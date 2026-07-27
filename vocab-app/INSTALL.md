@@ -15,31 +15,81 @@ C는 Android Studio(용량 큼)를 이미 쓰고 계실 때만 의미가 있습�
 
 ## 0단계 — 컴퓨터 준비 (모든 방법 공통)
 
-### Node.js 확인
+### 0-1. Node.js 설치 — 건너뛰지 마세요
 
-터미널(윈도우는 `PowerShell`, 맥은 `터미널`)을 열고:
+터미널(윈도우는 **PowerShell**, 맥은 **터미널**)을 열고:
 
 ```bash
 node --version
 ```
 
-`v18.0.0` 이상이 나와야 합니다.
-아무것도 안 나오거나 버전이 낮으면 https://nodejs.org 에서 **LTS** 버전을 받아 설치하고 터미널을 다시 여세요.
+**`v18.0.0` 이상이 나와야 다음으로 넘어갈 수 있습니다.**
 
-### 코드 받기
+`'node' 용어가 ... 인식되지 않습니다` 또는 `command not found`가 나오면 설치가 안 된 것입니다.
+이 상태로 진행하면 나중에 `npm install`에서 똑같은 오류가 납니다.
+
+**윈도우 설치**
+
+https://nodejs.org 에서 **LTS** 버튼을 눌러 `.msi`를 받고, 계속 `Next`를 눌러 설치합니다.
+(윈도우 10/11이면 PowerShell에서 `winget install OpenJS.NodeJS.LTS` 한 줄로도 됩니다.)
+
+> **설치가 끝나면 PowerShell 창을 완전히 닫고 새로 여세요.**
+> 열려 있던 창은 예전 설정을 그대로 들고 있어서 `npm`을 계속 못 찾습니다.
+> 가장 많이 걸리는 부분입니다.
+
+**맥 설치**
+
+https://nodejs.org 에서 LTS `.pkg`를 받아 설치하거나, Homebrew가 있으면 `brew install node`.
+
+설치 후 새 터미널에서 다시 확인합니다. 둘 다 버전이 나와야 합니다.
 
 ```bash
-git clone https://github.com/yangpa93/yangpa93.git
+node --version
+npm --version
+```
+
+### 0-2. 코드 받기
+
+**브랜치를 지정해서 받으세요.** `vocab-app` 폴더는 기본 브랜치(`main`)에는 없고
+아래 기능 브랜치에만 있습니다.
+
+```bash
+git clone -b claude/english-vocab-learning-app-pfy9yg https://github.com/yangpa93/yangpa93.git
 cd yangpa93/vocab-app
-git checkout claude/english-vocab-learning-app-pfy9yg
+```
+
+제대로 받았는지 확인합니다. `package.json`, `app.json`, `src` 등이 보이면 성공입니다.
+
+```bash
+ls
+```
+
+> **이미 브랜치 없이 clone 하셨다면** 다시 받을 필요 없이 저장소 폴더로 들어가 브랜치만 바꾸면 됩니다.
+> ```bash
+> cd yangpa93
+> git checkout claude/english-vocab-learning-app-pfy9yg
+> cd vocab-app
+> ```
+> `cd yangpa93/vocab-app`을 **먼저** 하면 "경로를 찾을 수 없습니다" 오류가 납니다.
+> 브랜치를 바꾸기 전에는 그 폴더가 아직 없기 때문입니다.
+
+### 0-3. 패키지 설치
+
+```bash
 npm install
 ```
 
-`npm install`은 처음 한 번 2~5분 걸립니다.
+처음 한 번 2~5분 걸립니다.
 중간에 `deprecated`, `warn` 같은 노란 글씨가 여러 줄 나오는데 **정상입니다.** 빨간 `ERR!`만 아니면 넘어가세요.
 
 > `git`이 없다는 오류가 나면 https://git-scm.com 에서 설치하시거나,
-> GitHub 페이지에서 `Code → Download ZIP`으로 받아 압축을 푸셔도 됩니다.
+> GitHub 페이지에서 브랜치를 고른 뒤 `Code → Download ZIP`으로 받아 압축을 푸셔도 됩니다.
+
+> **PowerShell에서 `npm.ps1 파일을 로드할 수 없습니다` 오류가 나면** 스크립트 실행이 막혀 있는 것입니다.
+> PowerShell에서 아래 한 줄을 실행하고 `Y`를 누른 뒤 다시 시도하세요.
+> ```powershell
+> Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+> ```
 
 ---
 
@@ -256,6 +306,17 @@ npx expo run:android --variant release
 ---
 
 ## 문제가 생기면
+
+**`'npm' 용어가 ... 인식되지 않습니다`**
+Node.js가 설치되지 않았거나, 설치 후 터미널을 다시 열지 않은 것입니다. **0-1단계**를 다시 보세요.
+
+**`cd yangpa93/vocab-app` 에서 "경로를 찾을 수 없습니다"**
+아직 기본 브랜치(`main`)에 있어서 그 폴더가 없는 상태입니다. `cd yangpa93` 까지만 들어간 뒤
+`git checkout claude/english-vocab-learning-app-pfy9yg` 를 먼저 실행하고 나서 `cd vocab-app`.
+
+**`fatal: not a git repository`**
+저장소 폴더 **밖**에서 git 명령을 실행한 것입니다. `cd yangpa93` 으로 들어간 뒤 다시 실행하세요.
+지금 어디인지는 `pwd`(윈도우도 동작)로 확인할 수 있습니다.
 
 **`npm install`에서 빨간 `ERR!` 가 납니다**
 Node.js 버전을 먼저 확인하세요(`node --version`, 18 이상). 그래도 안 되면 `vocab-app` 폴더의 `node_modules` 폴더와 `package-lock.json` 파일을 지우고 다시 `npm install`.

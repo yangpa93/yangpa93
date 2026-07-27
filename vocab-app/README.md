@@ -24,11 +24,17 @@ Expo(React Native)로 만들어 iOS·Android에서 그대로 돌아가고, **서
 
 ## 시작하기
 
+Node.js 18 이상이 필요합니다 (`node --version`으로 확인).
+
 ```bash
-cd vocab-app
+git clone -b claude/english-vocab-learning-app-pfy9yg https://github.com/yangpa93/yangpa93.git
+cd yangpa93/vocab-app
 npm install
 npm start
 ```
+
+> `vocab-app` 폴더는 위 기능 브랜치에만 있습니다. 브랜치 지정 없이 clone 하면
+> `main`에는 README만 있어서 폴더를 찾을 수 없습니다.
 
 터미널에 뜨는 QR 코드를 휴대폰의 **Expo Go** 앱으로 찍으면 바로 실행됩니다.
 (App Store / Play 스토어에서 "Expo Go" 검색)

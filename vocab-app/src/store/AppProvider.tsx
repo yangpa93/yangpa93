@@ -35,6 +35,7 @@ import { ALL_ENTRIES } from '../data';
 import { buildDailyReport, buildWeeklySummary } from '../features/report';
 import { SendResult, sendReportToParent, toPayload } from '../features/push';
 import {
+  DEFAULT_DAILY_GOAL,
   emptyProfileData,
   emptyState,
   loadProfileData,
@@ -163,7 +164,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         avatar,
         level,
         settings: {
-          dailyGoal: 15,
+          dailyGoal: DEFAULT_DAILY_GOAL,
           rounds: 3,
           reviewRatio: 70,
           showTranslation: true,
@@ -550,7 +551,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
 function profileGoal(state: AppState): number {
   return (
-    state.profiles.find((p) => p.id === state.activeProfileId)?.settings.dailyGoal ?? 15
+    state.profiles.find((p) => p.id === state.activeProfileId)?.settings.dailyGoal ?? DEFAULT_DAILY_GOAL
   );
 }
 

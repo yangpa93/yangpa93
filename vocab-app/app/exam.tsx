@@ -33,7 +33,7 @@ import { colors, font, radius, spacing } from '../src/theme';
  */
 export default function Exam() {
   const { profile, levelUp, recordAnswer, recordExam } = useApp();
-  const level = profile?.level ?? 'm1';
+  const level = profile?.level ?? 'm1-1';
 
   const startedAt = useRef(Date.now());
   const [queue, setQueue] = useState<ExamItem[]>(() => buildExam(entriesOf(level), level));

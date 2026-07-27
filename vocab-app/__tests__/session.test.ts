@@ -1,10 +1,10 @@
 import { buildSession, buildChoices, buildRounds, pickGame, SessionItem } from '../src/srs/session';
 import { createCard, grade } from '../src/srs/scheduler';
-import { entriesOf } from '../src/data';
+import { ALL_ENTRIES, entriesOf } from '../src/data';
 import { CardState, GameId, Stage, VocabEntry } from '../src/types';
 
 const TODAY = '2026-07-27';
-const POOL = entriesOf('m1');
+const POOL = entriesOf('m1-1');
 
 /** 테스트에서 난수를 고정한다. */
 const fixedRand = () => 0.5;
@@ -20,7 +20,7 @@ describe('buildSession', () => {
     const session = buildSession({
       entries: POOL,
       cards: {},
-      level: 'm1',
+      level: 'm1-1',
       goal: 15,
       reviewRatio: 70,
       today: TODAY,
@@ -39,7 +39,7 @@ describe('buildSession', () => {
     const session = buildSession({
       entries: POOL,
       cards,
-      level: 'm1',
+      level: 'm1-1',
       goal: 15,
       reviewRatio: 70,
       today: TODAY,
@@ -59,7 +59,7 @@ describe('buildSession', () => {
     const session = buildSession({
       entries: POOL,
       cards,
-      level: 'm1',
+      level: 'm1-1',
       goal: 15,
       reviewRatio: 100,
       today: TODAY,
@@ -83,7 +83,7 @@ describe('buildSession', () => {
     const session = buildSession({
       entries: POOL,
       cards,
-      level: 'm1',
+      level: 'm1-1',
       goal: 15,
       reviewRatio: 70,
       today: TODAY,
@@ -103,7 +103,7 @@ describe('buildSession', () => {
     const session = buildSession({
       entries: POOL,
       cards,
-      level: 'm1',
+      level: 'm1-1',
       goal: 15,
       reviewRatio: 70,
       today: TODAY,
@@ -117,16 +117,16 @@ describe('buildSession', () => {
 
   it('다른 레벨 단어는 섞이지 않는다', () => {
     const session = buildSession({
-      entries: [...entriesOf('m1'), ...entriesOf('m2')],
+      entries: [...entriesOf('m1-1'), ...entriesOf('m2-1')],
       cards: {},
-      level: 'm1',
+      level: 'm1-1',
       goal: 20,
       reviewRatio: 70,
       today: TODAY,
       rand: fixedRand,
     });
 
-    expect(session.every((i) => i.entry.level === 'm1')).toBe(true);
+    expect(session.every((i) => i.entry.level === 'm1-1')).toBe(true);
   });
 
   it('같은 단어가 한 세션에 두 번 나오지 않는다', () => {
@@ -138,7 +138,7 @@ describe('buildSession', () => {
     const session = buildSession({
       entries: POOL,
       cards,
-      level: 'm1',
+      level: 'm1-1',
       goal: 20,
       reviewRatio: 70,
       today: TODAY,
@@ -294,12 +294,12 @@ describe('pickGame', () => {
 });
 
 describe('다의어는 뜻마다 문항이 생긴다', () => {
-  it('뜻이 3개인 단어는 문항도 3개', () => {
-    const multi = POOL.find((e) => e.senses.length >= 3)!;
+  it('뜻이 여러 개인 단어는 뜻 수만큼 문항이 생긴다', () => {
+    const multi = ALL_ENTRIES.find((e) => e.senses.length >= 3)!;
     const session = buildSession({
       entries: [multi],
       cards: {},
-      level: 'm1',
+      level: multi.level,
       goal: 20,
       reviewRatio: 70,
       today: TODAY,
@@ -315,7 +315,7 @@ describe('다의어는 뜻마다 문항이 생긴다', () => {
     const session = buildSession({
       entries: POOL,
       cards: {},
-      level: 'm1',
+      level: 'm1-1',
       goal: 20,
       reviewRatio: 70,
       today: TODAY,

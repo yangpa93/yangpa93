@@ -4,14 +4,34 @@
  * 단어를 대량으로 추가할 때 여기서 걸러지면 앱을 켜기 전에 알 수 있다.
  */
 
-import { ALL_ENTRIES, ENTRIES_BY_LEVEL } from '../src/data';
+import { ALL_ENTRIES, ENTRIES_BY_LEVEL, entriesOfGrade } from '../src/data';
 import { clozeSentence, exposure, meaningLine, wordForms } from '../src/data/entry';
-import { LEVEL_ORDER } from '../src/types';
+import { GRADE_ORDER, LEVEL_ORDER } from '../src/types';
 
 describe('어휘 데이터', () => {
-  it('레벨마다 최소 100개가 있다', () => {
+  it('레벨마다 단어가 들어 있다', () => {
     for (const level of LEVEL_ORDER) {
-      expect(ENTRIES_BY_LEVEL[level].length).toBeGreaterThanOrEqual(100);
+      expect({ level, empty: ENTRIES_BY_LEVEL[level].length === 0 }).toEqual({
+        level,
+        empty: false,
+      });
+    }
+  });
+
+  it('한 레벨이 시험을 볼 수 있는 분량을 넘지 않는다', () => {
+    // 레벨 시험은 그 레벨 단어 전부를 다의어까지 출제한다. 문항이 200개를
+    // 넘어가면 한자리에서 끝낼 수 없어 시험이 무의미해진다.
+    for (const level of LEVEL_ORDER) {
+      const items = ENTRIES_BY_LEVEL[level].reduce((n, e) => n + e.senses.length, 0);
+      expect({ level, tooLong: items > 200 }).toEqual({ level, tooLong: false });
+    }
+  });
+
+  it('같은 학년 안에서 표제어가 중복되지 않는다', () => {
+    for (const grade of GRADE_ORDER) {
+      const words = entriesOfGrade(grade).map((e) => e.word.toLowerCase());
+      const dupes = [...new Set(words.filter((w, i) => words.indexOf(w) !== i))];
+      expect({ grade, dupes }).toEqual({ grade, dupes: [] });
     }
   });
 

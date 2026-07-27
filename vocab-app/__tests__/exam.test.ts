@@ -4,7 +4,7 @@ import { entriesOf } from '../src/data';
 import { CardState, GameId } from '../src/types';
 
 const TODAY = '2026-07-27';
-const POOL = entriesOf('m1');
+const POOL = entriesOf('m1-1');
 const fixedRand = () => 0.5;
 
 /** 그 레벨 단어들을 '완전 암기' 상태로 만든다. */
@@ -19,7 +19,7 @@ function masteredCards(count: number): Record<string, CardState> {
 }
 
 describe('buildExam', () => {
-  const exam = buildExam(POOL, 'm1', fixedRand);
+  const exam = buildExam(POOL, 'm1-1', fixedRand);
 
   it('그 레벨 단어를 하나도 빠뜨리지 않는다', () => {
     const covered = new Set(exam.map((it) => it.entry.id));
@@ -30,7 +30,7 @@ describe('buildExam', () => {
     const expected = POOL.reduce((n, e) => n + e.senses.length, 0);
     expect(exam).toHaveLength(expected);
 
-    const multi = POOL.find((e) => e.senses.length >= 3)!;
+    const multi = POOL.find((e) => e.senses.length >= 2)!;
     const its = exam.filter((it) => it.entry.id === multi.id);
     expect(its).toHaveLength(multi.senses.length);
     expect(new Set(its.map((it) => it.senseIndex)).size).toBe(multi.senses.length);
@@ -51,8 +51,8 @@ describe('buildExam', () => {
   });
 
   it('다른 레벨 단어는 섞이지 않는다', () => {
-    const mixed = buildExam([...entriesOf('m1'), ...entriesOf('m2')], 'm1', fixedRand);
-    expect(mixed.every((it) => it.entry.level === 'm1')).toBe(true);
+    const mixed = buildExam([...entriesOf('m1-1'), ...entriesOf('m2-1')], 'm1-1', fixedRand);
+    expect(mixed.every((it) => it.entry.level === 'm1-1')).toBe(true);
   });
 
   it('처음에는 모두 첫 시도로 표시된다', () => {
@@ -62,7 +62,7 @@ describe('buildExam', () => {
 
 describe('canTakeExam', () => {
   it('아무것도 안 외웠으면 시험을 볼 수 없다', () => {
-    const r = canTakeExam(POOL, {}, 'm1');
+    const r = canTakeExam(POOL, {}, 'm1-1');
     expect(r.allowed).toBe(false);
     expect(r.mastered).toBe(0);
     expect(r.total).toBe(POOL.length);
@@ -70,13 +70,13 @@ describe('canTakeExam', () => {
 
   it('90%에 못 미치면 아직 볼 수 없다', () => {
     const need = Math.ceil(POOL.length * 0.9);
-    const r = canTakeExam(POOL, masteredCards(need - 1), 'm1');
+    const r = canTakeExam(POOL, masteredCards(need - 1), 'm1-1');
     expect(r.allowed).toBe(false);
   });
 
   it('90%를 채우면 볼 수 있다', () => {
     const need = Math.ceil(POOL.length * 0.9);
-    const r = canTakeExam(POOL, masteredCards(need), 'm1');
+    const r = canTakeExam(POOL, masteredCards(need), 'm1-1');
     expect(r.allowed).toBe(true);
     expect(r.need).toBe(need);
   });
@@ -84,12 +84,12 @@ describe('canTakeExam', () => {
   it('한 번 맞힌 정도로는 완전 암기로 치지 않는다', () => {
     const cards: Record<string, CardState> = {};
     for (const e of POOL) cards[e.id] = grade(createCard(e.id), true, TODAY);
-    expect(canTakeExam(POOL, cards, 'm1').allowed).toBe(false);
+    expect(canTakeExam(POOL, cards, 'm1-1').allowed).toBe(false);
   });
 });
 
 describe('nextRetryRound', () => {
-  const exam = buildExam(POOL, 'm1', fixedRand);
+  const exam = buildExam(POOL, 'm1-1', fixedRand);
   const wrong = exam.slice(0, 5);
 
   it('틀린 문항만 다시 낸다', () => {

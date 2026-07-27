@@ -11,7 +11,7 @@ function makeProfile(over: Partial<Profile> = {}): Profile {
     id: 'p1',
     name: '서준',
     avatar: '🦊',
-    level: 'm1',
+    level: 'm1-1',
     settings: {
       dailyGoal: 15,
       rounds: 3,
@@ -45,7 +45,7 @@ describe('buildDailyReport', () => {
   });
 
   it('오늘 틀린 단어를 많이 틀린 순으로 보여준다', () => {
-    const pool = entriesOf('m1');
+    const pool = entriesOf('m1-1');
     const data = makeData({
       days: {
         [TODAY]: {
@@ -71,7 +71,7 @@ describe('buildDailyReport', () => {
   });
 
   it('누적으로 자주 틀린 단어도 함께 담는다', () => {
-    const pool = entriesOf('m1');
+    const pool = entriesOf('m1-1');
     const cards: Record<string, CardState> = {};
     let bad = createCard(pool[3].id);
     for (let i = 0; i < 5; i++) bad = grade(bad, false, TODAY);
@@ -99,7 +99,7 @@ describe('reportHeadline', () => {
 
 describe('reportText', () => {
   it('공유용 텍스트에 핵심 항목이 모두 들어간다', () => {
-    const pool = entriesOf('m1');
+    const pool = entriesOf('m1-1');
     const data = makeData({
       days: {
         [TODAY]: {
@@ -158,14 +158,14 @@ describe('buildWeeklySummary', () => {
 
 describe('levelProgress / nextLevel', () => {
   it('아무것도 안 했으면 진도가 0이다', () => {
-    const p = levelProgress(ALL_ENTRIES, {}, 'm1');
+    const p = levelProgress(ALL_ENTRIES, {}, 'm1-1');
     expect(p.mastered).toBe(0);
     expect(p.ratio).toBe(0);
     expect(p.canTakeExam).toBe(false);
   });
 
   it('90% 이상 외우면 레벨 시험을 볼 수 있다', () => {
-    const pool = entriesOf('m1');
+    const pool = entriesOf('m1-1');
     const cards: Record<string, CardState> = {};
     const need = Math.ceil(pool.length * 0.9);
 
@@ -176,21 +176,29 @@ describe('levelProgress / nextLevel', () => {
       cards[e.id] = c;
     }
 
-    const p = levelProgress(ALL_ENTRIES, cards, 'm1');
+    const p = levelProgress(ALL_ENTRIES, cards, 'm1-1');
     expect(p.canTakeExam).toBe(true);
     expect(p.remaining).toBe(0);
   });
 
-  it('레벨 순서대로 올라가고 고3이 마지막이다', () => {
-    expect(nextLevel('m1')).toBe('m2');
-    expect(nextLevel('m3')).toBe('h1');
-    expect(nextLevel('h3')).toBeNull();
+  it('한 학년 안에서 레벨 1 → 2 → 3 으로 올라간다', () => {
+    expect(nextLevel('m1-1')).toBe('m1-2');
+    expect(nextLevel('m1-2')).toBe('m1-3');
+  });
+
+  it('학년의 마지막 레벨을 끝내면 다음 학년으로 넘어간다', () => {
+    expect(nextLevel('m1-3')).toBe('m2-1');
+    expect(nextLevel('m3-3')).toBe('h1-1');
+  });
+
+  it('고3 마지막 레벨이 끝이다', () => {
+    expect(nextLevel('h3-3')).toBeNull();
   });
 });
 
 describe('troubleWords', () => {
   it('맞기만 한 단어는 오답 노트에 넣지 않는다', () => {
-    const pool = entriesOf('m1');
+    const pool = entriesOf('m1-1');
     const cards: Record<string, CardState> = {
       [pool[0].id]: grade(createCard(pool[0].id), true, TODAY),
     };
@@ -198,7 +206,7 @@ describe('troubleWords', () => {
   });
 
   it('틀린 횟수가 같으면 정답률이 낮은 쪽이 앞에 온다', () => {
-    const pool = entriesOf('m1');
+    const pool = entriesOf('m1-1');
     // a: 2번 틀리고 0번 맞음 / b: 2번 틀리고 5번 맞음
     let a = createCard(pool[0].id);
     a = grade(a, false, TODAY);

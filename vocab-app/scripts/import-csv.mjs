@@ -19,8 +19,10 @@
 
 import { readFileSync } from 'node:fs';
 
-const LEVELS = ['m1', 'm2', 'm3', 'h1', 'h2', 'h3'];
-const LEVEL_TITLE = {
+const GRADES = ['m1', 'm2', 'm3', 'h1', 'h2', 'h3'];
+const STEPS = [1, 2, 3];
+const LEVELS = GRADES.flatMap((g) => STEPS.map((s) => `${g}-${s}`));
+const GRADE_TITLE = {
   m1: '중학교 1학년',
   m2: '중학교 2학년',
   m3: '중학교 3학년',
@@ -34,6 +36,7 @@ const [csvPath, level, sourceArg] = process.argv.slice(2);
 if (!csvPath || !level) {
   console.error('사용법: node scripts/import-csv.mjs <csv 경로> <레벨> [출처]');
   console.error(`  레벨: ${LEVELS.join(' | ')}`);
+  console.error('  예)  node scripts/import-csv.mjs words.csv m1-2 > src/data/levels/m1-2.ts');
   console.error('  출처: curriculum(기본) | textbook | csat');
   process.exit(1);
 }
@@ -43,7 +46,9 @@ if (!LEVELS.includes(level)) {
   process.exit(1);
 }
 
-const defaultSource = sourceArg ?? (level.startsWith('h') ? 'csat' : 'curriculum');
+const grade = level.slice(0, 2);
+const step = level.slice(3);
+const defaultSource = sourceArg ?? (grade.startsWith('h') ? 'csat' : 'curriculum');
 
 /** 따옴표와 줄바꿈을 포함한 CSV를 파싱한다. */
 function parseCsv(text) {
@@ -154,7 +159,7 @@ if (problems.length > 0) {
 
 const lines = [];
 lines.push('/**');
-lines.push(` * ${LEVEL_TITLE[level]} 필수 어휘 ${byWord.size}개.`);
+lines.push(` * ${GRADE_TITLE[grade]} 레벨 ${step} 어휘 ${byWord.size}개.`);
 lines.push(' *');
 lines.push(` * scripts/import-csv.mjs 로 ${csvPath} 에서 생성했습니다.`);
 lines.push(' * 직접 고쳐도 되지만, CSV를 다시 부으면 덮어써집니다.');
@@ -162,7 +167,8 @@ lines.push(' */');
 lines.push('');
 lines.push("import { defineLevel } from '../define';");
 lines.push('');
-lines.push(`export const ${level.toUpperCase()} = defineLevel(`);
+const varName = `${grade.toUpperCase()}_${step}`;
+lines.push(`export const ${varName} = defineLevel(`);
 lines.push(`  ${q(level)},`);
 lines.push('  [');
 

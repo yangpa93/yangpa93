@@ -3,7 +3,8 @@ import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { router } from 'expo-router';
 import { Body, Button, Card, H1, H3, Muted, Screen } from '../src/components/ui';
 import { useApp } from '../src/store/AppProvider';
-import { LEVEL_LABEL, LEVEL_ORDER, LevelId } from '../src/types';
+import { LevelId } from '../src/types';
+import { LevelPicker } from '../src/components/LevelPicker';
 import { colors, radius, spacing } from '../src/theme';
 
 const AVATARS = ['🦊', '🐻', '🐼', '🐨', '🦁', '🐯', '🐸', '🐧', '🦄', '🐢'];
@@ -12,7 +13,7 @@ export default function Onboarding() {
   const { addProfile, state } = useApp();
   const [name, setName] = useState('');
   const [avatar, setAvatar] = useState(AVATARS[0]);
-  const [level, setLevel] = useState<LevelId>('m1');
+  const [level, setLevel] = useState<LevelId>('m1-1');
   const [saving, setSaving] = useState(false);
 
   const first = state.profiles.length === 0;
@@ -67,17 +68,8 @@ export default function Onboarding() {
         <Muted style={{ marginTop: spacing.xs }}>
           지금 학년보다 한 단계 낮게 시작해도 좋아요. 다 외우면 자동으로 올라갑니다.
         </Muted>
-        <View style={s.levelWrap}>
-          {LEVEL_ORDER.map((l) => (
-            <Pressable
-              key={l}
-              onPress={() => setLevel(l)}
-              style={[s.levelChip, level === l && s.levelChipOn]}
-              accessibilityRole="button"
-            >
-              <Text style={[s.levelText, level === l && s.levelTextOn]}>{LEVEL_LABEL[l]}</Text>
-            </Pressable>
-          ))}
+        <View style={{ marginTop: spacing.md }}>
+          <LevelPicker value={level} onChange={setLevel} />
         </View>
       </Card>
 

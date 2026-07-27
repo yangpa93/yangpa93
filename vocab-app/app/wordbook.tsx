@@ -5,14 +5,15 @@ import { useApp } from '../src/store/AppProvider';
 import { entriesOf } from '../src/data';
 import { meaningLine, videoUrl } from '../src/data/entry';
 import { isMastered } from '../src/srs/scheduler';
+import { LevelPicker } from '../src/components/LevelPicker';
 import { speak } from '../src/lib/feedback';
-import { LEVEL_ORDER, LEVEL_SHORT, LevelId } from '../src/types';
+import { LEVEL_SHORT, LevelId } from '../src/types';
 import { colors, font, radius, spacing } from '../src/theme';
 
 /** 레벨별 전체 단어 목록. 검색과 '안 외운 것만 보기'를 지원한다. */
 export default function Wordbook() {
   const { profile, data } = useApp();
-  const [level, setLevel] = useState<LevelId>(profile?.level ?? 'm1');
+  const [level, setLevel] = useState<LevelId>(profile?.level ?? 'm1-1');
   const [query, setQuery] = useState('');
   const [onlyUnlearned, setOnlyUnlearned] = useState(false);
   const [openId, setOpenId] = useState<string | null>(null);
@@ -40,17 +41,8 @@ export default function Wordbook() {
 
   return (
     <Screen>
-      <View style={s.levelRow}>
-        {LEVEL_ORDER.map((l) => (
-          <Pressable
-            key={l}
-            onPress={() => setLevel(l)}
-            style={[s.levelChip, level === l && s.levelChipOn]}
-            accessibilityRole="button"
-          >
-            <Text style={[s.levelText, level === l && s.levelTextOn]}>{LEVEL_SHORT[l]}</Text>
-          </Pressable>
-        ))}
+      <View style={{ paddingTop: spacing.md }}>
+        <LevelPicker value={level} onChange={setLevel} showCounts={false} />
       </View>
 
       <Card style={{ marginTop: spacing.md }}>
@@ -153,18 +145,6 @@ export default function Wordbook() {
 }
 
 const s = StyleSheet.create({
-  levelRow: { flexDirection: 'row', gap: spacing.sm, paddingTop: spacing.md, flexWrap: 'wrap' },
-  levelChip: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: radius.pill,
-    backgroundColor: colors.card,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  levelChipOn: { backgroundColor: colors.primary, borderColor: colors.primary },
-  levelText: { fontSize: font.small, fontWeight: '700', color: colors.subtext },
-  levelTextOn: { color: '#fff' },
   search: {
     marginTop: spacing.md,
     borderWidth: 1,

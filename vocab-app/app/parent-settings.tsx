@@ -3,7 +3,8 @@ import { Alert, Pressable, StyleSheet, Switch, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { Button, Card, Chip, H3, Muted, Row, Screen } from '../src/components/ui';
 import { useApp } from '../src/store/AppProvider';
-import { LEVEL_ORDER, LEVEL_SHORT, LevelId } from '../src/types';
+import { LEVEL_SHORT, LevelId } from '../src/types';
+import { LevelPicker } from '../src/components/LevelPicker';
 import { colors, font, radius, spacing } from '../src/theme';
 
 const GOALS = [10, 12, 15, 18, 20];
@@ -198,22 +199,17 @@ export default function ParentSettings() {
           </Card>
 
           <Card style={{ marginTop: spacing.md }}>
-            <H3>학년 조정</H3>
+            <H3>학년·레벨 조정</H3>
             <Muted style={{ marginTop: spacing.xs }}>
-              보통은 단어를 다 외우면 자동으로 올라갑니다. 수동으로 바꾸면 그 학년 단어부터 다시 시작해요.
+              보통은 레벨 시험에 통과하면 자동으로 올라갑니다. 수동으로 바꾸면 그 레벨 단어부터 다시 시작해요.
             </Muted>
-            <Row style={{ gap: spacing.sm, marginTop: spacing.md, flexWrap: 'wrap' }}>
-              {LEVEL_ORDER.map((l: LevelId) => (
-                <Pressable
-                  key={l}
-                  onPress={() => updateProfile(profile.id, { level: l })}
-                  style={[s.chip, profile.level === l && s.chipOn]}
-                  accessibilityRole="button"
-                >
-                  <Text style={[s.chipText, profile.level === l && s.chipTextOn]}>{LEVEL_SHORT[l]}</Text>
-                </Pressable>
-              ))}
-            </Row>
+            <View style={{ marginTop: spacing.md }}>
+              <LevelPicker
+                value={profile.level}
+                onChange={(l: LevelId) => updateProfile(profile.id, { level: l })}
+                tone="parent"
+              />
+            </View>
             {profile.clearedLevels.length > 0 ? (
               <Row style={{ gap: spacing.sm, marginTop: spacing.md, flexWrap: 'wrap' }}>
                 <Muted>완료: </Muted>

@@ -11,7 +11,7 @@ function makeProfile(over: Partial<Profile> = {}): Profile {
     id: 'p1',
     name: '서준',
     avatar: '🦊',
-    level: 'm1',
+    level: 'm1-1',
     settings: {
       dailyGoal: 15,
       rounds: 3,
@@ -73,7 +73,7 @@ describe('buildLinkUrl', () => {
 
 describe('toPayload', () => {
   it('리포트를 전송용으로 바꾼다', () => {
-    const pool = entriesOf('m1');
+    const pool = entriesOf('m1-1');
     const data = makeData({
       days: {
         [TODAY]: {

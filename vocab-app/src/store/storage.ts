@@ -6,12 +6,18 @@
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AppState, ProfileData } from '../types';
+import { AppState, LevelId, ProfileData } from '../types';
+import { LEGACY_ID_WORD } from './legacy-ids';
+import { ALL_ENTRIES } from '../data';
 
 const ROOT_KEY = 'urivocab:root:v1';
 const DATA_KEY = (profileId: string) => `urivocab:data:v1:${profileId}`;
 
-export const STATE_VERSION = 1;
+/** 2: 학년을 레벨 3개로 쪼개고 단어 id를 표제어 기반으로 바꿈 */
+export const STATE_VERSION = 2;
+
+/** 하루에 새로 만날 단어 수 기본값. */
+export const DEFAULT_DAILY_GOAL = 10;
 
 export function emptyState(): AppState {
   return {
@@ -59,12 +65,12 @@ export async function loadProfileData(profileId: string): Promise<ProfileData> {
     const raw = await AsyncStorage.getItem(DATA_KEY(profileId));
     if (!raw) return emptyProfileData();
     const parsed = JSON.parse(raw) as ProfileData;
-    return {
+    return migrateData({
       cards: parsed.cards ?? {},
       days: parsed.days ?? {},
       answers: parsed.answers ?? [],
       exams: parsed.exams ?? [],
-    };
+    });
   } catch {
     return emptyProfileData();
   }
@@ -83,6 +89,72 @@ export async function removeProfileData(profileId: string): Promise<void> {
   await AsyncStorage.removeItem(DATA_KEY(profileId));
 }
 
+/* ------------------------------------------------------------------ */
+/* v1 → v2 : 레벨 쪼개기와 단어 id 교체                                 */
+/* ------------------------------------------------------------------ */
+
+/**
+ * 예전 레벨(`m1`)을 새 레벨(`m1-1`)로.
+ *
+ * 학년만 알고 어디까지 했는지는 모르므로 그 학년의 첫 레벨로 보낸다.
+ * 아래로 내려 잡는 쪽이 안전하다 — 이미 아는 단어는 카드 상태가 남아 있어서
+ * 금방 통과하지만, 위로 올려 잡으면 못 본 단어를 건너뛰게 된다.
+ */
+function upgradeLevel(level: string): LevelId {
+  if (/^[mh][123]-[123]$/.test(level)) return level as LevelId;
+  if (/^[mh][123]$/.test(level)) return `${level}-1` as LevelId;
+  return 'm1-1';
+}
+
+/** 새 단어 id 표. 표제어 → 그 단어의 새 id (같은 학년 안에서 찾는다). */
+const NEW_ID_BY_GRADE_WORD = new Map(
+  ALL_ENTRIES.map((e) => [`${e.level.slice(0, 2)}:${e.word.toLowerCase()}`, e.id]),
+);
+
+/**
+ * 예전 단어 id(`m1-042`)를 새 id(`m1-1-about`)로 바꾼다.
+ *
+ * 바꿀 수 없으면 null. 그런 기록은 버린다. 남겨 두면 존재하지 않는 단어의
+ * 카드가 계속 복습 대기열에 떠서 오늘의 학습이 채워지지 않는다.
+ */
+export function upgradeEntryId(id: string): string | null {
+  if (!/^[mh][123]-\d{3}$/.test(id)) return id.includes('-') ? id : null;
+  const word = LEGACY_ID_WORD[id];
+  if (!word) return null;
+  return NEW_ID_BY_GRADE_WORD.get(`${id.slice(0, 2)}:${word.toLowerCase()}`) ?? null;
+}
+
+/** 학습 데이터 안의 단어 id를 새 형식으로 옮긴다. */
+export function migrateData(data: ProfileData): ProfileData {
+  const cards: ProfileData['cards'] = {};
+  for (const [oldId, card] of Object.entries(data.cards)) {
+    const id = upgradeEntryId(oldId);
+    if (!id) continue;
+    // 같은 단어로 합쳐지는 경우는 없지만, 있어도 먼저 온 기록을 지키지 않는다.
+    cards[id] = { ...card, entryId: id };
+  }
+
+  const days: ProfileData['days'] = {};
+  for (const [date, rec] of Object.entries(data.days)) {
+    days[date] = {
+      ...rec,
+      wrongEntryIds: rec.wrongEntryIds
+        .map(upgradeEntryId)
+        .filter((x): x is string => x !== null),
+    };
+  }
+
+  return {
+    cards,
+    days,
+    answers: data.answers.flatMap((a) => {
+      const id = upgradeEntryId(a.entryId);
+      return id ? [{ ...a, entryId: id }] : [];
+    }),
+    exams: data.exams.map((e) => ({ ...e, level: upgradeLevel(e.level) })),
+  };
+}
+
 /** 저장 포맷이 바뀌면 여기서 올려준다. */
 function migrate(state: AppState): AppState {
   const base = emptyState();
@@ -94,13 +166,16 @@ function migrate(state: AppState): AppState {
     // rounds는 나중에 추가된 설정이라 예전에 저장된 프로필에는 없다.
     profiles: (state.profiles ?? []).map((p) => ({
       ...p,
+      level: upgradeLevel(p.level),
+      pendingLevelUps: (p.pendingLevelUps ?? []).map(upgradeLevel),
+      clearedLevels: (p.clearedLevels ?? []).map(upgradeLevel),
       settings: {
         ...p.settings,
         rounds: p.settings?.rounds ?? 3,
         showTranslation: p.settings?.showTranslation ?? true,
       },
     })),
-    rewards: state.rewards ?? [],
+    rewards: (state.rewards ?? []).map((r) => ({ ...r, earnedFrom: upgradeLevel(r.earnedFrom) })),
     role: state.role ?? 'child',
     parentLink: state.parentLink ?? null,
     myPushToken: state.myPushToken ?? null,

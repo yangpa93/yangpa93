@@ -5,12 +5,12 @@
  * src/store/migrations.ts 에 마이그레이션을 추가해야 한다.
  */
 
-/** 학년 레벨. 순서가 곧 레벨업 순서다. */
-export type LevelId = 'm1' | 'm2' | 'm3' | 'h1' | 'h2' | 'h3';
+/** 학년. */
+export type GradeId = 'm1' | 'm2' | 'm3' | 'h1' | 'h2' | 'h3';
 
-export const LEVEL_ORDER: LevelId[] = ['m1', 'm2', 'm3', 'h1', 'h2', 'h3'];
+export const GRADE_ORDER: GradeId[] = ['m1', 'm2', 'm3', 'h1', 'h2', 'h3'];
 
-export const LEVEL_LABEL: Record<LevelId, string> = {
+export const GRADE_LABEL: Record<GradeId, string> = {
   m1: '중학교 1학년',
   m2: '중학교 2학년',
   m3: '중학교 3학년',
@@ -19,7 +19,7 @@ export const LEVEL_LABEL: Record<LevelId, string> = {
   h3: '고등학교 3학년',
 };
 
-export const LEVEL_SHORT: Record<LevelId, string> = {
+export const GRADE_SHORT: Record<GradeId, string> = {
   m1: '중1',
   m2: '중2',
   m3: '중3',
@@ -27,6 +27,47 @@ export const LEVEL_SHORT: Record<LevelId, string> = {
   h2: '고2',
   h3: '고3',
 };
+
+/** 한 학년을 몇 단계로 쪼갤지. */
+export const STEPS = [1, 2, 3] as const;
+export type Step = (typeof STEPS)[number];
+
+/**
+ * 레벨. 순서가 곧 레벨업 순서다.
+ *
+ * 학년 하나를 통째로 한 레벨로 두면, 단어를 늘릴수록 레벨 시험이 감당할 수
+ * 없이 길어진다(시험은 그 레벨 단어를 하나도 빠짐없이 맞혀야 통과한다).
+ * 그래서 학년을 3단계로 쪼갠다. 레벨당 150개 안팎이면 시험이 30분 선에서
+ * 유지되고, 보상 요청 기회도 학년당 세 번으로 늘어난다.
+ */
+export type LevelId = `${GradeId}-${Step}`;
+
+export const LEVEL_ORDER: LevelId[] = GRADE_ORDER.flatMap((g) =>
+  STEPS.map((s) => `${g}-${s}` as LevelId),
+);
+
+export function gradeOf(level: LevelId): GradeId {
+  return level.slice(0, 2) as GradeId;
+}
+
+export function stepOf(level: LevelId): Step {
+  return Number(level.slice(3)) as Step;
+}
+
+/** 그 학년의 레벨 3개를 순서대로. */
+export function levelsOfGrade(grade: GradeId): LevelId[] {
+  return STEPS.map((s) => `${grade}-${s}` as LevelId);
+}
+
+/** '중학교 1학년 레벨 1' */
+export const LEVEL_LABEL: Record<LevelId, string> = Object.fromEntries(
+  LEVEL_ORDER.map((l) => [l, `${GRADE_LABEL[gradeOf(l)]} 레벨 ${stepOf(l)}`]),
+) as Record<LevelId, string>;
+
+/** '중1-1' */
+export const LEVEL_SHORT: Record<LevelId, string> = Object.fromEntries(
+  LEVEL_ORDER.map((l) => [l, `${GRADE_SHORT[gradeOf(l)]}-${stepOf(l)}`]),
+) as Record<LevelId, string>;
 
 /** 단어인지 숙어(구동사·관용구)인지. 숙어는 스펠링 게임에서 제외한다. */
 export type EntryKind = 'word' | 'idiom';

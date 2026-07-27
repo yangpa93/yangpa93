@@ -35,13 +35,27 @@ export interface Row {
   src?: EntrySource;
 }
 
+/**
+ * 표제어를 id로 쓸 수 있는 형태로 바꾼다. `look for` → `look-for`
+ *
+ * id를 배열 순서로 만들면(`m1-042`) 중간에 단어를 하나 끼워 넣는 순간 뒤쪽
+ * id가 전부 밀려서, 이미 쌓인 학습 기록이 엉뚱한 단어에 붙는다. 단어를 계속
+ * 늘려 갈 것이므로 표제어에서 뽑아 쓴다.
+ */
+export function slug(word: string): string {
+  return word
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
 export function defineLevel(
   level: LevelId,
   rows: Row[],
   defaultSource: EntrySource = 'curriculum',
 ): VocabEntry[] {
-  return rows.map((row, i) => ({
-    id: `${level}-${String(i + 1).padStart(3, '0')}`,
+  return rows.map((row) => ({
+    id: `${level}-${slug(row.w)}`,
     level,
     // 띄어쓰기가 있으면 숙어로 본다. (get up, look forward to …)
     kind: (row.w.includes(' ') ? 'idiom' : 'word') as EntryKind,

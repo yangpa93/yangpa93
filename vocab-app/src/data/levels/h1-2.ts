@@ -1,5 +1,5 @@
 /**
- * 고등학교 1학년 레벨 2 — 수록 136 / 계획 137개.
+ * 고등학교 1학년 레벨 2 — 수록 137 / 계획 137개.
  *
  * 난이도 층: 중급(중학 권장)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -901,6 +901,13 @@ export const H1_2 = defineLevel('h1-2', [
       ['She sewed a button on.', '그녀는 단추를 달았다.'],
       ['My mother sews very well.', '우리 어머니는 바느질을 아주 잘하신다.'],
       ['He is sewing a torn bag.', '그는 찢어진 가방을 꿰매고 있다.'],
+    ]},
+  ]},
+  { w: 'sex', p: 'n.', s: [
+    { m: '성별', syn: ['gender'], ex: [
+      ['Write your name and sex here.', '여기에 이름과 성별을 쓰세요.'],
+      ['The form asks for age and sex.', '그 양식은 나이와 성별을 묻는다.'],
+      ['Both sexes joined the class.', '남녀 모두 그 수업에 참여했다.'],
     ]},
   ]},
   { w: 'shade', p: 'n.', s: [

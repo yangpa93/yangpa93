@@ -166,7 +166,7 @@ function item(entry: VocabEntry, over: Partial<SessionItem> = {}): SessionItem {
     game: 'cloze',
     stage: 'learn',
     round: 0,
-    showIntro: false,
+    firstMeeting: false,
     ...over,
   };
 }
@@ -209,21 +209,21 @@ describe('buildRounds', () => {
     expect(backToBack).toBe(0);
   });
 
-  it('처음 보는 단어는 첫 라운드에서 단어 카드를 먼저 보여준다', () => {
+  it("새 단어는 첫 라운드의 첫 문항에만 '처음 만남' 표시가 붙는다", () => {
     const q = buildRounds(words, 3, fixedRand);
     const firstRound = q.filter((x) => x.round === 0);
-    // 뜻이 여러 개여도 카드는 그 단어의 첫 문항에서만 뜬다.
-    const introWords = firstRound.filter((x) => x.showIntro).map((x) => x.entry.id);
-    expect(new Set(introWords).size).toBe(introWords.length);
-    expect(introWords.length).toBe(20);
-    // 2라운드부터는 이미 본 단어이므로 카드를 다시 띄우지 않는다.
-    expect(q.filter((x) => x.round > 0).every((x) => !x.showIntro)).toBe(true);
+    // 뜻이 여러 개여도 표시는 그 단어의 첫 문항 하나에만 붙는다.
+    const marked = firstRound.filter((x) => x.firstMeeting).map((x) => x.entry.id);
+    expect(new Set(marked).size).toBe(marked.length);
+    expect(marked.length).toBe(20);
+    // 2라운드부터는 이미 만난 단어다.
+    expect(q.filter((x) => x.round > 0).every((x) => !x.firstMeeting)).toBe(true);
   });
 
-  it('복습 단어는 카드를 먼저 보여주지 않는다', () => {
+  it('복습 단어에는 처음 만남 표시가 붙지 않는다', () => {
     const review = POOL.slice(0, 5).map((e) => item(e, { mode: 'review' }));
     const q = buildRounds(review, 3, fixedRand);
-    expect(q.every((x) => !x.showIntro)).toBe(true);
+    expect(q.every((x) => !x.firstMeeting)).toBe(true);
   });
 
   it('라운드가 3을 넘으면 마지막 단계를 반복한다', () => {

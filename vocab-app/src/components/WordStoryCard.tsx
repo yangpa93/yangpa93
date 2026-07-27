@@ -1,8 +1,10 @@
 /**
- * 단어 카드. 두 곳에서 쓴다.
+ * 단어 카드. **문제를 푼 직후**에 뜬다. 정답이든 오답이든 매번.
  *
- *  - `variant="intro"` : 처음 보는 단어를 문제로 내기 전에 먼저 보여 준다.
- *  - `variant="feedback"` : 문제를 푼 직후. 정답이든 오답이든 매번 뜬다.
+ * 한 단어는 두 단계로 만난다. ① 문제를 푼다 → ② 이 카드로 확인한다.
+ * 카드를 문제보다 먼저 보여주면 방금 읽은 것을 그대로 되묻는 꼴이라,
+ * 아이는 스스로 떠올려 볼 기회 없이 베껴 답하게 된다. 그래서 처음 만나는
+ * 단어라도 먼저 풀어 보게 하고, 답을 낸 뒤에 이 카드에서 배우게 한다.
  *
  * **모든 뜻과 모든 예문을 처음부터 펼쳐 놓는다.** 접어 두고 버튼을 눌러야
  * 보이면 아이는 대부분 누르지 않는다. 오늘 다루는 뜻만 강조하고
@@ -36,19 +38,19 @@ export function WordStoryCard({
   entry,
   exp,
   correct,
+  firstTime,
   ttsEnabled,
   onNext,
   nextLabel,
-  variant = 'feedback',
 }: {
   entry: VocabEntry;
   exp: Exposure;
-  /** feedback일 때만 쓰인다 */
   correct?: boolean;
+  /** 이번 세션에서 처음 만난 단어인지. 맞고 틀리고보다 이쪽이 더 중요한 신호다. */
+  firstTime?: boolean;
   ttsEnabled: boolean;
   onNext: () => void;
   nextLabel: string;
-  variant?: 'intro' | 'feedback';
 }) {
   const [typed, setTyped] = useState(0);
 
@@ -69,7 +71,7 @@ export function WordStoryCard({
       }),
       Animated.spring(pop, { toValue: 1, friction: 5, tension: 120, useNativeDriver: true }),
     ]).start();
-  }, [entry.id, variant, slide, pop]);
+  }, [entry.id, slide, pop]);
 
   // 오늘의 예문을 한 글자씩 흘려 보여준다.
   useEffect(() => {
@@ -111,12 +113,18 @@ export function WordStoryCard({
     >
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: spacing.lg }}>
         <Animated.View style={{ transform: [{ scale: pop }] }}>
-          {variant === 'intro' ? (
-            <Chip label="✨ 새로 배우는 단어" tone="accent" />
-          ) : (
+          <Row style={{ gap: spacing.sm, flexWrap: 'wrap' }}>
             <Chip label={correct ? '✅ 정답!' : '💪 다시 만나요'} tone={correct ? 'correct' : 'wrong'} />
-          )}
+            {firstTime ? <Chip label="✨ 처음 만나는 단어" tone="accent" /> : null}
+          </Row>
         </Animated.View>
+
+        {firstTime && !correct ? (
+          // 본 적 없는 단어를 틀린 것은 당연하다. 여기서 배우면 된다.
+          <Muted style={{ marginTop: spacing.sm }}>
+            처음 보는 단어라 몰라도 괜찮아요. 지금 익히고, 오늘 안에 다시 만나요.
+          </Muted>
+        ) : null}
 
         <Row style={{ marginTop: spacing.md, alignItems: 'flex-end' }}>
           <Text style={s.word}>{entry.word}</Text>

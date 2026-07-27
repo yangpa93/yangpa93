@@ -34,8 +34,14 @@ export interface SessionItem {
   stage: Stage;
   /** 이 단어를 이번 세션에서 몇 번째로 만나는지 (0부터) */
   round: number;
-  /** 처음 보는 단어를 문제로 내기 전에 단어 카드를 먼저 보여줄지 */
-  showIntro: boolean;
+  /**
+   * 이번 세션에서 이 단어를 처음 만나는 문항인지.
+   *
+   * 문제를 풀고 난 뒤 뜨는 단어 카드에 '처음 만나는 단어'라고 표시하는 데 쓴다.
+   * 카드를 문제보다 **먼저** 보여주지는 않는다 — 먼저 보여주면 방금 읽은 것을
+   * 그대로 되묻는 꼴이라 스스로 떠올려 볼 기회가 사라진다.
+   */
+  firstMeeting: boolean;
 }
 
 export interface BuildSessionArgs {
@@ -149,7 +155,7 @@ function expandSenses(
         game: 'cloze',
         stage: 'learn',
         round: 0,
-        showIntro: false,
+        firstMeeting: false,
       };
       out.push({ ...item, game: pickGame(item, rand) });
     }
@@ -175,14 +181,14 @@ export function buildRounds(
   for (let r = 0; r < rounds; r++) {
     const stage = stages[Math.min(r, stages.length - 1)];
     // 처음 보는 단어는 첫 라운드에서 단어 카드를 먼저 펼쳐 준다.
-    // 그때는 뜻이 여러 개여도 첫 문항에서만 카드를 띄운다.
-    const introDone = new Set<string>();
+    // 뜻이 여러 개여도 '처음 만남'은 첫 문항 하나에만 붙인다.
+    const metOnce = new Set<string>();
 
     for (const item of shuffle(items, rand)) {
-      const showIntro = r === 0 && item.mode === 'new' && !introDone.has(item.entry.id);
-      if (showIntro) introDone.add(item.entry.id);
+      const firstMeeting = r === 0 && item.mode === 'new' && !metOnce.has(item.entry.id);
+      if (firstMeeting) metOnce.add(item.entry.id);
 
-      const staged: SessionItem = { ...item, stage, round: r, showIntro, game: 'cloze' };
+      const staged: SessionItem = { ...item, stage, round: r, firstMeeting, game: 'cloze' };
       out.push({ ...staged, game: pickGame(staged, rand) });
     }
   }

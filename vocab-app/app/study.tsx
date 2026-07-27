@@ -42,8 +42,6 @@ export default function Study() {
   });
 
   const [index, setIndex] = useState(0);
-  /** 문제 전에 보여주는 단어 카드를 아직 안 넘겼는지 */
-  const [introShown, setIntroShown] = useState(false);
   const [feedback, setFeedback] = useState<Feedback | null>(null);
   const [stats, setStats] = useState({ correct: 0, wrong: 0 });
   /** 이번 세션에서 실제로 다룬 단어 (중복 제외) */
@@ -85,7 +83,7 @@ export default function Study() {
           requeued.current.add(current.entry.id);
           setQueue((q) => [
             ...q,
-            { ...current, round: current.round + 1, stage: 'learn', game: 'cloze', showIntro: false },
+            { ...current, round: current.round + 1, stage: 'learn', game: 'cloze', firstMeeting: false },
           ]);
         }
       }
@@ -98,7 +96,6 @@ export default function Study() {
   const next = useCallback(() => {
     stopSpeaking();
     setFeedback(null);
-    setIntroShown(false);
 
     if (index + 1 >= queue.length) {
       const seconds = Math.round((Date.now() - startedAt.current) / 1000);
@@ -160,7 +157,6 @@ export default function Study() {
         exposureCount(data.cards[current.entry.id]) + current.round,
       );
 
-  const needsIntro = current.showIntro && !introShown && !feedback;
   const isLast = index + 1 >= queue.length;
 
   const gameProps = {
@@ -184,7 +180,7 @@ export default function Study() {
             <View style={s.stageTag}>
               <Text style={s.stageTagText}>{STAGE_LABEL[current.stage]}</Text>
             </View>
-            {!needsIntro && !feedback ? (
+            {!feedback ? (
               <View style={s.gameTag}>
                 <Text style={s.gameTagText}>{GAME_LABEL[current.game]}</Text>
               </View>
@@ -199,26 +195,13 @@ export default function Study() {
         <ProgressBar value={(index + (feedback ? 1 : 0)) / queue.length} height={6} />
 
         <View style={{ flex: 1, marginTop: spacing.lg }}>
-          {needsIntro ? (
-            // 처음 보는 단어는 문제를 내기 전에 뜻과 예문을 먼저 보여준다.
+          {feedback ? (
+            // 2단계 중 두 번째 — 풀어 본 다음에 단어를 펼쳐 보여준다.
             <WordStoryCard
-              variant="intro"
-              entry={current.entry}
-              exp={shownExposure}
-              ttsEnabled={profile.settings.ttsEnabled}
-              onNext={() => {
-                stopSpeaking();
-                setIntroShown(true);
-                questionStartedAt.current = Date.now();
-              }}
-              nextLabel="문제 풀어보기"
-            />
-          ) : feedback ? (
-            <WordStoryCard
-              variant="feedback"
               entry={feedback.item.entry}
               exp={shownExposure}
               correct={feedback.correct}
+              firstTime={feedback.item.firstMeeting}
               ttsEnabled={profile.settings.ttsEnabled}
               onNext={next}
               nextLabel={isLast ? '결과 보기' : '다음 문제'}

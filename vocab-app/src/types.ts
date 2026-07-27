@@ -213,13 +213,26 @@ export interface DailyRecord {
 
 export type RewardStatus = 'pending' | 'approved' | 'rejected' | 'fulfilled';
 
+/**
+ * 요구권 신청.
+ *
+ * 갖고 싶은 것을 적어 보내는 방식이 아니라 **정해진 금액을 요구할 권리**다.
+ * 조건과 금액은 src/features/awards.ts 에 있다.
+ */
 export interface RewardRequest {
   id: string;
   profileId: string;
-  /** 어떤 레벨을 끝내서 생긴 요청인지 */
-  earnedFrom: LevelId;
-  /** 아이가 적은 갖고 싶은 것 */
-  wish: string;
+  /** 'levelup' | 'perfectMonth' */
+  kind: string;
+  /** 요구 금액(원) */
+  amount: number;
+  /** levelup이면 어떤 레벨을 끝냈는지 */
+  earnedFrom: LevelId | null;
+  /** perfectMonth면 어느 달인지 (yyyy-mm) */
+  month: string | null;
+  /** 왜 받는지 한 줄 */
+  reason: string;
+  /** 아이가 덧붙인 한마디 (선택) */
   note: string;
   status: RewardStatus;
   createdAt: number;
@@ -285,10 +298,12 @@ export interface Profile {
   bestStreak: number;
   /** 마지막으로 목표를 채운 날 (yyyy-mm-dd) */
   lastCompletedDate: string | null;
-  /** 레벨업으로 아직 보상을 요청하지 않은 레벨들 */
+  /** 레벨업으로 아직 요구권을 신청하지 않은 레벨들 */
   pendingLevelUps: LevelId[];
   /** 이미 마스터한 레벨 */
   clearedLevels: LevelId[];
+  /** 개근 요구권을 이미 신청한 달들 (yyyy-mm) */
+  claimedMonths: string[];
 }
 
 /**

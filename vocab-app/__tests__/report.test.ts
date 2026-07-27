@@ -26,6 +26,7 @@ function makeProfile(over: Partial<Profile> = {}): Profile {
     lastCompletedDate: '2026-07-26',
     pendingLevelUps: [],
     clearedLevels: [],
+    claimedMonths: [],
     ...over,
   };
 }

@@ -2,10 +2,16 @@ import { useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { Body, Button, Card, Chip, EmptyState, H3, Muted, Row, Screen } from '../src/components/ui';
 import { useApp } from '../src/store/AppProvider';
+import { formatWon } from '../src/features/awards';
 import { LEVEL_SHORT, RewardRequest } from '../src/types';
 import { colors, radius, spacing } from '../src/theme';
 
-/** 아이가 레벨업으로 올린 보상 요청을 승인·거절한다. */
+/**
+ * 아이가 올린 요구권 신청을 승인·보류한다.
+ *
+ * 금액은 아이가 정하는 것이 아니라 조건에 따라 이미 정해져 있다.
+ *   중학교 레벨업 2만원 · 고등학교 레벨업 3만원 · 한 달 개근 2만원
+ */
 export default function ParentRewards() {
   const { state, decideReward } = useApp();
   const [notes, setNotes] = useState<Record<string, string>>({});
@@ -18,13 +24,23 @@ export default function ParentRewards() {
     return p ? `${p.avatar} ${p.name}` : '알 수 없음';
   }
 
+  function badgeOf(r: RewardRequest): string {
+    if (r.kind === 'perfectMonth') {
+      return r.month ? `${Number(r.month.slice(5))}월 개근` : '한 달 개근';
+    }
+    return r.earnedFrom ? `${LEVEL_SHORT[r.earnedFrom]} 완료` : '레벨업';
+  }
+
   if (state.rewards.length === 0) {
     return (
       <Screen>
         <EmptyState
           icon="🎁"
           title="아직 보상 요청이 없어요"
-          hint="아이가 한 학년의 단어를 모두 익히면 갖고 싶은 것을 요청할 수 있어요."
+          hint={
+            '레벨 시험에 통과하거나 한 달을 개근하면 요구권이 생깁니다.\n' +
+            '중학교 레벨업 2만원 · 고등학교 레벨업 3만원 · 한 달 개근 2만원'
+          }
         />
       </Screen>
     );
@@ -39,10 +55,11 @@ export default function ParentRewards() {
             <Card key={r.id} style={{ marginTop: spacing.md, borderColor: colors.accent }}>
               <Row style={{ justifyContent: 'space-between' }}>
                 <Muted>{nameOf(r)}</Muted>
-                <Chip label={`${LEVEL_SHORT[r.earnedFrom]} 완료`} tone="accent" />
+                <Chip label={badgeOf(r)} tone="accent" />
               </Row>
 
-              <Text style={s.wish}>{r.wish}</Text>
+              <Text style={s.amount}>{formatWon(r.amount)}</Text>
+              <Muted style={{ marginTop: spacing.xs }}>{r.reason}</Muted>
               {r.note ? <Muted style={{ marginTop: spacing.sm }}>“{r.note}”</Muted> : null}
 
               <TextInput
@@ -56,7 +73,7 @@ export default function ParentRewards() {
 
               <Row style={{ gap: spacing.sm, marginTop: spacing.md }}>
                 <Button
-                  title="들어주기"
+                  title="주기로 하기"
                   onPress={() => decideReward(r.id, 'approved', (notes[r.id] ?? '').trim())}
                   style={{ flex: 1 }}
                 />
@@ -86,11 +103,14 @@ export default function ParentRewards() {
                   tone={r.status === 'rejected' ? 'wrong' : 'correct'}
                 />
               </Row>
-              <Body style={{ marginTop: spacing.sm, fontWeight: '700' }}>{r.wish}</Body>
+              <Row style={{ marginTop: spacing.sm, gap: spacing.sm }}>
+                <Body style={{ fontWeight: '800' }}>{formatWon(r.amount)}</Body>
+                <Muted style={{ flex: 1 }}>{r.reason}</Muted>
+              </Row>
               {r.parentNote ? <Muted style={{ marginTop: spacing.xs }}>“{r.parentNote}”</Muted> : null}
               {r.status === 'approved' ? (
                 <Button
-                  title="약속 지켰어요"
+                  title="줬어요"
                   variant="ghost"
                   onPress={() => decideReward(r.id, 'fulfilled', r.parentNote)}
                   style={{ marginTop: spacing.sm }}
@@ -105,7 +125,7 @@ export default function ParentRewards() {
 }
 
 const s = StyleSheet.create({
-  wish: { fontSize: 22, fontWeight: '800', color: colors.text, marginTop: spacing.md },
+  amount: { fontSize: 32, fontWeight: '800', color: colors.text, marginTop: spacing.md },
   input: {
     marginTop: spacing.lg,
     borderWidth: 1,

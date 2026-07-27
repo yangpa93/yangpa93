@@ -32,6 +32,7 @@ import {
   RewardStatus,
 } from '../types';
 import { ALL_ENTRIES, entriesOf } from '../data';
+import { Award } from '../features/awards';
 import { plannedWordCount } from '../srs/session';
 import { buildDailyReport, buildWeeklySummary } from '../features/report';
 import { SendResult, sendReportToParent, toPayload } from '../features/push';
@@ -74,7 +75,8 @@ interface Ctx {
   /** 레벨 시험 결과를 남긴다. */
   recordExam(result: ExamResult): void;
 
-  requestReward(wish: string, note: string): void;
+  /** 요구권 하나를 부모님께 신청한다. */
+  requestReward(award: Award, note: string): void;
   decideReward(id: string, status: RewardStatus, parentNote: string): void;
 
   updateParent(patch: Partial<ParentSettings>): void;
@@ -179,6 +181,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         lastCompletedDate: null,
         pendingLevelUps: [],
         clearedLevels: [],
+        claimedMonths: [],
       };
       const state: AppState = {
         ...ref.current.state,
@@ -392,17 +395,19 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   /* ---------------------------------------------------------------- */
 
   const requestReward = useCallback(
-    (wish: string, note: string) => {
+    (award: Award, note: string) => {
       const { state } = ref.current;
       const active = state.profiles.find((p) => p.id === state.activeProfileId);
-      if (!active || active.pendingLevelUps.length === 0) return;
+      if (!active) return;
 
-      const [earnedFrom, ...restPending] = active.pendingLevelUps;
       const reward: RewardRequest = {
         id: `r_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`,
         profileId: active.id,
-        earnedFrom,
-        wish: wish.trim(),
+        kind: award.kind,
+        amount: award.amount,
+        earnedFrom: award.earnedFrom,
+        month: award.month,
+        reason: award.reason,
         note: note.trim(),
         status: 'pending',
         createdAt: Date.now(),
@@ -410,12 +415,23 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         parentNote: '',
       };
 
+      // 같은 요구권을 두 번 신청하지 못하도록 원장에서 지운다.
+      const patched: Profile = {
+        ...active,
+        pendingLevelUps:
+          award.kind === 'levelup'
+            ? active.pendingLevelUps.filter((l) => l !== award.earnedFrom)
+            : active.pendingLevelUps,
+        claimedMonths:
+          award.kind === 'perfectMonth' && award.month
+            ? [...active.claimedMonths, award.month]
+            : active.claimedMonths,
+      };
+
       persistState({
         ...state,
         rewards: [reward, ...state.rewards],
-        profiles: state.profiles.map((p) =>
-          p.id === active.id ? { ...p, pendingLevelUps: restPending } : p,
-        ),
+        profiles: state.profiles.map((p) => (p.id === active.id ? patched : p)),
       });
     },
     [persistState],

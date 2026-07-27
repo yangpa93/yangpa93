@@ -2,20 +2,25 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Easing, StyleSheet, Text, TextInput, View } from 'react-native';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Body, Button, Card, H1, H3, Muted, Screen } from '../src/components/ui';
+import { Body, Button, Card, Chip, H1, H3, Muted, Row, Screen } from '../src/components/ui';
 import { useApp } from '../src/store/AppProvider';
 import { ALL_ENTRIES } from '../src/data';
 import { levelProgress, nextLevel } from '../src/srs/progress';
 import { notifyNow } from '../src/features/notifications';
+import { Award, availableAwards, formatWon } from '../src/features/awards';
 import { LEVEL_LABEL, LEVEL_SHORT } from '../src/types';
 import { colors, radius, spacing } from '../src/theme';
 
 /**
- * 레벨업 축하 + 보상 요청.
+ * 레벨업 축하 + 요구권 신청.
  *
  * 두 단계다.
- *  1) 레벨업 조건을 채웠으면 축하하고 다음 학년으로 올린다.
- *  2) 올라간 뒤에는 갖고 싶은 것을 적어 부모님께 보낸다.
+ *  1) 레벨업 조건을 채웠으면 축하하고 시험으로 보낸다.
+ *  2) 통과한 뒤에는 얻은 요구권을 부모님께 신청한다.
+ *
+ * 갖고 싶은 것을 적어 보내는 방식이 아니라 **금액이 정해진 요구권**이다.
+ * 조건과 금액이 미리 정해져 있어서 아이는 얼마가 걸려 있는지 알고 공부하고,
+ * 부모는 매번 협상하지 않아도 된다.
  */
 export default function LevelUp() {
   const { profile, data, requestReward } = useApp();
@@ -27,9 +32,13 @@ export default function LevelUp() {
 
   const lastExam = data.exams.find((e) => e.level === profile?.level) ?? null;
 
-  const [wish, setWish] = useState('');
   const [note, setNote] = useState('');
   const [sent, setSent] = useState(false);
+
+  const awards = useMemo(
+    () => (profile ? availableAwards(profile, data) : []),
+    [profile, data],
+  );
 
   const bounce = useRef(new Animated.Value(0)).current;
   useEffect(() => {
@@ -43,7 +52,7 @@ export default function LevelUp() {
 
   if (!profile || !progress) return null;
 
-  const canRequest = profile.pendingLevelUps.length > 0;
+  const canRequest = awards.length > 0;
   const upcoming = nextLevel(profile.level);
 
   // 1단계: 시험을 볼 수 있게 됐지만 아직 안 본 상태
@@ -98,31 +107,41 @@ export default function LevelUp() {
     );
   }
 
-  // 2단계: 보상 요청서 작성
+  // 2단계: 얻은 요구권을 부모님께 신청
   if (canRequest && !sent) {
-    const earnedFrom = profile.pendingLevelUps[0];
+    const award: Award = awards[0];
     return (
       <Screen>
         <View style={{ paddingTop: spacing.xl }}>
-          <Text style={{ fontSize: 52 }}>🎁</Text>
-          <H1 style={{ marginTop: spacing.md }}>보상 요청하기</H1>
-          <Muted style={{ marginTop: spacing.sm }}>
-            {LEVEL_SHORT[earnedFrom]} 단어를 모두 익힌 상으로, 갖고 싶은 것을 부모님께 말해 보세요.
-          </Muted>
+          <Text style={{ fontSize: 52 }}>🎟️</Text>
+          <H1 style={{ marginTop: spacing.md }}>요구권을 얻었어요!</H1>
+          <Muted style={{ marginTop: spacing.sm }}>{award.reason}</Muted>
         </View>
 
-        <Card style={{ marginTop: spacing.xl }}>
-          <H3>갖고 싶은 것</H3>
-          <TextInput
-            value={wish}
-            onChangeText={setWish}
-            placeholder="예) 레고 세트, 친구랑 영화 보기"
-            placeholderTextColor={colors.muted}
-            style={s.input}
-            maxLength={40}
+        <Card
+          style={{
+            marginTop: spacing.xl,
+            backgroundColor: colors.accentSoft,
+            borderColor: colors.accent,
+            alignItems: 'center',
+          }}
+        >
+          <Chip
+            label={award.kind === 'levelup' ? `${LEVEL_SHORT[award.earnedFrom!]} 완료` : '한 달 개근'}
+            tone="accent"
           />
+          <Text style={s.amount}>{formatWon(award.amount)}</Text>
+          <Muted>요구권</Muted>
+        </Card>
 
-          <H3 style={{ marginTop: spacing.lg }}>하고 싶은 말 (선택)</H3>
+        {awards.length > 1 ? (
+          <Muted style={{ marginTop: spacing.md, textAlign: 'center' }}>
+            신청할 수 있는 요구권이 {awards.length}장 있어요. 하나씩 보내면 돼요.
+          </Muted>
+        ) : null}
+
+        <Card style={{ marginTop: spacing.lg }}>
+          <H3>하고 싶은 말 (선택)</H3>
           <TextInput
             value={note}
             onChangeText={setNote}
@@ -135,16 +154,15 @@ export default function LevelUp() {
         </Card>
 
         <Button
-          title="부모님께 보내기"
+          title={`${formatWon(award.amount)} 요구하기`}
           onPress={async () => {
-            requestReward(wish, note);
+            requestReward(award, note);
             setSent(true);
             await notifyNow(
-              '🎁 보상 요청이 도착했어요',
-              `${profile.name} · ${LEVEL_SHORT[earnedFrom]} 완료 — "${wish.trim()}"`,
+              '🎟️ 요구권 신청이 도착했어요',
+              `${profile.name} · ${award.reason} — ${formatWon(award.amount)}`,
             ).catch(() => {});
           }}
-          disabled={wish.trim().length === 0}
           style={{ marginTop: spacing.xl }}
         />
         <Button title="나중에 하기" variant="ghost" onPress={() => router.replace('/home')} style={{ marginTop: spacing.sm }} />
@@ -165,6 +183,17 @@ export default function LevelUp() {
             ? '부모님이 확인하면 홈 화면에서 결과를 볼 수 있어요.'
             : `${LEVEL_SHORT[profile.level]} 단어를 ${progress.remaining}개 더 외우면 레벨 시험을 볼 수 있어요.`}
         </Body>
+        {sent && awards.length > 1 ? (
+          <Button
+            title="다음 요구권도 신청하기"
+            variant="secondary"
+            onPress={() => {
+              setNote('');
+              setSent(false);
+            }}
+            style={{ marginTop: spacing.lg, width: '100%' }}
+          />
+        ) : null}
         <Button title="홈으로" onPress={() => router.replace('/home')} style={{ marginTop: spacing.xl, width: '100%' }} />
       </View>
     </SafeAreaView>
@@ -175,6 +204,7 @@ const s = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.bg },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: spacing.lg },
   emoji: { fontSize: 64 },
+  amount: { fontSize: 44, fontWeight: '800', color: '#B45309', marginTop: spacing.sm },
   input: {
     marginTop: spacing.sm,
     borderWidth: 1,

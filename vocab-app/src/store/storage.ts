@@ -6,7 +6,8 @@
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AppState, LevelId, ProfileData } from '../types';
+import { AppState, LevelId, ProfileData, RewardRequest } from '../types';
+import { levelUpAmount, MIDDLE_LEVEL_AWARD } from '../features/awards';
 import { LEGACY_ID_WORD } from './legacy-ids';
 
 const ROOT_KEY = 'urivocab:root:v1';
@@ -17,8 +18,9 @@ const DATA_KEY = (profileId: string) => `urivocab:data:v1:${profileId}`;
  *  1 → 2  학년을 레벨 3개로 쪼개고 단어 id를 표제어 기반으로 바꿈
  *  2 → 3  교육부 기본 어휘 목록 기준으로 24레벨 재편, id에서 레벨을 뗌,
  *         하루 목표를 '새 단어 / 복습' 두 값으로 분리
+ *  3 → 4  보상을 '갖고 싶은 것 적어 보내기'에서 '정해진 금액 요구권'으로
  */
-export const STATE_VERSION = 3;
+export const STATE_VERSION = 4;
 
 /** 하루에 새로 만날 단어 수 기본값. 10개면 3,286개를 약 1년에 돈다. */
 export const DEFAULT_NEW_PER_DAY = 10;
@@ -167,6 +169,27 @@ export function migrateData(data: ProfileData): ProfileData {
   };
 }
 
+/**
+ * 예전 보상 요청(갖고 싶은 것을 적어 보내던 것)을 요구권 형식으로.
+ *
+ * 금액은 그 레벨의 규칙대로 매기고, 아이가 적었던 소원은 한마디로 옮겨
+ * 남긴다. 이미 부모가 판단한 기록까지 지울 이유는 없다.
+ */
+function upgradeReward(r: RewardRequest & { wish?: string }): RewardRequest {
+  if (r.kind) return r;
+  const level = r.earnedFrom ? upgradeLevel(r.earnedFrom) : null;
+  const wish = (r.wish ?? '').trim();
+  return {
+    ...r,
+    kind: 'levelup',
+    amount: level ? levelUpAmount(level) : MIDDLE_LEVEL_AWARD,
+    earnedFrom: level,
+    month: null,
+    reason: wish ? `예전 요청: ${wish}` : '레벨 하나를 끝냈어요',
+    note: r.note ?? '',
+  };
+}
+
 /** 저장 포맷이 바뀌면 여기서 올려준다. */
 function migrate(state: AppState): AppState {
   const base = emptyState();
@@ -181,6 +204,7 @@ function migrate(state: AppState): AppState {
       level: upgradeLevel(p.level),
       pendingLevelUps: (p.pendingLevelUps ?? []).map(upgradeLevel),
       clearedLevels: (p.clearedLevels ?? []).map(upgradeLevel),
+      claimedMonths: p.claimedMonths ?? [],
       settings: {
         ...p.settings,
         newPerDay: p.settings?.newPerDay ?? DEFAULT_NEW_PER_DAY,
@@ -189,7 +213,7 @@ function migrate(state: AppState): AppState {
         showTranslation: p.settings?.showTranslation ?? true,
       },
     })),
-    rewards: (state.rewards ?? []).map((r) => ({ ...r, earnedFrom: upgradeLevel(r.earnedFrom) })),
+    rewards: (state.rewards ?? []).map(upgradeReward),
     role: state.role ?? 'child',
     parentLink: state.parentLink ?? null,
     myPushToken: state.myPushToken ?? null,

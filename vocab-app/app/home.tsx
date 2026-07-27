@@ -9,6 +9,12 @@ import { buildSession } from '../src/srs/session';
 import { levelProgress } from '../src/srs/progress';
 import { buildDailyReport } from '../src/features/report';
 import { buildMonth, monthOf } from '../src/features/calendar';
+import {
+  availableAwards,
+  formatWon,
+  perfectMonthProgress,
+  PERFECT_MONTH_AWARD,
+} from '../src/features/awards';
 import { scheduleDailyReport } from '../src/features/notifications';
 import { loadProfileData } from '../src/store/storage';
 import { LEVEL_LABEL, LEVEL_SHORT } from '../src/types';
@@ -95,7 +101,9 @@ export default function Home() {
   if (!profile || !progress) return null;
 
   const myRewards = state.rewards.filter((r) => r.profileId === profile.id);
-  const decided = myRewards.filter((r) => r.status === 'approved' || r.status === 'rejected');
+  const awards = availableAwards(profile, data, today);
+  const perfect = perfectMonthProgress(data.days, today);
+  const decided = myRewards.filter((r) => r.status !== 'pending');
 
   return (
     <Screen>
@@ -249,28 +257,50 @@ export default function Home() {
         </Card>
       </Pressable>
 
+      {/* 이번 달 개근 */}
+      <Card style={{ marginTop: spacing.md }}>
+        <Row style={{ justifyContent: 'space-between' }}>
+          <H3>🗓️ 이번 달 개근</H3>
+          <Muted>
+            {perfect.studied} / {perfect.elapsed}일
+          </Muted>
+        </Row>
+        <View style={{ marginTop: spacing.md }}>
+          <ProgressBar
+            value={perfect.total === 0 ? 0 : perfect.studied / perfect.total}
+            color={perfect.alive ? colors.correct : colors.border}
+          />
+        </View>
+        <Muted style={{ marginTop: spacing.sm }}>
+          {perfect.alive
+            ? `한 달을 하루도 빠짐없이 하면 ${formatWon(PERFECT_MONTH_AWARD)} 요구권이 생겨요. ${perfect.total - perfect.elapsed}일 남았어요!`
+            : '이번 달은 빠진 날이 있어요. 다음 달에 다시 도전해요!'}
+        </Muted>
+      </Card>
+
       {/* 보상 결과 알림 */}
       {decided.length > 0 ? (
         <Card style={{ marginTop: spacing.md }}>
-          <H3>🎁 보상 소식</H3>
+          <H3>🎟️ 요구권 소식</H3>
           {decided.slice(0, 3).map((r) => (
             <View key={r.id} style={{ marginTop: spacing.md }}>
               <Row style={{ justifyContent: 'space-between' }}>
-                <Body style={{ flex: 1, fontWeight: '700' }}>{r.wish}</Body>
+                <Body style={{ flex: 1, fontWeight: '800' }}>{formatWon(r.amount)}</Body>
                 <Chip
-                  label={r.status === 'approved' ? '승인됨' : '다음 기회에'}
-                  tone={r.status === 'approved' ? 'correct' : 'wrong'}
+                  label={r.status === 'approved' ? '주기로 하셨어요' : r.status === 'fulfilled' ? '받았어요' : '다음 기회에'}
+                  tone={r.status === 'rejected' ? 'wrong' : 'correct'}
                 />
               </Row>
+              <Muted style={{ marginTop: 2 }}>{r.reason}</Muted>
               {r.parentNote ? <Muted style={{ marginTop: spacing.xs }}>“{r.parentNote}”</Muted> : null}
             </View>
           ))}
         </Card>
       ) : null}
 
-      {profile.pendingLevelUps.length > 0 ? (
+      {awards.length > 0 ? (
         <Button
-          title="🎁 보상 요청하러 가기"
+          title={`🎟️ 요구권 ${awards.length}장 신청하기 (${formatWon(awards.reduce((n, a) => n + a.amount, 0))})`}
           variant="secondary"
           onPress={() => router.push('/levelup')}
           style={{ marginTop: spacing.md }}

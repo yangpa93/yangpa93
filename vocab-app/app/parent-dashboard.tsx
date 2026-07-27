@@ -145,6 +145,12 @@ export default function ParentDashboard() {
           <Muted style={{ marginTop: spacing.md }}>
             총 {weekly.totalStudied}개 학습 · 평균 정답률 {Math.round(weekly.averageAccuracy * 100)}%
           </Muted>
+          <Button
+            title="🗓️ 달력으로 보기"
+            variant="secondary"
+            onPress={() => router.push({ pathname: '/calendar', params: { profileId: profile.id } })}
+            style={{ marginTop: spacing.lg }}
+          />
         </Card>
       ) : null}
 

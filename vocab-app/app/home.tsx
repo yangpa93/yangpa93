@@ -8,10 +8,11 @@ import { ALL_ENTRIES, entriesOf } from '../src/data';
 import { buildSession } from '../src/srs/session';
 import { levelProgress } from '../src/srs/progress';
 import { buildDailyReport } from '../src/features/report';
+import { buildMonth, monthOf } from '../src/features/calendar';
 import { scheduleDailyReport } from '../src/features/notifications';
 import { loadProfileData } from '../src/store/storage';
 import { LEVEL_LABEL, LEVEL_SHORT } from '../src/types';
-import { todayKey } from '../src/lib/date';
+import { lastNDays, todayKey } from '../src/lib/date';
 import { colors, radius, spacing } from '../src/theme';
 
 export default function Home() {
@@ -35,6 +36,19 @@ export default function Home() {
       reviewRatio: profile.settings.reviewRatio,
     });
   }, [profile, data.cards]);
+
+  const calendar = useMemo(() => buildMonth(data.days, monthOf(today), today), [data.days, today]);
+
+  // 달력 카드에 붙는 최근 2주 미리 보기.
+  const recent = useMemo(
+    () =>
+      lastNDays(14, today).map((date) => ({
+        date,
+        studied: data.days[date]?.studied ?? 0,
+        completed: data.days[date]?.completed ?? false,
+      })),
+    [data.days, today],
+  );
 
   const reviewCount = session.filter((i) => i.mode === 'review').length;
   const newCount = session.filter((i) => i.mode === 'new').length;
@@ -194,6 +208,44 @@ export default function Home() {
         </Pressable>
       </Row>
 
+      {/* 학습 달력 */}
+      <Pressable onPress={() => router.push('/calendar')} accessibilityRole="button">
+        <Card style={{ marginTop: spacing.md }}>
+          <Row style={{ justifyContent: 'space-between' }}>
+            <Row style={{ gap: spacing.sm }}>
+              <Text style={{ fontSize: 22 }}>🗓️</Text>
+              <H3>학습 달력</H3>
+            </Row>
+            <Text style={s.more}>보기 →</Text>
+          </Row>
+          <Muted style={{ marginTop: spacing.sm }}>
+            {calendar.studiedDays > 0
+              ? `${calendar.label}에 ${calendar.studiedDays}일 공부했고 단어 ${calendar.totalWords}개를 봤어요.`
+              : `${calendar.label}은 아직 기록이 없어요. 오늘 공부하면 달력에 표시돼요.`}
+          </Muted>
+
+          {/* 최근 2주 미리 보기 */}
+          <Row style={{ marginTop: spacing.md, gap: 4 }}>
+            {recent.map((d) => (
+              <View
+                key={d.date}
+                style={[
+                  s.spark,
+                  {
+                    backgroundColor:
+                      d.studied === 0
+                        ? colors.border
+                        : d.completed
+                          ? colors.primary
+                          : colors.primarySoft,
+                  },
+                ]}
+              />
+            ))}
+          </Row>
+        </Card>
+      </Pressable>
+
       {/* 보상 결과 알림 */}
       {decided.length > 0 ? (
         <Card style={{ marginTop: spacing.md }}>
@@ -245,4 +297,6 @@ const s = StyleSheet.create({
     padding: spacing.lg,
   },
   tileIcon: { fontSize: 26, marginBottom: spacing.sm },
+  more: { fontSize: 13, fontWeight: '700', color: colors.primary },
+  spark: { flex: 1, height: 10, borderRadius: 3 },
 });

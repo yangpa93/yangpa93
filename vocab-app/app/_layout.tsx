@@ -30,6 +30,7 @@ export default function RootLayout() {
             <Stack.Screen name="result" options={{ headerShown: false, gestureEnabled: false }} />
             <Stack.Screen name="wordbook" options={{ title: '단어장' }} />
             <Stack.Screen name="mistakes" options={{ title: '오답 노트' }} />
+            <Stack.Screen name="calendar" options={{ title: '학습 달력' }} />
             <Stack.Screen name="levelup" options={{ headerShown: false }} />
             <Stack.Screen name="exam" options={{ headerShown: false, gestureEnabled: false }} />
             <Stack.Screen name="parent" options={{ title: '부모님 모드' }} />

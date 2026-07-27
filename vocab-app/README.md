@@ -33,6 +33,9 @@ npm start
 터미널에 뜨는 QR 코드를 휴대폰의 **Expo Go** 앱으로 찍으면 바로 실행됩니다.
 (App Store / Play 스토어에서 "Expo Go" 검색)
 
+**폰에 진짜 앱으로 설치하려면 → [INSTALL.md](./INSTALL.md)**
+안드로이드 APK 만들기, 아이폰 설치, 자주 막히는 곳을 단계별로 정리해 두었습니다.
+
 ```bash
 npm test            # 로직 테스트 (53개)
 npm run typecheck   # 타입 검사

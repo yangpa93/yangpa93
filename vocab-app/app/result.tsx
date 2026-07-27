@@ -58,7 +58,7 @@ export default function Result() {
           <Muted style={{ marginTop: spacing.sm, textAlign: 'center' }}>
             {goalMet
               ? `${profile.streak}일 연속으로 공부하고 있어요 🔥`
-              : `오늘 ${day?.studied ?? 0} / ${day?.goal ?? profile.settings.dailyGoal}개 학습했어요.`}
+              : `오늘 ${day?.studied ?? 0} / ${day?.goal ?? profile.settings.newPerDay}개 학습했어요.`}
           </Muted>
         </Animated.View>
 

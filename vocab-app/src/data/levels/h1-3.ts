@@ -1,148 +1,36 @@
 /**
- * 고등학교 1학년 레벨 3 어휘 33개.
+ * 고등학교 1학년 레벨 3 — 수록 37 / 계획 137개.
  *
- * 선정 기준: 고1 전국연합학력평가 지문에 반복 출현하는 어휘를 중심으로, 교육부 「기본 어휘 목록」
- * 고등 구간과 겹치는 항목을 우선 배치했다.
- *
- * 뜻이 여러 개인 단어는 뜻마다 예문을 나눠 두었다. 같은 단어를 다시 만날 때마다
- * 다른 뜻·다른 문장이 나오도록 하기 위한 것.
+ * 난이도 층: 중급(중학 권장)
+ * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
+ * 여기에는 그중 뜻과 예문을 적어 둔 것만 들어 있다.
  */
 
 import { defineLevel } from '../define';
 
 export const H1_3 = defineLevel('h1-3', [
-  { w: 'objective', p: 'n., adj.', s: [
-    { m: '목표', syn: ['goal', 'aim'], ex: [
-      ['Our main objective is safety.', '우리의 주요 목표는 안전이다.'],
-      ['She achieved all her objectives.', '그녀는 모든 목표를 달성했다.'],
-    ]},
-    { m: '객관적인', syn: ['unbiased', 'neutral'], ex: [
-      ['Try to stay objective.', '객관적인 태도를 유지하려고 해라.'],
-      ['We need an objective opinion.', '우리는 객관적인 의견이 필요하다.'],
+  { w: 'shine', p: 'v.', s: [
+    { m: '빛나다, 비추다', syn: ['glow'], ex: [
+      ['The sun is shining brightly.', '해가 밝게 빛나고 있다.'],
+      ['Her eyes shone with joy.', '그녀의 눈이 기쁨으로 빛났다.'],
+      ['Stars shine at night.', '별은 밤에 빛난다.'],
     ]},
   ]},
-  { w: 'obtain', p: 'v.', s: [
-    { m: '얻다, 획득하다', syn: ['get', 'acquire'], ex: [
-      ['She obtained a scholarship.', '그녀는 장학금을 받았다.'],
-      ['You must obtain permission first.', '먼저 허가를 받아야 한다.'],
-      ['The data were obtained from a survey.', '그 자료는 설문 조사에서 얻었다.'],
+  { w: 'shout', p: 'v.', s: [
+    { m: '소리치다, 외치다', syn: ['yell', 'cry out'], ex: [
+      ['Do not shout in the classroom.', '교실에서 소리치지 마라.'],
+      ['He shouted for help.', '그는 도와달라고 소리쳤다.'],
+      ['She is shouting at the players.', '그녀는 선수들에게 외치고 있다.'],
     ]},
   ]},
-  { w: 'participate', p: 'v.', s: [
-    { m: '참여하다', syn: ['take part', 'join in'], ex: [
-      ['All students participated actively.', '모든 학생이 적극적으로 참여했다.'],
-      ['She participated in the debate.', '그녀는 그 토론에 참여했다.'],
-      ['Everyone is welcome to participate.', '누구나 참여할 수 있다.'],
+  { w: 'sign', p: 'n., v.', s: [
+    { m: '표지판, 표시', syn: ['mark'], ex: [
+      ['The sign says the road is closed.', '표지판에 길이 막혔다고 쓰여 있다.'],
+      ['Follow the signs to the exit.', '출구 표지를 따라가라.'],
     ]},
-  ]},
-  { w: 'perceive', p: 'v.', s: [
-    { m: '인식하다, 지각하다', syn: ['notice', 'see'], ex: [
-      ['People perceive colors differently.', '사람들은 색을 다르게 인식한다.'],
-      ['He perceived a change in her voice.', '그는 그녀의 목소리 변화를 알아챘다.'],
-      ['Risk is often perceived as larger than it is.', '위험은 종종 실제보다 크게 인식된다.'],
-    ]},
-  ]},
-  { w: 'phenomenon', p: 'n.', s: [
-    { m: '현상', syn: ['occurrence', 'event'], ex: [
-      ['This is a common phenomenon.', '이것은 흔한 현상이다.'],
-      ['Scientists cannot explain the phenomenon.', '과학자들은 그 현상을 설명하지 못한다.'],
-      ['Social media is a global phenomenon.', '소셜 미디어는 세계적인 현상이다.'],
-    ]},
-  ]},
-  { w: 'potential', p: 'n., adj.', s: [
-    { m: '잠재력', syn: ['promise', 'capability'], ex: [
-      ['She has great potential.', '그녀는 큰 잠재력을 가지고 있다.'],
-      ['The plan has potential for growth.', '그 계획은 성장 잠재력이 있다.'],
-    ]},
-    { m: '잠재적인, 가능성 있는', syn: ['possible', 'likely'], ex: [
-      ['We identified potential risks.', '우리는 잠재적 위험을 확인했다.'],
-      ['He is a potential leader.', '그는 잠재적 지도자이다.'],
-    ]},
-  ]},
-  { w: 'previous', p: 'adj.', s: [
-    { m: '이전의, 앞의', syn: ['earlier', 'former'], ex: [
-      ['Check the previous chapter.', '이전 장을 확인해라.'],
-      ['She has no previous experience.', '그녀는 이전 경력이 없다.'],
-      ['The previous owner painted the walls.', '이전 주인이 벽을 칠했다.'],
-    ]},
-  ]},
-  { w: 'principle', p: 'n.', s: [
-    { m: '원칙, 신념', syn: ['belief', 'standard'], ex: [
-      ['He never breaks his principles.', '그는 결코 자신의 원칙을 어기지 않는다.'],
-      ['She refused on principle.', '그녀는 원칙에 따라 거절했다.'],
-    ]},
-    { m: '원리, 법칙', syn: ['rule', 'law'], ex: [
-      ['This machine works on a simple principle.', '이 기계는 간단한 원리로 작동한다.'],
-      ['We learned the principles of physics.', '우리는 물리학의 원리를 배웠다.'],
-    ]},
-  ]},
-  { w: 'priority', p: 'n.', s: [
-    { m: '우선순위, 우선 사항', syn: ['first concern'], ex: [
-      ['Safety is our top priority.', '안전이 우리의 최우선 과제이다.'],
-      ['You need to set your priorities.', '너는 우선순위를 정해야 한다.'],
-      ['Health takes priority over work.', '건강이 일보다 우선이다.'],
-    ]},
-  ]},
-  { w: 'pursue', p: 'v.', s: [
-    { m: '추구하다', syn: ['seek', 'go after'], ex: [
-      ['She decided to pursue medicine.', '그녀는 의학을 공부하기로 했다.'],
-      ['He pursued his dream for ten years.', '그는 10년 동안 꿈을 좇았다.'],
-    ]},
-    { m: '뒤쫓다', syn: ['chase', 'follow'], ex: [
-      ['The police pursued the car.', '경찰이 그 차를 뒤쫓았다.'],
-      ['The dog pursued the rabbit.', '개가 토끼를 쫓았다.'],
-    ]},
-  ]},
-  { w: 'reject', p: 'v.', s: [
-    { m: '거부하다, 거절하다', syn: ['refuse', 'turn down'], ex: [
-      ['They rejected the offer.', '그들은 그 제안을 거절했다.'],
-      ['His application was rejected.', '그의 지원서는 거절되었다.'],
-      ['She rejected the idea completely.', '그녀는 그 생각을 완전히 거부했다.'],
-    ]},
-  ]},
-  { w: 'relevant', p: 'adj.', s: [
-    { m: '관련 있는, 적절한', syn: ['related', 'applicable'], ex: [
-      ['Give only relevant examples.', '관련 있는 예만 들어라.'],
-      ['That fact is not relevant here.', '그 사실은 여기서 관련이 없다.'],
-      ['Please attach all relevant documents.', '관련 서류를 모두 첨부해 주세요.'],
-    ]},
-  ]},
-  { w: 'reluctant', p: 'adj.', s: [
-    { m: '꺼리는, 마지못한', syn: ['unwilling', 'hesitant'], ex: [
-      ['He was reluctant to speak.', '그는 말하기를 꺼렸다.'],
-      ['She gave a reluctant nod.', '그녀는 마지못해 고개를 끄덕였다.'],
-      ['They were reluctant to change the plan.', '그들은 계획을 바꾸기를 꺼렸다.'],
-    ]},
-  ]},
-  { w: 'represent', p: 'v.', s: [
-    { m: '나타내다, 상징하다', syn: ['symbolize', 'stand for'], ex: [
-      ['This chart represents monthly sales.', '이 도표는 월별 매출을 나타낸다.'],
-      ['The dove represents peace.', '비둘기는 평화를 상징한다.'],
-    ]},
-    { m: '대표하다', syn: ['speak for'], ex: [
-      ['She represented our school at the contest.', '그녀는 대회에서 우리 학교를 대표했다.'],
-      ['He represents the workers.', '그는 노동자들을 대표한다.'],
-    ]},
-  ]},
-  { w: 'resource', p: 'n.', s: [
-    { m: '자원', syn: ['supply', 'asset'], ex: [
-      ['Water is a limited resource.', '물은 한정된 자원이다.'],
-      ['The country is rich in natural resources.', '그 나라는 천연자원이 풍부하다.'],
-      ['Time is our most valuable resource.', '시간은 우리의 가장 귀한 자원이다.'],
-    ]},
-  ]},
-  { w: 'restrict', p: 'v.', s: [
-    { m: '제한하다', syn: ['limit', 'control'], ex: [
-      ['The rule restricts phone use.', '그 규칙은 휴대폰 사용을 제한한다.'],
-      ['Access is restricted to members.', '출입은 회원으로 제한된다.'],
-      ['They restricted the number of visitors.', '그들은 방문객 수를 제한했다.'],
-    ]},
-  ]},
-  { w: 'reveal', p: 'v.', s: [
-    { m: '드러내다, 밝히다', syn: ['show', 'disclose'], ex: [
-      ['The study revealed a surprising fact.', '그 연구는 놀라운 사실을 밝혔다.'],
-      ['She refused to reveal her source.', '그녀는 출처 밝히기를 거부했다.'],
-      ['The curtain opened to reveal the stage.', '커튼이 열리며 무대가 드러났다.'],
+    { m: '서명하다', syn: [], ex: [
+      ['Please sign your name here.', '여기에 서명해 주세요.'],
+      ['He signed the letter and sent it.', '그는 편지에 서명하고 부쳤다.'],
     ]},
   ]},
   { w: 'significant', p: 'adj.', s: [
@@ -152,11 +40,197 @@ export const H1_3 = defineLevel('h1-3', [
       ['Sales rose by a significant amount.', '매출이 상당한 액수만큼 올랐다.'],
     ]},
   ]},
+  { w: 'similar', p: 'adj.', s: [
+    { m: '비슷한, 유사한', syn: ['alike', 'like'], ex: [
+      ['Our ideas are similar.', '우리 생각은 비슷하다.'],
+      ['The twins look very similar.', '그 쌍둥이는 매우 닮았다.'],
+      ['This is similar to what we saw before.', '이것은 우리가 전에 본 것과 비슷하다.'],
+    ]},
+  ]},
+  { w: 'simple', p: 'adj.', s: [
+    { m: '간단한, 단순한', syn: ['easy', 'plain'], ex: [
+      ['The rule is very simple.', '그 규칙은 아주 간단하다.'],
+      ['She lives a simple life.', '그녀는 단순한 삶을 산다.'],
+      ['Here is a simple way to solve it.', '그것을 푸는 간단한 방법이 있다.'],
+    ]},
+  ]},
+  { w: 'skill', p: 'n.', s: [
+    { m: '기술, 능력', syn: ['ability', 'technique'], ex: [
+      ['Cooking is a useful skill.', '요리는 유용한 기술이다.'],
+      ['He has great computer skills.', '그는 뛰어난 컴퓨터 기술을 가지고 있다.'],
+      ['Listening is an important language skill.', '듣기는 중요한 언어 기술이다.'],
+    ]},
+  ]},
+  { w: 'smart', p: 'adj.', s: [
+    { m: '똑똑한, 영리한', syn: ['clever', 'bright'], ex: [
+      ['She is a smart student.', '그녀는 똑똑한 학생이다.'],
+      ['That was a smart choice.', '그것은 현명한 선택이었다.'],
+      ['Dogs are smart animals.', '개는 영리한 동물이다.'],
+    ]},
+  ]},
+  { w: 'society', p: 'n.', s: [
+    { m: '사회', syn: ['community', 'the public'], ex: [
+      ['Technology changes society.', '기술은 사회를 변화시킨다.'],
+      ['Every member of society has a role.', '사회의 모든 구성원은 역할이 있다.'],
+      ['Modern society moves very fast.', '현대 사회는 매우 빠르게 움직인다.'],
+    ]},
+  ]},
+  { w: 'solve', p: 'v.', s: [
+    { m: '풀다, 해결하다', syn: ['work out', 'figure out'], ex: [
+      ['Can you solve this puzzle?', '이 퍼즐을 풀 수 있니?'],
+      ['We solved the problem in ten minutes.', '우리는 10분 만에 그 문제를 풀었다.'],
+      ['Talking can solve many problems.', '대화는 많은 문제를 해결할 수 있다.'],
+    ]},
+  ]},
+  { w: 'source', p: 'n.', s: [
+    { m: '원천, 근원', syn: ['origin', 'root'], ex: [
+      ['The sun is a source of energy.', '태양은 에너지의 원천이다.'],
+      ['Stress is a source of many illnesses.', '스트레스는 많은 질병의 근원이다.'],
+    ]},
+    { m: '출처, 정보원', syn: ['reference'], ex: [
+      ['Always check your sources.', '항상 출처를 확인해라.'],
+      ['The news came from a reliable source.', '그 소식은 믿을 만한 출처에서 왔다.'],
+    ]},
+  ]},
+  { w: 'specific', p: 'adj.', s: [
+    { m: '구체적인', syn: ['detailed', 'precise'], ex: [
+      ['Give me a specific example.', '구체적인 예를 들어 줘.'],
+      ['Can you be more specific?', '좀 더 구체적으로 말해 줄 수 있니?'],
+    ]},
+    { m: '특정한', syn: ['particular'], ex: [
+      ['This medicine treats a specific disease.', '이 약은 특정 질병을 치료한다.'],
+      ['Each student has a specific role.', '각 학생은 특정한 역할이 있다.'],
+    ]},
+  ]},
+  { w: 'speech', p: 'n.', s: [
+    { m: '연설, 말', syn: ['talk'], ex: [
+      ['She gave a speech at the festival.', '그녀는 축제에서 연설했다.'],
+      ['His speech was short but powerful.', '그의 연설은 짧지만 강력했다.'],
+      ['I am nervous about my speech.', '나는 연설이 걱정된다.'],
+    ]},
+  ]},
+  { w: 'spell', p: 'v.', s: [
+    { m: '철자를 쓰다', syn: [], ex: [
+      ['How do you spell your name?', '이름 철자가 어떻게 되나요?'],
+      ['She spelled the word correctly.', '그녀는 그 단어의 철자를 바르게 썼다.'],
+      ['I always spell this word wrong.', '나는 늘 이 단어의 철자를 틀린다.'],
+    ]},
+  ]},
+  { w: 'spend', p: 'v.', s: [
+    { m: '(시간을) 보내다', syn: ['pass'], ex: [
+      ['I spend two hours studying.', '나는 공부하는 데 두 시간을 쓴다.'],
+      ['We spent the weekend at home.', '우리는 주말을 집에서 보냈다.'],
+    ]},
+    { m: '(돈을) 쓰다', syn: ['pay out'], ex: [
+      ['He spent all his money on books.', '그는 돈을 전부 책에 썼다.'],
+      ['Don’t spend too much on snacks.', '간식에 너무 많이 쓰지 마라.'],
+    ]},
+  ]},
+  { w: 'spread', p: 'v.', s: [
+    { m: '퍼지다, 확산되다', syn: ['expand', 'scatter'], ex: [
+      ['The news spread quickly.', '그 소식은 빠르게 퍼졌다.'],
+      ['The fire spread to nearby houses.', '불이 근처 집들로 번졌다.'],
+    ]},
+    { m: '펼치다, 바르다', syn: ['open out', 'apply'], ex: [
+      ['She spread a map on the table.', '그녀는 탁자 위에 지도를 펼쳤다.'],
+      ['Spread butter on the bread.', '빵에 버터를 발라라.'],
+    ]},
+  ]},
+  { w: 'stable', p: 'adj.', s: [
+    { m: '안정된', syn: ['steady', 'secure'], ex: [
+      ['Prices have been stable this year.', '올해 물가는 안정적이었다.'],
+      ['He is in stable condition.', '그는 상태가 안정적이다.'],
+      ['We need a stable internet connection.', '우리는 안정적인 인터넷 연결이 필요하다.'],
+    ]},
+  ]},
+  { w: 'station', p: 'n.', s: [
+    { m: '역, 정거장', syn: [], ex: [
+      ['Meet me at the subway station.', '지하철역에서 만나자.'],
+      ['The station is crowded in the morning.', '역은 아침에 붐빈다.'],
+      ['We got off at the next station.', '우리는 다음 역에서 내렸다.'],
+    ]},
+  ]},
+  { w: 'steal', p: 'v.', s: [
+    { m: '훔치다', syn: ['take without permission'], ex: [
+      ['Someone stole my umbrella.', '누군가 내 우산을 훔쳐 갔다.'],
+      ['Do not steal other peoples things.', '남의 물건을 훔치지 마라.'],
+      ['The thief was stealing from the shop.', '도둑이 가게에서 물건을 훔치고 있었다.'],
+    ]},
+  ]},
+  { w: 'step', p: 'n.', s: [
+    { m: '걸음, 단계', syn: ['stage'], ex: [
+      ['Take one step forward.', '한 걸음 앞으로 나오세요.'],
+      ['The first step is the hardest.', '첫 단계가 가장 어렵다.'],
+      ['Follow these steps carefully.', '이 단계들을 주의 깊게 따라 하세요.'],
+    ]},
+  ]},
+  { w: 'storm', p: 'n.', s: [
+    { m: '폭풍, 폭풍우', syn: [], ex: [
+      ['The storm broke many trees.', '폭풍이 많은 나무를 쓰러뜨렸다.'],
+      ['We stayed inside during the storm.', '우리는 폭풍이 부는 동안 안에 있었다.'],
+      ['A big storm is coming tonight.', '오늘 밤 큰 폭풍이 온다.'],
+    ]},
+  ]},
+  { w: 'straight', p: 'adj., adv.', s: [
+    { m: '곧은, 곧장', syn: ['direct'], ex: [
+      ['Go straight and turn left.', '곧장 가다가 왼쪽으로 도세요.'],
+      ['Draw a straight line here.', '여기에 직선을 그으세요.'],
+      ['He went straight home after school.', '그는 방과 후 곧장 집에 갔다.'],
+    ]},
+  ]},
+  { w: 'strange', p: 'adj.', s: [
+    { m: '이상한', syn: ['odd', 'weird'], ex: [
+      ['I heard a strange sound.', '나는 이상한 소리를 들었다.'],
+      ['It is strange that he did not come.', '그가 오지 않은 것은 이상하다.'],
+    ]},
+    { m: '낯선', syn: ['unfamiliar'], ex: [
+      ['Everything looked strange in the new city.', '새 도시에서는 모든 것이 낯설어 보였다.'],
+      ['Do not talk to strange people.', '낯선 사람과 이야기하지 마라.'],
+    ]},
+  ]},
   { w: 'strategy', p: 'n.', s: [
     { m: '전략', syn: ['plan', 'approach'], ex: [
       ['We need a better strategy.', '우리는 더 나은 전략이 필요하다.'],
       ['Her study strategy really works.', '그녀의 공부 전략은 정말 효과가 있다.'],
       ['The team changed its strategy at halftime.', '그 팀은 하프타임에 전략을 바꿨다.'],
+    ]},
+  ]},
+  { w: 'stress', p: 'n.', s: [
+    { m: '스트레스, 압박', syn: ['pressure'], ex: [
+      ['Exercise helps reduce stress.', '운동은 스트레스를 줄이는 데 도움이 된다.'],
+      ['She is under a lot of stress.', '그녀는 스트레스를 많이 받고 있다.'],
+      ['Too much stress is bad for health.', '스트레스가 너무 많으면 건강에 나쁘다.'],
+    ]},
+  ]},
+  { w: 'struggle', p: 'v., n.', s: [
+    { m: '애쓰다, 고군분투하다', syn: ['strive', 'have trouble'], ex: [
+      ['He struggled to finish the race.', '그는 경주를 마치려고 애썼다.'],
+      ['She struggles with math.', '그녀는 수학을 힘들어한다.'],
+      ['Life was a struggle for them.', '그들에게 삶은 투쟁이었다.'],
+    ]},
+  ]},
+  { w: 'subject', p: 'n.', s: [
+    { m: '과목', syn: ['course'], ex: [
+      ['English is my favorite subject.', '영어는 내가 제일 좋아하는 과목이다.'],
+      ['We study six subjects this year.', '우리는 올해 여섯 과목을 배운다.'],
+    ]},
+    { m: '주제, 화제', syn: ['topic'], ex: [
+      ['Let us change the subject.', '주제를 바꾸자.'],
+      ['The subject of the talk was health.', '그 강연의 주제는 건강이었다.'],
+    ]},
+  ]},
+  { w: 'succeed', p: 'v.', s: [
+    { m: '성공하다', syn: ['do well', 'make it'], ex: [
+      ['She succeeded after many tries.', '그녀는 여러 번 시도한 끝에 성공했다.'],
+      ['You will succeed if you keep trying.', '계속 노력하면 성공할 것이다.'],
+      ['The plan succeeded beyond our hopes.', '그 계획은 기대 이상으로 성공했다.'],
+    ]},
+  ]},
+  { w: 'sudden', p: 'adj.', s: [
+    { m: '갑작스러운', syn: ['abrupt', 'unexpected'], ex: [
+      ['There was a sudden noise.', '갑작스러운 소음이 났다.'],
+      ['His sudden change surprised us.', '그의 갑작스러운 변화가 우리를 놀라게 했다.'],
+      ['All of a sudden, it began to rain.', '갑자기 비가 오기 시작했다.'],
     ]},
   ]},
   { w: 'sufficient', p: 'adj.', s: [
@@ -166,101 +240,56 @@ export const H1_3 = defineLevel('h1-3', [
       ['There was not sufficient evidence.', '충분한 증거가 없었다.'],
     ]},
   ]},
-  { w: 'tolerate', p: 'v.', s: [
-    { m: '참다, 용인하다', syn: ['put up with', 'endure'], ex: [
-      ['I cannot tolerate rudeness.', '나는 무례함을 참을 수 없다.'],
-      ['The school does not tolerate bullying.', '학교는 괴롭힘을 용인하지 않는다.'],
-      ['These plants tolerate cold weather.', '이 식물들은 추운 날씨를 견딘다.'],
+  { w: 'suggest', p: 'v.', s: [
+    { m: '제안하다', syn: ['propose', 'recommend'], ex: [
+      ['I suggest starting early.', '나는 일찍 시작할 것을 제안한다.'],
+      ['She suggested a different plan.', '그녀는 다른 계획을 제안했다.'],
+      ['May I suggest something?', '한 가지 제안해도 될까요?'],
     ]},
   ]},
-  { w: 'transform', p: 'v.', s: [
-    { m: '완전히 바꾸다, 변형시키다', syn: ['change', 'convert'], ex: [
-      ['The internet transformed learning.', '인터넷은 학습을 완전히 바꿔 놓았다.'],
-      ['The old factory was transformed into a museum.', '그 낡은 공장은 박물관으로 바뀌었다.'],
-      ['Exercise transformed his health.', '운동이 그의 건강을 바꿔 놓았다.'],
+  { w: 'support', p: 'v., n.', s: [
+    { m: '지지하다, 응원하다', syn: ['back up', 'encourage'], ex: [
+      ['My family supports my dream.', '가족은 내 꿈을 지지한다.'],
+      ['Thank you for your support.', '응원해 주셔서 감사합니다.'],
+    ]},
+    { m: '떠받치다', syn: ['hold up'], ex: [
+      ['These pillars support the roof.', '이 기둥들이 지붕을 떠받친다.'],
+      ['The bridge is supported by steel.', '그 다리는 강철로 지탱된다.'],
     ]},
   ]},
-  { w: 'account for', p: 'phr.', s: [
-    { m: '설명하다', syn: ['explain'], ex: [
-      ['How do you account for the delay?', '그 지연을 어떻게 설명하겠니?'],
-      ['He could not account for the missing money.', '그는 사라진 돈을 설명하지 못했다.'],
-    ]},
-    { m: '차지하다', syn: ['make up'], ex: [
-      ['Rice accounts for half the crop.', '쌀이 수확량의 절반을 차지한다.'],
-      ['Teens account for most of the users.', '십 대가 사용자의 대부분을 차지한다.'],
+  { w: 'surface', p: 'n.', s: [
+    { m: '표면', syn: ['outside', 'top'], ex: [
+      ['The surface of the lake was calm.', '호수의 표면은 잔잔했다.'],
+      ['Clean the surface before painting.', '칠하기 전에 표면을 닦아라.'],
+      ['Most of the earth’s surface is water.', '지구 표면의 대부분은 물이다.'],
     ]},
   ]},
-  { w: 'be based on', p: 'phr.', s: [
-    { m: '~에 근거하다', syn: ['rest on', 'come from'], ex: [
-      ['The film is based on a true story.', '그 영화는 실화에 근거한다.'],
-      ['His theory is based on long research.', '그의 이론은 오랜 연구에 근거한다.'],
-      ['The decision was based on the data.', '그 결정은 자료에 근거했다.'],
+  { w: 'sweet', p: 'adj.', s: [
+    { m: '달콤한', syn: ['sugary'], ex: [
+      ['This apple is very sweet.', '이 사과는 아주 달다.'],
+      ['I do not like sweet drinks.', '나는 단 음료를 좋아하지 않는다.'],
+      ['The cake tastes sweet.', '그 케이크는 단맛이 난다.'],
     ]},
   ]},
-  { w: 'carry out', p: 'phr.', s: [
-    { m: '수행하다, 실행하다', syn: ['perform', 'conduct'], ex: [
-      ['They carried out the experiment.', '그들은 그 실험을 수행했다.'],
-      ['We must carry out the plan carefully.', '우리는 그 계획을 신중히 실행해야 한다.'],
-      ['The survey was carried out last month.', '그 조사는 지난달에 실시되었다.'],
+  { w: 'take place', p: 'phr.', s: [
+    { m: '일어나다, 개최되다', syn: ['happen', 'be held'], ex: [
+      ['The festival takes place in May.', '그 축제는 5월에 열린다.'],
+      ['The meeting took place last Friday.', '그 회의는 지난 금요일에 열렸다.'],
+      ['Great changes took place after the war.', '전쟁 후에 큰 변화가 일어났다.'],
     ]},
   ]},
-  { w: 'in terms of', p: 'phr.', s: [
-    { m: '~의 관점에서, ~ 면에서', syn: ['regarding', 'with respect to'], ex: [
-      ['In terms of cost, it is better.', '비용의 관점에서 그것이 더 낫다.'],
-      ['In terms of size, they are similar.', '크기 면에서 그들은 비슷하다.'],
-      ['Think in terms of long-term results.', '장기적인 결과의 관점에서 생각해라.'],
+  { w: 'temperature', p: 'n.', s: [
+    { m: '온도, 기온, 체온', syn: [], ex: [
+      ['The temperature is below zero today.', '오늘 기온은 영하다.'],
+      ['The nurse checked my temperature.', '간호사가 내 체온을 쟀다.'],
+      ['Water boils at a high temperature.', '물은 높은 온도에서 끓는다.'],
     ]},
   ]},
-  { w: 'lead to', p: 'phr.', s: [
-    { m: '~로 이어지다, 초래하다', syn: ['result in', 'cause'], ex: [
-      ['Small habits lead to big changes.', '작은 습관이 큰 변화로 이어진다.'],
-      ['Poor sleep can lead to health problems.', '수면 부족은 건강 문제로 이어질 수 있다.'],
-      ['This road leads to the beach.', '이 길은 해변으로 이어진다.'],
+  { w: 'tend', p: 'v.', s: [
+    { m: '~하는 경향이 있다', syn: ['be likely to', 'have a tendency to'], ex: [
+      ['Kids tend to copy adults.', '아이들은 어른을 따라 하는 경향이 있다.'],
+      ['Prices tend to rise in winter.', '겨울에는 물가가 오르는 경향이 있다.'],
+      ['She tends to speak too fast.', '그녀는 너무 빨리 말하는 경향이 있다.'],
     ]},
   ]},
-  { w: 'rely on', p: 'phr.', s: [
-    { m: '~에 의존하다, 믿다', syn: ['depend on', 'count on'], ex: [
-      ['We rely on public transport.', '우리는 대중교통에 의존한다.'],
-      ['You can rely on her to be honest.', '그녀가 정직할 것이라고 믿어도 된다.'],
-      ['Many farmers rely on rain.', '많은 농부가 비에 의존한다.'],
-    ]},
-  ]},
-  { w: 'assumption', p: 'n.', s: [
-    { m: '가정, 추정', syn: ['belief', 'supposition'], ex: [
-      ['The plan rests on a false assumption.', '그 계획은 잘못된 가정에 기대고 있다.'],
-      ['We made the assumption that costs would fall.', '우리는 비용이 내릴 것이라고 가정했다.'],
-      ['Question your own assumptions.', '자신의 가정을 의심해 보아라.'],
-    ]},
-  ]},
-  { w: 'compensation', p: 'n.', s: [
-    { m: '보상, 배상', syn: ['payment', 'repayment'], ex: [
-      ['They received compensation for the damage.', '그들은 피해에 대한 보상을 받았다.'],
-      ['She asked for fair compensation.', '그녀는 정당한 보상을 요구했다.'],
-      ['No compensation was offered.', '어떤 보상도 제시되지 않았다.'],
-    ]},
-  ]},
-  { w: 'engage', p: 'v.', s: [
-    { m: '참여하다, 관여하다', syn: ['take part', 'involve'], ex: [
-      ['Students engage in group discussion.', '학생들이 모둠 토론에 참여한다.'],
-      ['He rarely engages with strangers.', '그는 낯선 사람과 잘 어울리지 않는다.'],
-    ]},
-    { m: '(관심을) 사로잡다', syn: ['attract', 'hold'], ex: [
-      ['The story engaged my attention.', '그 이야기가 내 주의를 사로잡았다.'],
-      ['Good teachers engage their students.', '좋은 교사는 학생들의 흥미를 끈다.'],
-    ]},
-  ]},
-  { w: 'quantity', p: 'n.', s: [
-    { m: '양, 수량', syn: ['amount', 'number'], ex: [
-      ['A small quantity of salt is enough.', '적은 양의 소금이면 충분하다.'],
-      ['Quality matters more than quantity.', '양보다 질이 중요하다.'],
-      ['They bought a large quantity of paper.', '그들은 많은 양의 종이를 샀다.'],
-    ]},
-  ]},
-  { w: 'in addition to', p: 'phr.', s: [
-    { m: '~에 더하여, ~뿐만 아니라', syn: ['besides', 'as well as'], ex: [
-      ['In addition to math, she teaches science.', '수학뿐만 아니라 그녀는 과학도 가르친다.'],
-      ['In addition to the fee, there is a tax.', '수수료에 더해 세금이 있다.'],
-      ['He speaks Chinese in addition to English.', '그는 영어에 더해 중국어도 한다.'],
-    ]},
-  ]},
-], 'csat');
+], 'curriculum');

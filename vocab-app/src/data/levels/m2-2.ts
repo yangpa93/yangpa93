@@ -1,271 +1,464 @@
 /**
- * 중학교 2학년 레벨 2 어휘 33개.
+ * 중학교 2학년 레벨 2 — 수록 62 / 계획 137개.
  *
- * 선정 기준: 중학교 2학년 검정 교과서 공통 어휘와 중간·기말 서술형에 자주 나오는 구동사.
- *
- * 뜻이 여러 개인 단어는 뜻마다 예문을 나눠 두었다. 같은 단어를 다시 만날 때마다
- * 다른 뜻·다른 문장이 나오도록 하기 위한 것.
+ * 난이도 층: 기초(초등 권장)
+ * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
+ * 여기에는 그중 뜻과 예문을 적어 둔 것만 들어 있다.
  */
 
 import { defineLevel } from '../define';
 
 export const M2_2 = defineLevel('m2-2', [
-  { w: 'experience', p: 'n., v.', s: [
-    { m: '경험; 경험하다', syn: ['go through'], ex: [
-      ['It was a great experience.', '그것은 훌륭한 경험이었다.'],
-      ['He has ten years of experience.', '그는 10년의 경력이 있다.'],
-      ['We experienced heavy snow last winter.', '우리는 지난겨울 폭설을 경험했다.'],
+  { w: 'set', p: 'v.', s: [
+    { m: '놓다, 차리다, 정하다', syn: ['put'], ex: [
+      ['Please set the table for dinner.', '저녁 식탁을 차려 주세요.'],
+      ['She set the box on the floor.', '그녀는 상자를 바닥에 놓았다.'],
+      ['We set a date for the meeting.', '우리는 회의 날짜를 정했다.'],
     ]},
   ]},
-  { w: 'explain', p: 'v.', s: [
-    { m: '설명하다', syn: ['describe', 'make clear'], ex: [
-      ['Can you explain this rule?', '이 규칙을 설명해 줄 수 있니?'],
-      ['She explained the problem step by step.', '그녀는 문제를 단계별로 설명했다.'],
-      ['Let me explain why I was late.', '내가 왜 늦었는지 설명할게.'],
+  { w: 'ship', p: 'n.', s: [
+    { m: '배, 선박', syn: ['boat'], ex: [
+      ['The ship left the port at dawn.', '배는 새벽에 항구를 떠났다.'],
+      ['We traveled by ship.', '우리는 배로 여행했다.'],
+      ['That ship carries cars.', '저 배는 자동차를 실어 나른다.'],
     ]},
   ]},
-  { w: 'express', p: 'v.', s: [
-    { m: '표현하다, 나타내다', syn: ['show', 'convey'], ex: [
-      ['Music expresses feelings.', '음악은 감정을 표현한다.'],
-      ['He expressed his thanks in a letter.', '그는 편지로 감사를 표현했다.'],
-      ['It is hard to express this in English.', '이것을 영어로 표현하기 어렵다.'],
+  { w: 'shop', p: 'n., v.', s: [
+    { m: '가게, 쇼핑하다', syn: ['store'], ex: [
+      ['There is a flower shop near here.', '이 근처에 꽃 가게가 있다.'],
+      ['She shops online every weekend.', '그녀는 주말마다 온라인에서 쇼핑한다.'],
+      ['The shop opens at nine.', '그 가게는 9시에 문을 연다.'],
     ]},
   ]},
-  { w: 'fail', p: 'v.', s: [
-    { m: '실패하다', syn: ['not succeed'], ex: [
-      ["Don't be afraid to fail.", '실패하는 것을 두려워하지 마라.'],
-      ['The plan failed because of rain.', '그 계획은 비 때문에 실패했다.'],
-      ['He failed the test but tried again.', '그는 시험에 떨어졌지만 다시 도전했다.'],
+  { w: 'short', p: 'adj.', s: [
+    { m: '짧은', syn: ['brief'], ex: [
+      ['She has short hair.', '그녀는 머리가 짧다.'],
+      ['We took a short break.', '우리는 짧게 쉬었다.'],
+      ['The meeting was short.', '회의는 짧았다.'],
     ]},
   ]},
-  { w: 'fix', p: 'v.', s: [
-    { m: '고치다, 수리하다', syn: ['repair', 'mend'], ex: [
-      ['My dad fixed my bike.', '아빠가 내 자전거를 고쳐 주셨다.'],
-      ['Can you fix this computer?', '이 컴퓨터를 고칠 수 있니?'],
+  { w: 'show', p: 'v., n.', s: [
+    { m: '보여 주다', syn: ['display'], ex: [
+      ['Show me your notebook.', '네 공책을 보여 줘.'],
+      ['He showed us the way to the station.', '그는 우리에게 역으로 가는 길을 알려 주었다.'],
     ]},
-    { m: '(날짜·장소를) 정하다', syn: ['set', 'arrange'], ex: [
-      ['We fixed the meeting for Friday.', '우리는 회의를 금요일로 정했다.'],
-      ['The price is fixed.', '가격은 정해져 있다.'],
-    ]},
-  ]},
-  { w: 'focus', p: 'v., n.', s: [
-    { m: '집중하다; 초점', syn: ['concentrate', 'pay attention'], ex: [
-      ['Focus on your work.', '네 일에 집중해라.'],
-      ['It is hard to focus when I am tired.', '피곤할 때는 집중하기 어렵다.'],
-      ['The focus of the class was grammar.', '그 수업의 초점은 문법이었다.'],
+    { m: '공연, 프로그램', syn: ['program'], ex: [
+      ['The show starts at seven.', '공연은 7시에 시작한다.'],
+      ['We watched a magic show.', '우리는 마술 공연을 보았다.'],
     ]},
   ]},
-  { w: 'gather', p: 'v.', s: [
-    { m: '모으다, 모이다', syn: ['collect', 'come together'], ex: [
-      ['People gathered in the square.', '사람들이 광장에 모였다.'],
-      ['We gathered leaves for the art class.', '우리는 미술 시간을 위해 나뭇잎을 모았다.'],
-      ['The family gathers every New Year.', '가족은 매년 새해에 모인다.'],
+  { w: 'shy', p: 'adj.', s: [
+    { m: '수줍은, 부끄러워하는', syn: ['timid'], ex: [
+      ['He is too shy to speak in class.', '그는 너무 수줍어서 수업에서 말을 못 한다.'],
+      ['She was shy at first.', '그녀는 처음에는 수줍어했다.'],
+      ['The shy boy stood behind his mother.', '수줍은 소년은 어머니 뒤에 서 있었다.'],
     ]},
   ]},
-  { w: 'grow', p: 'v.', s: [
-    { m: '자라다, 성장하다', syn: ['get bigger', 'develop'], ex: [
-      ['These plants grow fast.', '이 식물들은 빨리 자란다.'],
-      ['He grew ten centimeters last year.', '그는 작년에 10센티미터 자랐다.'],
-    ]},
-    { m: '기르다, 재배하다', syn: ['raise', 'cultivate'], ex: [
-      ['My grandmother grows vegetables.', '할머니는 채소를 기르신다.'],
-      ['They grow rice in this area.', '이 지역에서는 쌀을 재배한다.'],
+  { w: 'sick', p: 'adj.', s: [
+    { m: '아픈, 병든', syn: ['ill', 'unwell'], ex: [
+      ['He was sick yesterday.', '그는 어제 아팠다.'],
+      ['She stayed home because she was sick.', '그녀는 아파서 집에 있었다.'],
+      ['My dog got sick last week.', '내 개가 지난주에 아팠다.'],
     ]},
   ]},
-  { w: 'habit', p: 'n.', s: [
-    { m: '습관', syn: ['routine', 'practice'], ex: [
-      ['Reading is a good habit.', '독서는 좋은 습관이다.'],
-      ['He has a habit of biting his nails.', '그는 손톱을 물어뜯는 습관이 있다.'],
-      ['It takes time to change a habit.', '습관을 바꾸는 데는 시간이 걸린다.'],
+  { w: 'sing', p: 'v.', s: [
+    { m: '노래하다', syn: [], ex: [
+      ['She sings very well.', '그녀는 노래를 아주 잘한다.'],
+      ['We sang a song together.', '우리는 함께 노래를 불렀다.'],
+      ['Birds are singing in the tree.', '새들이 나무에서 노래하고 있다.'],
     ]},
   ]},
-  { w: 'hurt', p: 'v.', s: [
-    { m: '아프다, 다치게 하다', syn: ['injure', 'ache'], ex: [
-      ['My leg hurts a lot.', '다리가 많이 아프다.'],
-      ['He hurt his hand while cooking.', '그는 요리하다가 손을 다쳤다.'],
-    ]},
-    { m: '(마음을) 상하게 하다', syn: ['upset', 'offend'], ex: [
-      ['Your words hurt her feelings.', '네 말이 그녀의 기분을 상하게 했다.'],
-      ['I did not mean to hurt anyone.', '나는 누구도 상처 주려던 것이 아니었다.'],
+  { w: 'sit', p: 'v.', s: [
+    { m: '앉다', syn: ['take a seat'], ex: [
+      ['Please sit next to me.', '내 옆에 앉아 주세요.'],
+      ['He sat quietly in the corner.', '그는 구석에 조용히 앉아 있었다.'],
+      ['She is sitting on the bench.', '그녀는 벤치에 앉아 있다.'],
     ]},
   ]},
-  { w: 'imagine', p: 'v.', s: [
-    { m: '상상하다', syn: ['picture', 'suppose'], ex: [
-      ['Imagine a world without cars.', '자동차 없는 세상을 상상해 보라.'],
-      ['I cannot imagine living there.', '나는 그곳에 사는 것을 상상할 수 없다.'],
-      ['She imagined herself on stage.', '그녀는 무대 위의 자신을 상상했다.'],
+  { w: 'size', p: 'n.', s: [
+    { m: '크기, 치수', syn: [], ex: [
+      ['What size do you wear?', '어떤 치수를 입으시나요?'],
+      ['The two rooms are the same size.', '두 방은 크기가 같다.'],
+      ['This shirt is the wrong size.', '이 셔츠는 치수가 안 맞는다.'],
     ]},
   ]},
-  { w: 'improve', p: 'v.', s: [
-    { m: '향상시키다, 나아지다', syn: ['get better', 'enhance'], ex: [
-      ['I want to improve my English.', '나는 영어를 향상시키고 싶다.'],
-      ['His health improved after surgery.', '그의 건강은 수술 후 나아졌다.'],
-      ['Practice will improve your speed.', '연습하면 속도가 좋아질 것이다.'],
+  { w: 'sky', p: 'n.', s: [
+    { m: '하늘', syn: [], ex: [
+      ['The sky is clear today.', '오늘 하늘이 맑다.'],
+      ['Birds flew across the sky.', '새들이 하늘을 가로질러 날았다.'],
+      ['The sky turned dark before the storm.', '폭풍 전에 하늘이 어두워졌다.'],
     ]},
   ]},
-  { w: 'include', p: 'v.', s: [
-    { m: '포함하다', syn: ['contain', 'cover'], ex: [
-      ['The price includes breakfast.', '그 가격은 아침 식사를 포함한다.'],
-      ['The list includes ten names.', '그 목록에는 열 개의 이름이 들어 있다.'],
-      ['Does the tour include lunch?', '그 투어에 점심이 포함되나요?'],
+  { w: 'sleep', p: 'v., n.', s: [
+    { m: '자다, 잠', syn: ['rest'], ex: [
+      ['I sleep eight hours every night.', '나는 매일 밤 여덟 시간 잔다.'],
+      ['He slept well last night.', '그는 어젯밤에 잘 잤다.'],
+      ['The baby is sleeping now.', '아기가 지금 자고 있다.'],
     ]},
   ]},
-  { w: 'increase', p: 'v., n.', s: [
-    { m: '증가하다, 늘리다', syn: ['rise', 'go up'], ex: [
-      ['The number of visitors increased.', '방문객 수가 증가했다.'],
-      ['We need to increase our speed.', '우리는 속도를 높여야 한다.'],
-      ['There was an increase in sales.', '매출에 증가가 있었다.'],
+  { w: 'slow', p: 'adj.', s: [
+    { m: '느린', syn: [], ex: [
+      ['This computer is very slow.', '이 컴퓨터는 아주 느리다.'],
+      ['He is a slow reader.', '그는 읽는 속도가 느리다.'],
+      ['The bus was slow because of traffic.', '차가 막혀서 버스가 느렸다.'],
     ]},
   ]},
-  { w: 'information', p: 'n.', s: [
-    { m: '정보', syn: ['data', 'facts'], ex: [
-      ['I found useful information online.', '나는 온라인에서 유용한 정보를 찾았다.'],
-      ['Please give me more information.', '더 많은 정보를 주세요.'],
-      ['Not all information on the internet is true.', '인터넷의 모든 정보가 사실은 아니다.'],
+  { w: 'smell', p: 'v., n.', s: [
+    { m: '냄새가 나다, 냄새', syn: ['scent'], ex: [
+      ['The flowers smell sweet.', '그 꽃들은 향기롭다.'],
+      ['I smell something burning.', '뭔가 타는 냄새가 난다.'],
+      ['The smell of bread filled the kitchen.', '빵 냄새가 부엌에 가득했다.'],
     ]},
   ]},
-  { w: 'introduce', p: 'v.', s: [
-    { m: '소개하다', syn: ['present'], ex: [
-      ['Let me introduce my friend.', '내 친구를 소개할게.'],
-      ['She introduced herself to the class.', '그녀는 반에 자기소개를 했다.'],
-    ]},
-    { m: '도입하다, 처음 들여오다', syn: ['bring in'], ex: [
-      ['The school introduced a new rule.', '학교는 새 규칙을 도입했다.'],
-      ['Potatoes were introduced from America.', '감자는 아메리카에서 들어왔다.'],
+  { w: 'smile', p: 'v., n.', s: [
+    { m: '미소 짓다, 미소', syn: [], ex: [
+      ['She smiled at me kindly.', '그녀는 나에게 상냥하게 미소 지었다.'],
+      ['He has a warm smile.', '그는 따뜻한 미소를 가졌다.'],
+      ['The baby is smiling.', '아기가 미소 짓고 있다.'],
     ]},
   ]},
-  { w: 'knowledge', p: 'n.', s: [
-    { m: '지식', syn: ['understanding', 'learning'], ex: [
-      ['He has deep knowledge of history.', '그는 역사에 대한 깊은 지식이 있다.'],
-      ['Knowledge grows when you share it.', '지식은 나눌 때 자란다.'],
-      ['She has little knowledge of computers.', '그녀는 컴퓨터에 대한 지식이 거의 없다.'],
+  { w: 'snow', p: 'n., v.', s: [
+    { m: '눈, 눈이 오다', syn: [], ex: [
+      ['The snow covered the whole town.', '눈이 온 마을을 덮었다.'],
+      ['It snowed heavily last night.', '어젯밤에 눈이 많이 왔다.'],
+      ['Children love playing in the snow.', '아이들은 눈에서 노는 것을 좋아한다.'],
     ]},
   ]},
-  { w: 'local', p: 'adj.', s: [
-    { m: '지역의, 현지의', syn: ['nearby', 'regional'], ex: [
-      ['We visited a local market.', '우리는 현지 시장을 방문했다.'],
-      ['Try the local food.', '현지 음식을 먹어 봐라.'],
-      ['The local library opens at nine.', '지역 도서관은 9시에 문을 연다.'],
+  { w: 'soft', p: 'adj.', s: [
+    { m: '부드러운', syn: ['gentle'], ex: [
+      ['This pillow is very soft.', '이 베개는 아주 부드럽다.'],
+      ['She spoke in a soft voice.', '그녀는 부드러운 목소리로 말했다.'],
+      ['The cat has soft fur.', '그 고양이는 부드러운 털을 가졌다.'],
     ]},
   ]},
-  { w: 'manage', p: 'v.', s: [
-    { m: '관리하다, 운영하다', syn: ['run', 'handle'], ex: [
-      ['She manages her time well.', '그녀는 시간을 잘 관리한다.'],
-      ['He manages a small shop.', '그는 작은 가게를 운영한다.'],
-    ]},
-    { m: '해내다, 용케 ~하다', syn: ['succeed in'], ex: [
-      ['We managed to finish on time.', '우리는 제시간에 마치는 데 성공했다.'],
-      ['She managed to open the jar.', '그녀는 겨우 병을 열었다.'],
+  { w: 'sometimes', p: 'adv.', s: [
+    { m: '가끔, 때때로', syn: ['occasionally', 'at times'], ex: [
+      ['Sometimes I walk to school.', '나는 가끔 학교에 걸어간다.'],
+      ['She sometimes helps in the kitchen.', '그녀는 가끔 부엌일을 돕는다.'],
+      ['Sometimes it snows in April.', '가끔 4월에 눈이 온다.'],
     ]},
   ]},
-  { w: 'medicine', p: 'n.', s: [
-    { m: '약', syn: ['drug', 'pill'], ex: [
-      ['Take this medicine after meals.', '식후에 이 약을 드세요.'],
-      ['The medicine tastes bitter.', '그 약은 맛이 쓰다.'],
+  { w: 'sound', p: 'n., v.', s: [
+    { m: '소리', syn: ['noise'], ex: [
+      ['I heard a strange sound.', '나는 이상한 소리를 들었다.'],
+      ['The sound of rain is nice.', '빗소리는 좋다.'],
     ]},
-    { m: '의학', syn: [], ex: [
-      ['She wants to study medicine.', '그녀는 의학을 공부하고 싶어 한다.'],
-      ['Modern medicine has saved many lives.', '현대 의학은 많은 생명을 구했다.'],
-    ]},
-  ]},
-  { w: 'memory', p: 'n.', s: [
-    { m: '기억(력)', syn: ['recall'], ex: [
-      ['He has a good memory for names.', '그는 이름을 잘 기억한다.'],
-      ['Sleep helps memory.', '잠은 기억력에 도움이 된다.'],
-    ]},
-    { m: '추억', syn: ['remembrance'], ex: [
-      ['I have a happy memory of that day.', '나는 그날의 행복한 추억이 있다.'],
-      ['These photos bring back memories.', '이 사진들은 추억을 떠올리게 한다.'],
+    { m: '~처럼 들리다', syn: ['seem'], ex: [
+      ['That sounds like a good plan.', '그것은 좋은 계획처럼 들린다.'],
+      ['She sounded tired on the phone.', '그녀는 전화로 피곤한 목소리였다.'],
     ]},
   ]},
-  { w: 'nature', p: 'n.', s: [
-    { m: '자연', syn: ['the natural world'], ex: [
-      ['We enjoyed the beauty of nature.', '우리는 자연의 아름다움을 즐겼다.'],
-      ['Nature gives us clean air and water.', '자연은 우리에게 깨끗한 공기와 물을 준다.'],
-    ]},
-    { m: '본성, 성질', syn: ['character'], ex: [
-      ['It is human nature to make mistakes.', '실수하는 것은 인간의 본성이다.'],
-      ['She has a gentle nature.', '그녀는 온화한 성품을 지녔다.'],
+  { w: 'south', p: 'n., adj.', s: [
+    { m: '남쪽', syn: [], ex: [
+      ['Birds fly south in winter.', '새들은 겨울에 남쪽으로 날아간다.'],
+      ['The town is in the south of the country.', '그 마을은 나라의 남쪽에 있다.'],
+      ['My window faces south.', '내 창문은 남쪽을 향해 있다.'],
     ]},
   ]},
-  { w: 'notice', p: 'v., n.', s: [
-    { m: '알아차리다', syn: ['see', 'observe'], ex: [
-      ['I noticed a small mistake.', '나는 작은 실수를 알아차렸다.'],
-      ['Did you notice her new haircut?', '그녀의 새 머리 모양을 알아챘니?'],
+  { w: 'space', p: 'n.', s: [
+    { m: '공간, 자리', syn: ['room'], ex: [
+      ['There is not enough space in this box.', '이 상자에는 공간이 충분하지 않다.'],
+      ['We need more space for the desks.', '책상을 놓을 자리가 더 필요하다.'],
     ]},
-    { m: '안내문, 공지', syn: ['announcement'], ex: [
-      ['There is a notice on the door.', '문에 안내문이 있다.'],
-      ['Please read the notice carefully.', '공지를 주의 깊게 읽어 주세요.'],
-    ]},
-  ]},
-  { w: 'offer', p: 'v., n.', s: [
-    { m: '제안하다, 권하다', syn: ['propose', 'give'], ex: [
-      ['He offered me a seat.', '그는 나에게 자리를 권했다.'],
-      ['She offered to help with the dishes.', '그녀는 설거지를 돕겠다고 했다.'],
-      ['They made a good offer.', '그들은 좋은 제안을 했다.'],
+    { m: '우주', syn: ['the universe'], ex: [
+      ['He dreams of traveling in space.', '그는 우주 여행을 꿈꾼다.'],
+      ['There is no air in space.', '우주에는 공기가 없다.'],
     ]},
   ]},
-  { w: 'opinion', p: 'n.', s: [
-    { m: '의견, 견해', syn: ['view', 'thought'], ex: [
-      ['In my opinion, this is better.', '내 생각에는 이것이 더 낫다.'],
-      ['Everyone has a different opinion.', '모두 의견이 다르다.'],
-      ['What is your opinion about the plan?', '그 계획에 대한 네 의견은 무엇이니?'],
+  { w: 'speak', p: 'v.', s: [
+    { m: '말하다', syn: ['talk'], ex: [
+      ['She speaks three languages.', '그녀는 세 개 언어를 한다.'],
+      ['He spoke slowly and clearly.', '그는 천천히 또렷하게 말했다.'],
+      ['Please speak louder.', '더 크게 말해 주세요.'],
     ]},
   ]},
-  { w: 'opportunity', p: 'n.', s: [
-    { m: '기회', syn: ['chance'], ex: [
-      ["Don't miss this opportunity.", '이 기회를 놓치지 마라.'],
-      ['Studying abroad is a great opportunity.', '해외 유학은 좋은 기회이다.'],
-      ['She had the opportunity to meet the author.', '그녀는 그 작가를 만날 기회가 있었다.'],
+  { w: 'special', p: 'adj.', s: [
+    { m: '특별한', syn: ['unusual', 'unique'], ex: [
+      ['Today is a special day.', '오늘은 특별한 날이다.'],
+      ['She has a special talent for music.', '그녀는 음악에 특별한 재능이 있다.'],
+      ['We ate something special for dinner.', '우리는 저녁으로 특별한 것을 먹었다.'],
     ]},
   ]},
-  { w: 'pollution', p: 'n.', s: [
-    { m: '오염', syn: ['contamination'], ex: [
-      ['Air pollution is a serious problem.', '대기 오염은 심각한 문제이다.'],
-      ['Cars cause a lot of pollution.', '자동차는 많은 오염을 일으킨다.'],
-      ['We must reduce water pollution.', '우리는 수질 오염을 줄여야 한다.'],
+  { w: 'speed', p: 'n.', s: [
+    { m: '속도', syn: ['rate'], ex: [
+      ['The car increased its speed.', '차가 속도를 높였다.'],
+      ['Please reduce your speed here.', '여기서는 속도를 줄여 주세요.'],
+      ['He ran at full speed.', '그는 전속력으로 달렸다.'],
     ]},
   ]},
-  { w: 'prefer', p: 'v.', s: [
-    { m: '더 좋아하다, 선호하다', syn: ['like better', 'favor'], ex: [
-      ['I prefer tea to coffee.', '나는 커피보다 차를 더 좋아한다.'],
-      ['She prefers reading to watching TV.', '그녀는 TV 보기보다 독서를 선호한다.'],
-      ['Which one do you prefer?', '어느 것을 더 좋아하니?'],
+  { w: 'spring', p: 'n.', s: [
+    { m: '봄', syn: [], ex: [
+      ['Flowers bloom in spring.', '봄에 꽃이 핀다.'],
+      ['We plant trees every spring.', '우리는 매년 봄에 나무를 심는다.'],
+      ['Spring is warm and bright.', '봄은 따뜻하고 밝다.'],
     ]},
   ]},
-  { w: 'protect', p: 'v.', s: [
-    { m: '보호하다, 지키다', syn: ['guard', 'keep safe'], ex: [
-      ['Sunglasses protect your eyes.', '선글라스는 눈을 보호한다.'],
-      ['We should protect wild animals.', '우리는 야생 동물을 보호해야 한다.'],
-      ['A helmet protects your head.', '헬멧은 머리를 보호한다.'],
+  { w: 'stand', p: 'v.', s: [
+    { m: '서다, 서 있다', syn: ['get up'], ex: [
+      ['Please stand up.', '일어서 주세요.'],
+      ['He stood by the window.', '그는 창가에 서 있었다.'],
+      ['She is standing in line.', '그녀는 줄을 서 있다.'],
     ]},
   ]},
-  { w: 'provide', p: 'v.', s: [
-    { m: '제공하다', syn: ['supply', 'give'], ex: [
-      ['The school provides free lunch.', '학교는 무료 급식을 제공한다.'],
-      ['They provided us with blankets.', '그들은 우리에게 담요를 제공했다.'],
-      ['This app provides useful information.', '이 앱은 유용한 정보를 제공한다.'],
+  { w: 'star', p: 'n.', s: [
+    { m: '별', syn: [], ex: [
+      ['We counted the stars last night.', '우리는 어젯밤 별을 세었다.'],
+      ['The star is very far away.', '그 별은 아주 멀리 있다.'],
+      ['Stars are hard to see in the city.', '도시에서는 별을 보기 어렵다.'],
     ]},
   ]},
-  { w: 'reduce', p: 'v.', s: [
-    { m: '줄이다', syn: ['cut down', 'lower'], ex: [
-      ['We should reduce plastic waste.', '우리는 플라스틱 쓰레기를 줄여야 한다.'],
-      ['The store reduced its prices.', '그 가게는 가격을 낮췄다.'],
-      ['Walking can reduce stress.', '걷기는 스트레스를 줄일 수 있다.'],
+  { w: 'start', p: 'v.', s: [
+    { m: '시작하다', syn: ['begin'], ex: [
+      ['The class starts at nine.', '수업은 9시에 시작한다.'],
+      ['She started learning Chinese.', '그녀는 중국어를 배우기 시작했다.'],
+      ['It is starting to rain.', '비가 오기 시작하고 있다.'],
     ]},
   ]},
-  { w: 'regular', p: 'adj.', s: [
-    { m: '규칙적인, 정기적인', syn: ['steady', 'routine'], ex: [
-      ['Regular exercise keeps you healthy.', '규칙적인 운동은 건강을 지켜 준다.'],
-      ['We have regular meetings on Monday.', '우리는 월요일마다 정기 회의를 한다.'],
-      ['Try to keep regular sleeping hours.', '규칙적인 수면 시간을 유지하려고 해라.'],
+  { w: 'stay', p: 'v.', s: [
+    { m: '머무르다, 있다', syn: ['remain'], ex: [
+      ['We stayed at a hotel near the beach.', '우리는 해변 근처 호텔에 묵었다.'],
+      ['Please stay here until I come back.', '내가 돌아올 때까지 여기 있어 줘.'],
+      ['He is staying with his grandmother.', '그는 할머니 댁에 머물고 있다.'],
     ]},
   ]},
-  { w: 'relationship', p: 'n.', s: [
-    { m: '관계, 사이', syn: ['connection', 'bond'], ex: [
-      ['They have a good relationship.', '그들은 좋은 관계이다.'],
-      ['There is a close relationship between sleep and health.', '수면과 건강 사이에는 밀접한 관계가 있다.'],
-      ['A good relationship needs trust.', '좋은 관계에는 신뢰가 필요하다.'],
+  { w: 'stone', p: 'n.', s: [
+    { m: '돌', syn: ['rock'], ex: [
+      ['The wall is made of stone.', '그 벽은 돌로 만들어졌다.'],
+      ['He threw a stone into the river.', '그는 강에 돌을 던졌다.'],
+      ['There are small stones on the path.', '길에 작은 돌들이 있다.'],
+    ]},
+  ]},
+  { w: 'stop', p: 'v.', s: [
+    { m: '멈추다, 그만두다', syn: ['halt', 'quit'], ex: [
+      ['The bus stopped in front of the school.', '버스가 학교 앞에 멈췄다.'],
+      ['Please stop talking.', '그만 이야기해 주세요.'],
+      ['The rain is stopping now.', '비가 지금 그치고 있다.'],
+    ]},
+  ]},
+  { w: 'store', p: 'n., v.', s: [
+    { m: '가게, 상점', syn: ['shop'], ex: [
+      ['I bought milk at the store.', '나는 가게에서 우유를 샀다.'],
+      ['The store closes at ten.', '그 가게는 10시에 문을 닫는다.'],
+    ]},
+    { m: '보관하다, 저장하다', syn: ['keep'], ex: [
+      ['We store rice in this room.', '우리는 이 방에 쌀을 보관한다.'],
+      ['She stored the photos on her computer.', '그녀는 사진을 컴퓨터에 저장했다.'],
+    ]},
+  ]},
+  { w: 'story', p: 'n.', s: [
+    { m: '이야기', syn: ['tale'], ex: [
+      ['Grandmother told us a story.', '할머니가 우리에게 이야기를 들려주셨다.'],
+      ['This story is about a brave girl.', '이 이야기는 용감한 소녀에 관한 것이다.'],
+      ['I read three stories last night.', '나는 어젯밤에 이야기 세 편을 읽었다.'],
+    ]},
+  ]},
+  { w: 'street', p: 'n.', s: [
+    { m: '거리, 길', syn: ['road'], ex: [
+      ['The street was full of people.', '거리가 사람들로 가득했다.'],
+      ['Do not play in the street.', '길에서 놀지 마라.'],
+      ['She lives on this street.', '그녀는 이 거리에 산다.'],
+    ]},
+  ]},
+  { w: 'strong', p: 'adj.', s: [
+    { m: '강한, 튼튼한', syn: ['powerful', 'tough'], ex: [
+      ['He has strong arms.', '그는 팔이 튼튼하다.'],
+      ['A strong wind blew all night.', '강한 바람이 밤새 불었다.'],
+      ['She has a strong will.', '그녀는 강한 의지를 가지고 있다.'],
+    ]},
+  ]},
+  { w: 'sugar', p: 'n.', s: [
+    { m: '설탕', syn: [], ex: [
+      ['Do not put too much sugar in the tea.', '차에 설탕을 너무 많이 넣지 마라.'],
+      ['This cake has a lot of sugar.', '이 케이크에는 설탕이 많이 들어 있다.'],
+      ['She drinks coffee without sugar.', '그녀는 설탕 없이 커피를 마신다.'],
+    ]},
+  ]},
+  { w: 'summer', p: 'n.', s: [
+    { m: '여름', syn: [], ex: [
+      ['We swim in the sea every summer.', '우리는 매년 여름 바다에서 수영한다.'],
+      ['Summer in Korea is hot and wet.', '한국의 여름은 덥고 습하다.'],
+      ['She visited Europe last summer.', '그녀는 지난여름 유럽을 방문했다.'],
+    ]},
+  ]},
+  { w: 'sunny', p: 'adj.', s: [
+    { m: '화창한, 햇볕이 잘 드는', syn: [], ex: [
+      ['It is sunny and warm today.', '오늘은 화창하고 따뜻하다.'],
+      ['We had a sunny day at the beach.', '우리는 해변에서 화창한 하루를 보냈다.'],
+      ['Her room is bright and sunny.', '그녀의 방은 밝고 햇볕이 잘 든다.'],
+    ]},
+  ]},
+  { w: 'surprised', p: 'adj.', s: [
+    { m: '놀란', syn: ['amazed', 'shocked'], ex: [
+      ['I was surprised at the news.', '나는 그 소식에 놀랐다.'],
+      ['She looked surprised to see me.', '그녀는 나를 보고 놀란 듯했다.'],
+      ['We were surprised by his answer.', '우리는 그의 대답에 놀랐다.'],
+    ]},
+  ]},
+  { w: 'swim', p: 'v.', s: [
+    { m: '수영하다, 헤엄치다', syn: [], ex: [
+      ['I swim twice a week.', '나는 일주일에 두 번 수영한다.'],
+      ['She swam across the river.', '그녀는 강을 헤엄쳐 건넜다.'],
+      ['Fish are swimming in the pond.', '물고기들이 연못에서 헤엄치고 있다.'],
+    ]},
+  ]},
+  { w: 'take a walk', p: 'phr.', s: [
+    { m: '산책하다', syn: ['go for a walk'], ex: [
+      ['We take a walk after dinner.', '우리는 저녁 후에 산책한다.'],
+      ['Let’s take a walk in the park.', '공원에서 산책하자.'],
+      ['She took a walk to clear her mind.', '그녀는 머리를 식히려고 산책했다.'],
+    ]},
+  ]},
+  { w: 'take care of', p: 'phr.', s: [
+    { m: '~을 돌보다', syn: ['look after', 'care for'], ex: [
+      ['She takes care of her cat.', '그녀는 고양이를 돌본다.'],
+      ['Please take care of yourself.', '몸 조심하세요.'],
+      ['He took care of his sister all day.', '그는 하루 종일 여동생을 돌봤다.'],
+    ]},
+  ]},
+  { w: 'take off', p: 'phr.', s: [
+    { m: '(옷을) 벗다', syn: ['remove'], ex: [
+      ['Take off your shoes at the door.', '문에서 신발을 벗어라.'],
+      ['He took off his hat politely.', '그는 정중히 모자를 벗었다.'],
+    ]},
+    { m: '이륙하다', syn: ['leave the ground'], ex: [
+      ['The plane took off on time.', '비행기는 정시에 이륙했다.'],
+      ['Our plane takes off at noon.', '우리 비행기는 정오에 이륙한다.'],
+    ]},
+  ]},
+  { w: 'take part in', p: 'phr.', s: [
+    { m: '~에 참여하다', syn: ['join', 'participate in'], ex: [
+      ['I took part in the contest.', '나는 그 대회에 참가했다.'],
+      ['Many students took part in the event.', '많은 학생이 그 행사에 참여했다.'],
+      ['Will you take part in the discussion?', '토론에 참여할 거니?'],
+    ]},
+  ]},
+  { w: 'talk', p: 'v.', s: [
+    { m: '말하다, 이야기하다', syn: ['speak', 'chat'], ex: [
+      ['Let us talk about it later.', '나중에 그것에 대해 이야기하자.'],
+      ['They talked for two hours.', '그들은 두 시간 동안 이야기했다.'],
+      ['She is talking with her friend.', '그녀는 친구와 이야기하고 있다.'],
+    ]},
+  ]},
+  { w: 'taste', p: 'v., n.', s: [
+    { m: '맛이 나다, 맛', syn: ['flavor'], ex: [
+      ['This soup tastes salty.', '이 국은 짠맛이 난다.'],
+      ['Would you like to taste it?', '맛을 보시겠어요?'],
+      ['The taste of this fruit is new to me.', '이 과일의 맛은 나에게 낯설다.'],
+    ]},
+  ]},
+  { w: 'teach', p: 'v.', s: [
+    { m: '가르치다', syn: ['show', 'instruct'], ex: [
+      ['She teaches math.', '그녀는 수학을 가르친다.'],
+      ['My father taught me to ride a bike.', '아버지가 나에게 자전거 타는 법을 가르쳐 주셨다.'],
+      ['This story teaches an important lesson.', '이 이야기는 중요한 교훈을 가르쳐 준다.'],
+    ]},
+  ]},
+  { w: 'team', p: 'n.', s: [
+    { m: '팀, 단체', syn: ['group'], ex: [
+      ['Our team won the game.', '우리 팀이 경기에서 이겼다.'],
+      ['She joined the swimming team.', '그녀는 수영팀에 들어갔다.'],
+      ['The team practices every day.', '그 팀은 매일 연습한다.'],
+    ]},
+  ]},
+  { w: 'test', p: 'n., v.', s: [
+    { m: '시험, 검사하다', syn: ['exam'], ex: [
+      ['We have a math test tomorrow.', '우리는 내일 수학 시험이 있다.'],
+      ['She passed the test easily.', '그녀는 시험에 쉽게 합격했다.'],
+      ['They tested the new machine.', '그들은 새 기계를 시험했다.'],
+    ]},
+  ]},
+  { w: 'thanks to', p: 'phr.', s: [
+    { m: '~ 덕분에', syn: ['because of', 'owing to'], ex: [
+      ['Thanks to her, we finished early.', '그녀 덕분에 우리는 일찍 끝냈다.'],
+      ['Thanks to the map, we did not get lost.', '지도 덕분에 우리는 길을 잃지 않았다.'],
+      ['He passed thanks to hard work.', '그는 노력 덕분에 합격했다.'],
+    ]},
+  ]},
+  { w: 'think of', p: 'phr.', s: [
+    { m: '~을 생각하다, 떠올리다', syn: ['think about'], ex: [
+      ['I cannot think of his name.', '나는 그의 이름이 떠오르지 않는다.'],
+      ['What do you think of this plan?', '이 계획을 어떻게 생각하니?'],
+      ['She often thinks of her old school.', '그녀는 종종 옛 학교를 생각한다.'],
+    ]},
+  ]},
+  { w: 'thirsty', p: 'adj.', s: [
+    { m: '목마른', syn: ['dry'], ex: [
+      ["I'm thirsty. May I have water?", '목이 말라요. 물 좀 주시겠어요?'],
+      ['Running makes me thirsty.', '달리면 목이 마르다.'],
+      ['The plants look thirsty.', '식물들이 물이 필요해 보인다.'],
+    ]},
+  ]},
+  { w: 'tired', p: 'adj.', s: [
+    { m: '피곤한, 지친', syn: ['exhausted'], ex: [
+      ['I am too tired to study.', '나는 너무 피곤해서 공부할 수 없다.'],
+      ['She looked tired after the trip.', '그녀는 여행 후에 지쳐 보였다.'],
+      ['He gets tired easily these days.', '그는 요즘 쉽게 피곤해진다.'],
+    ]},
+  ]},
+  { w: 'together', p: 'adv.', s: [
+    { m: '함께, 같이', syn: [], ex: [
+      ['We studied together last night.', '우리는 어젯밤에 함께 공부했다.'],
+      ['Let us go to the museum together.', '함께 박물관에 가자.'],
+      ['They worked together on the project.', '그들은 과제를 함께 했다.'],
+    ]},
+  ]},
+  { w: 'touch', p: 'v.', s: [
+    { m: '만지다, 닿다', syn: ['feel'], ex: [
+      ['Do not touch the hot pot.', '뜨거운 냄비를 만지지 마라.'],
+      ['She touched the soft blanket.', '그녀는 부드러운 담요를 만졌다.'],
+      ['His hand touched mine.', '그의 손이 내 손에 닿았다.'],
+    ]},
+  ]},
+  { w: 'town', p: 'n.', s: [
+    { m: '마을, 도시', syn: ['village'], ex: [
+      ['I grew up in a small town.', '나는 작은 마을에서 자랐다.'],
+      ['The town has only one school.', '그 마을에는 학교가 하나뿐이다.'],
+      ['Many people left the town.', '많은 사람이 그 마을을 떠났다.'],
+    ]},
+  ]},
+  { w: 'train', p: 'n., v.', s: [
+    { m: '기차, 열차', syn: [], ex: [
+      ['We took the train to Busan.', '우리는 부산행 기차를 탔다.'],
+      ['The train leaves at eight.', '기차는 8시에 떠난다.'],
+    ]},
+    { m: '훈련하다, 훈련시키다', syn: ['practice'], ex: [
+      ['He trains every day for the race.', '그는 경주를 위해 매일 훈련한다.'],
+      ['She trained her dog well.', '그녀는 개를 잘 훈련시켰다.'],
+    ]},
+  ]},
+  { w: 'trash', p: 'n.', s: [
+    { m: '쓰레기', syn: ['garbage'], ex: [
+      ['Please put the trash in the bin.', '쓰레기는 통에 넣어 주세요.'],
+      ['Do not leave trash on the beach.', '해변에 쓰레기를 버리지 마라.'],
+      ['We take out the trash every Monday.', '우리는 매주 월요일에 쓰레기를 내놓는다.'],
+    ]},
+  ]},
+  { w: 'travel', p: 'v., n.', s: [
+    { m: '여행하다; 여행', syn: ['journey', 'trip'], ex: [
+      ['They travel every summer.', '그들은 여름마다 여행한다.'],
+      ['I want to travel around the world.', '나는 세계 일주를 하고 싶다.'],
+      ['Air travel is fast but expensive.', '항공 여행은 빠르지만 비싸다.'],
+    ]},
+  ]},
+  { w: 'tree', p: 'n.', s: [
+    { m: '나무', syn: [], ex: [
+      ['We planted a tree in the garden.', '우리는 정원에 나무를 심었다.'],
+      ['Birds are singing in the tree.', '새들이 나무에서 노래하고 있다.'],
+      ['The old tree fell in the storm.', '그 오래된 나무가 폭풍에 쓰러졌다.'],
+    ]},
+  ]},
+  { w: 'trip', p: 'n.', s: [
+    { m: '여행', syn: ['journey'], ex: [
+      ['We went on a school trip last week.', '우리는 지난주에 수학여행을 갔다.'],
+      ['The trip to Jeju was wonderful.', '제주 여행은 훌륭했다.'],
+      ['She is planning a trip to Europe.', '그녀는 유럽 여행을 계획하고 있다.'],
+    ]},
+  ]},
+  { w: 'true', p: 'adj.', s: [
+    { m: '사실인, 진짜의', syn: ['real'], ex: [
+      ['Is that story true?', '그 이야기가 사실이니?'],
+      ['A true friend helps you in bad times.', '진정한 친구는 힘들 때 도와준다.'],
+      ['His dream came true.', '그의 꿈이 이루어졌다.'],
     ]},
   ]},
 ], 'curriculum');

@@ -1,250 +1,287 @@
 /**
- * 고등학교 2학년 레벨 3 어휘 33개.
+ * 고등학교 2학년 레벨 3 — 수록 38 / 계획 137개.
  *
- * 선정 기준: 고2 모의고사·수능 기출에서 반복되는 어휘와 독해 지문의 핵심 추상 어휘.
- *
- * 뜻이 여러 개인 단어는 뜻마다 예문을 나눠 두었다. 같은 단어를 다시 만날 때마다
- * 다른 뜻·다른 문장이 나오도록 하기 위한 것.
+ * 난이도 층: 고급(고등)
+ * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
+ * 여기에는 그중 뜻과 예문을 적어 둔 것만 들어 있다.
  */
 
 import { defineLevel } from '../define';
 
 export const H2_3 = defineLevel('h2-3', [
-  { w: 'resemble', p: 'v.', s: [
-    { m: '닮다, 비슷하다', syn: ['look like', 'be similar to'], ex: [
-      ['She resembles her mother.', '그녀는 어머니를 닮았다.'],
-      ['This fruit resembles an apple.', '이 과일은 사과와 비슷하다.'],
-      ['The copy closely resembles the original.', '그 복제품은 원본과 매우 비슷하다.'],
+  { w: 'derive', p: 'v.', s: [
+    { m: '얻다, 유래하다', syn: ['obtain', 'come from'], ex: [
+      ['We derive energy from food.', '우리는 음식에서 에너지를 얻는다.'],
+      ['The word derives from Latin.', '그 단어는 라틴어에서 유래한다.'],
+      ['She derives pleasure from teaching.', '그녀는 가르치는 데서 기쁨을 얻는다.'],
     ]},
   ]},
-  { w: 'retain', p: 'v.', s: [
-    { m: '유지하다, 간직하다', syn: ['keep', 'hold on to'], ex: [
-      ['We retain what we practice.', '우리는 연습한 것을 기억에 남긴다.'],
-      ['The soil retains water well.', '그 흙은 물을 잘 머금는다.'],
-      ['She retained her calm throughout.', '그녀는 내내 침착함을 유지했다.'],
+  { w: 'deteriorate', p: 'v.', s: [
+    { m: '악화되다, 나빠지다', syn: ['worsen', 'decline'], ex: [
+      ['His health deteriorated quickly.', '그의 건강이 빠르게 악화되었다.'],
+      ['Relations between them deteriorated.', '그들 사이의 관계가 나빠졌다.'],
+      ['The building deteriorated over the years.', '그 건물은 세월이 흐르며 낡아 갔다.'],
     ]},
   ]},
-  { w: 'reverse', p: 'v., adj.', s: [
-    { m: '뒤집다, 반대로 하다', syn: ['turn around', 'undo'], ex: [
-      ['The court reversed the decision.', '법원은 그 결정을 뒤집었다.'],
-      ['We cannot reverse what happened.', '우리는 일어난 일을 되돌릴 수 없다.'],
-      ['Read the list in reverse order.', '목록을 역순으로 읽어라.'],
+  { w: 'devastate', p: 'v.', s: [
+    { m: '황폐화하다, 큰 충격을 주다', syn: ['destroy', 'ruin'], ex: [
+      ['The flood devastated the village.', '홍수가 그 마을을 황폐화했다.'],
+      ['She was devastated by the news.', '그녀는 그 소식에 큰 충격을 받았다.'],
+      ['War devastated the entire region.', '전쟁이 그 지역 전체를 파괴했다.'],
     ]},
   ]},
-  { w: 'rigid', p: 'adj.', s: [
-    { m: '엄격한, 융통성 없는', syn: ['strict', 'inflexible'], ex: [
-      ['The school has rigid rules.', '그 학교는 엄격한 규칙이 있다.'],
-      ['His thinking is too rigid.', '그의 사고는 너무 경직되어 있다.'],
-    ]},
-    { m: '딱딱한, 뻣뻣한', syn: ['stiff', 'hard'], ex: [
-      ['The frame is made of rigid plastic.', '그 틀은 단단한 플라스틱으로 만들어졌다.'],
-      ['His body went rigid with fear.', '그의 몸은 두려움으로 굳어졌다.'],
+  { w: 'diminish', p: 'v.', s: [
+    { m: '줄어들다, 약해지다', syn: ['decrease', 'lessen'], ex: [
+      ['His interest gradually diminished.', '그의 관심은 점차 줄어들었다.'],
+      ['The pain diminished after a week.', '통증은 일주일 후 약해졌다.'],
+      ['Nothing can diminish her achievement.', '어떤 것도 그녀의 업적을 깎아내릴 수 없다.'],
     ]},
   ]},
-  { w: 'sacrifice', p: 'v., n.', s: [
-    { m: '희생하다; 희생', syn: ['give up', 'surrender'], ex: [
-      ['She sacrificed sleep to study.', '그녀는 공부하려고 잠을 희생했다.'],
-      ['Their sacrifice will be remembered.', '그들의 희생은 기억될 것이다.'],
-      ['He sacrificed his weekend for the team.', '그는 팀을 위해 주말을 희생했다.'],
+  { w: 'discourse', p: 'n.', s: [
+    { m: '담론, 담화', syn: ['discussion', 'dialogue'], ex: [
+      ['Public discourse has changed online.', '공적 담론은 온라인에서 변했다.'],
+      ['The book studies political discourse.', '그 책은 정치 담론을 연구한다.'],
+      ['We need civil discourse, not shouting.', '우리에게는 고함이 아니라 예의 있는 대화가 필요하다.'],
     ]},
   ]},
-  { w: 'scarce', p: 'adj.', s: [
-    { m: '부족한, 드문', syn: ['rare', 'in short supply'], ex: [
-      ['Water is scarce in this region.', '이 지역은 물이 부족하다.'],
-      ['Jobs were scarce that year.', '그해에는 일자리가 드물었다.'],
-      ['Good teachers are scarce here.', '이곳에는 좋은 교사가 드물다.'],
+  { w: 'disperse', p: 'v.', s: [
+    { m: '흩어지다, 해산시키다', syn: ['scatter', 'break up'], ex: [
+      ['The crowd dispersed after the show.', '공연이 끝나자 군중이 흩어졌다.'],
+      ['Wind disperses seeds widely.', '바람은 씨앗을 널리 퍼뜨린다.'],
+      ['Police dispersed the protesters.', '경찰이 시위대를 해산시켰다.'],
     ]},
   ]},
-  { w: 'sequence', p: 'n.', s: [
-    { m: '순서, 연속', syn: ['order', 'series'], ex: [
-      ['Put the pictures in the right sequence.', '그림을 올바른 순서로 놓아라.'],
-      ['The sequence of events is unclear.', '사건의 순서가 분명하지 않다.'],
-      ['He described a sequence of steps.', '그는 일련의 단계를 설명했다.'],
+  { w: 'disrupt', p: 'v.', s: [
+    { m: '방해하다, 지장을 주다', syn: ['interrupt', 'upset'], ex: [
+      ['The storm disrupted traffic.', '폭풍이 교통에 지장을 주었다.'],
+      ['Do not disrupt the class.', '수업을 방해하지 마라.'],
+      ['New technology disrupted the industry.', '새 기술이 그 산업을 뒤흔들었다.'],
     ]},
   ]},
-  { w: 'simultaneously', p: 'adv.', s: [
-    { m: '동시에', syn: ['at the same time'], ex: [
-      ['Both events happened simultaneously.', '두 사건이 동시에 일어났다.'],
-      ['She can read and listen simultaneously.', '그녀는 읽기와 듣기를 동시에 할 수 있다.'],
-      ['The lights went out simultaneously.', '조명이 동시에 꺼졌다.'],
+  { w: 'distinguish', p: 'v.', s: [
+    { m: '구별하다, 식별하다', syn: ['tell apart', 'differentiate'], ex: [
+      ['Can you distinguish the two twins?', '그 쌍둥이를 구별할 수 있니?'],
+      ['It is hard to distinguish fact from opinion.', '사실과 의견을 구별하기 어렵다.'],
+      ['Color helps us distinguish objects.', '색은 우리가 사물을 구별하도록 돕는다.'],
     ]},
   ]},
-  { w: 'stable', p: 'adj.', s: [
-    { m: '안정된', syn: ['steady', 'secure'], ex: [
-      ['Prices have been stable this year.', '올해 물가는 안정적이었다.'],
-      ['He is in stable condition.', '그는 상태가 안정적이다.'],
-      ['We need a stable internet connection.', '우리는 안정적인 인터넷 연결이 필요하다.'],
+  { w: 'distort', p: 'v.', s: [
+    { m: '왜곡하다, 일그러뜨리다', syn: ['twist', 'misrepresent'], ex: [
+      ['The media distorted his words.', '언론이 그의 말을 왜곡했다.'],
+      ['Fear distorts our judgment.', '두려움은 우리의 판단을 왜곡한다.'],
+      ['The mirror distorted her face.', '그 거울은 그녀의 얼굴을 일그러뜨렸다.'],
     ]},
   ]},
-  { w: 'subsequent', p: 'adj.', s: [
-    { m: '그 이후의, 다음의', syn: ['following', 'later'], ex: [
-      ['Subsequent tests confirmed the result.', '이후의 검사가 그 결과를 확인해 주었다.'],
-      ['In subsequent years, sales grew.', '이후 몇 년간 매출이 늘었다.'],
-      ['The subsequent chapter explains why.', '다음 장이 그 이유를 설명한다.'],
+  { w: 'distribute', p: 'v.', s: [
+    { m: '분배하다, 배포하다', syn: ['hand out', 'spread'], ex: [
+      ['They distributed food to the villagers.', '그들은 마을 사람들에게 음식을 나눠 주었다.'],
+      ['Wealth is not distributed equally.', '부는 균등하게 분배되지 않는다.'],
+      ['The teacher distributed the handouts.', '선생님이 유인물을 나눠 주셨다.'],
     ]},
   ]},
-  { w: 'substantial', p: 'adj.', s: [
-    { m: '상당한, 실질적인', syn: ['considerable', 'large'], ex: [
-      ['They made a substantial profit.', '그들은 상당한 이익을 냈다.'],
-      ['There is substantial evidence for it.', '그것에 대한 상당한 증거가 있다.'],
-      ['She made substantial progress.', '그녀는 상당한 진전을 이뤘다.'],
+  { w: 'diverge', p: 'v.', s: [
+    { m: '갈라지다, 달라지다', syn: ['differ', 'branch off'], ex: [
+      ['Our opinions diverge on this point.', '이 점에서 우리 의견이 갈린다.'],
+      ['The road diverges near the river.', '그 길은 강 근처에서 갈라진다.'],
+      ['Their careers diverged after college.', '그들의 진로는 대학 후 갈라졌다.'],
     ]},
   ]},
-  { w: 'sustain', p: 'v.', s: [
-    { m: '지속하다, 유지하다', syn: ['maintain', 'keep up'], ex: [
-      ['He could not sustain the pace.', '그는 그 속도를 유지할 수 없었다.'],
-      ['The forest sustains many species.', '그 숲은 많은 종을 지탱한다.'],
-      ['Can we sustain this growth?', '우리가 이 성장을 지속할 수 있을까?'],
+  { w: 'diverse', p: 'adj.', s: [
+    { m: '다양한', syn: ['varied', 'different'], ex: [
+      ['Our class has diverse interests.', '우리 반은 다양한 관심사를 가지고 있다.'],
+      ['The city has a diverse population.', '그 도시는 다양한 인구를 가지고 있다.'],
+      ['We read texts from diverse cultures.', '우리는 다양한 문화의 글을 읽는다.'],
     ]},
   ]},
-  { w: 'thrive', p: 'v.', s: [
-    { m: '번영하다, 잘 자라다', syn: ['flourish', 'prosper'], ex: [
-      ['These plants thrive in sunlight.', '이 식물들은 햇빛에서 잘 자란다.'],
-      ['The business thrived for ten years.', '그 사업은 10년간 번창했다.'],
-      ['Some children thrive under pressure.', '어떤 아이들은 압박 속에서 더 잘한다.'],
+  { w: 'dominate', p: 'v.', s: [
+    { m: '지배하다, 우세하다', syn: ['control', 'rule'], ex: [
+      ['One team dominated the match.', '한 팀이 경기를 지배했다.'],
+      ['Tall buildings dominate the skyline.', '높은 건물들이 도시 경관을 압도한다.'],
+      ['A few companies dominate the market.', '몇몇 회사가 시장을 지배한다.'],
     ]},
   ]},
-  { w: 'trigger', p: 'v., n.', s: [
-    { m: '촉발하다, 유발하다', syn: ['set off', 'cause'], ex: [
-      ['The news triggered a debate.', '그 소식은 논쟁을 촉발했다.'],
-      ['Dust can trigger allergies.', '먼지는 알레르기를 유발할 수 있다.'],
-      ['What triggered the argument?', '무엇이 그 말다툼을 촉발했니?'],
+  { w: 'efficient', p: 'adj.', s: [
+    { m: '효율적인', syn: ['effective', 'productive'], ex: [
+      ['This engine is more efficient.', '이 엔진이 더 효율적이다.'],
+      ['She is an efficient worker.', '그녀는 효율적으로 일하는 사람이다.'],
+      ['We need a more efficient system.', '우리는 더 효율적인 체계가 필요하다.'],
     ]},
   ]},
-  { w: 'undergo', p: 'v.', s: [
-    { m: '겪다, 받다', syn: ['go through', 'experience'], ex: [
-      ['The city underwent great change.', '그 도시는 큰 변화를 겪었다.'],
-      ['He underwent surgery last week.', '그는 지난주에 수술을 받았다.'],
-      ['Materials undergo testing before sale.', '재료는 판매 전에 시험을 거친다.'],
+  { w: 'elaborate', p: 'adj., v.', s: [
+    { m: '정교한, 공들인', syn: ['detailed', 'complicated'], ex: [
+      ['They made an elaborate plan.', '그들은 정교한 계획을 세웠다.'],
+      ['The costume was very elaborate.', '그 의상은 매우 공들여 만든 것이었다.'],
+    ]},
+    { m: '자세히 설명하다', syn: ['expand on', 'explain further'], ex: [
+      ['Could you elaborate on that point?', '그 점을 자세히 설명해 주시겠어요?'],
+      ['He refused to elaborate.', '그는 더 설명하기를 거부했다.'],
     ]},
   ]},
-  { w: 'undermine', p: 'v.', s: [
-    { m: '약화시키다, 훼손하다', syn: ['weaken', 'damage'], ex: [
-      ['Constant criticism undermines confidence.', '끊임없는 비판은 자신감을 약화시킨다.'],
-      ['The scandal undermined public trust.', '그 추문은 대중의 신뢰를 훼손했다.'],
-      ['Lack of sleep undermines your health.', '수면 부족은 건강을 해친다.'],
+  { w: 'eliminate', p: 'v.', s: [
+    { m: '제거하다, 없애다', syn: ['remove', 'get rid of'], ex: [
+      ['We must eliminate careless errors.', '우리는 부주의한 실수를 없애야 한다.'],
+      ['The new rule eliminated confusion.', '새 규칙이 혼란을 없앴다.'],
+      ['They were eliminated in the first round.', '그들은 1회전에서 탈락했다.'],
     ]},
   ]},
-  { w: 'utilize', p: 'v.', s: [
-    { m: '활용하다, 이용하다', syn: ['use', 'make use of'], ex: [
-      ['We should utilize every resource.', '우리는 모든 자원을 활용해야 한다.'],
-      ['The app utilizes your location.', '그 앱은 너의 위치 정보를 이용한다.'],
-      ['Farmers utilize modern machines.', '농부들은 현대적 기계를 활용한다.'],
+  { w: 'embrace', p: 'v.', s: [
+    { m: '받아들이다, 수용하다', syn: ['accept', 'welcome'], ex: [
+      ['We should embrace new ideas.', '우리는 새로운 생각을 받아들여야 한다.'],
+      ['The company embraced digital tools.', '그 회사는 디지털 도구를 적극 수용했다.'],
+      ['She embraced the challenge happily.', '그녀는 그 도전을 기꺼이 받아들였다.'],
     ]},
   ]},
-  { w: 'valid', p: 'adj.', s: [
-    { m: '타당한, 유효한', syn: ['sound', 'legitimate'], ex: [
-      ['That is a valid point.', '그것은 타당한 지적이다.'],
-      ['The ticket is valid for one month.', '그 표는 한 달간 유효하다.'],
-      ['His excuse was not valid.', '그의 변명은 타당하지 않았다.'],
+  { w: 'emerge', p: 'v.', s: [
+    { m: '나타나다, 드러나다', syn: ['appear', 'come out'], ex: [
+      ['A new problem emerged.', '새로운 문제가 나타났다.'],
+      ['The sun emerged from behind the clouds.', '해가 구름 뒤에서 나왔다.'],
+      ['New facts emerged during the trial.', '재판 중에 새로운 사실이 드러났다.'],
     ]},
   ]},
-  { w: 'vary', p: 'v.', s: [
-    { m: '다르다, 다양하다', syn: ['differ', 'change'], ex: [
-      ['Prices vary from shop to shop.', '가격은 가게마다 다르다.'],
-      ['Opinions vary widely on this issue.', '이 문제에 대한 의견은 매우 다양하다.'],
-      ['The weather varies by season.', '날씨는 계절에 따라 다르다.'],
+  { w: 'empirical', p: 'adj.', s: [
+    { m: '경험적인, 실증적인', syn: ['observed', 'evidence-based'], ex: [
+      ['We need empirical evidence.', '우리는 실증적 증거가 필요하다.'],
+      ['The claim lacks empirical support.', '그 주장은 실증적 근거가 부족하다.'],
+      ['Empirical studies confirmed the theory.', '실증 연구가 그 이론을 확인했다.'],
     ]},
   ]},
-  { w: 'vital', p: 'adj.', s: [
-    { m: '필수적인, 매우 중요한', syn: ['essential', 'crucial'], ex: [
-      ['Sleep is vital for health.', '잠은 건강에 필수적이다.'],
-      ['She played a vital role in the team.', '그녀는 팀에서 매우 중요한 역할을 했다.'],
-      ['Clean water is vital to survival.', '깨끗한 물은 생존에 필수적이다.'],
+  { w: 'enact', p: 'v.', s: [
+    { m: '제정하다, 시행하다', syn: ['pass', 'put into law'], ex: [
+      ['The government enacted a new law.', '정부가 새 법을 제정했다.'],
+      ['The rule was enacted last year.', '그 규정은 작년에 시행되었다.'],
+      ['They enacted reforms step by step.', '그들은 개혁을 단계적으로 시행했다.'],
     ]},
   ]},
-  { w: 'widespread', p: 'adj.', s: [
-    { m: '널리 퍼진, 광범위한', syn: ['common', 'extensive'], ex: [
-      ['The belief is widespread.', '그 믿음은 널리 퍼져 있다.'],
-      ['There was widespread damage after the storm.', '폭풍 후 광범위한 피해가 있었다.'],
-      ['Smartphone use is widespread among teens.', '스마트폰 사용은 십 대 사이에 널리 퍼져 있다.'],
+  { w: 'endeavor', p: 'n., v.', s: [
+    { m: '노력; 노력하다', syn: ['effort', 'strive'], ex: [
+      ['Her endeavor finally paid off.', '그녀의 노력이 마침내 결실을 맺었다.'],
+      ['We endeavor to improve every year.', '우리는 매년 나아지려고 노력한다.'],
+      ['It was a worthwhile endeavor.', '그것은 가치 있는 노력이었다.'],
     ]},
   ]},
-  { w: 'be attributed to', p: 'phr.', s: [
-    { m: '~의 탓으로 여겨지다', syn: ['be caused by'], ex: [
-      ['The growth is attributed to new policy.', '그 성장은 새 정책 덕분으로 여겨진다.'],
-      ['The delay was attributed to heavy snow.', '그 지연은 폭설 탓으로 여겨졌다.'],
-      ['His success is attributed to persistence.', '그의 성공은 끈기 덕분으로 여겨진다.'],
+  { w: 'endure', p: 'v.', s: [
+    { m: '견디다, 참다', syn: ['bear', 'put up with'], ex: [
+      ['They endured great hardship.', '그들은 큰 고난을 견뎠다.'],
+      ['I cannot endure this noise.', '나는 이 소음을 참을 수 없다.'],
+    ]},
+    { m: '지속되다, 오래가다', syn: ['last', 'survive'], ex: [
+      ['Their friendship endured for decades.', '그들의 우정은 수십 년간 지속되었다.'],
+      ['Few buildings endure that long.', '그렇게 오래 남는 건물은 드물다.'],
     ]},
   ]},
-  { w: 'be exposed to', p: 'phr.', s: [
-    { m: '~에 노출되다', syn: ['come into contact with'], ex: [
-      ['Children are exposed to too many ads.', '아이들은 너무 많은 광고에 노출된다.'],
-      ['Workers were exposed to loud noise.', '노동자들은 큰 소음에 노출되었다.'],
-      ['Being exposed to English daily helps a lot.', '매일 영어에 노출되는 것은 큰 도움이 된다.'],
+  { w: 'enhance', p: 'v.', s: [
+    { m: '향상시키다, 높이다', syn: ['improve', 'boost'], ex: [
+      ['Music can enhance your mood.', '음악은 기분을 좋게 할 수 있다.'],
+      ['The new lens enhances image quality.', '새 렌즈는 화질을 향상시킨다.'],
+      ['Training enhanced their performance.', '훈련이 그들의 성과를 높였다.'],
     ]},
   ]},
-  { w: 'give rise to', p: 'phr.', s: [
-    { m: '~을 일으키다, 낳다', syn: ['cause', 'produce'], ex: [
-      ['The policy gave rise to protests.', '그 정책은 시위를 일으켰다.'],
-      ['New technology gave rise to new jobs.', '새 기술이 새로운 일자리를 낳았다.'],
-      ['His remark gave rise to confusion.', '그의 발언은 혼란을 낳았다.'],
+  { w: 'ensure', p: 'v.', s: [
+    { m: '확실하게 하다, 보장하다', syn: ['make sure', 'guarantee'], ex: [
+      ['Please ensure the door is locked.', '문이 잠겼는지 확인해 주세요.'],
+      ['These rules ensure fair play.', '이 규칙들은 공정한 경기를 보장한다.'],
+      ['We must ensure everyone is safe.', '우리는 모두가 안전한지 확실히 해야 한다.'],
     ]},
   ]},
-  { w: 'in the long run', p: 'phr.', s: [
-    { m: '장기적으로 보면', syn: ['eventually', 'over time'], ex: [
-      ['In the long run, honesty pays.', '장기적으로 보면 정직이 이득이다.'],
-      ['This costs more in the long run.', '장기적으로는 이것이 더 비싸다.'],
-      ['Exercise helps in the long run.', '운동은 장기적으로 도움이 된다.'],
+  { w: 'entail', p: 'v.', s: [
+    { m: '수반하다, 필요로 하다', syn: ['involve', 'require'], ex: [
+      ['This job entails long hours.', '이 일은 긴 근무 시간을 수반한다.'],
+      ['Freedom entails responsibility.', '자유는 책임을 수반한다.'],
+      ['What does the process entail?', '그 과정에는 무엇이 따르나요?'],
     ]},
   ]},
-  { w: 'take into account', p: 'phr.', s: [
-    { m: '고려하다, 참작하다', syn: ['consider', 'allow for'], ex: [
-      ['Take the weather into account.', '날씨를 고려해라.'],
-      ['We took her age into account.', '우리는 그녀의 나이를 참작했다.'],
-      ['You must take costs into account.', '너는 비용을 고려해야 한다.'],
+  { w: 'evaluate', p: 'v.', s: [
+    { m: '평가하다', syn: ['assess', 'judge'], ex: [
+      ['Teachers evaluate our progress.', '교사들이 우리의 진전을 평가한다.'],
+      ['We need to evaluate the results.', '우리는 결과를 평가해야 한다.'],
+      ['The program was evaluated as successful.', '그 프로그램은 성공적이라고 평가되었다.'],
     ]},
   ]},
-  { w: 'to some extent', p: 'phr.', s: [
-    { m: '어느 정도는', syn: ['partly', 'in part'], ex: [
-      ['To some extent, I agree with you.', '어느 정도는 네 말에 동의한다.'],
-      ['The rumor is true to some extent.', '그 소문은 어느 정도 사실이다.'],
-      ['Success depends on luck to some extent.', '성공은 어느 정도 운에 달려 있다.'],
+  { w: 'evoke', p: 'v.', s: [
+    { m: '불러일으키다, 환기하다', syn: ['bring out', 'call up'], ex: [
+      ['The song evokes childhood memories.', '그 노래는 어린 시절 기억을 불러일으킨다.'],
+      ['His speech evoked strong emotion.', '그의 연설은 강한 감정을 불러일으켰다.'],
+      ['The smell evoked her grandmother’s kitchen.', '그 냄새는 할머니의 부엌을 떠올리게 했다.'],
     ]},
   ]},
-  { w: 'abstract', p: 'adj.', s: [
-    { m: '추상적인', syn: ['theoretical', 'conceptual'], ex: [
-      ['Justice is an abstract idea.', '정의는 추상적인 개념이다.'],
-      ['Young children struggle with abstract terms.', '어린아이들은 추상적인 용어를 어려워한다.'],
-      ['His painting is completely abstract.', '그의 그림은 완전히 추상적이다.'],
+  { w: 'evolve', p: 'v.', s: [
+    { m: '진화하다, 발전하다', syn: ['develop', 'progress'], ex: [
+      ['Birds evolved from dinosaurs.', '새는 공룡으로부터 진화했다.'],
+      ['The language has evolved over time.', '그 언어는 시간이 지나며 변화해 왔다.'],
+      ['Our plan evolved into something bigger.', '우리 계획은 더 큰 것으로 발전했다.'],
     ]},
   ]},
-  { w: 'accommodate', p: 'v.', s: [
-    { m: '수용하다, 공간을 제공하다', syn: ['hold', 'house'], ex: [
-      ['The hall accommodates 300 people.', '그 홀은 300명을 수용한다.'],
-      ['The hotel accommodated us for a night.', '그 호텔은 우리를 하룻밤 재워 주었다.'],
-    ]},
-    { m: '맞추다, 편의를 봐주다', syn: ['adapt to', 'allow for'], ex: [
-      ['We accommodated her schedule.', '우리는 그녀의 일정에 맞춰 주었다.'],
-      ['The system accommodates different needs.', '그 체계는 다양한 요구를 수용한다.'],
+  { w: 'exaggerate', p: 'v.', s: [
+    { m: '과장하다', syn: ['overstate', 'blow up'], ex: [
+      ['He tends to exaggerate his stories.', '그는 이야기를 과장하는 경향이 있다.'],
+      ['The danger was exaggerated by the media.', '그 위험은 언론에 의해 과장되었다.'],
+      ['I am not exaggerating at all.', '나는 전혀 과장하고 있지 않다.'],
     ]},
   ]},
-  { w: 'component', p: 'n.', s: [
-    { m: '구성 요소, 부품', syn: ['part', 'element'], ex: [
-      ['Each component must be tested.', '각 부품은 검사되어야 한다.'],
-      ['Trust is a key component of teamwork.', '신뢰는 협동의 핵심 요소이다.'],
-      ['The engine has many small components.', '그 엔진은 작은 부품이 많다.'],
+  { w: 'exceed', p: 'v.', s: [
+    { m: '초과하다, 넘어서다', syn: ['go beyond', 'surpass'], ex: [
+      ['Do not exceed the speed limit.', '제한 속도를 초과하지 마라.'],
+      ['The results exceeded our expectations.', '결과는 우리 기대를 넘어섰다.'],
+      ['Costs exceeded the budget.', '비용이 예산을 초과했다.'],
     ]},
   ]},
-  { w: 'implication', p: 'n.', s: [
-    { m: '함의, 영향', syn: ['consequence', 'significance'], ex: [
-      ['The findings have serious implications.', '그 발견은 심각한 함의를 지닌다.'],
-      ['Consider the implications before deciding.', '결정하기 전에 그 영향을 생각해 보아라.'],
-      ['He understood the implication of her silence.', '그는 그녀의 침묵이 뜻하는 바를 이해했다.'],
+  { w: 'exclude', p: 'v.', s: [
+    { m: '제외하다, 배제하다', syn: ['leave out', 'rule out'], ex: [
+      ['The price excludes tax.', '그 가격은 세금을 제외한 것이다.'],
+      ['They excluded him from the group.', '그들은 그를 그룹에서 배제했다.'],
+      ['We cannot exclude that possibility.', '우리는 그 가능성을 배제할 수 없다.'],
     ]},
   ]},
-  { w: 'proceed', p: 'v.', s: [
-    { m: '진행하다, 계속하다', syn: ['continue', 'go ahead'], ex: [
-      ['Please proceed with your presentation.', '발표를 계속해 주세요.'],
-      ['The work proceeded without delay.', '작업은 지체 없이 진행되었다.'],
-      ['We proceeded to the next question.', '우리는 다음 질문으로 넘어갔다.'],
+  { w: 'exert', p: 'v.', s: [
+    { m: '행사하다, 발휘하다', syn: ['apply', 'use'], ex: [
+      ['He exerts great influence on the team.', '그는 팀에 큰 영향력을 행사한다.'],
+      ['She exerted all her strength.', '그녀는 온 힘을 다했다.'],
+      ['Parents exert pressure without knowing.', '부모는 모르는 사이에 압력을 행사한다.'],
     ]},
   ]},
-  { w: 'regardless of', p: 'phr.', s: [
-    { m: '~과 관계없이', syn: ['no matter', 'in spite of'], ex: [
-      ['Everyone is welcome regardless of age.', '나이와 관계없이 누구나 환영이다.'],
-      ['We will go regardless of the weather.', '날씨와 상관없이 우리는 갈 것이다.'],
-      ['She spoke up regardless of the risk.', '그녀는 위험과 관계없이 목소리를 냈다.'],
+  { w: 'explicit', p: 'adj.', s: [
+    { m: '명시적인, 분명한', syn: ['clear', 'direct'], ex: [
+      ['She gave explicit instructions.', '그녀는 명시적인 지시를 내렸다.'],
+      ['The rule is explicit about this.', '그 규칙은 이에 대해 분명하다.'],
+      ['He made his position explicit.', '그는 자기 입장을 분명히 밝혔다.'],
+    ]},
+  ]},
+  { w: 'exploit', p: 'v.', s: [
+    { m: '이용하다, 활용하다', syn: ['make use of', 'utilize'], ex: [
+      ['We should exploit renewable energy.', '우리는 재생 에너지를 활용해야 한다.'],
+      ['He exploited every opportunity.', '그는 모든 기회를 활용했다.'],
+    ]},
+    { m: '착취하다', syn: ['take advantage of'], ex: [
+      ['Some companies exploit their workers.', '어떤 회사들은 노동자를 착취한다.'],
+      ['Children were exploited in factories.', '아이들이 공장에서 착취당했다.'],
+    ]},
+  ]},
+  { w: 'external', p: 'adj.', s: [
+    { m: '외부의, 외적인', syn: ['outside', 'outer'], ex: [
+      ['External factors affected the result.', '외부 요인이 결과에 영향을 미쳤다.'],
+      ['The external walls need painting.', '외벽은 페인트칠이 필요하다.'],
+      ['We hired an external expert.', '우리는 외부 전문가를 고용했다.'],
+    ]},
+  ]},
+  { w: 'facilitate', p: 'v.', s: [
+    { m: '촉진하다, 쉽게 하다', syn: ['ease', 'help'], ex: [
+      ['Technology facilitates communication.', '기술은 의사소통을 쉽게 만든다.'],
+      ['The teacher facilitated the discussion.', '선생님이 토론을 이끌어 주셨다.'],
+      ['Good roads facilitate trade.', '좋은 도로는 교역을 촉진한다.'],
+    ]},
+  ]},
+  { w: 'facility', p: 'n.', s: [
+    { m: '시설', syn: ['building', 'amenity'], ex: [
+      ['The school has good sports facilities.', '그 학교는 좋은 체육 시설을 갖추고 있다.'],
+      ['The facility opens at seven.', '그 시설은 7시에 문을 연다.'],
+      ['Medical facilities are limited here.', '이곳은 의료 시설이 부족하다.'],
+    ]},
+  ]},
+  { w: 'feasible', p: 'adj.', s: [
+    { m: '실현 가능한', syn: ['possible', 'workable'], ex: [
+      ['Is this plan feasible?', '이 계획이 실현 가능한가?'],
+      ['It is not feasible in one week.', '일주일 안에는 실현 불가능하다.'],
+      ['They chose the most feasible option.', '그들은 가장 실현 가능한 선택지를 골랐다.'],
     ]},
   ]},
 ], 'csat');

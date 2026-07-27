@@ -7,8 +7,8 @@ import { LEVEL_SHORT, LevelId } from '../src/types';
 import { LevelPicker } from '../src/components/LevelPicker';
 import { colors, font, radius, spacing } from '../src/theme';
 
-const GOALS = [10, 12, 15, 18, 20];
-const RATIOS = [50, 60, 70, 80];
+const NEW_PER_DAY = [5, 8, 10, 15, 20];
+const REVIEW_PER_DAY = [5, 10, 15, 20, 30];
 const ROUNDS = [
   { value: 2, label: '2회 (가볍게)' },
   { value: 3, label: '3회 (표준)' },
@@ -107,16 +107,20 @@ export default function ParentSettings() {
           <Card style={{ marginTop: spacing.md }}>
             <H3>{profile.name} 학습 설정</H3>
 
-            <Text style={[s.label, { marginTop: spacing.lg }]}>하루 목표 단어 수</Text>
+            <Text style={[s.label, { marginTop: spacing.lg }]}>하루 새 단어 수</Text>
+            <Muted style={{ marginTop: spacing.xs }}>
+              진도를 정하는 값입니다. 하루 {profile.settings.newPerDay}개면 전체 3,286개를
+              도는 데 약 {Math.round(3286 / profile.settings.newPerDay / 30)}개월 걸립니다.
+            </Muted>
             <Row style={{ gap: spacing.sm, marginTop: spacing.sm, flexWrap: 'wrap' }}>
-              {GOALS.map((g) => (
+              {NEW_PER_DAY.map((g) => (
                 <Pressable
                   key={g}
-                  onPress={() => updateSettings(profile.id, { dailyGoal: g })}
-                  style={[s.chip, profile.settings.dailyGoal === g && s.chipOn]}
+                  onPress={() => updateSettings(profile.id, { newPerDay: g })}
+                  style={[s.chip, profile.settings.newPerDay === g && s.chipOn]}
                   accessibilityRole="button"
                 >
-                  <Text style={[s.chipText, profile.settings.dailyGoal === g && s.chipTextOn]}>
+                  <Text style={[s.chipText, profile.settings.newPerDay === g && s.chipTextOn]}>
                     {g}개
                   </Text>
                 </Pressable>
@@ -125,10 +129,19 @@ export default function ParentSettings() {
 
             <Text style={[s.label, { marginTop: spacing.lg }]}>학습 강도</Text>
             <Muted style={{ marginTop: spacing.xs }}>
-              한 단어를 한 번에 몇 번 만날지 정합니다. 3회면 뜻 고르기 → 문장 속 활용 →
-              직접 쓰기를 모두 거칩니다. 단어 {profile.settings.dailyGoal}개 ×{' '}
-              {profile.settings.rounds}회 = {profile.settings.dailyGoal * profile.settings.rounds}문제,
-              약 {Math.round((profile.settings.dailyGoal * profile.settings.rounds * 10) / 60)}분 걸립니다.
+              한 단어를 한 번에 몇 번 만날지 정합니다. 3회면 문장 속에서 알아보기 →
+              뜻 구별하기 → 직접 쓰기를 모두 거칩니다. 하루{' '}
+              {profile.settings.newPerDay + profile.settings.reviewPerDay}단어 ×{' '}
+              {profile.settings.rounds}회 ={' '}
+              {(profile.settings.newPerDay + profile.settings.reviewPerDay) * profile.settings.rounds}문제,
+              약{' '}
+              {Math.round(
+                ((profile.settings.newPerDay + profile.settings.reviewPerDay) *
+                  profile.settings.rounds *
+                  10) /
+                  60,
+              )}
+              분 걸립니다.
             </Muted>
             <Row style={{ gap: spacing.sm, marginTop: spacing.sm, flexWrap: 'wrap' }}>
               {ROUNDS.map((r) => (
@@ -145,20 +158,21 @@ export default function ParentSettings() {
               ))}
             </Row>
 
-            <Text style={[s.label, { marginTop: spacing.lg }]}>복습 비중</Text>
+            <Text style={[s.label, { marginTop: spacing.lg }]}>하루 복습 단어 수</Text>
             <Muted style={{ marginTop: spacing.xs }}>
-              높을수록 틀렸던 단어를 더 많이 반복하고, 새 단어는 천천히 나갑니다.
+              새 단어 위에 얹히는 복습의 상한입니다. 복습이 밀리면 오래 밀린 것과
+              많이 틀린 것부터 채웁니다. 늘리면 덜 잊지만 하루가 길어집니다.
             </Muted>
             <Row style={{ gap: spacing.sm, marginTop: spacing.sm, flexWrap: 'wrap' }}>
-              {RATIOS.map((r) => (
+              {REVIEW_PER_DAY.map((r) => (
                 <Pressable
                   key={r}
-                  onPress={() => updateSettings(profile.id, { reviewRatio: r })}
-                  style={[s.chip, profile.settings.reviewRatio === r && s.chipOn]}
+                  onPress={() => updateSettings(profile.id, { reviewPerDay: r })}
+                  style={[s.chip, profile.settings.reviewPerDay === r && s.chipOn]}
                   accessibilityRole="button"
                 >
-                  <Text style={[s.chipText, profile.settings.reviewRatio === r && s.chipTextOn]}>
-                    {r}%
+                  <Text style={[s.chipText, profile.settings.reviewPerDay === r && s.chipTextOn]}>
+                    {r}개
                   </Text>
                 </Pressable>
               ))}

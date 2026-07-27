@@ -3,6 +3,7 @@ import { Linking, Pressable, StyleSheet, Text, TextInput, View } from 'react-nat
 import { Body, Card, Chip, EmptyState, H3, Muted, ProgressBar, Row, Screen } from '../src/components/ui';
 import { useApp } from '../src/store/AppProvider';
 import { entriesOf } from '../src/data';
+import { PLAN_COUNT } from '../src/data/plan';
 import { meaningLine, videoUrl } from '../src/data/entry';
 import { isMastered } from '../src/srs/scheduler';
 import { LevelPicker } from '../src/components/LevelPicker';
@@ -55,6 +56,12 @@ export default function Wordbook() {
         <View style={{ marginTop: spacing.md }}>
           <ProgressBar value={entries.length ? masteredCount / entries.length : 0} color={colors.accent} />
         </View>
+        {entries.length < PLAN_COUNT[level] ? (
+          <Muted style={{ marginTop: spacing.sm }}>
+            이 레벨은 교육부 기본 어휘 목록 기준 {PLAN_COUNT[level]}개가 배정돼 있고, 그중{' '}
+            {entries.length}개가 뜻·예문까지 준비돼 있어요. 나머지는 준비되는 대로 채워집니다.
+          </Muted>
+        ) : null}
       </Card>
 
       <TextInput

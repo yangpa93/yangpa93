@@ -32,8 +32,8 @@ export default function Home() {
       entries: entriesOf(profile.level),
       cards: data.cards,
       level: profile.level,
-      goal: profile.settings.dailyGoal,
-      reviewRatio: profile.settings.reviewRatio,
+      newPerDay: profile.settings.newPerDay,
+      reviewPerDay: profile.settings.reviewPerDay,
     });
   }, [profile, data.cards]);
 
@@ -50,11 +50,14 @@ export default function Home() {
     [data.days, today],
   );
 
-  const reviewCount = session.filter((i) => i.mode === 'review').length;
-  const newCount = session.filter((i) => i.mode === 'new').length;
+  // 다의어는 문항이 여럿이라 단어 수로 센다.
+  const reviewCount = new Set(session.filter((i) => i.mode === 'review').map((i) => i.entry.id)).size;
+  const newCount = new Set(session.filter((i) => i.mode === 'new').map((i) => i.entry.id)).size;
 
   const doneToday = day?.studied ?? 0;
-  const goal = profile?.settings.dailyGoal ?? 15;
+  // 오늘 뽑힌 단어 수가 곧 오늘의 목표다.
+  const plannedWords = new Set(session.map((i) => i.entry.id)).size;
+  const goal = day?.goal ?? plannedWords;
   const finished = day?.completed ?? false;
 
   // 화면에 돌아올 때마다 부모 알림을 최신 상태로 다시 예약한다.

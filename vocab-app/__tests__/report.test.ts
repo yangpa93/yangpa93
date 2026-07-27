@@ -13,9 +13,9 @@ function makeProfile(over: Partial<Profile> = {}): Profile {
     avatar: '🦊',
     level: 'm1-1',
     settings: {
-      dailyGoal: 15,
+      newPerDay: 10,
+      reviewPerDay: 10,
       rounds: 3,
-      reviewRatio: 70,
       showTranslation: true,
       ttsEnabled: true,
       hapticsEnabled: true,
@@ -187,12 +187,12 @@ describe('levelProgress / nextLevel', () => {
   });
 
   it('학년의 마지막 레벨을 끝내면 다음 학년으로 넘어간다', () => {
-    expect(nextLevel('m1-3')).toBe('m2-1');
-    expect(nextLevel('m3-3')).toBe('h1-1');
+    expect(nextLevel('m1-4')).toBe('m2-1');
+    expect(nextLevel('m3-4')).toBe('h1-1');
   });
 
   it('고3 마지막 레벨이 끝이다', () => {
-    expect(nextLevel('h3-3')).toBeNull();
+    expect(nextLevel('h3-4')).toBeNull();
   });
 });
 

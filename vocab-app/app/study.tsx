@@ -35,8 +35,8 @@ export default function Study() {
       entries: entriesOf(profile.level),
       cards: data.cards,
       level: profile.level,
-      goal: profile.settings.dailyGoal,
-      reviewRatio: profile.settings.reviewRatio,
+      newPerDay: profile.settings.newPerDay,
+      reviewPerDay: profile.settings.reviewPerDay,
     });
     return buildRounds(words, profile.settings.rounds);
   });

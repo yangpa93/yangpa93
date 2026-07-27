@@ -29,7 +29,7 @@ export const GRADE_SHORT: Record<GradeId, string> = {
 };
 
 /** 한 학년을 몇 단계로 쪼갤지. */
-export const STEPS = [1, 2, 3] as const;
+export const STEPS = [1, 2, 3, 4] as const;
 export type Step = (typeof STEPS)[number];
 
 /**
@@ -37,8 +37,11 @@ export type Step = (typeof STEPS)[number];
  *
  * 학년 하나를 통째로 한 레벨로 두면, 단어를 늘릴수록 레벨 시험이 감당할 수
  * 없이 길어진다(시험은 그 레벨 단어를 하나도 빠짐없이 맞혀야 통과한다).
- * 그래서 학년을 3단계로 쪼갠다. 레벨당 150개 안팎이면 시험이 30분 선에서
- * 유지되고, 보상 요청 기회도 학년당 세 번으로 늘어난다.
+ * 그래서 학년을 4단계로 쪼갠다.
+ *
+ * 교육부 기본 어휘 목록 3,043개에 교과서 빈출 어휘를 더한 3,286개를 24레벨로
+ * 나누면 레벨당 137개. 하루 새 단어 10개면 한 레벨에 2주 남짓이고, 24레벨을
+ * 다 돌면 대략 1년이 된다. 레벨 시험은 160문항 안팎으로 30분 선을 지킨다.
  */
 export type LevelId = `${GradeId}-${Step}`;
 
@@ -190,7 +193,7 @@ export const STAGE_LABEL: Record<Stage, string> = {
 export interface DailyRecord {
   /** yyyy-mm-dd (기기 로컬 기준) */
   date: string;
-  /** 목표 문항 수 */
+  /** 그날 계획했던 단어 수 (새 단어 + 복습) */
   goal: number;
   /** 실제로 학습한 단어 수 (중복 제외) */
   studied: number;
@@ -230,8 +233,20 @@ export interface RewardRequest {
 /* ------------------------------------------------------------------ */
 
 export interface ProfileSettings {
-  /** 하루 목표 단어 수 (10~20) */
-  dailyGoal: number;
+  /**
+   * 하루에 새로 만날 단어 수 (5~20).
+   *
+   * 진도를 정하는 것은 이 값이다. 10개면 3,286개를 다 도는 데 대략 1년.
+   * 복습은 여기에 얹히므로 실제로 푸는 단어는 이보다 많다.
+   */
+  newPerDay: number;
+  /**
+   * 하루에 복습할 단어 수 상한 (0~30).
+   *
+   * 복습이 밀리면 급한 것(오래 밀린 것·많이 틀린 것)부터 채운다.
+   * 새 단어 10 + 복습 10 = 하루 20단어면 3라운드 기준 13분쯤 걸린다.
+   */
+  reviewPerDay: number;
   /**
    * 한 단어를 한 세션에서 몇 번 만날지 (2~4).
    *
@@ -239,8 +254,6 @@ export interface ProfileSettings {
    * 60문제로 대략 10분 분량이 된다.
    */
   rounds: number;
-  /** 복습 비중(%). 세션에서 복습 단어가 차지하는 비율 상한. */
-  reviewRatio: number;
   /**
    * 문제를 풀 때 예문 해석을 미리 보여줄지.
    *

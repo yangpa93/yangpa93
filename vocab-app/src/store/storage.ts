@@ -8,16 +8,22 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AppState, LevelId, ProfileData } from '../types';
 import { LEGACY_ID_WORD } from './legacy-ids';
-import { ALL_ENTRIES } from '../data';
 
 const ROOT_KEY = 'urivocab:root:v1';
 const DATA_KEY = (profileId: string) => `urivocab:data:v1:${profileId}`;
 
-/** 2: 학년을 레벨 3개로 쪼개고 단어 id를 표제어 기반으로 바꿈 */
-export const STATE_VERSION = 2;
+/**
+ * 저장 포맷 판.
+ *  1 → 2  학년을 레벨 3개로 쪼개고 단어 id를 표제어 기반으로 바꿈
+ *  2 → 3  교육부 기본 어휘 목록 기준으로 24레벨 재편, id에서 레벨을 뗌,
+ *         하루 목표를 '새 단어 / 복습' 두 값으로 분리
+ */
+export const STATE_VERSION = 3;
 
-/** 하루에 새로 만날 단어 수 기본값. */
-export const DEFAULT_DAILY_GOAL = 10;
+/** 하루에 새로 만날 단어 수 기본값. 10개면 3,286개를 약 1년에 돈다. */
+export const DEFAULT_NEW_PER_DAY = 10;
+/** 하루 복습 상한 기본값. 새 단어 10 + 복습 10 = 3라운드 기준 13분쯤. */
+export const DEFAULT_REVIEW_PER_DAY = 10;
 
 export function emptyState(): AppState {
   return {
@@ -101,27 +107,33 @@ export async function removeProfileData(profileId: string): Promise<void> {
  * 금방 통과하지만, 위로 올려 잡으면 못 본 단어를 건너뛰게 된다.
  */
 function upgradeLevel(level: string): LevelId {
-  if (/^[mh][123]-[123]$/.test(level)) return level as LevelId;
+  if (/^[mh][123]-[1-4]$/.test(level)) return level as LevelId;
   if (/^[mh][123]$/.test(level)) return `${level}-1` as LevelId;
   return 'm1-1';
 }
 
-/** 새 단어 id 표. 표제어 → 그 단어의 새 id (같은 학년 안에서 찾는다). */
-const NEW_ID_BY_GRADE_WORD = new Map(
-  ALL_ENTRIES.map((e) => [`${e.level.slice(0, 2)}:${e.word.toLowerCase()}`, e.id]),
-);
+function slugOf(word: string): string {
+  return word.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
 
 /**
- * 예전 단어 id(`m1-042`)를 새 id(`m1-1-about`)로 바꾼다.
+ * 예전 단어 id를 지금 형식(표제어 슬러그)으로 바꾼다.
  *
- * 바꿀 수 없으면 null. 그런 기록은 버린다. 남겨 두면 존재하지 않는 단어의
- * 카드가 계속 복습 대기열에 떠서 오늘의 학습이 채워지지 않는다.
+ *   `m1-042`      배열 순서로 만들던 시절 → 표제어 표를 거쳐 변환
+ *   `m1-1-save`   레벨이 붙어 있던 시절   → 레벨만 떼면 된다
+ *   `save`        지금 형식               → 그대로
+ *
+ * 바꿀 수 없으면 null이고 그 기록은 버린다. 남겨 두면 존재하지 않는 단어의
+ * 카드가 복습 대기열에 떠서 오늘의 학습이 채워지지 않는다.
  */
 export function upgradeEntryId(id: string): string | null {
-  if (!/^[mh][123]-\d{3}$/.test(id)) return id.includes('-') ? id : null;
-  const word = LEGACY_ID_WORD[id];
-  if (!word) return null;
-  return NEW_ID_BY_GRADE_WORD.get(`${id.slice(0, 2)}:${word.toLowerCase()}`) ?? null;
+  if (/^[mh][123]-\d{3}$/.test(id)) {
+    const word = LEGACY_ID_WORD[id];
+    return word ? slugOf(word) : null;
+  }
+  const withLevel = id.match(/^[mh][123]-[1-4]-(.+)$/);
+  if (withLevel) return withLevel[1];
+  return id.trim() === '' ? null : id;
 }
 
 /** 학습 데이터 안의 단어 id를 새 형식으로 옮긴다. */
@@ -171,6 +183,8 @@ function migrate(state: AppState): AppState {
       clearedLevels: (p.clearedLevels ?? []).map(upgradeLevel),
       settings: {
         ...p.settings,
+        newPerDay: p.settings?.newPerDay ?? DEFAULT_NEW_PER_DAY,
+        reviewPerDay: p.settings?.reviewPerDay ?? DEFAULT_REVIEW_PER_DAY,
         rounds: p.settings?.rounds ?? 3,
         showTranslation: p.settings?.showTranslation ?? true,
       },

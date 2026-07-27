@@ -1,163 +1,47 @@
 /**
- * 고등학교 3학년 레벨 2 어휘 33개.
+ * 고등학교 3학년 레벨 2 — 수록 29 / 계획 137개.
  *
- * 선정 기준: 수능·평가원 모의고사 최빈출 어휘와 고난도 구동사.
- *
- * 뜻이 여러 개인 단어는 뜻마다 예문을 나눠 두었다. 같은 단어를 다시 만날 때마다
- * 다른 뜻·다른 문장이 나오도록 하기 위한 것.
+ * 난이도 층: 고급(고등)
+ * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
+ * 여기에는 그중 뜻과 예문을 적어 둔 것만 들어 있다.
  */
 
 import { defineLevel } from '../define';
 
 export const H3_2 = defineLevel('h3-2', [
-  { w: 'explicit', p: 'adj.', s: [
-    { m: '명시적인, 분명한', syn: ['clear', 'direct'], ex: [
-      ['She gave explicit instructions.', '그녀는 명시적인 지시를 내렸다.'],
-      ['The rule is explicit about this.', '그 규칙은 이에 대해 분명하다.'],
-      ['He made his position explicit.', '그는 자기 입장을 분명히 밝혔다.'],
+  { w: 'obstacle', p: 'n.', s: [
+    { m: '장애물, 방해물', syn: ['barrier', 'hurdle'], ex: [
+      ['Fear is the biggest obstacle.', '두려움이 가장 큰 장애물이다.'],
+      ['They overcame many obstacles.', '그들은 많은 장애물을 극복했다.'],
+      ['An obstacle blocked the road.', '장애물이 도로를 막았다.'],
     ]},
   ]},
-  { w: 'feasible', p: 'adj.', s: [
-    { m: '실현 가능한', syn: ['possible', 'workable'], ex: [
-      ['Is this plan feasible?', '이 계획이 실현 가능한가?'],
-      ['It is not feasible in one week.', '일주일 안에는 실현 불가능하다.'],
-      ['They chose the most feasible option.', '그들은 가장 실현 가능한 선택지를 골랐다.'],
+  { w: 'obtain', p: 'v.', s: [
+    { m: '얻다, 획득하다', syn: ['get', 'acquire'], ex: [
+      ['She obtained a scholarship.', '그녀는 장학금을 받았다.'],
+      ['You must obtain permission first.', '먼저 허가를 받아야 한다.'],
+      ['The data were obtained from a survey.', '그 자료는 설문 조사에서 얻었다.'],
     ]},
   ]},
-  { w: 'fluctuate', p: 'v.', s: [
-    { m: '변동하다, 오르내리다', syn: ['vary', 'go up and down'], ex: [
-      ['Prices fluctuate throughout the year.', '가격은 연중 오르내린다.'],
-      ['His mood fluctuates a lot.', '그의 기분은 기복이 심하다.'],
-      ['Temperatures fluctuated sharply.', '기온이 급격히 변동했다.'],
+  { w: 'on the contrary', p: 'phr.', s: [
+    { m: '그와는 반대로', syn: ['in contrast', 'rather'], ex: [
+      ['He is not lazy; on the contrary, he works hard.', '그는 게으르지 않다. 오히려 열심히 일한다.'],
+      ['On the contrary, sales went up.', '그와는 반대로 매출이 올랐다.'],
+      ['I did not dislike it; on the contrary, I loved it.', '나는 그것을 싫어하지 않았다. 오히려 아주 좋아했다.'],
     ]},
   ]},
-  { w: 'imminent', p: 'adj.', s: [
-    { m: '임박한', syn: ['approaching', 'near'], ex: [
-      ['A storm is imminent.', '폭풍이 임박했다.'],
-      ['The company faces imminent collapse.', '그 회사는 임박한 붕괴에 직면해 있다.'],
-      ['There was no imminent danger.', '임박한 위험은 없었다.'],
+  { w: 'optimistic', p: 'adj.', s: [
+    { m: '낙관적인', syn: ['hopeful', 'positive'], ex: [
+      ['She is optimistic about the future.', '그녀는 미래에 대해 낙관적이다.'],
+      ['We remain optimistic despite the loss.', '패배에도 우리는 낙관적이다.'],
+      ['His optimistic view encouraged us.', '그의 낙관적인 시각이 우리를 북돋았다.'],
     ]},
   ]},
-  { w: 'impair', p: 'v.', s: [
-    { m: '손상시키다, 약화시키다', syn: ['damage', 'weaken'], ex: [
-      ['Loud music can impair hearing.', '큰 음악은 청력을 손상시킬 수 있다.'],
-      ['Lack of sleep impairs judgment.', '수면 부족은 판단력을 떨어뜨린다.'],
-      ['The injury impaired his movement.', '그 부상은 그의 움직임을 제약했다.'],
-    ]},
-  ]},
-  { w: 'implicit', p: 'adj.', s: [
-    { m: '암묵적인, 내포된', syn: ['unspoken', 'implied'], ex: [
-      ['There was an implicit agreement.', '암묵적인 합의가 있었다.'],
-      ['His approval was implicit in his smile.', '그의 승인은 미소에 담겨 있었다.'],
-      ['Implicit bias is hard to notice.', '암묵적 편견은 알아차리기 어렵다.'],
-    ]},
-  ]},
-  { w: 'incentive', p: 'n.', s: [
-    { m: '동기, 유인책', syn: ['motivation', 'reward'], ex: [
-      ['Money is not the only incentive.', '돈이 유일한 동기는 아니다.'],
-      ['The company offers incentives to workers.', '그 회사는 노동자에게 인센티브를 제공한다.'],
-      ['There is little incentive to change.', '변화할 유인이 거의 없다.'],
-    ]},
-  ]},
-  { w: 'indispensable', p: 'adj.', s: [
-    { m: '없어서는 안 될, 필수적인', syn: ['essential', 'vital'], ex: [
-      ['She is indispensable to the team.', '그녀는 그 팀에 없어서는 안 될 존재이다.'],
-      ['Water is indispensable for life.', '물은 생명에 필수적이다.'],
-      ['This tool has become indispensable.', '이 도구는 필수품이 되었다.'],
-    ]},
-  ]},
-  { w: 'induce', p: 'v.', s: [
-    { m: '유발하다, 유도하다', syn: ['cause', 'bring on'], ex: [
-      ['The drug induces sleep.', '그 약은 잠을 유도한다.'],
-      ['Nothing could induce him to change.', '어떤 것도 그를 바꾸도록 설득하지 못했다.'],
-      ['Stress can induce headaches.', '스트레스는 두통을 유발할 수 있다.'],
-    ]},
-  ]},
-  { w: 'inference', p: 'n.', s: [
-    { m: '추론', syn: ['conclusion', 'deduction'], ex: [
-      ['That is a reasonable inference.', '그것은 합리적인 추론이다.'],
-      ['Draw an inference from the passage.', '그 지문에서 추론을 이끌어 내라.'],
-      ['His inference proved wrong.', '그의 추론은 틀린 것으로 드러났다.'],
-    ]},
-  ]},
-  { w: 'ingenious', p: 'adj.', s: [
-    { m: '기발한, 독창적인', syn: ['clever', 'inventive'], ex: [
-      ['It was an ingenious solution.', '그것은 기발한 해결책이었다.'],
-      ['She has an ingenious mind.', '그녀는 독창적인 사고를 지녔다.'],
-      ['The device is simple yet ingenious.', '그 장치는 단순하지만 기발하다.'],
-    ]},
-  ]},
-  { w: 'inhibit', p: 'v.', s: [
-    { m: '억제하다, 막다', syn: ['prevent', 'hold back'], ex: [
-      ['Fear inhibits creativity.', '두려움은 창의성을 억제한다.'],
-      ['The drug inhibits the growth of bacteria.', '그 약은 세균의 증식을 억제한다.'],
-      ['Shyness inhibited him from speaking.', '수줍음이 그가 말하는 것을 막았다.'],
-    ]},
-  ]},
-  { w: 'intricate', p: 'adj.', s: [
-    { m: '복잡한, 정교한', syn: ['complex', 'elaborate'], ex: [
-      ['The clock has an intricate design.', '그 시계는 정교한 디자인을 갖고 있다.'],
-      ['They studied the intricate relationship.', '그들은 복잡한 관계를 연구했다.'],
-      ['She wove an intricate pattern.', '그녀는 정교한 무늬를 짰다.'],
-    ]},
-  ]},
-  { w: 'intrinsic', p: 'adj.', s: [
-    { m: '본질적인, 내재적인', syn: ['inherent', 'built-in'], ex: [
-      ['Learning has intrinsic value.', '배움은 본질적 가치가 있다.'],
-      ['Intrinsic motivation lasts longer.', '내재적 동기가 더 오래간다.'],
-      ['Curiosity is intrinsic to science.', '호기심은 과학에 본질적인 것이다.'],
-    ]},
-  ]},
-  { w: 'irrelevant', p: 'adj.', s: [
-    { m: '무관한, 관련 없는', syn: ['unrelated', 'beside the point'], ex: [
-      ['That fact is irrelevant here.', '그 사실은 여기서 무관하다.'],
-      ['He raised an irrelevant issue.', '그는 관련 없는 문제를 꺼냈다.'],
-      ['Age is irrelevant to this job.', '나이는 이 일과 관련이 없다.'],
-    ]},
-  ]},
-  { w: 'legacy', p: 'n.', s: [
-    { m: '유산', syn: ['heritage', 'inheritance'], ex: [
-      ['She left a lasting legacy.', '그녀는 오래 남을 유산을 남겼다.'],
-      ['The war left a painful legacy.', '전쟁은 고통스러운 유산을 남겼다.'],
-      ['His legacy still shapes the field.', '그의 유산은 여전히 그 분야를 형성한다.'],
-    ]},
-  ]},
-  { w: 'magnitude', p: 'n.', s: [
-    { m: '규모, 크기', syn: ['scale', 'size'], ex: [
-      ['We underestimated the magnitude of the task.', '우리는 그 일의 규모를 과소평가했다.'],
-      ['The earthquake had a magnitude of 6.5.', '그 지진은 규모 6.5였다.'],
-      ['The magnitude of the change surprised us.', '변화의 규모가 우리를 놀라게 했다.'],
-    ]},
-  ]},
-  { w: 'mitigate', p: 'v.', s: [
-    { m: '완화하다, 줄이다', syn: ['reduce', 'ease'], ex: [
-      ['Trees mitigate the heat in cities.', '나무는 도시의 열기를 완화한다.'],
-      ['We took steps to mitigate the damage.', '우리는 피해를 줄이기 위한 조치를 취했다.'],
-      ['Nothing could mitigate her sorrow.', '어떤 것도 그녀의 슬픔을 덜어 주지 못했다.'],
-    ]},
-  ]},
-  { w: 'notion', p: 'n.', s: [
-    { m: '개념, 생각', syn: ['idea', 'concept'], ex: [
-      ['He rejected the notion entirely.', '그는 그 생각을 완전히 거부했다.'],
-      ['The notion of fairness varies.', '공정함의 개념은 저마다 다르다.'],
-      ['She had no notion of the danger.', '그녀는 그 위험을 전혀 몰랐다.'],
-    ]},
-  ]},
-  { w: 'nurture', p: 'v.', s: [
-    { m: '양육하다, 기르다', syn: ['raise', 'foster'], ex: [
-      ['Parents nurture their children.', '부모는 자녀를 양육한다.'],
-      ['We should nurture young talent.', '우리는 젊은 인재를 길러야 한다.'],
-      ['She nurtured the idea for years.', '그녀는 그 생각을 여러 해 키워 왔다.'],
-    ]},
-  ]},
-  { w: 'obscure', p: 'adj., v.', s: [
-    { m: '잘 알려지지 않은, 모호한', syn: ['unclear', 'little-known'], ex: [
-      ['He quoted an obscure poet.', '그는 잘 알려지지 않은 시인을 인용했다.'],
-      ['The meaning remains obscure.', '그 의미는 여전히 모호하다.'],
-    ]},
-    { m: '가리다, 흐리게 하다', syn: ['hide', 'block'], ex: [
-      ['Clouds obscured the moon.', '구름이 달을 가렸다.'],
-      ['Jargon obscures the real message.', '전문 용어가 진짜 메시지를 가린다.'],
+  { w: 'overcome', p: 'v.', s: [
+    { m: '극복하다, 이겨 내다', syn: ['get over', 'conquer'], ex: [
+      ['She overcame her fear of water.', '그녀는 물에 대한 두려움을 극복했다.'],
+      ['They overcame many difficulties.', '그들은 많은 어려움을 이겨 냈다.'],
+      ['Hard work can overcome bad luck.', '노력은 불운을 이겨 낼 수 있다.'],
     ]},
   ]},
   { w: 'paradigm', p: 'n.', s: [
@@ -167,11 +51,67 @@ export const H3_2 = defineLevel('h3-2', [
       ['A new paradigm replaced the old one.', '새 패러다임이 옛것을 대체했다.'],
     ]},
   ]},
+  { w: 'participate', p: 'v.', s: [
+    { m: '참여하다', syn: ['take part', 'join in'], ex: [
+      ['All students participated actively.', '모든 학생이 적극적으로 참여했다.'],
+      ['She participated in the debate.', '그녀는 그 토론에 참여했다.'],
+      ['Everyone is welcome to participate.', '누구나 참여할 수 있다.'],
+    ]},
+  ]},
+  { w: 'perceive', p: 'v.', s: [
+    { m: '인식하다, 지각하다', syn: ['notice', 'see'], ex: [
+      ['People perceive colors differently.', '사람들은 색을 다르게 인식한다.'],
+      ['He perceived a change in her voice.', '그는 그녀의 목소리 변화를 알아챘다.'],
+      ['Risk is often perceived as larger than it is.', '위험은 종종 실제보다 크게 인식된다.'],
+    ]},
+  ]},
+  { w: 'permit', p: 'v.', s: [
+    { m: '허락하다, 허용하다', syn: ['allow', 'let'], ex: [
+      ['Smoking is not permitted here.', '이곳에서는 흡연이 허용되지 않는다.'],
+      ['The rules do not permit exceptions.', '규칙은 예외를 허용하지 않는다.'],
+      ['Weather permitting, we will go hiking.', '날씨가 허락하면 우리는 등산을 갈 것이다.'],
+    ]},
+  ]},
+  { w: 'perpetuate', p: 'v.', s: [
+    { m: '영속시키다, 지속시키다', syn: ['maintain', 'keep alive'], ex: [
+      ['Such images perpetuate stereotypes.', '그런 이미지는 고정 관념을 영속시킨다.'],
+      ['The system perpetuates inequality.', '그 체계는 불평등을 지속시킨다.'],
+      ['We should not perpetuate the myth.', '우리는 그 통념을 계속 이어 가서는 안 된다.'],
+    ]},
+  ]},
+  { w: 'persist', p: 'v.', s: [
+    { m: '계속되다, 지속하다', syn: ['continue', 'keep on'], ex: [
+      ['The problem persists despite repairs.', '수리에도 그 문제는 계속된다.'],
+      ['She persisted until she succeeded.', '그녀는 성공할 때까지 계속했다.'],
+      ['The rain persisted all week.', '비가 일주일 내내 계속되었다.'],
+    ]},
+  ]},
+  { w: 'perspective', p: 'n.', s: [
+    { m: '관점, 시각', syn: ['viewpoint', 'point of view'], ex: [
+      ['Try to see it from her perspective.', '그것을 그녀의 관점에서 보려고 해라.'],
+      ['Travel gives you a new perspective.', '여행은 새로운 시각을 준다.'],
+      ['From a historical perspective, this is normal.', '역사적 관점에서 이것은 정상이다.'],
+    ]},
+  ]},
+  { w: 'phenomenon', p: 'n.', s: [
+    { m: '현상', syn: ['occurrence', 'event'], ex: [
+      ['This is a common phenomenon.', '이것은 흔한 현상이다.'],
+      ['Scientists cannot explain the phenomenon.', '과학자들은 그 현상을 설명하지 못한다.'],
+      ['Social media is a global phenomenon.', '소셜 미디어는 세계적인 현상이다.'],
+    ]},
+  ]},
   { w: 'plausible', p: 'adj.', s: [
     { m: '그럴듯한, 타당해 보이는', syn: ['believable', 'reasonable'], ex: [
       ['That is a plausible explanation.', '그것은 그럴듯한 설명이다.'],
       ['His excuse sounded plausible.', '그의 변명은 그럴듯하게 들렸다.'],
       ['We need a more plausible theory.', '우리는 더 타당한 이론이 필요하다.'],
+    ]},
+  ]},
+  { w: 'precise', p: 'adj.', s: [
+    { m: '정확한, 정밀한', syn: ['exact', 'accurate'], ex: [
+      ['Give me the precise figure.', '정확한 수치를 알려 줘.'],
+      ['The instrument makes precise measurements.', '그 기구는 정밀한 측정을 한다.'],
+      ['To be precise, it took 42 minutes.', '정확히 말하면 42분 걸렸다.'],
     ]},
   ]},
   { w: 'preclude', p: 'v.', s: [
@@ -181,11 +121,25 @@ export const H3_2 = defineLevel('h3-2', [
       ['This does not preclude further study.', '이것이 추가 연구를 막는 것은 아니다.'],
     ]},
   ]},
+  { w: 'predict', p: 'v.', s: [
+    { m: '예측하다', syn: ['forecast', 'foretell'], ex: [
+      ['No one can predict the future.', '아무도 미래를 예측할 수 없다.'],
+      ['Experts predict a cold winter.', '전문가들은 추운 겨울을 예측한다.'],
+      ['The model predicted the result well.', '그 모형은 결과를 잘 예측했다.'],
+    ]},
+  ]},
   { w: 'predominant', p: 'adj.', s: [
     { m: '지배적인, 두드러진', syn: ['main', 'leading'], ex: [
       ['English is the predominant language here.', '이곳에서는 영어가 지배적인 언어이다.'],
       ['The predominant color is blue.', '주된 색은 파란색이다.'],
       ['That view was predominant at the time.', '그 견해가 당시 지배적이었다.'],
+    ]},
+  ]},
+  { w: 'preserve', p: 'v.', s: [
+    { m: '보존하다, 지키다', syn: ['protect', 'conserve'], ex: [
+      ['We must preserve our forests.', '우리는 숲을 보존해야 한다.'],
+      ['Salt was used to preserve food.', '소금은 음식을 보존하는 데 쓰였다.'],
+      ['They preserved the old temple.', '그들은 그 오래된 사찰을 보존했다.'],
     ]},
   ]},
   { w: 'presume', p: 'v.', s: [
@@ -209,11 +163,42 @@ export const H3_2 = defineLevel('h3-2', [
       ['The change was profound and lasting.', '그 변화는 깊고 오래갔다.'],
     ]},
   ]},
+  { w: 'prohibit', p: 'v.', s: [
+    { m: '금지하다', syn: ['ban', 'forbid'], ex: [
+      ['Smoking is prohibited in the building.', '건물 내 흡연은 금지되어 있다.'],
+      ['The law prohibits such advertising.', '법은 그런 광고를 금지한다.'],
+      ['Parents prohibited late-night gaming.', '부모님은 밤늦은 게임을 금지하셨다.'],
+    ]},
+  ]},
+  { w: 'prominent', p: 'adj.', s: [
+    { m: '두드러진, 저명한', syn: ['notable', 'well-known'], ex: [
+      ['She is a prominent scientist.', '그녀는 저명한 과학자이다.'],
+      ['The tower is a prominent landmark.', '그 탑은 눈에 띄는 랜드마크이다.'],
+      ['He played a prominent role in the project.', '그는 그 프로젝트에서 두드러진 역할을 했다.'],
+    ]},
+  ]},
   { w: 'proportion', p: 'n.', s: [
     { m: '비율, 부분', syn: ['ratio', 'share'], ex: [
       ['A large proportion of students walk.', '많은 비율의 학생이 걸어 다닌다.'],
       ['The proportion of women rose sharply.', '여성의 비율이 급격히 올랐다.'],
       ['Keep the ingredients in proportion.', '재료를 비율에 맞게 유지해라.'],
+    ]},
+  ]},
+  { w: 'pursue', p: 'v.', s: [
+    { m: '추구하다', syn: ['seek', 'go after'], ex: [
+      ['She decided to pursue medicine.', '그녀는 의학을 공부하기로 했다.'],
+      ['He pursued his dream for ten years.', '그는 10년 동안 꿈을 좇았다.'],
+    ]},
+    { m: '뒤쫓다', syn: ['chase', 'follow'], ex: [
+      ['The police pursued the car.', '경찰이 그 차를 뒤쫓았다.'],
+      ['The dog pursued the rabbit.', '개가 토끼를 쫓았다.'],
+    ]},
+  ]},
+  { w: 'quantity', p: 'n.', s: [
+    { m: '양, 수량', syn: ['amount', 'number'], ex: [
+      ['A small quantity of salt is enough.', '적은 양의 소금이면 충분하다.'],
+      ['Quality matters more than quantity.', '양보다 질이 중요하다.'],
+      ['They bought a large quantity of paper.', '그들은 많은 양의 종이를 샀다.'],
     ]},
   ]},
   { w: 'refute', p: 'v.', s: [
@@ -223,25 +208,11 @@ export const H3_2 = defineLevel('h3-2', [
       ['No one could refute the argument.', '아무도 그 논증을 반박할 수 없었다.'],
     ]},
   ]},
-  { w: 'render', p: 'v.', s: [
-    { m: '~하게 만들다', syn: ['make', 'cause to be'], ex: [
-      ['The injury rendered him unable to walk.', '그 부상은 그를 걷지 못하게 만들었다.'],
-      ['New rules rendered the old ones useless.', '새 규칙이 옛 규칙을 무용지물로 만들었다.'],
-      ['Fear rendered her speechless.', '두려움이 그녀를 말문 막히게 했다.'],
-    ]},
-  ]},
-  { w: 'resilient', p: 'adj.', s: [
-    { m: '회복력 있는, 탄력적인', syn: ['tough', 'quick to recover'], ex: [
-      ['Children are surprisingly resilient.', '아이들은 놀랍도록 회복력이 강하다.'],
-      ['The economy proved resilient.', '경제는 회복력이 있음을 보여 주었다.'],
-      ['We need a resilient system.', '우리는 회복력 있는 체계가 필요하다.'],
-    ]},
-  ]},
-  { w: 'scrutiny', p: 'n.', s: [
-    { m: '면밀한 조사, 정밀 검토', syn: ['examination', 'inspection'], ex: [
-      ['The plan came under close scrutiny.', '그 계획은 면밀한 검토를 받았다.'],
-      ['His record did not survive scrutiny.', '그의 기록은 정밀 검토를 견디지 못했다.'],
-      ['Public figures face constant scrutiny.', '공인은 끊임없는 감시를 받는다.'],
+  { w: 'regardless of', p: 'phr.', s: [
+    { m: '~과 관계없이', syn: ['no matter', 'in spite of'], ex: [
+      ['Everyone is welcome regardless of age.', '나이와 관계없이 누구나 환영이다.'],
+      ['We will go regardless of the weather.', '날씨와 상관없이 우리는 갈 것이다.'],
+      ['She spoke up regardless of the risk.', '그녀는 위험과 관계없이 목소리를 냈다.'],
     ]},
   ]},
 ], 'csat');

@@ -42,12 +42,22 @@ export interface BuildSessionArgs {
   entries: VocabEntry[];
   cards: Record<string, CardState>;
   level: LevelId;
-  /** 하루 목표 **단어** 수 (10~20). 다의어는 뜻 수만큼 문항이 늘어난다. */
-  goal: number;
-  /** 복습이 차지할 수 있는 최대 비율(0~100) */
-  reviewRatio: number;
+  /** 하루에 새로 만날 단어 수. 진도를 정하는 값이다. */
+  newPerDay: number;
+  /** 하루 복습 단어 수 상한. 복습이 밀리면 급한 것부터 채운다. */
+  reviewPerDay: number;
   today?: string;
   rand?: () => number;
+}
+
+/**
+ * 오늘 계획된 **단어** 수.
+ *
+ * 하루 목표를 설정값(새 단어 + 복습)으로 잡으면, 복습이 없는 첫날에는
+ * 아무리 해도 목표를 못 채운다. 실제로 뽑힌 단어 수를 그날의 목표로 쓴다.
+ */
+export function plannedWordCount(args: BuildSessionArgs): number {
+  return new Set(buildSession(args).map((i) => i.entry.id)).size;
 }
 
 /** 세션에 쓸 문항 목록을 고른다. 라운드로 펼치기 전의 원본이다. */
@@ -55,8 +65,8 @@ export function buildSession({
   entries,
   cards,
   level,
-  goal,
-  reviewRatio,
+  newPerDay,
+  reviewPerDay,
   today = todayKey(),
   rand = Math.random,
 }: BuildSessionArgs): SessionItem[] {
@@ -71,7 +81,9 @@ export function buildSession({
 
   const fresh = pool.filter((e) => cards[e.id] == null);
 
-  const maxReview = Math.max(1, Math.round((goal * reviewRatio) / 100));
+  // 복습을 먼저 채우고 새 단어를 얹는다. 잊지 않게 하는 것이 우선이다.
+  const goal = newPerDay + reviewPerDay;
+  const maxReview = reviewPerDay;
   const picked: VocabEntry[] = [];
   const modes = new Map<string, 'review' | 'new'>();
 
@@ -81,10 +93,14 @@ export function buildSession({
     modes.set(e.id, 'review');
   }
 
+  // 새 단어는 정해진 개수만. 복습이 적은 날이라고 새 단어를 몰아 넣으면
+  // 며칠 뒤 복습이 한꺼번에 몰려 감당이 안 된다.
+  let newCount = 0;
   for (const e of fresh) {
-    if (picked.length >= goal) break;
+    if (newCount >= newPerDay) break;
     picked.push(e);
     modes.set(e.id, 'new');
+    newCount++;
   }
 
   // 새 단어가 동나면 복습으로 남은 자리를 채운다.

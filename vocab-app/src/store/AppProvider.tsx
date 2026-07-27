@@ -31,11 +31,13 @@ import {
   RewardRequest,
   RewardStatus,
 } from '../types';
-import { ALL_ENTRIES } from '../data';
+import { ALL_ENTRIES, entriesOf } from '../data';
+import { plannedWordCount } from '../srs/session';
 import { buildDailyReport, buildWeeklySummary } from '../features/report';
 import { SendResult, sendReportToParent, toPayload } from '../features/push';
 import {
-  DEFAULT_DAILY_GOAL,
+  DEFAULT_NEW_PER_DAY,
+  DEFAULT_REVIEW_PER_DAY,
   emptyProfileData,
   emptyState,
   loadProfileData,
@@ -164,9 +166,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         avatar,
         level,
         settings: {
-          dailyGoal: DEFAULT_DAILY_GOAL,
+          newPerDay: DEFAULT_NEW_PER_DAY,
+          reviewPerDay: DEFAULT_REVIEW_PER_DAY,
           rounds: 3,
-          reviewRatio: 70,
           showTranslation: true,
           ttsEnabled: true,
           hapticsEnabled: true,
@@ -253,7 +255,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
       const day: DailyRecord = data.days[today] ?? {
         date: today,
-        goal: profileGoal(ref.current.state),
+        goal: profileGoal(ref.current.state, data),
         studied: 0,
         correct: 0,
         wrong: 0,
@@ -289,7 +291,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       const today = todayKey();
       const day: DailyRecord = data.days[today] ?? {
         date: today,
-        goal: active.settings.dailyGoal,
+        goal: profileGoal(state, data),
         studied: 0,
         correct: 0,
         wrong: 0,
@@ -549,10 +551,22 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }
 
-function profileGoal(state: AppState): number {
-  return (
-    state.profiles.find((p) => p.id === state.activeProfileId)?.settings.dailyGoal ?? DEFAULT_DAILY_GOAL
-  );
+/**
+ * 오늘 이 아이가 몇 단어를 하기로 했는지.
+ *
+ * 설정값(새 단어 + 복습)을 그대로 쓰면 복습이 없는 첫날에 목표를 못 채운다.
+ * 실제로 뽑히는 단어 수를 그날의 목표로 삼는다.
+ */
+function profileGoal(state: AppState, data: ProfileData): number {
+  const p = state.profiles.find((x) => x.id === state.activeProfileId);
+  if (!p) return DEFAULT_NEW_PER_DAY + DEFAULT_REVIEW_PER_DAY;
+  return plannedWordCount({
+    entries: entriesOf(p.level),
+    cards: data.cards,
+    level: p.level,
+    newPerDay: p.settings.newPerDay,
+    reviewPerDay: p.settings.reviewPerDay,
+  });
 }
 
 export function useApp(): Ctx {

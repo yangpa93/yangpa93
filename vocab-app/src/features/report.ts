@@ -73,7 +73,7 @@ export function buildDailyReport(
     profileId: profile.id,
     profileName: profile.name,
     completed: day?.completed ?? false,
-    goal: day?.goal ?? profile.settings.dailyGoal,
+    goal: day?.goal ?? profile.settings.newPerDay + profile.settings.reviewPerDay,
     studied: day?.studied ?? 0,
     correct: day?.correct ?? 0,
     wrong: day?.wrong ?? 0,

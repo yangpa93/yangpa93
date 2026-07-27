@@ -4,9 +4,10 @@
  * 단어를 대량으로 추가할 때 여기서 걸러지면 앱을 켜기 전에 알 수 있다.
  */
 
-import { ALL_ENTRIES, ENTRIES_BY_LEVEL, entriesOfGrade } from '../src/data';
+import { ALL_ENTRIES, ENTRIES_BY_LEVEL } from '../src/data';
 import { clozeSentence, exposure, meaningLine, wordForms } from '../src/data/entry';
-import { GRADE_ORDER, LEVEL_ORDER } from '../src/types';
+import { PLAN, PLAN_COUNT } from '../src/data/plan';
+import { LEVEL_ORDER } from '../src/types';
 
 describe('어휘 데이터', () => {
   it('레벨마다 단어가 들어 있다', () => {
@@ -27,26 +28,17 @@ describe('어휘 데이터', () => {
     }
   });
 
-  it('같은 학년 안에서 표제어가 중복되지 않는다', () => {
-    for (const grade of GRADE_ORDER) {
-      const words = entriesOfGrade(grade).map((e) => e.word.toLowerCase());
-      const dupes = [...new Set(words.filter((w, i) => words.indexOf(w) !== i))];
-      expect({ grade, dupes }).toEqual({ grade, dupes: [] });
-    }
+  it('표제어가 전체에서 한 번만 나온다', () => {
+    // id를 표제어로만 만들기 때문에 같은 단어가 두 레벨에 있으면 id가 겹친다.
+    const words = ALL_ENTRIES.map((e) => e.word.toLowerCase());
+    const dupes = [...new Set(words.filter((w, i) => words.indexOf(w) !== i))];
+    expect(dupes).toEqual([]);
   });
 
   it('id가 중복되지 않는다', () => {
     const ids = ALL_ENTRIES.map((e) => e.id);
     const dupes = ids.filter((id, i) => ids.indexOf(id) !== i);
     expect(dupes).toEqual([]);
-  });
-
-  it('같은 레벨 안에 같은 표제어가 두 번 들어가지 않는다', () => {
-    for (const level of LEVEL_ORDER) {
-      const words = ENTRIES_BY_LEVEL[level].map((e) => e.word.toLowerCase());
-      const dupes = words.filter((w, i) => words.indexOf(w) !== i);
-      expect({ level, dupes }).toEqual({ level, dupes: [] });
-    }
   });
 
   it('필수 필드가 비어 있지 않다', () => {
@@ -126,6 +118,44 @@ describe('어휘 데이터', () => {
         }
       }
     }
+  });
+});
+
+describe('배치표(plan.ts)', () => {
+  it('배치표에 같은 단어가 두 번 나오지 않는다', () => {
+    const words = PLAN.map((r) => r.word);
+    const dupes = [...new Set(words.filter((w, i) => words.indexOf(w) !== i))];
+    expect(dupes).toEqual([]);
+  });
+
+  it('레벨당 계획 단어 수가 시험을 볼 수 있는 범위다', () => {
+    // 계획대로 다 채웠을 때 시험이 길어지지 않아야 한다.
+    for (const level of LEVEL_ORDER) {
+      expect({ level, ok: PLAN_COUNT[level] > 0 && PLAN_COUNT[level] <= 150 }).toEqual({
+        level,
+        ok: true,
+      });
+    }
+  });
+
+  it('수록한 단어는 모두 배치표에 있고, 배치표가 정한 레벨에 놓여 있다', () => {
+    const planned = new Map(PLAN.map((r) => [r.word, r.level]));
+    const misplaced: string[] = [];
+    for (const e of ALL_ENTRIES) {
+      const want = planned.get(e.word);
+      if (want === undefined) misplaced.push(`${e.word}: 배치표에 없음`);
+      else if (want !== e.level) misplaced.push(`${e.word}: ${e.level} → ${want} 여야 함`);
+    }
+    expect(misplaced).toEqual([]);
+  });
+
+  it('앞 레벨부터 순서대로 채워 나간다', () => {
+    // 뒤 레벨을 먼저 채우면 아이가 진도를 나가다 빈 레벨을 만난다.
+    // 수록률이 한 번 떨어진 뒤 다시 올라가면 그 순서가 깨진 것이다.
+    const rates = LEVEL_ORDER.map((l) => ENTRIES_BY_LEVEL[l].length / PLAN_COUNT[l]);
+    const complete = rates.filter((r) => r >= 1).length;
+    // 완성된 레벨은 반드시 앞쪽에 몰려 있어야 한다.
+    expect(rates.slice(0, complete).every((r) => r >= 1)).toBe(true);
   });
 });
 

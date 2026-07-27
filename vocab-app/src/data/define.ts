@@ -38,9 +38,12 @@ export interface Row {
 /**
  * 표제어를 id로 쓸 수 있는 형태로 바꾼다. `look for` → `look-for`
  *
- * id를 배열 순서로 만들면(`m1-042`) 중간에 단어를 하나 끼워 넣는 순간 뒤쪽
- * id가 전부 밀려서, 이미 쌓인 학습 기록이 엉뚱한 단어에 붙는다. 단어를 계속
- * 늘려 갈 것이므로 표제어에서 뽑아 쓴다.
+ * id에 레벨을 넣지 않는다. 배치표(plan.ts)를 손보면 단어가 레벨 사이를
+ * 옮겨 다니는데, id에 레벨이 박혀 있으면 그때마다 학습 기록이 끊긴다.
+ * 표제어만으로 만들면 레벨을 어떻게 재배치해도 기록이 따라온다.
+ *
+ * 배열 순서로 만들지 않는 이유도 같다. 순서 기반(`m1-042`)이면 중간에
+ * 한 단어만 끼워 넣어도 뒤쪽 id가 전부 밀린다.
  */
 export function slug(word: string): string {
   return word
@@ -55,7 +58,7 @@ export function defineLevel(
   defaultSource: EntrySource = 'curriculum',
 ): VocabEntry[] {
   return rows.map((row) => ({
-    id: `${level}-${slug(row.w)}`,
+    id: slug(row.w),
     level,
     // 띄어쓰기가 있으면 숙어로 본다. (get up, look forward to …)
     kind: (row.w.includes(' ') ? 'idiom' : 'word') as EntryKind,

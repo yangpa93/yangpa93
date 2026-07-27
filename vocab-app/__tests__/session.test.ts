@@ -21,8 +21,8 @@ describe('buildSession', () => {
       entries: POOL,
       cards: {},
       level: 'm1-1',
-      goal: 15,
-      reviewRatio: 70,
+      newPerDay: 15,
+      reviewPerDay: 10,
       today: TODAY,
       rand: fixedRand,
     });
@@ -31,7 +31,7 @@ describe('buildSession', () => {
     expect(session.every((i) => i.mode === 'new')).toBe(true);
   });
 
-  it('틀린 단어가 쌓이면 복습이 새 단어보다 먼저 자리를 차지한다', () => {
+  it('복습은 상한까지만 들어가고, 새 단어는 그 위에 얹힌다', () => {
     // 20개를 전부 틀린 상태로 만든다.
     const wrongIds = POOL.slice(0, 20).map((e) => e.id);
     const cards = cardsFor(wrongIds, (c) => grade(c, false, TODAY));
@@ -40,19 +40,23 @@ describe('buildSession', () => {
       entries: POOL,
       cards,
       level: 'm1-1',
-      goal: 15,
-      reviewRatio: 70,
+      newPerDay: 15,
+      reviewPerDay: 10,
       today: TODAY,
       rand: fixedRand,
     });
 
     const reviewWords = new Set(session.filter((i) => i.mode === 'review').map((i) => i.entry.id));
-    // reviewRatio 70% → 15 × 0.7 ≈ 11개까지 복습이 들어간다.
-    expect(reviewWords.size).toBe(11);
-    expect(new Set(session.map((i) => i.entry.id)).size).toBe(15);
+    const newWords = new Set(session.filter((i) => i.mode === 'new').map((i) => i.entry.id));
+
+    // 복습은 상한(10)까지, 새 단어는 정해진 개수(15)만큼.
+    // 복습이 밀렸다고 새 단어가 줄지 않는다 — 진도가 멈추면 안 되기 때문.
+    expect(reviewWords.size).toBe(10);
+    expect(newWords.size).toBe(15);
   });
 
-  it('복습 비중을 100으로 두면 새 단어 없이 복습만 나온다', () => {
+  it('새 단어를 0으로 두면 복습만 나온다', () => {
+    // 진도를 잠시 멈추고 밀린 것만 정리하고 싶을 때.
     const wrongIds = POOL.slice(0, 30).map((e) => e.id);
     const cards = cardsFor(wrongIds, (c) => grade(c, false, TODAY));
 
@@ -60,12 +64,13 @@ describe('buildSession', () => {
       entries: POOL,
       cards,
       level: 'm1-1',
-      goal: 15,
-      reviewRatio: 100,
+      newPerDay: 0,
+      reviewPerDay: 15,
       today: TODAY,
       rand: fixedRand,
     });
 
+    expect(session.length).toBeGreaterThan(0);
     expect(session.every((i) => i.mode === 'review')).toBe(true);
   });
 
@@ -84,8 +89,8 @@ describe('buildSession', () => {
       entries: POOL,
       cards,
       level: 'm1-1',
-      goal: 15,
-      reviewRatio: 70,
+      newPerDay: 15,
+      reviewPerDay: 10,
       today: TODAY,
       rand: fixedRand,
     });
@@ -104,14 +109,15 @@ describe('buildSession', () => {
       entries: POOL,
       cards,
       level: 'm1-1',
-      goal: 15,
-      reviewRatio: 70,
+      newPerDay: 15,
+      reviewPerDay: 10,
       today: TODAY,
       rand: fixedRand,
     });
 
     // 새 단어도 복습 대상도 없으니 아직 안 외운 단어를 당겨온다.
-    expect(new Set(session.map((i) => i.entry.id)).size).toBeLessThanOrEqual(15);
+    // 하루치(새 15 + 복습 10)를 넘기지는 않는다.
+    expect(new Set(session.map((i) => i.entry.id)).size).toBeLessThanOrEqual(25);
     expect(session.every((i) => i.mode === 'review')).toBe(true);
   });
 
@@ -120,8 +126,8 @@ describe('buildSession', () => {
       entries: [...entriesOf('m1-1'), ...entriesOf('m2-1')],
       cards: {},
       level: 'm1-1',
-      goal: 20,
-      reviewRatio: 70,
+      newPerDay: 20,
+      reviewPerDay: 14,
       today: TODAY,
       rand: fixedRand,
     });
@@ -139,8 +145,8 @@ describe('buildSession', () => {
       entries: POOL,
       cards,
       level: 'm1-1',
-      goal: 20,
-      reviewRatio: 70,
+      newPerDay: 20,
+      reviewPerDay: 14,
       today: TODAY,
       rand: fixedRand,
     });
@@ -300,8 +306,8 @@ describe('다의어는 뜻마다 문항이 생긴다', () => {
       entries: [multi],
       cards: {},
       level: multi.level,
-      goal: 20,
-      reviewRatio: 70,
+      newPerDay: 20,
+      reviewPerDay: 14,
       today: TODAY,
       rand: fixedRand,
     });
@@ -316,8 +322,8 @@ describe('다의어는 뜻마다 문항이 생긴다', () => {
       entries: POOL,
       cards: {},
       level: 'm1-1',
-      goal: 20,
-      reviewRatio: 70,
+      newPerDay: 20,
+      reviewPerDay: 14,
       today: TODAY,
       rand: fixedRand,
     });

@@ -13,9 +13,9 @@ function makeProfile(over: Partial<Profile> = {}): Profile {
     avatar: '🦊',
     level: 'm1-1',
     settings: {
-      dailyGoal: 15,
+      newPerDay: 10,
+      reviewPerDay: 10,
       rounds: 3,
-      reviewRatio: 70,
       showTranslation: true,
       ttsEnabled: true,
       hapticsEnabled: true,

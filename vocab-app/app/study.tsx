@@ -6,7 +6,7 @@ import { ChoiceGame, ChoiceGameId } from '../src/games/ChoiceGame';
 import { ClozeGame } from '../src/games/ClozeGame';
 import { SpellingGame } from '../src/games/SpellingGame';
 import { WordStoryCard } from '../src/components/WordStoryCard';
-import { ProgressBar, Row } from '../src/components/ui';
+import { CONTENT_MAX_WIDTH, ProgressBar, Row } from '../src/components/ui';
 import { useApp } from '../src/store/AppProvider';
 import { entriesOf } from '../src/data';
 import { exposure, exposureCount } from '../src/data/entry';
@@ -234,7 +234,15 @@ export default function Study() {
 
 const s = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.bg },
-  inner: { flex: 1, paddingHorizontal: spacing.lg, paddingTop: spacing.md, paddingBottom: spacing.lg },
+  inner: {
+    flex: 1,
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.md,
+    paddingBottom: spacing.lg,
+    width: '100%',
+    maxWidth: CONTENT_MAX_WIDTH,
+    alignSelf: 'center',
+  },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   emptyText: { fontSize: font.h3, color: colors.subtext },
   backBtn: { marginTop: spacing.lg, padding: spacing.md },

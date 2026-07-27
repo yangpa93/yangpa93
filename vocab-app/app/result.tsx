@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import { Animated, Easing, StyleSheet, Text, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Body, Button, Card, Chip, H1, H3, Muted, ProgressBar, Row } from '../src/components/ui';
+import { Body, Button, Card, Chip, CONTENT_MAX_WIDTH, H1, H3, Muted, ProgressBar, Row } from '../src/components/ui';
 import { useApp } from '../src/store/AppProvider';
 import { ALL_ENTRIES } from '../src/data';
 import { meaningLine } from '../src/data/entry';
@@ -127,7 +127,15 @@ function Stat({ label, value, color }: { label: string; value: string; color: st
 
 const s = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.bg },
-  inner: { flex: 1, paddingHorizontal: spacing.lg, paddingTop: spacing.xl, paddingBottom: spacing.lg },
+  inner: {
+    flex: 1,
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.xl,
+    paddingBottom: spacing.lg,
+    width: '100%',
+    maxWidth: CONTENT_MAX_WIDTH,
+    alignSelf: 'center',
+  },
   emoji: { fontSize: 64 },
   statValue: { fontSize: 30, fontWeight: '800' },
 });

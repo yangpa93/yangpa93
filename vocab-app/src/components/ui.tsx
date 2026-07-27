@@ -15,6 +15,9 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, font, radius, spacing } from '../theme';
 
+/** 태블릿에서 본문이 너무 넓어지지 않게 하는 상한. */
+export const CONTENT_MAX_WIDTH = 640;
+
 export function Screen({
   children,
   scroll = true,
@@ -203,8 +206,16 @@ const chipTone = {
 
 const s = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.bg },
-  screenInner: { flex: 1, paddingHorizontal: spacing.lg },
-  scrollContent: { flexGrow: 1, paddingBottom: spacing.xxl },
+  // 태블릿처럼 넓은 화면에서 글줄이 끝까지 늘어나면 읽기 힘들다.
+  // 본문 폭을 제한하고 가운데로 모은다.
+  screenInner: {
+    flex: 1,
+    paddingHorizontal: spacing.lg,
+    width: '100%',
+    maxWidth: CONTENT_MAX_WIDTH,
+    alignSelf: 'center',
+  },
+  scrollContent: { flexGrow: 1, paddingBottom: spacing.xxl, alignItems: 'stretch' },
 
   card: {
     backgroundColor: colors.card,

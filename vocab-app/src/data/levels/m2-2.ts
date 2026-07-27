@@ -1,5 +1,5 @@
 /**
- * 중학교 2학년 레벨 2 — 수록 136 / 계획 137개.
+ * 중학교 2학년 레벨 2 — 수록 137 / 계획 137개.
  *
  * 난이도 층: 기초(초등 권장)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -897,6 +897,13 @@ export const M2_2 = defineLevel('m2-2', [
       ['Brush your tooth carefully.', '이를 꼼꼼히 닦아라.'],
       ['My tooth hurts today.', '오늘 이가 아프다.'],
       ['The child lost a tooth.', '그 아이는 이가 하나 빠졌다.'],
+    ]},
+  ]},
+  { w: 'top', p: 'n.', s: [
+    { m: '맨 위, 꼭대기', syn: ['summit'], ex: [
+      ['The book is on the top shelf.', '책은 맨 위 선반에 있다.'],
+      ['We reached the top of the hill.', '우리는 언덕 꼭대기에 이르렀다.'],
+      ['Write your name at the top.', '맨 위에 이름을 쓰세요.'],
     ]},
   ]},
   { w: 'touch', p: 'v.', s: [

@@ -35,7 +35,7 @@ export function emptyState(): AppState {
 }
 
 export function emptyProfileData(): ProfileData {
-  return { cards: {}, days: {}, answers: [] };
+  return { cards: {}, days: {}, answers: [], exams: [] };
 }
 
 export async function loadState(): Promise<AppState> {
@@ -63,6 +63,7 @@ export async function loadProfileData(profileId: string): Promise<ProfileData> {
       cards: parsed.cards ?? {},
       days: parsed.days ?? {},
       answers: parsed.answers ?? [],
+      exams: parsed.exams ?? [],
     };
   } catch {
     return emptyProfileData();

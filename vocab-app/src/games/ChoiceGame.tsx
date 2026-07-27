@@ -1,13 +1,12 @@
 /**
- * 4지선다 게임.
+ * 문장을 보여주고 보기에서 고르는 문제들.
  *
- * 여섯 유형이 같은 구조라 문제 지문과 보기만 갈아 끼워 하나로 처리한다.
- *   meaning   영어 → 뜻
- *   word      뜻 → 영어
- *   listening 소리 → 영어
- *   context   예문 속 표제어의 뜻          (문맥 단서로 풀어야 한다)
- *   polysemy  다의어: 이 문장에서 쓰인 뜻   (보기가 전부 그 단어의 뜻이라 가장 어렵다)
- *   synonym   문맥에 맞는 동의어
+ *   context   이 문장에서 그 단어가 무슨 뜻인지
+ *   polysemy  다의어: 여러 뜻 중 이 문장에서 쓰인 뜻 (보기가 전부 그 단어의 뜻이라 가장 어렵다)
+ *   synonym   문맥에 맞게 바꿔 쓸 수 있는 표현
+ *
+ * 셋 다 지문이 문장이다. 단어만 덩그러니 보여주는 문제는 두지 않았다.
+ * 빈칸 채우기는 ClozeGame에 따로 있다.
  *
  * 모든 문항에 "모르겠어요" 보기를 둔다. 찍어서 맞히면 학습 데이터가
  * 오염되기 때문이다. 누르면 오답으로 기록하되 정답을 바로 보여 준다.
@@ -16,26 +15,17 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import { GameId, VocabEntry } from '../types';
-import { Exposure, exposure, primaryMeaning } from '../data/entry';
+import { exposure, Exposure, primaryMeaning } from '../data/entry';
+import type { GameProps } from './ClozeGame';
 import { buildChoices, shuffle } from '../srs/session';
 import { speak } from '../lib/feedback';
 import { colors, font, radius, spacing } from '../theme';
-import { H2, Muted } from '../components/ui';
+import { Muted } from '../components/ui';
 import { HighlightedSentence } from '../components/HighlightedSentence';
 
-export type ChoiceGameId = Extract<
-  GameId,
-  'meaning' | 'word' | 'listening' | 'context' | 'polysemy' | 'synonym'
->;
+export type ChoiceGameId = Extract<GameId, 'context' | 'polysemy' | 'synonym'>;
 
-export interface GameProps {
-  entry: VocabEntry;
-  exp: Exposure;
-  /** 오답 보기를 뽑아올 같은 레벨 단어들 */
-  pool: VocabEntry[];
-  ttsEnabled: boolean;
-  onAnswer: (correct: boolean) => void;
-}
+export type { GameProps } from './ClozeGame';
 
 interface Choice {
   key: string;
@@ -61,11 +51,6 @@ export function ChoiceGame({
     [game, entry.id, exp.senseIndex, exp.exampleIndex, pool],
   );
 
-  // 듣기 문제는 화면에 답이 없으니 들어오자마자 읽어 준다.
-  useEffect(() => {
-    if (game === 'listening') speak(entry.word, ttsEnabled);
-  }, [game, entry.id, ttsEnabled]);
-
   function choose(key: string, correct: boolean) {
     if (picked) return;
     setPicked(key);
@@ -77,7 +62,7 @@ export function ChoiceGame({
       <Muted>{PROMPT[game]}</Muted>
 
       <View style={s.stem}>
-        <Stem game={game} entry={entry} exp={exp} ttsEnabled={ttsEnabled} answered={picked !== null} />
+        <Stem entry={entry} exp={exp} ttsEnabled={ttsEnabled} answered={picked !== null} />
       </View>
 
       <View style={{ gap: spacing.sm }}>
@@ -98,52 +83,27 @@ export function ChoiceGame({
   );
 }
 
+/** 세 유형 모두 예문을 지문으로 쓴다. */
 function Stem({
-  game,
   entry,
   exp,
   ttsEnabled,
   answered,
 }: {
-  game: ChoiceGameId;
   entry: VocabEntry;
   exp: Exposure;
   ttsEnabled: boolean;
   answered: boolean;
 }) {
-  if (game === 'listening') {
-    return (
-      <Pressable
-        onPress={() => speak(entry.word, ttsEnabled)}
-        style={{ alignItems: 'center' }}
-        accessibilityRole="button"
-        accessibilityLabel="다시 듣기"
-      >
-        <Text style={{ fontSize: 44 }}>🔊</Text>
-        <Muted style={{ marginTop: spacing.sm }}>다시 듣기</Muted>
-      </Pressable>
-    );
-  }
-
-  if (game === 'word') {
-    return <H2 style={{ textAlign: 'center' }}>{exp.sense.meaning}</H2>;
-  }
-
-  // context / polysemy / synonym 은 모두 예문을 보여준다.
-  if (game === 'context' || game === 'polysemy' || game === 'synonym') {
-    return (
-      <View style={s.sentenceBox}>
-        <HighlightedSentence text={exp.example.en} word={entry.word} />
-        {answered ? <Text style={s.sentenceKo}>{exp.example.ko}</Text> : null}
-      </View>
-    );
-  }
-
-  // meaning
   return (
-    <Pressable onPress={() => speak(entry.word, ttsEnabled)} accessibilityRole="button">
-      <Text style={s.word}>{entry.word}</Text>
-      <Muted style={{ textAlign: 'center', marginTop: spacing.xs }}>{entry.pos}</Muted>
+    <Pressable
+      style={s.sentenceBox}
+      onPress={() => speak(exp.example.en, ttsEnabled)}
+      accessibilityRole="button"
+      accessibilityLabel="문장 듣기"
+    >
+      <HighlightedSentence text={exp.example.en} word={entry.word} />
+      {answered ? <Text style={s.sentenceKo}>{exp.example.ko}</Text> : null}
     </Pressable>
   );
 }
@@ -206,9 +166,6 @@ function ChoiceButton({
 }
 
 const PROMPT: Record<ChoiceGameId, string> = {
-  meaning: '이 단어의 뜻은?',
-  word: '이 뜻을 가진 단어는?',
-  listening: '잘 듣고 알맞은 단어를 고르세요',
   context: '색칠한 단어는 여기서 무슨 뜻일까요?',
   polysemy: '이 단어는 뜻이 여러 개예요. 이 문장에서는?',
   synonym: '색칠한 단어를 바꿔 쓸 수 있는 표현은?',
@@ -241,20 +198,11 @@ function buildOptions(
     return shuffle(own).slice(0, 4);
   }
 
-  if (game === 'meaning' || game === 'context') {
+  if (game === 'context') {
     // 정답은 지금 노출 중인 뜻. 다의어라도 그날 배운 뜻을 묻는다.
     const picked = buildChoices(
       { key: entry.id, label: exp.sense.meaning },
       others.map((e) => ({ key: e.id, label: primaryMeaning(e) })),
-      (c) => c.label,
-    );
-    return picked.map((c) => ({ ...c, correct: c.key === entry.id }));
-  }
-
-  if (game === 'word' || game === 'listening') {
-    const picked = buildChoices(
-      { key: entry.id, label: entry.word },
-      others.map((e) => ({ key: e.id, label: e.word })),
       (c) => c.label,
     );
     return picked.map((c) => ({ ...c, correct: c.key === entry.id }));

@@ -4,12 +4,11 @@ import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChoiceGame, ChoiceGameId } from '../src/games/ChoiceGame';
 import { ClozeGame } from '../src/games/ClozeGame';
-import { SpellingGame } from '../src/games/SpellingGame';
 import { WordStoryCard } from '../src/components/WordStoryCard';
 import { CONTENT_MAX_WIDTH, ProgressBar, Row } from '../src/components/ui';
 import { useApp } from '../src/store/AppProvider';
 import { entriesOf } from '../src/data';
-import { exposure, exposureCount } from '../src/data/entry';
+import { exposureCount, senseExposure } from '../src/data/entry';
 import { buildRounds, buildSession, SessionItem } from '../src/srs/session';
 import { tapCorrect, tapWrong, stopSpeaking } from '../src/lib/feedback';
 import { GAME_LABEL, STAGE_LABEL } from '../src/types';
@@ -86,7 +85,7 @@ export default function Study() {
           requeued.current.add(current.entry.id);
           setQueue((q) => [
             ...q,
-            { ...current, round: current.round + 1, stage: 'learn', game: 'meaning', showIntro: false },
+            { ...current, round: current.round + 1, stage: 'learn', game: 'cloze', showIntro: false },
           ]);
         }
       }
@@ -154,8 +153,12 @@ export default function Study() {
   // 피드백 카드는 문제를 풀기 직전의 노출 인덱스를 써야
   // 방금 본 문장과 같은 문장이 나온다.
   const shownExposure = feedback
-    ? exposure(feedback.item.entry, feedback.exposureIndex)
-    : exposure(current.entry, exposureCount(data.cards[current.entry.id]) + current.round);
+    ? senseExposure(feedback.item.entry, feedback.item.senseIndex, feedback.exposureIndex)
+    : senseExposure(
+        current.entry,
+        current.senseIndex,
+        exposureCount(data.cards[current.entry.id]) + current.round,
+      );
 
   const needsIntro = current.showIntro && !introShown && !feedback;
   const isLast = index + 1 >= queue.length;
@@ -219,10 +222,10 @@ export default function Study() {
               onNext={next}
               nextLabel={isLast ? '결과 보기' : '다음 문제'}
             />
-          ) : current.game === 'cloze' ? (
-            <ClozeGame {...gameProps} />
-          ) : current.game === 'spelling' || current.game === 'recall' ? (
-            <SpellingGame {...gameProps} mode={current.game === 'recall' ? 'recall' : 'spelling'} />
+          ) : current.game === 'cloze' || current.game === 'listening' ? (
+            <ClozeGame {...gameProps} listen={current.game === 'listening'} />
+          ) : current.game === 'clozeType' ? (
+            <ClozeGame {...gameProps} mode="type" />
           ) : (
             <ChoiceGame {...gameProps} game={current.game as ChoiceGameId} />
           )}

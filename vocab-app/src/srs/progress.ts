@@ -3,7 +3,10 @@
 import { CardState, LEVEL_ORDER, LevelId, VocabEntry } from '../types';
 import { isMastered } from './scheduler';
 
-/** 이 비율 이상 외우면 다음 학년으로 올라간다. */
+/**
+ * 이 비율 이상 외우면 **레벨 시험을 볼 수 있다.**
+ * 실제 레벨업은 시험에서 그 레벨 단어를 전부 맞혀야 이뤄진다.
+ */
 export const LEVEL_UP_RATIO = 0.9;
 
 export interface LevelProgress {
@@ -15,9 +18,9 @@ export interface LevelProgress {
   mastered: number;
   /** 0~1 */
   ratio: number;
-  /** 레벨업 조건을 채웠는지 */
-  canLevelUp: boolean;
-  /** 레벨업까지 남은 단어 수 */
+  /** 레벨 시험을 볼 수 있는지 */
+  canTakeExam: boolean;
+  /** 시험 응시까지 남은 단어 수 */
   remaining: number;
 }
 
@@ -47,7 +50,7 @@ export function levelProgress(
     seen,
     mastered,
     ratio,
-    canLevelUp: total > 0 && mastered >= need,
+    canTakeExam: total > 0 && mastered >= need,
     remaining: Math.max(0, need - mastered),
   };
 }

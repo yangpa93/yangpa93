@@ -1,43 +1,50 @@
 /**
- * 빈칸 채우기.
+ * 빈칸 채우기. 이 앱의 중심 문제 유형이다.
  *
- * 그날 노출 중인 예문에서 표제어만 빈칸으로 만들고 4지선다로 고르게 한다.
- * 뜻만 외우는 게 아니라 "문장 안에서 어떻게 쓰이는지"를 같이 익히게 하려는 것.
+ * 문장에서 그 단어만 지우고 무엇이 들어가야 하는지 묻는다.
+ * 단어와 뜻만 짝지어 외우면 문장 안에 든 그 단어를 못 알아보기 때문에,
+ * 처음부터 문장으로 만나게 한다.
+ *
+ * 두 가지 방식이 있다.
+ *   cloze     — 보기 4개 중에서 고른다
+ *   clozeType — 보기 없이 직접 타이핑한다 (마지막 라운드·시험용)
  */
 
 import { useMemo, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { clozeSentence } from '../data/entry';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { VocabEntry } from '../types';
+import { clozeSentence, Exposure } from '../data/entry';
 import { buildChoices } from '../srs/session';
-import { GameProps } from './ChoiceGame';
+import { speak } from '../lib/feedback';
 import { colors, font, radius, spacing } from '../theme';
 import { Muted } from '../components/ui';
 
-export function ClozeGame({ entry, exp, pool, onAnswer }: GameProps) {
-  const [picked, setPicked] = useState<string | null>(null);
+export interface GameProps {
+  entry: VocabEntry;
+  exp: Exposure;
+  /** 오답 보기를 뽑아올 같은 레벨 단어들 */
+  pool: VocabEntry[];
+  ttsEnabled: boolean;
+  onAnswer: (correct: boolean) => void;
+}
 
-  const cloze = useMemo(
-    () => clozeSentence(entry, exp.example.en),
-    [entry.id, exp.example.en],
-  );
+export function ClozeGame({
+  entry,
+  exp,
+  pool,
+  ttsEnabled,
+  onAnswer,
+  mode = 'choice',
+  /** 듣기 모드: 문장을 먼저 읽어 준다 */
+  listen = false,
+}: GameProps & { mode?: 'choice' | 'type'; listen?: boolean }) {
+  const cloze = useMemo(() => clozeSentence(entry, exp.example.en), [entry.id, exp.example.en]);
 
-  const choices = useMemo(() => {
-    const answer = { key: entry.id, label: cloze?.answer ?? entry.word };
-    const distractors = pool
-      .filter((e) => e.id !== entry.id)
-      .map((e) => ({ key: e.id, label: e.word }));
-    return buildChoices(answer, distractors, (c) => c.label).map((c) => ({
-      ...c,
-      correct: c.key === entry.id,
-    }));
-  }, [entry.id, cloze?.answer, pool]);
-
-  // 표제어를 예문에서 못 찾으면 이 게임을 낼 수 없다.
-  // pickGame이 걸러 주지만, 데이터가 바뀌었을 때를 대비한 안전장치.
   if (!cloze) {
+    // pickGame이 걸러 주지만, 데이터가 바뀌었을 때를 위한 안전장치.
     return (
       <View style={{ flex: 1, justifyContent: 'center' }}>
-        <Muted style={{ textAlign: 'center' }}>이 문장은 문제로 낼 수 없어요.</Muted>
+        <Muted style={{ textAlign: 'center' }}>이 문장은 빈칸으로 낼 수 없어요.</Muted>
         <Pressable style={s.skip} onPress={() => onAnswer(true)} accessibilityRole="button">
           <Text style={s.skipText}>넘어가기</Text>
         </Pressable>
@@ -45,29 +52,96 @@ export function ClozeGame({ entry, exp, pool, onAnswer }: GameProps) {
     );
   }
 
-  function choose(c: { key: string; correct: boolean }) {
+  return mode === 'type' ? (
+    <TypeCloze entry={entry} exp={exp} cloze={cloze} ttsEnabled={ttsEnabled} onAnswer={onAnswer} />
+  ) : (
+    <ChoiceCloze
+      entry={entry}
+      exp={exp}
+      cloze={cloze}
+      pool={pool}
+      ttsEnabled={ttsEnabled}
+      listen={listen}
+      onAnswer={onAnswer}
+    />
+  );
+}
+
+interface Cloze {
+  text: string;
+  answer: string;
+}
+
+/* ------------------------------------------------------------------ */
+/* 보기에서 고르기                                                      */
+/* ------------------------------------------------------------------ */
+
+function ChoiceCloze({
+  entry,
+  exp,
+  cloze,
+  pool,
+  ttsEnabled,
+  listen,
+  onAnswer,
+}: GameProps & { cloze: Cloze; listen: boolean }) {
+  const [picked, setPicked] = useState<string | null>(null);
+
+  const choices = useMemo(() => {
+    const answer = { key: entry.id, label: cloze.answer };
+    // 오답도 같은 문장에 넣었을 때 말이 안 되는 것으로 고른다.
+    // 같은 품사끼리 섞으면 난이도가 올라간다.
+    const samePos = pool.filter((e) => e.id !== entry.id && e.pos === entry.pos);
+    const others = (samePos.length >= 5 ? samePos : pool.filter((e) => e.id !== entry.id)).map(
+      (e) => ({ key: e.id, label: e.word }),
+    );
+    return buildChoices(answer, others, (c) => c.label).map((c) => ({
+      ...c,
+      correct: c.key === entry.id,
+    }));
+  }, [entry.id, cloze.answer, pool]);
+
+  // 듣기 모드는 들어오자마자 문장을 읽어 준다.
+  useMemo(() => {
+    if (listen) speak(exp.example.en, ttsEnabled);
+    return null;
+  }, [listen, exp.example.en, ttsEnabled]);
+
+  function choose(key: string, correct: boolean) {
     if (picked) return;
-    setPicked(c.key);
-    onAnswer(c.correct);
+    setPicked(key);
+    onAnswer(correct);
   }
 
   return (
     <View style={{ flex: 1 }}>
-      <Muted>빈칸에 알맞은 말을 고르세요</Muted>
+      <Muted>{listen ? '잘 듣고 빈칸에 알맞은 말을 고르세요' : '빈칸에 알맞은 말을 고르세요'}</Muted>
 
-      <View style={s.sentenceBox}>
-        <Text style={s.sentence}>{cloze.text}</Text>
+      <Pressable
+        style={s.sentenceBox}
+        onPress={() => speak(exp.example.en, ttsEnabled)}
+        accessibilityRole="button"
+        accessibilityLabel="문장 듣기"
+      >
+        {listen && !picked ? (
+          <View style={{ alignItems: 'center' }}>
+            <Text style={{ fontSize: 40 }}>🔊</Text>
+            <Muted style={{ marginTop: spacing.sm }}>다시 듣기</Muted>
+          </View>
+        ) : (
+          <Text style={s.sentence}>{cloze.text}</Text>
+        )}
         {picked ? <Text style={s.sentenceKo}>{exp.example.ko}</Text> : null}
-      </View>
+      </Pressable>
 
-      <View style={{ gap: spacing.md }}>
+      <View style={{ gap: spacing.sm }}>
         {choices.map((c) => {
           const answered = picked !== null;
           const isPicked = picked === c.key;
           return (
             <Pressable
               key={c.key}
-              onPress={() => choose(c)}
+              onPress={() => choose(c.key, c.correct)}
               disabled={answered}
               accessibilityRole="button"
               style={({ pressed }) => [
@@ -90,14 +164,123 @@ export function ClozeGame({ entry, exp, pool, onAnswer }: GameProps) {
             </Pressable>
           );
         })}
+
+        <Pressable
+          onPress={() => choose('__dontknow__', false)}
+          disabled={picked !== null}
+          accessibilityRole="button"
+          style={[s.dontKnow, picked !== null && { opacity: 0.6 }]}
+        >
+          <Text style={s.dontKnowText}>모르겠어요</Text>
+        </Pressable>
       </View>
     </View>
   );
 }
 
+/* ------------------------------------------------------------------ */
+/* 직접 쓰기                                                            */
+/* ------------------------------------------------------------------ */
+
+function TypeCloze({
+  entry,
+  exp,
+  cloze,
+  ttsEnabled,
+  onAnswer,
+}: Omit<GameProps, 'pool'> & { cloze: Cloze }) {
+  const [value, setValue] = useState('');
+  const [result, setResult] = useState<'correct' | 'wrong' | null>(null);
+  const [hint, setHint] = useState(0);
+
+  function submit() {
+    if (result) return;
+    // 원형으로 써도, 문장에 맞는 변화형으로 써도 맞는 것으로 본다.
+    // 철자를 묻는 게 아니라 "여기 들어갈 단어를 아는가"를 묻기 때문이다.
+    const v = normalize(value);
+    const ok = v === normalize(cloze.answer) || v === normalize(entry.word);
+    setResult(ok ? 'correct' : 'wrong');
+    if (ok) speak(exp.example.en, ttsEnabled);
+    onAnswer(ok);
+  }
+
+  return (
+    <View style={{ flex: 1 }}>
+      <Muted>빈칸에 알맞은 말을 직접 써 보세요</Muted>
+
+      <View style={s.sentenceBox}>
+        <Text style={s.sentence}>{cloze.text}</Text>
+        <Text style={s.hintKo}>{exp.example.ko}</Text>
+        {hint > 0 ? (
+          <Text style={s.hint}>
+            {hint === 1
+              ? `${cloze.answer.length}글자`
+              : `${cloze.answer[0]}${'_'.repeat(Math.max(0, cloze.answer.length - 1))}`}
+          </Text>
+        ) : null}
+      </View>
+
+      <TextInput
+        value={value}
+        onChangeText={setValue}
+        editable={result === null}
+        autoCapitalize="none"
+        autoCorrect={false}
+        spellCheck={false}
+        autoComplete="off"
+        placeholder="영어로 입력"
+        placeholderTextColor={colors.muted}
+        onSubmitEditing={submit}
+        returnKeyType="done"
+        style={[
+          s.input,
+          result === 'correct' && { borderColor: colors.correct, backgroundColor: colors.correctSoft },
+          result === 'wrong' && { borderColor: colors.wrong, backgroundColor: colors.wrongSoft },
+        ]}
+      />
+
+      {result === 'wrong' ? <Text style={s.answer}>정답: {cloze.answer}</Text> : null}
+
+      {result === null ? (
+        <View style={{ gap: spacing.sm, marginTop: spacing.lg }}>
+          <Pressable
+            onPress={submit}
+            disabled={value.trim().length === 0}
+            accessibilityRole="button"
+            style={[s.submit, value.trim().length === 0 && { opacity: 0.4 }]}
+          >
+            <Text style={s.submitText}>확인</Text>
+          </Pressable>
+          <View style={{ flexDirection: 'row', justifyContent: 'center', gap: spacing.lg }}>
+            {hint < 2 ? (
+              <Pressable onPress={() => setHint((h) => h + 1)} accessibilityRole="button" style={s.textBtn}>
+                <Text style={s.textBtnLabel}>힌트 보기</Text>
+              </Pressable>
+            ) : null}
+            <Pressable
+              onPress={() => {
+                setResult('wrong');
+                onAnswer(false);
+              }}
+              accessibilityRole="button"
+              style={s.textBtn}
+            >
+              <Text style={s.textBtnLabel}>모르겠어요</Text>
+            </Pressable>
+          </View>
+        </View>
+      ) : null}
+    </View>
+  );
+}
+
+function normalize(str: string): string {
+  return str.trim().toLowerCase().replace(/\s+/g, ' ');
+}
+
 const s = StyleSheet.create({
   sentenceBox: {
-    minHeight: 130,
+    minHeight: 140,
     justifyContent: 'center',
     marginVertical: spacing.lg,
     padding: spacing.lg,
@@ -108,6 +291,9 @@ const s = StyleSheet.create({
   },
   sentence: { fontSize: 20, lineHeight: 30, color: colors.text, fontWeight: '600' },
   sentenceKo: { fontSize: font.small, color: colors.subtext, marginTop: spacing.md },
+  hintKo: { fontSize: font.small, color: colors.subtext, marginTop: spacing.md },
+  hint: { fontSize: 18, letterSpacing: 2, color: colors.primary, marginTop: spacing.md, fontWeight: '700' },
+
   choice: {
     minHeight: 56,
     borderRadius: radius.md,
@@ -116,10 +302,50 @@ const s = StyleSheet.create({
     borderColor: colors.border,
     alignItems: 'center',
     justifyContent: 'center',
+    paddingHorizontal: spacing.lg,
   },
-  choiceText: { fontSize: font.h3, fontWeight: '600', color: colors.text },
+  choiceText: { fontSize: font.h3, fontWeight: '600', color: colors.text, textAlign: 'center' },
   correct: { borderColor: colors.correct, backgroundColor: colors.correctSoft },
   wrong: { borderColor: colors.wrong, backgroundColor: colors.wrongSoft },
+
+  dontKnow: {
+    minHeight: 44,
+    borderRadius: radius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: spacing.xs,
+  },
+  dontKnowText: { fontSize: font.small, fontWeight: '600', color: colors.muted },
+
+  input: {
+    borderWidth: 2,
+    borderColor: colors.border,
+    borderRadius: radius.md,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    fontSize: 22,
+    textAlign: 'center',
+    color: colors.text,
+    backgroundColor: colors.card,
+  },
+  answer: {
+    marginTop: spacing.md,
+    textAlign: 'center',
+    fontSize: font.h3,
+    fontWeight: '700',
+    color: colors.correct,
+  },
+  submit: {
+    minHeight: 52,
+    borderRadius: radius.md,
+    backgroundColor: colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  submitText: { color: '#fff', fontWeight: '700', fontSize: 16 },
+  textBtn: { padding: spacing.sm },
+  textBtnLabel: { color: colors.muted, fontWeight: '600', fontSize: font.small },
+
   skip: { marginTop: spacing.lg, alignSelf: 'center', padding: spacing.md },
   skipText: { color: colors.primary, fontWeight: '700' },
 });

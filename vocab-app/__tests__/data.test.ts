@@ -85,13 +85,14 @@ describe('어휘 데이터', () => {
         }
       }
     }
-    // 불규칙 변화(go/went, buy/bought 등)는 어쩔 수 없이 놓친다.
-    // 전체의 12%를 넘으면 데이터가 잘못됐다고 본다.
+    // 빈칸 채우기가 모든 문제의 중심이라 적용률이 곧 출제 가능 범위다.
+    // 불규칙 변화표를 넣어 대부분을 잡는다. 남는 것은 표제어가 문장에
+    // 흩어져 있는 경우(wake me up)로, 그때는 다른 유형으로 돌아간다.
     const totalExamples = ALL_ENTRIES.reduce(
       (n, e) => n + e.senses.reduce((m, s) => m + s.examples.length, 0),
       0,
     );
-    expect(misses.length / totalExamples).toBeLessThan(0.12);
+    expect(misses.length / totalExamples).toBeLessThan(0.02);
   });
 
   it('동의어에 표제어 자신이 들어가지 않는다', () => {
@@ -181,8 +182,19 @@ describe('wordForms', () => {
     expect(savedIdx).toBeLessThan(saveIdx);
   });
 
-  it('숙어는 원형만 쓴다', () => {
-    expect(wordForms('take part in')).toEqual(['take part in']);
+  it('숙어는 첫 낱말만 바꾼다', () => {
+    const forms = wordForms('take part in');
+    expect(forms).toContain('take part in');
+    // 문장에는 'took part in'으로 나오므로 이것도 잡아야 한다.
+    expect(forms).toContain('took part in');
+    // 뒷부분은 그대로 둔다.
+    expect(forms.every((f) => f.endsWith(' part in'))).toBe(true);
+  });
+
+  it('불규칙 동사의 과거형을 찾아낸다', () => {
+    expect(wordForms('bring')).toContain('brought');
+    expect(wordForms('catch')).toContain('caught');
+    expect(wordForms('leave')).toContain('left');
   });
 });
 

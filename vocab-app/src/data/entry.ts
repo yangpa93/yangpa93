@@ -7,6 +7,7 @@
  */
 
 import { CardState, Example, Sense, VocabEntry } from '../types';
+import { irregularOf } from './irregular';
 
 /** 화면에 한 줄로 보여줄 뜻. 다의어는 `;`로 이어 붙인다. */
 export function meaningLine(entry: VocabEntry): string {
@@ -70,6 +71,28 @@ export function exposure(entry: VocabEntry, n: number): Exposure {
 }
 
 /**
+ * 특정 뜻에 대한 노출을 만든다.
+ *
+ * `exposure()`는 뜻을 번갈아 고르지만, 이쪽은 뜻이 이미 정해져 있고
+ * 그 안에서 예문만 돌린다. 다의어의 모든 뜻을 한 세션에서 다루려면
+ * 뜻을 밖에서 정해 줘야 하기 때문이다.
+ */
+export function senseExposure(entry: VocabEntry, senseIndex: number, n: number): Exposure {
+  const si = Math.min(Math.max(0, senseIndex), entry.senses.length - 1);
+  const sense = entry.senses[si];
+  const i = Math.max(0, Math.floor(n));
+  const exampleIndex = sense.examples.length === 0 ? 0 : i % sense.examples.length;
+
+  return {
+    sense,
+    senseIndex: si,
+    example: sense.examples[exampleIndex] ?? { en: entry.word, ko: sense.meaning },
+    exampleIndex,
+    hasSynonym: sense.synonyms.length > 0,
+  };
+}
+
+/**
  * 예문에서 표제어를 빈칸으로 바꾼다. 빈칸 채우기 게임에 쓴다.
  *
  * 표제어가 변형된 형태(saved, saving, is saving …)로 들어 있는 경우가 많아서
@@ -98,37 +121,42 @@ export function clozeSentence(entry: VocabEntry, sentence: string): { text: stri
 export function wordForms(word: string): string[] {
   const w = word.toLowerCase();
 
-  // 숙어는 굴절이 복잡해서 첫 낱말만 바꿔 본다. (take part in → took part in)
+  // 숙어는 첫 낱말만 변한다. (take part in → took part in)
   if (w.includes(' ')) {
-    return [w];
+    const [head, ...rest] = w.split(' ');
+    const tail = rest.join(' ');
+    const heads = new Set<string>([head, ...irregularOf(head), ...regularForms(head)]);
+    return [...heads].map((h) => `${h} ${tail}`).sort((a, b) => b.length - a.length);
   }
 
-  const forms = new Set<string>([w]);
-  forms.add(`${w}s`);
-  forms.add(`${w}ed`);
-  forms.add(`${w}ing`);
+  const forms = new Set<string>([w, ...regularForms(w), ...irregularOf(w)]);
+  return [...forms].sort((a, b) => b.length - a.length);
+}
+
+/** 규칙 변화형. -s / -ed / -ing 와 철자 규칙. */
+function regularForms(w: string): string[] {
+  const out = new Set<string>([`${w}s`, `${w}ed`, `${w}ing`]);
 
   if (w.endsWith('e')) {
     const stem = w.slice(0, -1);
-    forms.add(`${stem}ed`);
-    forms.add(`${stem}ing`);
+    out.add(`${stem}ed`);
+    out.add(`${stem}ing`);
   }
-  if (w.endsWith('y')) {
+  if (w.endsWith('y') && !/[aeiou]y$/.test(w)) {
     const stem = w.slice(0, -1);
-    forms.add(`${stem}ies`);
-    forms.add(`${stem}ied`);
+    out.add(`${stem}ies`);
+    out.add(`${stem}ied`);
   }
+  // stop → stopped / stopping (단모음 + 단자음으로 끝날 때)
   if (/[^aeiou][aeiou][^aeiouwxy]$/.test(w)) {
-    // stop → stopped / stopping
     const last = w[w.length - 1];
-    forms.add(`${w}${last}ed`);
-    forms.add(`${w}${last}ing`);
+    out.add(`${w}${last}ed`);
+    out.add(`${w}${last}ing`);
   }
-  if (w.endsWith('s') || w.endsWith('x') || w.endsWith('ch') || w.endsWith('sh')) {
-    forms.add(`${w}es`);
+  if (/(s|x|z|ch|sh)$/.test(w)) {
+    out.add(`${w}es`);
   }
-
-  return [...forms].sort((a, b) => b.length - a.length);
+  return [...out];
 }
 
 function escapeRegExp(s: string): string {

@@ -161,9 +161,9 @@ export default function ParentDashboard() {
             <ProgressBar value={progress.ratio} color={colors.accent} />
           </View>
           <Muted style={{ marginTop: spacing.sm }}>
-            {progress.canLevelUp
-              ? '레벨업 조건을 채웠습니다. 아이가 보상을 요청할 수 있어요.'
-              : `${progress.remaining}개 더 외우면 다음 학년으로 올라갑니다.`}
+            {progress.canTakeExam
+              ? '레벨 시험을 볼 수 있습니다. 그 학년 단어를 모두 맞혀야 통과합니다.'
+              : `${progress.remaining}개 더 외우면 레벨 시험을 볼 수 있습니다.`}
           </Muted>
         </Card>
       ) : null}

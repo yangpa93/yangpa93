@@ -27,7 +27,7 @@ describe('buildSession', () => {
       rand: fixedRand,
     });
 
-    expect(session).toHaveLength(15);
+    expect(new Set(session.map((i) => i.entry.id)).size).toBe(15);
     expect(session.every((i) => i.mode === 'new')).toBe(true);
   });
 
@@ -46,10 +46,10 @@ describe('buildSession', () => {
       rand: fixedRand,
     });
 
-    const reviews = session.filter((i) => i.mode === 'review');
+    const reviewWords = new Set(session.filter((i) => i.mode === 'review').map((i) => i.entry.id));
     // reviewRatio 70% → 15 × 0.7 ≈ 11개까지 복습이 들어간다.
-    expect(reviews).toHaveLength(11);
-    expect(session).toHaveLength(15);
+    expect(reviewWords.size).toBe(11);
+    expect(new Set(session.map((i) => i.entry.id)).size).toBe(15);
   });
 
   it('복습 비중을 100으로 두면 새 단어 없이 복습만 나온다', () => {
@@ -111,7 +111,7 @@ describe('buildSession', () => {
     });
 
     // 새 단어도 복습 대상도 없으니 아직 안 외운 단어를 당겨온다.
-    expect(session.length).toBeLessThanOrEqual(15);
+    expect(new Set(session.map((i) => i.entry.id)).size).toBeLessThanOrEqual(15);
     expect(session.every((i) => i.mode === 'review')).toBe(true);
   });
 
@@ -145,20 +145,19 @@ describe('buildSession', () => {
       rand: fixedRand,
     });
 
-    const ids = session.map((i) => i.entry.id);
-    expect(new Set(ids).size).toBe(ids.length);
+    // 같은 단어라도 뜻이 다르면 문항이 따로 생긴다. (단어,뜻) 짝이 유일해야 한다.
+    const keys = session.map((i) => `${i.entry.id}#${i.senseIndex}`);
+    expect(new Set(keys).size).toBe(keys.length);
   });
 });
 
-function item(
-  entry: VocabEntry,
-  over: Partial<SessionItem> = {},
-): SessionItem {
+function item(entry: VocabEntry, over: Partial<SessionItem> = {}): SessionItem {
   return {
     entry,
     card: null,
+    senseIndex: 0,
     mode: 'new',
-    game: 'meaning',
+    game: 'cloze',
     stage: 'learn',
     round: 0,
     showIntro: false,
@@ -167,7 +166,8 @@ function item(
 }
 
 describe('buildRounds', () => {
-  const words = POOL.slice(0, 20).map((e) => item(e));
+  // 뜻이 하나인 단어만 골라 문항 수를 단어 수와 같게 맞춘다.
+  const words = POOL.filter((e) => e.senses.length === 1).slice(0, 20).map((e) => item(e));
 
   it('단어 수 × 라운드 수만큼 문제를 만든다', () => {
     const q = buildRounds(words, 3, fixedRand);
@@ -206,7 +206,10 @@ describe('buildRounds', () => {
   it('처음 보는 단어는 첫 라운드에서 단어 카드를 먼저 보여준다', () => {
     const q = buildRounds(words, 3, fixedRand);
     const firstRound = q.filter((x) => x.round === 0);
-    expect(firstRound.every((x) => x.showIntro)).toBe(true);
+    // 뜻이 여러 개여도 카드는 그 단어의 첫 문항에서만 뜬다.
+    const introWords = firstRound.filter((x) => x.showIntro).map((x) => x.entry.id);
+    expect(new Set(introWords).size).toBe(introWords.length);
+    expect(introWords.length).toBe(20);
     // 2라운드부터는 이미 본 단어이므로 카드를 다시 띄우지 않는다.
     expect(q.filter((x) => x.round > 0).every((x) => !x.showIntro)).toBe(true);
   });
@@ -239,65 +242,90 @@ describe('pickGame', () => {
     return out;
   }
 
-  it('익히기 단계는 4지선다로만 낸다', () => {
-    const games = possibleGames(item(POOL[0], { stage: 'learn', mode: 'review', card: createCard(POOL[0].id) }));
-    for (const g of games) {
-      expect(['meaning', 'word', 'listening']).toContain(g);
+  it('모든 유형이 문장을 지문으로 쓴다', () => {
+    // 단어와 뜻만 짝지어 묻는 유형은 없어야 한다.
+    const sentenceBased: GameId[] = [
+      'cloze',
+      'clozeType',
+      'listening',
+      'context',
+      'polysemy',
+      'synonym',
+    ];
+    for (const entry of POOL) {
+      for (const stage of ['learn', 'apply', 'recall'] as Stage[]) {
+        for (const g of possibleGames(item(entry, { stage, mode: 'review' }))) {
+          expect(sentenceBased).toContain(g);
+        }
+      }
     }
   });
 
-  it('새 단어는 익히기 단계에서 듣기 문제를 내지 않는다', () => {
-    // 본 적 없는 단어를 소리만 듣고 고르라고 하면 찍기밖에 안 된다.
-    const games = possibleGames(item(POOL[0], { stage: 'learn', mode: 'new' }));
-    expect(games.has('listening')).toBe(false);
-  });
-
-  it('활용하기 단계는 문장을 쓰는 유형만 낸다', () => {
-    const games = possibleGames(item(POOL[0], { stage: 'apply', mode: 'review' }));
-    for (const g of games) {
-      expect(['context', 'cloze', 'synonym', 'polysemy']).toContain(g);
-    }
+  it('마지막 단계는 직접 쓰게 한다', () => {
+    const e = POOL.find((x) => x.senses.length === 1)!;
+    const games = possibleGames(item(e, { stage: 'recall', mode: 'review' }));
+    expect(games.has('clozeType')).toBe(true);
   });
 
   it('뜻이 하나뿐인 단어에는 다의어 구별 문제를 내지 않는다', () => {
     const single = POOL.find((e) => e.senses.length === 1)!;
-    const games = possibleGames(item(single, { stage: 'apply', mode: 'review' }));
-    expect(games.has('polysemy')).toBe(false);
+    for (const stage of ['learn', 'apply', 'recall'] as Stage[]) {
+      expect(possibleGames(item(single, { stage, mode: 'review' })).has('polysemy')).toBe(false);
+    }
   });
 
   it('다의어에는 다의어 구별 문제가 나온다', () => {
     const multi = POOL.find((e) => e.senses.length >= 2)!;
-    const games = possibleGames(item(multi, { stage: 'apply', mode: 'review' }));
+    const games = possibleGames(item(multi, { stage: 'apply', mode: 'review', senseIndex: 0 }));
     expect(games.has('polysemy')).toBe(true);
   });
 
-  it('떠올리기 단계는 직접 쓰게 한다', () => {
-    const word = POOL.find((e) => e.kind === 'word')!;
-    const games = possibleGames(item(word, { stage: 'recall', mode: 'review' }));
-    for (const g of games) {
-      expect(['recall', 'spelling']).toContain(g);
-    }
-  });
-
-  it('숙어에는 철자·직접 쓰기를 내지 않는다', () => {
-    const idiom = POOL.find((e) => e.kind === 'idiom')!;
-    for (const stage of ['learn', 'apply', 'recall'] as Stage[]) {
-      const games = possibleGames(item(idiom, { stage, mode: 'review' }));
-      expect(games.has('spelling')).toBe(false);
-      expect(games.has('recall')).toBe(false);
-    }
-  });
-
-  it('어떤 단어·단계에서도 반드시 문제 유형이 정해진다', () => {
+  it('어떤 단어·단계에서도 반드시 유형이 정해진다', () => {
     for (const entry of POOL) {
-      for (const stage of ['learn', 'apply', 'recall'] as Stage[]) {
-        for (const mode of ['new', 'review'] as const) {
-          const g = pickGame(item(entry, { stage, mode }), fixedRand);
+      for (let si = 0; si < entry.senses.length; si++) {
+        for (const stage of ['learn', 'apply', 'recall'] as Stage[]) {
+          const g = pickGame(item(entry, { stage, senseIndex: si }), fixedRand);
           expect(typeof g).toBe('string');
           expect(g.length).toBeGreaterThan(0);
         }
       }
     }
+  });
+});
+
+describe('다의어는 뜻마다 문항이 생긴다', () => {
+  it('뜻이 3개인 단어는 문항도 3개', () => {
+    const multi = POOL.find((e) => e.senses.length >= 3)!;
+    const session = buildSession({
+      entries: [multi],
+      cards: {},
+      level: 'm1',
+      goal: 20,
+      reviewRatio: 70,
+      today: TODAY,
+      rand: fixedRand,
+    });
+
+    expect(session).toHaveLength(multi.senses.length);
+    // 뜻 번호가 겹치지 않는다.
+    expect(new Set(session.map((i) => i.senseIndex)).size).toBe(multi.senses.length);
+  });
+
+  it('목표 단어 수만큼 단어를 고르되, 다의어는 문항이 늘어난다', () => {
+    const session = buildSession({
+      entries: POOL,
+      cards: {},
+      level: 'm1',
+      goal: 20,
+      reviewRatio: 70,
+      today: TODAY,
+      rand: fixedRand,
+    });
+
+    const words = new Set(session.map((i) => i.entry.id));
+    expect(words.size).toBe(20);
+    // 중1에는 다의어가 있으므로 문항 수가 단어 수보다 많다.
+    expect(session.length).toBeGreaterThan(20);
   });
 });
 

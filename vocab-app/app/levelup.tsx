@@ -18,12 +18,14 @@ import { colors, radius, spacing } from '../src/theme';
  *  2) 올라간 뒤에는 갖고 싶은 것을 적어 부모님께 보낸다.
  */
 export default function LevelUp() {
-  const { profile, data, levelUp, requestReward } = useApp();
+  const { profile, data, requestReward } = useApp();
 
   const progress = useMemo(
     () => (profile ? levelProgress(ALL_ENTRIES, data.cards, profile.level) : null),
     [profile, data.cards],
   );
+
+  const lastExam = data.exams.find((e) => e.level === profile?.level) ?? null;
 
   const [wish, setWish] = useState('');
   const [note, setNote] = useState('');
@@ -44,8 +46,8 @@ export default function LevelUp() {
   const canRequest = profile.pendingLevelUps.length > 0;
   const upcoming = nextLevel(profile.level);
 
-  // 1단계: 아직 레벨업을 확정하지 않은 상태
-  if (progress.canLevelUp && upcoming) {
+  // 1단계: 시험을 볼 수 있게 됐지만 아직 안 본 상태
+  if (progress.canTakeExam && upcoming) {
     return (
       <SafeAreaView style={s.screen}>
         <View style={s.center}>
@@ -58,28 +60,37 @@ export default function LevelUp() {
             🎊
           </Animated.Text>
           <H1 style={{ textAlign: 'center', marginTop: spacing.lg }}>
-            {LEVEL_SHORT[profile.level]} 단어를{'\n'}모두 익혔어요!
+            {LEVEL_SHORT[profile.level]} 레벨 시험
           </H1>
           <Body style={{ textAlign: 'center', marginTop: spacing.md, color: colors.subtext }}>
-            {progress.mastered}개 단어를 완전히 외웠어요.{'\n'}이제 {LEVEL_LABEL[upcoming]} 단어에 도전할 수 있어요.
+            {progress.mastered}개 단어를 완전히 외웠어요.{'\n'}이제 마지막 시험만 통과하면 {LEVEL_LABEL[upcoming]}이에요.
           </Body>
 
           <Card style={{ marginTop: spacing.xl, width: '100%', backgroundColor: colors.accentSoft, borderColor: colors.accent }}>
-            <H3 style={{ textAlign: 'center' }}>🎁 보상 요청 자격을 얻었어요</H3>
+            <H3 style={{ textAlign: 'center' }}>🏆 통과 조건</H3>
             <Muted style={{ textAlign: 'center', marginTop: spacing.sm }}>
-              레벨업하면 갖고 싶은 것을 부모님께 요청할 수 있어요.
+              {LEVEL_SHORT[profile.level]} 단어 <Text style={{ fontWeight: '800' }}>{progress.total}개를 하나도 빠짐없이</Text> 맞혀야 해요.
+              {'\n'}뜻이 여러 개인 단어는 뜻마다 한 문제씩 나와요.
+              {'\n\n'}틀려도 괜찮아요. 틀린 문제는 끝나고 다시 나오고,
+              전부 맞히면 통과예요.
             </Muted>
           </Card>
 
+          {lastExam ? (
+            <Muted style={{ marginTop: spacing.lg, textAlign: 'center' }}>
+              지난 시험: {lastExam.firstTryCorrect}/{lastExam.total} 한 번에 맞힘
+            </Muted>
+          ) : null}
+
           <Button
-            title={`${LEVEL_SHORT[upcoming]}(으)로 올라가기`}
-            onPress={levelUp}
+            title="시험 시작하기"
+            onPress={() => router.replace('/exam')}
             style={{ marginTop: spacing.xl, width: '100%' }}
           />
           <Button
             title="조금 더 복습할래요"
             variant="ghost"
-            onPress={() => router.back()}
+            onPress={() => router.replace('/home')}
             style={{ marginTop: spacing.sm, width: '100%' }}
           />
         </View>
@@ -152,7 +163,7 @@ export default function LevelUp() {
         <Body style={{ textAlign: 'center', marginTop: spacing.md, color: colors.subtext }}>
           {sent
             ? '부모님이 확인하면 홈 화면에서 결과를 볼 수 있어요.'
-            : `${LEVEL_SHORT[profile.level]} 단어를 ${progress.remaining}개 더 외우면 레벨업이에요.`}
+            : `${LEVEL_SHORT[profile.level]} 단어를 ${progress.remaining}개 더 외우면 레벨 시험을 볼 수 있어요.`}
         </Body>
         <Button title="홈으로" onPress={() => router.replace('/home')} style={{ marginTop: spacing.xl, width: '100%' }} />
       </View>

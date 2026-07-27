@@ -24,7 +24,7 @@ function makeProfile(over: Partial<Profile> = {}): Profile {
 }
 
 function makeData(over: Partial<ProfileData> = {}): ProfileData {
-  return { cards: {}, days: {}, answers: [], ...over };
+  return { cards: {}, days: {}, answers: [], exams: [], ...over };
 }
 
 describe('isValidPushToken', () => {

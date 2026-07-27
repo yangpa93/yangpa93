@@ -112,34 +112,28 @@ export interface AnswerLog {
 /**
  * 문제 유형.
  *
- * 아래로 갈수록 어렵다. 4지선다(재인)는 보기 중에 답이 있어서 쉽고,
- * 직접 타이핑(인출)은 스스로 떠올려야 해서 어렵다. 한 세션에서
- * 같은 단어를 재인 → 문맥 → 인출 순으로 올려 가며 세 번 만난다.
+ * **모든 문제가 문장으로 나온다.** 단어와 뜻만 짝지어 외우면 시험에서
+ * 문장 안에 들어간 그 단어를 못 알아본다. 그래서 뜻만 보여주고 고르게
+ * 하는 유형은 두지 않았다.
+ *
+ * 중심은 빈칸 채우기다. 문장에서 그 단어만 지우고, 거기에 무엇이
+ * 들어가야 하는지 묻는다.
  */
 export type GameId =
-  // 1단계 · 재인
-  | 'meaning' // 영어 → 뜻 4지선다
-  | 'word' // 뜻 → 영어 4지선다
-  | 'listening' // 듣고 고르기
-  // 2단계 · 문맥
-  | 'context' // 예문 속 표제어의 뜻 고르기
-  | 'polysemy' // 다의어: 이 문장에서 쓰인 뜻 고르기
-  | 'cloze' // 예문 빈칸 채우기
-  | 'synonym' // 문맥에 맞는 동의어 고르기
-  // 3단계 · 인출
-  | 'spelling' // 첫 글자 힌트를 보고 철자 쓰기
-  | 'recall'; // 힌트 없이 뜻만 보고 영어로 쓰기
+  | 'cloze' // 문장 빈칸에 알맞은 단어 고르기        (기본)
+  | 'clozeType' // 문장 빈칸에 알맞은 단어 직접 쓰기   (가장 어려움)
+  | 'listening' // 문장을 듣고 빈칸에 알맞은 단어 고르기
+  | 'context' // 문장 속 그 단어가 여기서 무슨 뜻인지
+  | 'polysemy' // 다의어: 여러 뜻 중 이 문장에서 쓰인 뜻
+  | 'synonym'; // 문맥에 맞게 바꿔 쓸 수 있는 표현
 
 export const GAME_LABEL: Record<GameId, string> = {
-  meaning: '뜻 맞히기',
-  word: '단어 맞히기',
-  listening: '듣고 맞히기',
+  cloze: '빈칸 채우기',
+  clozeType: '빈칸에 직접 쓰기',
+  listening: '듣고 빈칸 채우기',
   context: '문맥 속 뜻',
   polysemy: '여러 뜻 구별',
-  cloze: '빈칸 채우기',
-  synonym: '같은 뜻 찾기',
-  spelling: '철자 쓰기',
-  recall: '직접 쓰기',
+  synonym: '바꿔 쓰기',
 };
 
 /** 한 세션에서 단어를 만나는 단계. 라운드가 올라갈수록 어려워진다. */
@@ -232,12 +226,34 @@ export interface Profile {
   clearedLevels: LevelId[];
 }
 
+/**
+ * 레벨 시험 결과.
+ *
+ * 다음 학년으로 올라가려면 그 레벨의 단어를 **하나도 빠짐없이** 맞혀야
+ * 한다. 틀린 문제는 시험이 끝난 뒤 다시 나오고, 전부 맞히면 통과다.
+ * `firstTryCorrect`는 처음에 몇 개를 맞혔는지로, 부모 리포트에 남는다.
+ */
+export interface ExamResult {
+  level: LevelId;
+  /** 전체 문항 수 (다의어는 뜻마다 한 문항) */
+  total: number;
+  /** 처음 시도에서 맞힌 개수 */
+  firstTryCorrect: number;
+  /** 다시 풀기를 몇 번 했는지 */
+  retries: number;
+  passed: boolean;
+  seconds: number;
+  at: number;
+}
+
 /** 프로필 하나에 딸린 학습 데이터. 프로필별로 따로 저장된다. */
 export interface ProfileData {
   cards: Record<string, CardState>;
   days: Record<string, DailyRecord>;
   /** 최근 답안 로그. 오래된 건 잘라낸다. */
   answers: AnswerLog[];
+  /** 레벨 시험 기록 (최신순) */
+  exams: ExamResult[];
 }
 
 /**

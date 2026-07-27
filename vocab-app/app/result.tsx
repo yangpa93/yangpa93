@@ -103,9 +103,9 @@ export default function Result() {
         <View style={{ flex: 1 }} />
 
         <Button title="홈으로" onPress={() => router.replace('/home')} style={{ marginTop: spacing.lg }} />
-        {progress.canLevelUp ? (
+        {progress.canTakeExam ? (
           <Button
-            title="🎁 레벨업 확인하기"
+            title="🏆 레벨 시험 보기"
             variant="secondary"
             onPress={() => router.replace('/levelup')}
             style={{ marginTop: spacing.sm }}

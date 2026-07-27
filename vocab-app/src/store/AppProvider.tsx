@@ -20,6 +20,7 @@ import {
   CardState,
   DailyRecord,
   DeviceRole,
+  ExamResult,
   LevelId,
   ParentLink,
   Profile,
@@ -67,6 +68,8 @@ interface Ctx {
 
   /** 레벨업 확정. 다음 학년으로 올리고 보상 요청 자격을 준다. */
   levelUp(): void;
+  /** 레벨 시험 결과를 남긴다. */
+  recordExam(result: ExamResult): void;
 
   requestReward(wish: string, note: string): void;
   decideReward(id: string, status: RewardStatus, parentNote: string): void;
@@ -258,6 +261,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       };
 
       persistData({
+        ...data,
         cards: { ...data.cards, [log.entryId]: graded },
         days: {
           ...data.days,
@@ -346,6 +350,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       }
     },
     [persistData, persistState],
+  );
+
+  const recordExam = useCallback(
+    (result: ExamResult) => {
+      const { data } = ref.current;
+      persistData({ ...data, exams: [result, ...data.exams].slice(0, 30) });
+    },
+    [persistData],
   );
 
   const levelUp = useCallback(() => {
@@ -520,6 +532,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     recordAnswer,
     finishSession,
     levelUp,
+    recordExam,
     requestReward,
     decideReward,
     updateParent,

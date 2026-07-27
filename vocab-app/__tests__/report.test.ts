@@ -24,7 +24,7 @@ function makeProfile(over: Partial<Profile> = {}): Profile {
 }
 
 function makeData(over: Partial<ProfileData> = {}): ProfileData {
-  return { cards: {}, days: {}, answers: [], ...over };
+  return { cards: {}, days: {}, answers: [], exams: [], ...over };
 }
 
 describe('buildDailyReport', () => {
@@ -154,10 +154,10 @@ describe('levelProgress / nextLevel', () => {
     const p = levelProgress(ALL_ENTRIES, {}, 'm1');
     expect(p.mastered).toBe(0);
     expect(p.ratio).toBe(0);
-    expect(p.canLevelUp).toBe(false);
+    expect(p.canTakeExam).toBe(false);
   });
 
-  it('90% 이상 외우면 레벨업할 수 있다', () => {
+  it('90% 이상 외우면 레벨 시험을 볼 수 있다', () => {
     const pool = entriesOf('m1');
     const cards: Record<string, CardState> = {};
     const need = Math.ceil(pool.length * 0.9);
@@ -170,7 +170,7 @@ describe('levelProgress / nextLevel', () => {
     }
 
     const p = levelProgress(ALL_ENTRIES, cards, 'm1');
-    expect(p.canLevelUp).toBe(true);
+    expect(p.canTakeExam).toBe(true);
     expect(p.remaining).toBe(0);
   });
 

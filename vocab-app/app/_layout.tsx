@@ -31,6 +31,7 @@ export default function RootLayout() {
             <Stack.Screen name="wordbook" options={{ title: '단어장' }} />
             <Stack.Screen name="mistakes" options={{ title: '오답 노트' }} />
             <Stack.Screen name="levelup" options={{ headerShown: false }} />
+            <Stack.Screen name="exam" options={{ headerShown: false, gestureEnabled: false }} />
             <Stack.Screen name="parent" options={{ title: '부모님 모드' }} />
             <Stack.Screen name="parent-dashboard" options={{ title: '학습 리포트' }} />
             <Stack.Screen name="parent-rewards" options={{ title: '보상 요청' }} />

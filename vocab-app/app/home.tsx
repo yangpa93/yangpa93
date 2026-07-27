@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback } from 'react';
@@ -72,10 +72,8 @@ export default function Home() {
     }, [state.profiles, state.parent, state.activeProfileId, data, today]),
   );
 
-  // 레벨을 다 외웠으면 축하 화면으로 보낸다.
-  useEffect(() => {
-    if (progress?.canLevelUp) router.push('/levelup');
-  }, [progress?.canLevelUp]);
+  // 레벨 시험 자격이 생기면 알려 준다. 시험은 아이가 눌러서 시작한다.
+  // 자동으로 끌고 들어가면 준비 안 된 채로 보게 된다.
 
   if (!profile || !progress) return null;
 
@@ -162,10 +160,24 @@ export default function Home() {
           <ProgressBar value={progress.ratio} color={colors.accent} />
         </View>
         <Muted style={{ marginTop: spacing.sm }}>
-          {progress.canLevelUp
-            ? '레벨업 조건을 채웠어요! 🎁'
-            : `${progress.remaining}개 더 외우면 다음 학년으로 올라가요.`}
+          {progress.canTakeExam
+            ? '레벨 시험을 볼 수 있어요!'
+            : `${progress.remaining}개 더 외우면 레벨 시험을 볼 수 있어요.`}
         </Muted>
+
+        {progress.canTakeExam ? (
+          <>
+            <Button
+              title={`🏆 ${LEVEL_SHORT[profile.level]} 레벨 시험 보기`}
+              variant="secondary"
+              onPress={() => router.push('/levelup')}
+              style={{ marginTop: spacing.lg }}
+            />
+            <Muted style={{ marginTop: spacing.sm, textAlign: 'center' }}>
+              {progress.total}개 단어를 모두 맞혀야 다음 학년으로 올라가요.
+            </Muted>
+          </>
+        ) : null}
       </Card>
 
       {/* 바로가기 */}

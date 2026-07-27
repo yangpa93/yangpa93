@@ -214,6 +214,7 @@ export default function Exam() {
     exp,
     pool,
     ttsEnabled: profile.settings.ttsEnabled,
+    showTranslation: profile.settings.showTranslation,
     onAnswer,
   };
 

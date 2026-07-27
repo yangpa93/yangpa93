@@ -41,6 +41,7 @@ export function ChoiceGame({
   exp,
   pool,
   ttsEnabled,
+  showTranslation,
   onAnswer,
 }: GameProps & { game: ChoiceGameId }) {
   const [picked, setPicked] = useState<string | null>(null);
@@ -62,7 +63,14 @@ export function ChoiceGame({
       <Muted>{PROMPT[game]}</Muted>
 
       <View style={s.stem}>
-        <Stem entry={entry} exp={exp} ttsEnabled={ttsEnabled} answered={picked !== null} />
+        <Stem
+          entry={entry}
+          exp={exp}
+          ttsEnabled={ttsEnabled}
+          // 해석에 정답(한국어 뜻)이 그대로 들어 있는 유형은 미리 보여줄 수 없다.
+          // '바꿔 쓰기'는 정답이 영어 표현이라 해석을 봐도 답이 드러나지 않는다.
+          showKo={picked !== null || (showTranslation && game === 'synonym')}
+        />
       </View>
 
       <View style={{ gap: spacing.sm }}>
@@ -88,12 +96,12 @@ function Stem({
   entry,
   exp,
   ttsEnabled,
-  answered,
+  showKo,
 }: {
   entry: VocabEntry;
   exp: Exposure;
   ttsEnabled: boolean;
-  answered: boolean;
+  showKo: boolean;
 }) {
   return (
     <Pressable
@@ -103,7 +111,7 @@ function Stem({
       accessibilityLabel="문장 듣기"
     >
       <HighlightedSentence text={exp.example.en} word={entry.word} />
-      {answered ? <Text style={s.sentenceKo}>{exp.example.ko}</Text> : null}
+      {showKo ? <Text style={s.sentenceKo}>{exp.example.ko}</Text> : null}
     </Pressable>
   );
 }

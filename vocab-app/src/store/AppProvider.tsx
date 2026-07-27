@@ -166,6 +166,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           dailyGoal: 15,
           rounds: 3,
           reviewRatio: 70,
+          showTranslation: true,
           ttsEnabled: true,
           hapticsEnabled: true,
         },

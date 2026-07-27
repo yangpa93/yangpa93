@@ -164,6 +164,21 @@ export default function ParentSettings() {
             </Row>
 
             <Row style={{ justifyContent: 'space-between', marginTop: spacing.lg }}>
+              <View style={{ flex: 1, paddingRight: spacing.md }}>
+                <Text style={s.label}>해석 미리 보여주기</Text>
+                <Muted style={{ marginTop: 2 }}>
+                  빈칸 문제에서 한국어 해석을 처음부터 보여줍니다. 아직 문장을 읽기
+                  어려우면 켜 두세요. 실력이 붙으면 끄면 난이도가 올라갑니다.
+                </Muted>
+              </View>
+              <Switch
+                value={profile.settings.showTranslation}
+                onValueChange={(v) => updateSettings(profile.id, { showTranslation: v })}
+                trackColor={{ true: colors.parent }}
+              />
+            </Row>
+
+            <Row style={{ justifyContent: 'space-between', marginTop: spacing.lg }}>
               <Text style={s.label}>소리로 읽어주기</Text>
               <Switch
                 value={profile.settings.ttsEnabled}

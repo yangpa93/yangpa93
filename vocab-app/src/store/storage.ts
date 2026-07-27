@@ -94,7 +94,11 @@ function migrate(state: AppState): AppState {
     // rounds는 나중에 추가된 설정이라 예전에 저장된 프로필에는 없다.
     profiles: (state.profiles ?? []).map((p) => ({
       ...p,
-      settings: { ...p.settings, rounds: p.settings?.rounds ?? 3 },
+      settings: {
+        ...p.settings,
+        rounds: p.settings?.rounds ?? 3,
+        showTranslation: p.settings?.showTranslation ?? true,
+      },
     })),
     rewards: state.rewards ?? [],
     role: state.role ?? 'child',

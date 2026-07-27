@@ -168,6 +168,7 @@ export default function Study() {
     exp: shownExposure,
     pool,
     ttsEnabled: profile.settings.ttsEnabled,
+    showTranslation: profile.settings.showTranslation,
     onAnswer,
   };
 

@@ -25,6 +25,8 @@ export interface GameProps {
   /** 오답 보기를 뽑아올 같은 레벨 단어들 */
   pool: VocabEntry[];
   ttsEnabled: boolean;
+  /** 예문 해석을 문제 풀기 전에 보여줄지 */
+  showTranslation: boolean;
   onAnswer: (correct: boolean) => void;
 }
 
@@ -33,6 +35,7 @@ export function ClozeGame({
   exp,
   pool,
   ttsEnabled,
+  showTranslation,
   onAnswer,
   mode = 'choice',
   /** 듣기 모드: 문장을 먼저 읽어 준다 */
@@ -53,7 +56,14 @@ export function ClozeGame({
   }
 
   return mode === 'type' ? (
-    <TypeCloze entry={entry} exp={exp} cloze={cloze} ttsEnabled={ttsEnabled} onAnswer={onAnswer} />
+    <TypeCloze
+      entry={entry}
+      exp={exp}
+      cloze={cloze}
+      ttsEnabled={ttsEnabled}
+      showTranslation={showTranslation}
+      onAnswer={onAnswer}
+    />
   ) : (
     <ChoiceCloze
       entry={entry}
@@ -61,6 +71,7 @@ export function ClozeGame({
       cloze={cloze}
       pool={pool}
       ttsEnabled={ttsEnabled}
+      showTranslation={showTranslation}
       listen={listen}
       onAnswer={onAnswer}
     />
@@ -82,6 +93,7 @@ function ChoiceCloze({
   cloze,
   pool,
   ttsEnabled,
+  showTranslation,
   listen,
   onAnswer,
 }: GameProps & { cloze: Cloze; listen: boolean }) {
@@ -131,7 +143,12 @@ function ChoiceCloze({
         ) : (
           <Text style={s.sentence}>{cloze.text}</Text>
         )}
-        {picked ? <Text style={s.sentenceKo}>{exp.example.ko}</Text> : null}
+        {/* 해석은 처음부터 보여준다. 문장을 아직 못 읽는 아이가
+            찍지 않고 어떤 단어가 들어갈지 판단할 수 있어야 한다.
+            정답은 영어 단어라서 해석을 봐도 답이 그대로 노출되지는 않는다. */}
+        {showTranslation || picked ? (
+          <Text style={s.sentenceKo}>{exp.example.ko}</Text>
+        ) : null}
       </Pressable>
 
       <View style={{ gap: spacing.sm }}>
@@ -187,6 +204,7 @@ function TypeCloze({
   exp,
   cloze,
   ttsEnabled,
+  showTranslation,
   onAnswer,
 }: Omit<GameProps, 'pool'> & { cloze: Cloze }) {
   const [value, setValue] = useState('');
@@ -210,7 +228,9 @@ function TypeCloze({
 
       <View style={s.sentenceBox}>
         <Text style={s.sentence}>{cloze.text}</Text>
-        <Text style={s.hintKo}>{exp.example.ko}</Text>
+        {showTranslation || result !== null ? (
+          <Text style={s.hintKo}>{exp.example.ko}</Text>
+        ) : null}
         {hint > 0 ? (
           <Text style={s.hint}>
             {hint === 1

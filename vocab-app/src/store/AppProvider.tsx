@@ -19,14 +19,20 @@ import {
   AppState,
   CardState,
   DailyRecord,
+  DeviceRole,
   LevelId,
+  ParentLink,
   Profile,
   ProfileData,
   ProfileSettings,
   ParentSettings,
+  ReceivedReport,
   RewardRequest,
   RewardStatus,
 } from '../types';
+import { ALL_ENTRIES } from '../data';
+import { buildDailyReport, buildWeeklySummary } from '../features/report';
+import { SendResult, sendReportToParent, toPayload } from '../features/push';
 import {
   emptyProfileData,
   emptyState,
@@ -66,6 +72,16 @@ interface Ctx {
   decideReward(id: string, status: RewardStatus, parentNote: string): void;
 
   updateParent(patch: Partial<ParentSettings>): void;
+
+  /* 기기 역할과 페어링 */
+  setRole(role: DeviceRole): void;
+  setMyPushToken(token: string | null): void;
+  linkParent(link: ParentLink): void;
+  unlinkParent(): void;
+  /** 부모 기기가 받은 리포트를 쌓는다. 같은 아이·같은 날짜는 최신 것으로 덮는다. */
+  addReceivedReport(report: Omit<ReceivedReport, 'id' | 'receivedAt'>): void;
+  /** 지금 리포트를 부모 기기로 보낸다. 결과를 돌려준다. */
+  pushReportNow(profileId?: string): Promise<SendResult>;
 }
 
 const AppContext = createContext<Ctx | null>(null);
@@ -280,7 +296,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       const completed = totalStudied >= day.goal;
       const wasCompleted = day.completed;
 
-      persistData({
+      const nextData: ProfileData = {
         ...data,
         days: {
           ...data.days,
@@ -291,25 +307,42 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
             completed,
           },
         },
-      });
+      };
+      persistData(nextData);
 
       // 오늘 처음으로 목표를 채운 순간에만 연속 일수를 올린다.
+      let updated = active;
       if (completed && !wasCompleted) {
         const yesterday = addDays(today, -1);
         const streak = active.lastCompletedDate === yesterday ? active.streak + 1 : 1;
+        updated = {
+          ...active,
+          streak,
+          bestStreak: Math.max(active.bestStreak, streak),
+          lastCompletedDate: today,
+        };
         persistState({
           ...ref.current.state,
-          profiles: ref.current.state.profiles.map((p) =>
-            p.id === active.id
-              ? {
-                  ...p,
-                  streak,
-                  bestStreak: Math.max(p.bestStreak, streak),
-                  lastCompletedDate: today,
-                }
-              : p,
-          ),
+          profiles: ref.current.state.profiles.map((p) => (p.id === active.id ? updated : p)),
         });
+      }
+
+      // 부모님 폰이 연결돼 있으면 방금 끝낸 결과를 바로 쏜다.
+      // 실패해도 아이 화면을 막지 않는다 — 조용히 넘어가고
+      // 부모 모드의 '마지막 전송' 표시로만 드러난다.
+      const link = ref.current.state.parentLink;
+      if (link && state.parent.pushToParent) {
+        const report = buildDailyReport(updated, nextData, ALL_ENTRIES, today);
+        void sendReportToParent(link.token, toPayload(report, buildWeeklySummary(nextData, today)))
+          .then((res) => {
+            if (res.ok) {
+              persistState({
+                ...ref.current.state,
+                parentLink: { ...ref.current.state.parentLink!, lastSentDate: today },
+              });
+            }
+          })
+          .catch(() => {});
       }
     },
     [persistData, persistState],
@@ -395,6 +428,85 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     [persistState],
   );
 
+  /* ---------------------------------------------------------------- */
+  /* 기기 역할과 페어링                                                 */
+  /* ---------------------------------------------------------------- */
+
+  const setRole = useCallback(
+    (role: DeviceRole) => persistState({ ...ref.current.state, role }),
+    [persistState],
+  );
+
+  const setMyPushToken = useCallback(
+    (myPushToken: string | null) => persistState({ ...ref.current.state, myPushToken }),
+    [persistState],
+  );
+
+  const linkParent = useCallback(
+    (link: ParentLink) => persistState({ ...ref.current.state, parentLink: link }),
+    [persistState],
+  );
+
+  const unlinkParent = useCallback(
+    () => persistState({ ...ref.current.state, parentLink: null }),
+    [persistState],
+  );
+
+  const addReceivedReport = useCallback(
+    (r: Omit<ReceivedReport, 'id' | 'receivedAt'>) => {
+      const { state } = ref.current;
+      // 같은 아이가 같은 날 여러 번 보내면 마지막 것만 남긴다.
+      const rest = state.receivedReports.filter(
+        (x) => !(x.childName === r.childName && x.date === r.date),
+      );
+      persistState({
+        ...state,
+        receivedReports: [
+          {
+            ...r,
+            id: `rr_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`,
+            receivedAt: Date.now(),
+          },
+          ...rest,
+        ].slice(0, 60),
+      });
+    },
+    [persistState],
+  );
+
+  /**
+   * 부모 기기로 리포트를 전송한다.
+   *
+   * 학습이 끝날 때 자동으로 불리고, 부모 모드에서 손으로도 부를 수 있다.
+   * 실패해도 아이 화면을 막지 않는다 — 결과만 돌려준다.
+   */
+  const pushReportNow = useCallback(async (profileId?: string): Promise<SendResult> => {
+    const { state, data } = ref.current;
+    const link = state.parentLink;
+    if (!link) return { ok: false, error: '연결된 부모님 기기가 없습니다.' };
+
+    const target = profileId ?? state.activeProfileId;
+    const p = state.profiles.find((x) => x.id === target);
+    if (!p) return { ok: false, error: '아이 프로필을 찾을 수 없습니다.' };
+
+    const pdata = p.id === state.activeProfileId ? data : await loadProfileData(p.id);
+    const today = todayKey();
+    const report = buildDailyReport(p, pdata, ALL_ENTRIES, today);
+
+    const result = await sendReportToParent(
+      link.token,
+      toPayload(report, buildWeeklySummary(pdata, today)),
+    );
+
+    if (result.ok) {
+      persistState({
+        ...ref.current.state,
+        parentLink: { ...link, lastSentDate: today },
+      });
+    }
+    return result;
+  }, [persistState]);
+
   const value: Ctx = {
     ready: store.ready,
     state: store.state,
@@ -411,6 +523,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     requestReward,
     decideReward,
     updateParent,
+    setRole,
+    setMyPushToken,
+    linkParent,
+    unlinkParent,
+    addReceivedReport,
+    pushReportNow,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

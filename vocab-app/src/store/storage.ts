@@ -24,8 +24,13 @@ export function emptyState(): AppState {
       notifyMinute: 0,
       notifyEnabled: true,
       notifyOnlyWhenMissed: false,
+      pushToParent: true,
     },
     rewards: [],
+    role: 'child',
+    parentLink: null,
+    myPushToken: null,
+    receivedReports: [],
   };
 }
 
@@ -91,5 +96,10 @@ function migrate(state: AppState): AppState {
       settings: { ...p.settings, rounds: p.settings?.rounds ?? 3 },
     })),
     rewards: state.rewards ?? [],
+    role: state.role ?? 'child',
+    parentLink: state.parentLink ?? null,
+    myPushToken: state.myPushToken ?? null,
+    // 받은 리포트는 최근 60건만 남긴다.
+    receivedReports: (state.receivedReports ?? []).slice(0, 60),
   };
 }

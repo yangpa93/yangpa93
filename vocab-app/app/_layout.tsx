@@ -3,6 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppProvider } from '../src/store/AppProvider';
+import { PushBridge } from '../src/features/PushBridge';
 import { colors } from '../src/theme';
 
 export default function RootLayout() {
@@ -11,6 +12,7 @@ export default function RootLayout() {
       <SafeAreaProvider>
         <AppProvider>
           <StatusBar style="dark" />
+          <PushBridge />
           <Stack
             screenOptions={{
               headerStyle: { backgroundColor: colors.bg },
@@ -33,6 +35,8 @@ export default function RootLayout() {
             <Stack.Screen name="parent-dashboard" options={{ title: '학습 리포트' }} />
             <Stack.Screen name="parent-rewards" options={{ title: '보상 요청' }} />
             <Stack.Screen name="parent-settings" options={{ title: '설정' }} />
+            <Stack.Screen name="parent-link" options={{ title: '부모님 폰 연결' }} />
+            <Stack.Screen name="link" options={{ title: '연결하기' }} />
           </Stack>
         </AppProvider>
       </SafeAreaProvider>

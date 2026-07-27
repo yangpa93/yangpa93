@@ -210,6 +210,31 @@ export default function ParentSettings() {
           </Card>
 
           <Card style={{ marginTop: spacing.md }}>
+            <H3>부모님 폰으로 알림 받기</H3>
+            <Muted style={{ marginTop: spacing.xs }}>
+              {state.parentLink
+                ? `${state.parentLink.label}에 연결돼 있습니다. 학습이 끝나면 바로 전송됩니다.`
+                : '아직 연결된 부모님 폰이 없습니다. 지금은 이 기기에만 알림이 뜹니다.'}
+            </Muted>
+            {state.parentLink ? (
+              <Row style={{ justifyContent: 'space-between', marginTop: spacing.lg }}>
+                <Text style={s.label}>학습 후 자동 전송</Text>
+                <Switch
+                  value={state.parent.pushToParent}
+                  onValueChange={(v) => updateParent({ pushToParent: v })}
+                  trackColor={{ true: colors.parent }}
+                />
+              </Row>
+            ) : null}
+            <Button
+              title={state.parentLink ? '연결 관리' : '부모님 폰 연결하기'}
+              variant="parent"
+              onPress={() => router.push('/parent-link')}
+              style={{ marginTop: spacing.md }}
+            />
+          </Card>
+
+          <Card style={{ marginTop: spacing.md }}>
             <H3>PIN</H3>
             <Button
               title="PIN 다시 설정하기"

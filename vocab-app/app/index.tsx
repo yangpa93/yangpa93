@@ -10,6 +10,11 @@ export default function Boot() {
 
   useEffect(() => {
     if (!ready) return;
+    // 부모님 전용 기기는 학습 화면을 거치지 않고 바로 리포트로 간다.
+    if (state.role === 'parent') {
+      router.replace('/parent-dashboard');
+      return;
+    }
     if (state.profiles.length === 0) {
       router.replace('/onboarding');
     } else if (!state.activeProfileId) {
@@ -17,7 +22,7 @@ export default function Boot() {
     } else {
       router.replace('/home');
     }
-  }, [ready, state.profiles.length, state.activeProfileId]);
+  }, [ready, state.role, state.profiles.length, state.activeProfileId]);
 
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.bg }}>

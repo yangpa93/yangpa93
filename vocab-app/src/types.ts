@@ -240,6 +240,42 @@ export interface ProfileData {
   answers: AnswerLog[];
 }
 
+/**
+ * 이 기기의 역할.
+ *
+ *  child  — 아이가 공부하는 기기. 학습이 끝나면 부모 기기로 리포트를 쏜다.
+ *  parent — 부모님 전용 기기. 학습 기능을 쓰지 않고 리포트만 받는다.
+ *
+ * 처음에는 child다. 부모님 폰에 깔았을 때만 parent로 바꾼다.
+ */
+export type DeviceRole = 'child' | 'parent';
+
+/** 아이 기기가 들고 있는 '부모님 폰' 정보. */
+export interface ParentLink {
+  /** 부모 기기의 Expo 푸시 토큰 */
+  token: string;
+  /** 부모님이 정한 이름 (예: 엄마 폰) */
+  label: string;
+  linkedAt: number;
+  /** 마지막으로 리포트를 보낸 날 (yyyy-mm-dd) */
+  lastSentDate: string | null;
+}
+
+/** 부모 기기가 아이 기기에서 받아 쌓아 둔 리포트. */
+export interface ReceivedReport {
+  id: string;
+  /** 보낸 아이 이름 */
+  childName: string;
+  /** 보낸 기기가 붙인 날짜 (yyyy-mm-dd) */
+  date: string;
+  /** 알림에 뜬 한 줄 요약 */
+  headline: string;
+  /** 자세한 내용 (틀린 단어 등) */
+  detail: string;
+  completed: boolean;
+  receivedAt: number;
+}
+
 /** 부모 모드 설정. 기기 전체에 하나. */
 export interface ParentSettings {
   /** 4자리 PIN. null이면 아직 설정 안 함. */
@@ -250,6 +286,8 @@ export interface ParentSettings {
   notifyEnabled: boolean;
   /** 아이가 목표를 못 채웠을 때만 알릴지 */
   notifyOnlyWhenMissed: boolean;
+  /** 학습이 끝나면 부모님 폰으로 리포트를 보낼지 (아이 기기에서만 의미 있음) */
+  pushToParent: boolean;
 }
 
 /** 저장소 루트. */
@@ -259,4 +297,13 @@ export interface AppState {
   activeProfileId: string | null;
   parent: ParentSettings;
   rewards: RewardRequest[];
+
+  /** 이 기기의 역할 */
+  role: DeviceRole;
+  /** child일 때: 연결된 부모 기기 */
+  parentLink: ParentLink | null;
+  /** parent일 때: 이 기기가 남에게 보여줄 자기 푸시 토큰 */
+  myPushToken: string | null;
+  /** parent일 때: 받아 둔 리포트 (최신순) */
+  receivedReports: ReceivedReport[];
 }

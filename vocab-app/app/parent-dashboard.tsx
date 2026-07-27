@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Pressable, Share, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
-import { Body, Button, Card, Chip, H1, H3, Muted, ProgressBar, Row, Screen } from '../src/components/ui';
+import { Body, Button, Card, Chip, EmptyState, H3, Muted, ProgressBar, Row, Screen } from '../src/components/ui';
 import { useApp } from '../src/store/AppProvider';
 import { ALL_ENTRIES } from '../src/data';
 import { loadProfileData } from '../src/store/storage';
@@ -53,6 +53,12 @@ export default function ParentDashboard() {
   );
 
   const pendingRewards = state.rewards.filter((r) => r.status === 'pending');
+
+  // 부모님 전용 기기는 자기 학습 데이터가 없다. 아이 기기들이 보내 온
+  // 리포트만 쌓여 있으므로 그것을 보여준다.
+  if (state.role === 'parent') {
+    return <ReceivedInbox />;
+  }
 
   if (!profile) {
     return (
@@ -216,6 +222,97 @@ export default function ParentDashboard() {
   );
 }
 
+/**
+ * 부모님 전용 기기 화면.
+ *
+ * 아이 기기가 보내 온 리포트를 날짜별로 모아 보여준다. 알림을 지워 버려도
+ * 여기 남아 있어서 며칠 치를 훑어볼 수 있다.
+ */
+function ReceivedInbox() {
+  const { state } = useApp();
+  const today = todayKey();
+
+  const byDate = useMemo(() => {
+    const groups = new Map<string, typeof state.receivedReports>();
+    for (const r of state.receivedReports) {
+      const list = groups.get(r.date) ?? [];
+      list.push(r);
+      groups.set(r.date, list);
+    }
+    return [...groups.entries()].sort((a, b) => b[0].localeCompare(a[0]));
+  }, [state.receivedReports]);
+
+  const todayReports = state.receivedReports.filter((r) => r.date === today);
+
+  return (
+    <Screen>
+      <Card
+        style={{
+          marginTop: spacing.md,
+          backgroundColor: todayReports.length > 0 ? colors.correctSoft : colors.bg,
+          borderColor: todayReports.length > 0 ? colors.correct : colors.border,
+        }}
+      >
+        <H3>{formatKo(today)}</H3>
+        {todayReports.length === 0 ? (
+          <Muted style={{ marginTop: spacing.sm }}>
+            아직 오늘 리포트가 오지 않았습니다. 아이가 학습을 마치면 알림이 옵니다.
+          </Muted>
+        ) : (
+          todayReports.map((r) => (
+            <View key={r.id} style={{ marginTop: spacing.md }}>
+              <Row style={{ justifyContent: 'space-between' }}>
+                <Body style={{ fontWeight: '800', flex: 1 }}>{r.childName}</Body>
+                <Chip label={r.completed ? '목표 달성' : '목표 미달'} tone={r.completed ? 'correct' : 'wrong'} />
+              </Row>
+              <Muted style={{ marginTop: spacing.xs }}>{r.headline}</Muted>
+            </View>
+          ))
+        )}
+      </Card>
+
+      {byDate.length === 0 ? (
+        <EmptyState
+          icon="📭"
+          title="받은 리포트가 없어요"
+          hint="아이 기기에서 부모님 폰 연결을 마쳤는지 확인해 주세요."
+        />
+      ) : (
+        byDate.map(([date, list]) => (
+          <Card key={date} style={{ marginTop: spacing.md }}>
+            <H3>{formatKo(date)}</H3>
+            {list.map((r) => (
+              <View key={r.id} style={{ marginTop: spacing.md }}>
+                <Row style={{ justifyContent: 'space-between' }}>
+                  <Body style={{ fontWeight: '700', flex: 1 }}>{r.childName}</Body>
+                  <Chip
+                    label={r.completed ? '달성' : '미달'}
+                    tone={r.completed ? 'correct' : 'wrong'}
+                  />
+                </Row>
+                <Text style={s.detail}>{r.detail}</Text>
+              </View>
+            ))}
+          </Card>
+        ))
+      )}
+
+      <Button
+        title="연결 관리"
+        variant="parent"
+        onPress={() => router.push('/parent-link')}
+        style={{ marginTop: spacing.lg }}
+      />
+      <Button
+        title="알림 시각 설정"
+        variant="ghost"
+        onPress={() => router.push('/parent-settings')}
+        style={{ marginTop: spacing.sm }}
+      />
+    </Screen>
+  );
+}
+
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <View style={{ alignItems: 'center' }}>
@@ -238,5 +335,6 @@ const s = StyleSheet.create({
   tabText: { fontSize: font.small, fontWeight: '700', color: colors.subtext },
   tabTextOn: { color: '#fff' },
   statValue: { fontSize: 20, fontWeight: '800', color: colors.text },
+  detail: { fontSize: font.small, color: colors.subtext, lineHeight: 20, marginTop: spacing.sm },
   bar: { width: 18, borderRadius: 4 },
 });

@@ -20,6 +20,49 @@ C는 Android Studio(용량 큼)를 이미 쓰고 계실 때만 의미가 있습�
 > **태블릿에 넣으실 거라면 B로 가세요.** A(Expo Go)는 컴퓨터를 계속 켜 둬야 해서
 > 아이가 매일 쓰기에 맞지 않고, 부모님 폰으로 결과를 보내는 기능도 동작하지 않습니다.
 
+
+---
+
+## 처음부터 끝까지 (요약)
+
+새 컴퓨터에서 시작한다면 이 순서만 따라가면 됩니다. 각 단계 자세한 설명은 아래에 있습니다.
+
+```powershell
+# 1. Node.js 설치 후 PowerShell을 새로 열고 확인
+node --version
+
+# 2. 코드 받기 (브랜치 지정 필수)
+cd C:\
+mkdir gagavoca ; cd gagavoca
+git clone -b claude/english-vocab-learning-app-pfy9yg https://github.com/yangpa93/yangpa93.git
+cd yangpa93\vocab-app
+
+# 3. 패키지 설치
+npm install
+
+# 4. 컴퓨터 브라우저에서 먼저 확인 (5분)
+npm run web
+
+# 5. 마음에 들면 APK 빌드
+npm install -g eas-cli
+eas login
+eas init
+eas build --platform android --profile preview
+```
+
+빌드가 끝나면 나오는 링크를 **딸1 기기 · 딸2 기기 · 부모님 폰** 각각에서 열어 APK를 받아 설치합니다.
+그다음 [부모님 폰으로 결과 받기](#부모님-폰으로-결과-받기-아이-기기가-따로일-때)로 연결하면 끝입니다.
+
+### 나중에 업데이트할 때
+
+```powershell
+cd C:\gagavoca\yangpa93\vocab-app
+.\update.ps1
+```
+
+`git pull`을 직접 쓰셔도 되지만, Expo가 `tsconfig.json`을 자동으로 고쳐 놓아서 막히는 일이 잦습니다.
+이 스크립트가 그것까지 처리해 줍니다.
+
 ---
 
 ## 0단계 — 컴퓨터 준비 (모든 방법 공통)
@@ -417,6 +460,27 @@ Node.js가 설치되지 않았거나, 설치 후 터미널을 다시 열지 않�
 **`fatal: not a git repository`**
 저장소 폴더 **밖**에서 git 명령을 실행한 것입니다. `cd yangpa93` 으로 들어간 뒤 다시 실행하세요.
 지금 어디인지는 `pwd`(윈도우도 동작)로 확인할 수 있습니다.
+
+**`git pull` 이 `Your local changes to the following files would be overwritten` 로 막힙니다**
+Expo가 실행될 때마다 `tsconfig.json`을 자기 형식으로 다시 쓰기 때문입니다. 자동 생성물이라 버려도 안전합니다.
+`vocab-app` 폴더 안에서:
+```powershell
+git checkout -- tsconfig.json
+git pull origin claude/english-vocab-learning-app-pfy9yg
+```
+`.\update.ps1` 을 쓰시면 이 과정을 대신해 줍니다.
+
+> git에 파일 경로를 줄 때는 **지금 있는 폴더 기준**입니다. 오류 메시지에는 저장소 최상위 기준
+> 경로(`vocab-app/tsconfig.json`)가 찍히는데, `vocab-app` 안에서는 `tsconfig.json` 이라고만 써야 합니다.
+
+**`fatal: unable to access ... Could not resolve host: github.com`**
+git 문제가 아니라 네트워크 문제입니다. github.com에 닿지 못하고 있습니다.
+1. 잠시 뒤 다시 시도 (일시적 DNS 문제가 흔합니다)
+2. `ping github.com` 으로 확인 — 응답이 없으면 인터넷 자체가 막힌 것입니다
+3. **회사·학교 네트워크는 github.com을 차단하는 경우가 많습니다.** 집이나 휴대폰 핫스팟에서 시도해 보세요
+4. VPN을 쓰고 계시면 잠시 꺼 보세요
+5. 예전 프록시 설정이 남아 있는지: `git config --global --get http.proxy`
+   (주소가 나오는데 지금 안 쓰는 것이면 `git config --global --unset http.proxy`)
 
 **`npm install`에서 빨간 `ERR!` 가 납니다**
 Node.js 버전을 먼저 확인하세요(`node --version`, 18 이상). 그래도 안 되면 `vocab-app` 폴더의 `node_modules` 폴더와 `package-lock.json` 파일을 지우고 다시 `npm install`.

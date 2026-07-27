@@ -145,6 +145,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         level,
         settings: {
           dailyGoal: 15,
+          rounds: 3,
           reviewRatio: 70,
           ttsEnabled: true,
           hapticsEnabled: true,

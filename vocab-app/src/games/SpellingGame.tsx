@@ -1,8 +1,12 @@
 /**
- * 철자 쓰기.
+ * 직접 쓰기.
  *
- * 뜻과 예문(표제어는 빈칸)을 보여주고 단어를 직접 타이핑하게 한다.
- * 세 번 이상 맞힌 단어에만 낸다. 첫 글자는 힌트로 준다.
+ * 두 가지 난이도가 있다.
+ *   spelling — 첫 글자를 힌트로 준다. 아직 손에 익지 않은 단어용.
+ *   recall   — 힌트가 전혀 없다. 뜻만 보고 스스로 떠올려 써야 한다.
+ *
+ * 4지선다와 달리 보기 중에 답이 없어서, 실제로 외웠는지가 여기서 드러난다.
+ * 한 세션의 마지막 라운드는 이 유형으로 끝난다.
  */
 
 import { useMemo, useState } from 'react';
@@ -13,10 +17,17 @@ import { speak } from '../lib/feedback';
 import { colors, font, radius, spacing } from '../theme';
 import { H2, Muted } from '../components/ui';
 
-export function SpellingGame({ entry, exp, ttsEnabled, onAnswer }: GameProps) {
+export function SpellingGame({
+  entry,
+  exp,
+  ttsEnabled,
+  onAnswer,
+  mode = 'spelling',
+}: GameProps & { mode?: 'spelling' | 'recall' }) {
   const [value, setValue] = useState('');
   const [result, setResult] = useState<'correct' | 'wrong' | null>(null);
-  const [hintShown, setHintShown] = useState(false);
+  /** 0 = 힌트 없음, 1 = 첫 글자, 2 = 절반 */
+  const [hintLevel, setHintLevel] = useState(mode === 'spelling' ? 1 : 0);
 
   const cloze = useMemo(() => clozeSentence(entry, exp.example.en), [entry.id, exp.example.en]);
 
@@ -28,16 +39,23 @@ export function SpellingGame({ entry, exp, ttsEnabled, onAnswer }: GameProps) {
     onAnswer(ok);
   }
 
-  const hint = buildHint(entry.word, hintShown);
+  function giveUp() {
+    if (result) return;
+    setResult('wrong');
+    onAnswer(false);
+  }
 
   return (
     <View style={{ flex: 1 }}>
-      <Muted>뜻을 보고 단어를 직접 써 보세요</Muted>
+      <Muted>
+        {mode === 'recall' ? '뜻을 보고 영어로 써 보세요 (힌트 없음)' : '뜻을 보고 단어를 직접 써 보세요'}
+      </Muted>
 
       <View style={s.stem}>
         <H2 style={{ textAlign: 'center' }}>{exp.sense.meaning}</H2>
         {cloze ? <Text style={s.sentence}>{cloze.text}</Text> : null}
-        <Text style={s.hint}>{hint}</Text>
+        {hintLevel > 0 ? <Text style={s.hint}>{buildHint(entry.word, hintLevel)}</Text> : null}
+        {hintLevel === 0 ? <Text style={s.letterCount}>{entry.word.length}글자</Text> : null}
       </View>
 
       <TextInput
@@ -47,6 +65,7 @@ export function SpellingGame({ entry, exp, ttsEnabled, onAnswer }: GameProps) {
         autoCapitalize="none"
         autoCorrect={false}
         spellCheck={false}
+        autoComplete="off"
         placeholder="영어로 입력"
         placeholderTextColor={colors.muted}
         onSubmitEditing={submit}
@@ -58,12 +77,10 @@ export function SpellingGame({ entry, exp, ttsEnabled, onAnswer }: GameProps) {
         ]}
       />
 
-      {result === 'wrong' ? (
-        <Text style={s.answer}>정답: {entry.word}</Text>
-      ) : null}
+      {result === 'wrong' ? <Text style={s.answer}>정답: {entry.word}</Text> : null}
 
       {result === null ? (
-        <View style={{ gap: spacing.md, marginTop: spacing.lg }}>
+        <View style={{ gap: spacing.sm, marginTop: spacing.lg }}>
           <Pressable
             onPress={submit}
             disabled={value.trim().length === 0}
@@ -72,24 +89,30 @@ export function SpellingGame({ entry, exp, ttsEnabled, onAnswer }: GameProps) {
           >
             <Text style={s.submitText}>확인</Text>
           </Pressable>
-          {!hintShown ? (
-            <Pressable onPress={() => setHintShown(true)} accessibilityRole="button" style={s.hintBtn}>
-              <Text style={s.hintBtnText}>힌트 보기</Text>
+
+          <View style={{ flexDirection: 'row', justifyContent: 'center', gap: spacing.lg }}>
+            {hintLevel < 2 ? (
+              <Pressable onPress={() => setHintLevel((h) => h + 1)} accessibilityRole="button" style={s.textBtn}>
+                <Text style={s.textBtnLabel}>힌트 보기</Text>
+              </Pressable>
+            ) : null}
+            <Pressable onPress={giveUp} accessibilityRole="button" style={s.textBtn}>
+              <Text style={s.textBtnLabel}>모르겠어요</Text>
             </Pressable>
-          ) : null}
+          </View>
         </View>
       ) : null}
     </View>
   );
 }
 
-function normalize(s: string): string {
-  return s.trim().toLowerCase().replace(/\s+/g, ' ');
+function normalize(str: string): string {
+  return str.trim().toLowerCase().replace(/\s+/g, ' ');
 }
 
-/** 첫 글자만 주고 나머지는 밑줄. 힌트를 누르면 절반을 열어 준다. */
-function buildHint(word: string, more: boolean): string {
-  const reveal = more ? Math.ceil(word.length / 2) : 1;
+/** 1 = 첫 글자만, 2 = 앞 절반. 나머지는 밑줄. */
+function buildHint(word: string, level: number): string {
+  const reveal = level >= 2 ? Math.ceil(word.length / 2) : 1;
   return word
     .split('')
     .map((ch, i) => (ch === ' ' ? '  ' : i < reveal ? ch : '_'))
@@ -97,7 +120,7 @@ function buildHint(word: string, more: boolean): string {
 }
 
 const s = StyleSheet.create({
-  stem: { minHeight: 140, alignItems: 'center', justifyContent: 'center', marginVertical: spacing.lg },
+  stem: { minHeight: 150, alignItems: 'center', justifyContent: 'center', marginVertical: spacing.md },
   sentence: {
     fontSize: font.body,
     color: colors.subtext,
@@ -106,6 +129,7 @@ const s = StyleSheet.create({
     lineHeight: 22,
   },
   hint: { fontSize: 24, letterSpacing: 2, color: colors.primary, marginTop: spacing.lg, fontWeight: '700' },
+  letterCount: { fontSize: font.small, color: colors.muted, marginTop: spacing.lg, fontWeight: '600' },
   input: {
     borderWidth: 2,
     borderColor: colors.border,
@@ -132,6 +156,6 @@ const s = StyleSheet.create({
     justifyContent: 'center',
   },
   submitText: { color: '#fff', fontWeight: '700', fontSize: 16 },
-  hintBtn: { alignSelf: 'center', padding: spacing.sm },
-  hintBtnText: { color: colors.subtext, fontWeight: '600' },
+  textBtn: { padding: spacing.sm },
+  textBtnLabel: { color: colors.muted, fontWeight: '600', fontSize: font.small },
 });

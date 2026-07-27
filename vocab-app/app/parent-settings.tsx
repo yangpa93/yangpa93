@@ -8,6 +8,11 @@ import { colors, font, radius, spacing } from '../src/theme';
 
 const GOALS = [10, 12, 15, 18, 20];
 const RATIOS = [50, 60, 70, 80];
+const ROUNDS = [
+  { value: 2, label: '2회 (가볍게)' },
+  { value: 3, label: '3회 (표준)' },
+  { value: 4, label: '4회 (집중)' },
+];
 
 export default function ParentSettings() {
   const { state, updateParent, updateSettings, updateProfile, deleteProfile } = useApp();
@@ -112,6 +117,28 @@ export default function ParentSettings() {
                 >
                   <Text style={[s.chipText, profile.settings.dailyGoal === g && s.chipTextOn]}>
                     {g}개
+                  </Text>
+                </Pressable>
+              ))}
+            </Row>
+
+            <Text style={[s.label, { marginTop: spacing.lg }]}>학습 강도</Text>
+            <Muted style={{ marginTop: spacing.xs }}>
+              한 단어를 한 번에 몇 번 만날지 정합니다. 3회면 뜻 고르기 → 문장 속 활용 →
+              직접 쓰기를 모두 거칩니다. 단어 {profile.settings.dailyGoal}개 ×{' '}
+              {profile.settings.rounds}회 = {profile.settings.dailyGoal * profile.settings.rounds}문제,
+              약 {Math.round((profile.settings.dailyGoal * profile.settings.rounds * 10) / 60)}분 걸립니다.
+            </Muted>
+            <Row style={{ gap: spacing.sm, marginTop: spacing.sm, flexWrap: 'wrap' }}>
+              {ROUNDS.map((r) => (
+                <Pressable
+                  key={r.value}
+                  onPress={() => updateSettings(profile.id, { rounds: r.value })}
+                  style={[s.chip, profile.settings.rounds === r.value && s.chipOn]}
+                  accessibilityRole="button"
+                >
+                  <Text style={[s.chipText, profile.settings.rounds === r.value && s.chipTextOn]}>
+                    {r.label}
                   </Text>
                 </Pressable>
               ))}

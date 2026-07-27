@@ -1,7 +1,7 @@
-import { buildSession, buildChoices, pickGame } from '../src/srs/session';
+import { buildSession, buildChoices, buildRounds, pickGame, SessionItem } from '../src/srs/session';
 import { createCard, grade } from '../src/srs/scheduler';
 import { entriesOf } from '../src/data';
-import { CardState } from '../src/types';
+import { CardState, GameId, Stage, VocabEntry } from '../src/types';
 
 const TODAY = '2026-07-27';
 const POOL = entriesOf('m1');
@@ -150,23 +150,153 @@ describe('buildSession', () => {
   });
 });
 
-describe('pickGame', () => {
-  it('처음 보는 단어는 뜻 맞히기로 시작한다', () => {
-    const game = pickGame({ entry: POOL[0], card: null, mode: 'new', game: 'meaning' }, fixedRand);
-    expect(game).toBe('meaning');
+function item(
+  entry: VocabEntry,
+  over: Partial<SessionItem> = {},
+): SessionItem {
+  return {
+    entry,
+    card: null,
+    mode: 'new',
+    game: 'meaning',
+    stage: 'learn',
+    round: 0,
+    showIntro: false,
+    ...over,
+  };
+}
+
+describe('buildRounds', () => {
+  const words = POOL.slice(0, 20).map((e) => item(e));
+
+  it('단어 수 × 라운드 수만큼 문제를 만든다', () => {
+    const q = buildRounds(words, 3, fixedRand);
+    expect(q).toHaveLength(60);
   });
 
-  it('숙어에는 철자 게임을 내지 않는다', () => {
-    const idiom = POOL.find((e) => e.kind === 'idiom')!;
-    let card = createCard(idiom.id);
-    for (let i = 0; i < 6; i++) card = grade(card, true, '2026-07-27');
+  it('라운드마다 익히기 → 활용하기 → 떠올리기 순으로 올라간다', () => {
+    const q = buildRounds(words, 3, fixedRand);
+    const stages: Stage[] = [];
+    for (let r = 0; r < 3; r++) {
+      const round = q.filter((x) => x.round === r);
+      expect(new Set(round.map((x) => x.stage)).size).toBe(1);
+      stages.push(round[0].stage);
+    }
+    expect(stages).toEqual(['learn', 'apply', 'recall']);
+  });
 
-    for (let r = 0; r < 20; r++) {
-      const game = pickGame(
-        { entry: idiom, card, mode: 'review', game: 'meaning' },
-        () => r / 20,
-      );
-      expect(game).not.toBe('spelling');
+  it('모든 단어가 매 라운드에 한 번씩 나온다', () => {
+    const q = buildRounds(words, 3, fixedRand);
+    for (let r = 0; r < 3; r++) {
+      const ids = q.filter((x) => x.round === r).map((x) => x.entry.id);
+      expect(new Set(ids).size).toBe(20);
+    }
+  });
+
+  it('한 단어를 연달아 묻지 않는다', () => {
+    // 바로 다시 물으면 단기 기억에 남아 있어서 시험이 되지 않는다.
+    const q = buildRounds(words, 3, () => 0.37);
+    let backToBack = 0;
+    for (let i = 1; i < q.length; i++) {
+      if (q[i].entry.id === q[i - 1].entry.id) backToBack++;
+    }
+    expect(backToBack).toBe(0);
+  });
+
+  it('처음 보는 단어는 첫 라운드에서 단어 카드를 먼저 보여준다', () => {
+    const q = buildRounds(words, 3, fixedRand);
+    const firstRound = q.filter((x) => x.round === 0);
+    expect(firstRound.every((x) => x.showIntro)).toBe(true);
+    // 2라운드부터는 이미 본 단어이므로 카드를 다시 띄우지 않는다.
+    expect(q.filter((x) => x.round > 0).every((x) => !x.showIntro)).toBe(true);
+  });
+
+  it('복습 단어는 카드를 먼저 보여주지 않는다', () => {
+    const review = POOL.slice(0, 5).map((e) => item(e, { mode: 'review' }));
+    const q = buildRounds(review, 3, fixedRand);
+    expect(q.every((x) => !x.showIntro)).toBe(true);
+  });
+
+  it('라운드가 3을 넘으면 마지막 단계를 반복한다', () => {
+    const q = buildRounds(words, 4, fixedRand);
+    expect(q.filter((x) => x.round === 3).every((x) => x.stage === 'recall')).toBe(true);
+  });
+
+  it('20단어 3라운드는 대략 10분 분량이다', () => {
+    // 한 문제에 10초로 잡는다.
+    const q = buildRounds(words, 3, fixedRand);
+    const minutes = (q.length * 10) / 60;
+    expect(minutes).toBeGreaterThanOrEqual(9);
+    expect(minutes).toBeLessThanOrEqual(11);
+  });
+});
+
+describe('pickGame', () => {
+  /** 난수를 훑어서 그 문항에 나올 수 있는 유형을 전부 모은다. */
+  function possibleGames(it: SessionItem): Set<GameId> {
+    const out = new Set<GameId>();
+    for (let i = 0; i < 40; i++) out.add(pickGame(it, () => i / 40));
+    return out;
+  }
+
+  it('익히기 단계는 4지선다로만 낸다', () => {
+    const games = possibleGames(item(POOL[0], { stage: 'learn', mode: 'review', card: createCard(POOL[0].id) }));
+    for (const g of games) {
+      expect(['meaning', 'word', 'listening']).toContain(g);
+    }
+  });
+
+  it('새 단어는 익히기 단계에서 듣기 문제를 내지 않는다', () => {
+    // 본 적 없는 단어를 소리만 듣고 고르라고 하면 찍기밖에 안 된다.
+    const games = possibleGames(item(POOL[0], { stage: 'learn', mode: 'new' }));
+    expect(games.has('listening')).toBe(false);
+  });
+
+  it('활용하기 단계는 문장을 쓰는 유형만 낸다', () => {
+    const games = possibleGames(item(POOL[0], { stage: 'apply', mode: 'review' }));
+    for (const g of games) {
+      expect(['context', 'cloze', 'synonym', 'polysemy']).toContain(g);
+    }
+  });
+
+  it('뜻이 하나뿐인 단어에는 다의어 구별 문제를 내지 않는다', () => {
+    const single = POOL.find((e) => e.senses.length === 1)!;
+    const games = possibleGames(item(single, { stage: 'apply', mode: 'review' }));
+    expect(games.has('polysemy')).toBe(false);
+  });
+
+  it('다의어에는 다의어 구별 문제가 나온다', () => {
+    const multi = POOL.find((e) => e.senses.length >= 2)!;
+    const games = possibleGames(item(multi, { stage: 'apply', mode: 'review' }));
+    expect(games.has('polysemy')).toBe(true);
+  });
+
+  it('떠올리기 단계는 직접 쓰게 한다', () => {
+    const word = POOL.find((e) => e.kind === 'word')!;
+    const games = possibleGames(item(word, { stage: 'recall', mode: 'review' }));
+    for (const g of games) {
+      expect(['recall', 'spelling']).toContain(g);
+    }
+  });
+
+  it('숙어에는 철자·직접 쓰기를 내지 않는다', () => {
+    const idiom = POOL.find((e) => e.kind === 'idiom')!;
+    for (const stage of ['learn', 'apply', 'recall'] as Stage[]) {
+      const games = possibleGames(item(idiom, { stage, mode: 'review' }));
+      expect(games.has('spelling')).toBe(false);
+      expect(games.has('recall')).toBe(false);
+    }
+  });
+
+  it('어떤 단어·단계에서도 반드시 문제 유형이 정해진다', () => {
+    for (const entry of POOL) {
+      for (const stage of ['learn', 'apply', 'recall'] as Stage[]) {
+        for (const mode of ['new', 'review'] as const) {
+          const g = pickGame(item(entry, { stage, mode }), fixedRand);
+          expect(typeof g).toBe('string');
+          expect(g.length).toBeGreaterThan(0);
+        }
+      }
     }
   });
 });

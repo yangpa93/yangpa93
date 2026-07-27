@@ -1,13 +1,15 @@
 /**
- * 문제를 푼 직후 뜨는 '단어 스토리' 카드.
+ * 단어 카드. 두 곳에서 쓴다.
  *
- * 정답/오답과 상관없이 매번 띄운다. 문제를 맞혔는지보다 그 단어를
- * 한 번 더, 다른 문장으로 만나게 하는 게 목적이다.
+ *  - `variant="intro"` : 처음 보는 단어를 문제로 내기 전에 먼저 보여 준다.
+ *  - `variant="feedback"` : 문제를 푼 직후. 정답이든 오답이든 매번 뜬다.
  *
- *  - 예문이 한 글자씩 타이핑되면서 표제어에 형광펜이 그어진다.
- *  - 🔊 를 누르면 문장을 읽어 준다.
- *  - '영상으로 보기'는 그 단어가 실제로 발화되는 유튜브 구간(YouGlish)으로 보낸다.
- *  - 다른 뜻·다른 예문도 접어서 같이 보여 준다.
+ * **모든 뜻과 모든 예문을 처음부터 펼쳐 놓는다.** 접어 두고 버튼을 눌러야
+ * 보이면 아이는 대부분 누르지 않는다. 오늘 다루는 뜻만 강조하고
+ * 나머지 뜻도 바로 아래에 이어 붙여, 한 화면에서 다의어를 함께 보게 한다.
+ *
+ * 오늘의 예문은 한 글자씩 타이핑되며 표제어에 형광펜이 그어지고,
+ * 다 찍히면 소리로 읽어 준다.
  */
 
 import { useEffect, useRef, useState } from 'react';
@@ -22,12 +24,13 @@ import {
   View,
 } from 'react-native';
 import { VocabEntry } from '../types';
-import { Exposure, videoUrl, wordForms } from '../data/entry';
+import { Exposure, videoUrl } from '../data/entry';
 import { speak, stopSpeaking } from '../lib/feedback';
 import { colors, font, radius, spacing } from '../theme';
 import { Button, Chip, Muted, Row } from './ui';
+import { HighlightedSentence } from './HighlightedSentence';
 
-const TYPE_MS = 28;
+const TYPE_MS = 26;
 
 export function WordStoryCard({
   entry,
@@ -35,17 +38,19 @@ export function WordStoryCard({
   correct,
   ttsEnabled,
   onNext,
-  isLast,
+  nextLabel,
+  variant = 'feedback',
 }: {
   entry: VocabEntry;
   exp: Exposure;
-  correct: boolean;
+  /** feedback일 때만 쓰인다 */
+  correct?: boolean;
   ttsEnabled: boolean;
   onNext: () => void;
-  isLast: boolean;
+  nextLabel: string;
+  variant?: 'intro' | 'feedback';
 }) {
   const [typed, setTyped] = useState(0);
-  const [showMore, setShowMore] = useState(false);
 
   const slide = useRef(new Animated.Value(0)).current;
   const pop = useRef(new Animated.Value(0)).current;
@@ -58,18 +63,17 @@ export function WordStoryCard({
     Animated.parallel([
       Animated.timing(slide, {
         toValue: 1,
-        duration: 260,
+        duration: 240,
         easing: Easing.out(Easing.cubic),
         useNativeDriver: true,
       }),
       Animated.spring(pop, { toValue: 1, friction: 5, tension: 120, useNativeDriver: true }),
     ]).start();
-  }, [entry.id, slide, pop]);
+  }, [entry.id, variant, slide, pop]);
 
-  // 예문을 한 글자씩 흘려 보여준다.
+  // 오늘의 예문을 한 글자씩 흘려 보여준다.
   useEffect(() => {
     setTyped(0);
-    setShowMore(false);
     const timer = setInterval(() => {
       setTyped((n) => {
         if (n >= sentence.length) {
@@ -84,9 +88,7 @@ export function WordStoryCard({
 
   // 타이핑이 끝나면 문장을 읽어 준다.
   useEffect(() => {
-    if (typed >= sentence.length && sentence.length > 0) {
-      speak(sentence, ttsEnabled);
-    }
+    if (typed >= sentence.length && sentence.length > 0) speak(sentence, ttsEnabled);
   }, [typed, sentence, ttsEnabled]);
 
   useEffect(() => () => stopSpeaking(), []);
@@ -97,25 +99,23 @@ export function WordStoryCard({
     if (ok) await Linking.openURL(url).catch(() => {});
   }
 
-  const otherExamples = entry.senses
-    .flatMap((sense, si) =>
-      sense.examples.map((ex, ei) => ({ sense, ex, si, ei })),
-    )
-    .filter((x) => !(x.si === exp.senseIndex && x.ei === exp.exampleIndex));
-
   return (
     <Animated.View
       style={[
         s.wrap,
         {
           opacity: slide,
-          transform: [{ translateY: slide.interpolate({ inputRange: [0, 1], outputRange: [24, 0] }) }],
+          transform: [{ translateY: slide.interpolate({ inputRange: [0, 1], outputRange: [20, 0] }) }],
         },
       ]}
     >
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: spacing.lg }}>
         <Animated.View style={{ transform: [{ scale: pop }] }}>
-          <Chip label={correct ? '✅ 정답!' : '💪 다시 만나요'} tone={correct ? 'correct' : 'wrong'} />
+          {variant === 'intro' ? (
+            <Chip label="✨ 새로 배우는 단어" tone="accent" />
+          ) : (
+            <Chip label={correct ? '✅ 정답!' : '💪 다시 만나요'} tone={correct ? 'correct' : 'wrong'} />
+          )}
         </Animated.View>
 
         <Row style={{ marginTop: spacing.md, alignItems: 'flex-end' }}>
@@ -129,14 +129,22 @@ export function WordStoryCard({
             <Text style={{ fontSize: 22 }}>🔊</Text>
           </Pressable>
         </Row>
-        <Muted>{entry.pos}</Muted>
+        <Row style={{ gap: spacing.sm }}>
+          <Muted>{entry.pos}</Muted>
+          {entry.senses.length > 1 ? (
+            <Muted style={{ color: colors.accent, fontWeight: '700' }}>
+              뜻이 {entry.senses.length}개예요
+            </Muted>
+          ) : null}
+        </Row>
 
-        {/* 오늘 배우는 뜻 */}
-        <View style={s.senseBox}>
+        {/* 오늘 배우는 뜻 — 예문이 타이핑된다 */}
+        <View style={s.todayBox}>
+          <Muted style={{ color: colors.primary, fontWeight: '800' }}>오늘 배우는 뜻</Muted>
           <Text style={s.meaning}>{exp.sense.meaning}</Text>
           {exp.sense.synonyms.length > 0 ? (
             <Row style={{ marginTop: spacing.sm, gap: spacing.xs, flexWrap: 'wrap' }}>
-              <Muted>같은 뜻: </Muted>
+              <Muted>= </Muted>
               {exp.sense.synonyms.map((syn) => (
                 <View key={syn} style={s.syn}>
                   <Text style={s.synText}>{syn}</Text>
@@ -144,90 +152,70 @@ export function WordStoryCard({
               ))}
             </Row>
           ) : null}
+
+          <Pressable
+            style={s.exampleBox}
+            onPress={() => speak(sentence, ttsEnabled)}
+            accessibilityRole="button"
+            accessibilityLabel="예문 듣기"
+          >
+            <HighlightedSentence text={sentence.slice(0, typed)} word={entry.word} />
+            {typed >= sentence.length ? <Text style={s.exampleKo}>{exp.example.ko}</Text> : null}
+          </Pressable>
         </View>
 
-        {/* 타이핑되는 예문 */}
-        <Pressable
-          style={s.exampleBox}
-          onPress={() => speak(sentence, ttsEnabled)}
-          accessibilityRole="button"
-          accessibilityLabel="예문 듣기"
-        >
-          <Highlighted text={sentence.slice(0, typed)} word={entry.word} />
-          {typed >= sentence.length ? <Text style={s.exampleKo}>{exp.example.ko}</Text> : null}
-        </Pressable>
+        {/* 나머지 뜻과 예문 — 전부 펼쳐서 보여준다 */}
+        <View style={{ marginTop: spacing.lg }}>
+          <Muted style={{ fontWeight: '800' }}>
+            {entry.senses.length > 1 ? '이 단어의 모든 뜻과 쓰임' : '다른 문장에서는'}
+          </Muted>
 
-        <Row style={{ gap: spacing.sm, marginTop: spacing.md }}>
-          <Pressable style={s.videoBtn} onPress={openVideo} accessibilityRole="button">
-            <Text style={s.videoText}>🎬 영상으로 보기</Text>
-          </Pressable>
-          {otherExamples.length > 0 ? (
-            <Pressable
-              style={s.moreBtn}
-              onPress={() => setShowMore((v) => !v)}
-              accessibilityRole="button"
-            >
-              <Text style={s.moreText}>
-                {showMore ? '접기' : `다른 예문 ${otherExamples.length}개`}
-              </Text>
-            </Pressable>
-          ) : null}
-        </Row>
+          {entry.senses.map((sense, si) => {
+            const isToday = si === exp.senseIndex;
+            return (
+              <View key={si} style={[s.senseBlock, isToday && s.senseBlockToday]}>
+                <Row style={{ gap: spacing.sm, flexWrap: 'wrap' }}>
+                  <Text style={[s.senseTitle, isToday && { color: colors.primary }]}>
+                    {entry.senses.length > 1 ? `${si + 1}. ` : ''}
+                    {sense.meaning}
+                  </Text>
+                  {isToday ? <Chip label="오늘" tone="primary" /> : null}
+                </Row>
 
-        {showMore ? (
-          <View style={s.moreBox}>
-            {entry.senses.map((sense, si) => (
-              <View key={si} style={{ marginBottom: spacing.md }}>
-                <Text style={s.moreSense}>
-                  {si + 1}. {sense.meaning}
-                  {sense.synonyms.length > 0 ? `  (= ${sense.synonyms.join(', ')})` : ''}
-                </Text>
+                {sense.synonyms.length > 0 ? (
+                  <Muted style={{ marginTop: 2 }}>= {sense.synonyms.join(', ')}</Muted>
+                ) : null}
+
                 {sense.examples.map((ex, ei) => (
                   <Pressable
                     key={ei}
                     onPress={() => speak(ex.en, ttsEnabled)}
-                    style={s.moreEx}
+                    style={s.exRow}
                     accessibilityRole="button"
+                    accessibilityLabel={`예문 듣기: ${ex.en}`}
                   >
-                    <Text style={s.moreExEn}>· {ex.en}</Text>
-                    <Text style={s.moreExKo}>  {ex.ko}</Text>
+                    <HighlightedSentence
+                      text={ex.en}
+                      word={entry.word}
+                      style={s.exEn}
+                      hitStyle={{ color: colors.accent, fontWeight: '800' }}
+                    />
+                    <Text style={s.exKo}>{ex.ko}</Text>
                   </Pressable>
                 ))}
               </View>
-            ))}
-          </View>
-        ) : null}
+            );
+          })}
+        </View>
+
+        <Pressable style={s.videoBtn} onPress={openVideo} accessibilityRole="button">
+          <Text style={s.videoText}>🎬 실제로 쓰이는 영상 보기</Text>
+        </Pressable>
       </ScrollView>
 
-      <Button title={isLast ? '결과 보기' : '다음 문제'} onPress={onNext} style={{ marginTop: spacing.md }} />
+      <Button title={nextLabel} onPress={onNext} style={{ marginTop: spacing.md }} />
     </Animated.View>
   );
-}
-
-/** 예문 안의 표제어(굴절형 포함)에 형광펜을 긋는다. */
-function Highlighted({ text, word }: { text: string; word: string }) {
-  const forms = wordForms(word);
-  const pattern = forms.map(escapeRegExp).join('|');
-  const parts = pattern ? text.split(new RegExp(`\\b(${pattern})\\b`, 'gi')) : [text];
-
-  return (
-    <Text style={s.example}>
-      {parts.map((part, i) => {
-        const hit = forms.some((f) => f.toLowerCase() === part.toLowerCase());
-        return hit ? (
-          <Text key={i} style={s.exampleHit}>
-            {part}
-          </Text>
-        ) : (
-          <Text key={i}>{part}</Text>
-        );
-      })}
-    </Text>
-  );
-}
-
-function escapeRegExp(s: string): string {
-  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 const s = StyleSheet.create({
@@ -242,13 +230,13 @@ const s = StyleSheet.create({
   word: { fontSize: 34, fontWeight: '800', color: colors.text },
   iconBtn: { marginLeft: spacing.md, paddingBottom: spacing.xs },
 
-  senseBox: {
+  todayBox: {
     marginTop: spacing.lg,
     padding: spacing.md,
     backgroundColor: colors.primarySoft,
     borderRadius: radius.md,
   },
-  meaning: { fontSize: font.h3, fontWeight: '700', color: colors.primary },
+  meaning: { fontSize: font.h2, fontWeight: '800', color: colors.primary, marginTop: 2 },
   syn: {
     paddingHorizontal: spacing.sm,
     paddingVertical: 2,
@@ -260,34 +248,30 @@ const s = StyleSheet.create({
   exampleBox: {
     marginTop: spacing.md,
     padding: spacing.md,
-    backgroundColor: colors.bg,
+    backgroundColor: colors.card,
     borderRadius: radius.md,
-    minHeight: 96,
+    minHeight: 90,
   },
-  example: { fontSize: 18, lineHeight: 28, color: colors.text },
-  exampleHit: { color: colors.accent, fontWeight: '800' },
   exampleKo: { fontSize: font.small, color: colors.subtext, marginTop: spacing.sm },
 
+  senseBlock: {
+    marginTop: spacing.md,
+    paddingLeft: spacing.md,
+    borderLeftWidth: 3,
+    borderLeftColor: colors.border,
+  },
+  senseBlockToday: { borderLeftColor: colors.primary },
+  senseTitle: { fontSize: font.body, fontWeight: '700', color: colors.text },
+  exRow: { marginTop: spacing.sm },
+  exEn: { fontSize: font.body, lineHeight: 22 },
+  exKo: { fontSize: font.small, color: colors.subtext, lineHeight: 20 },
+
   videoBtn: {
-    flex: 1,
+    marginTop: spacing.lg,
     paddingVertical: spacing.md,
     borderRadius: radius.md,
     backgroundColor: colors.accentSoft,
     alignItems: 'center',
   },
   videoText: { color: '#B45309', fontWeight: '700' },
-  moreBtn: {
-    flex: 1,
-    paddingVertical: spacing.md,
-    borderRadius: radius.md,
-    backgroundColor: colors.bg,
-    alignItems: 'center',
-  },
-  moreText: { color: colors.subtext, fontWeight: '700' },
-
-  moreBox: { marginTop: spacing.md },
-  moreSense: { fontSize: font.body, fontWeight: '700', color: colors.text, marginBottom: spacing.sm },
-  moreEx: { marginBottom: spacing.sm },
-  moreExEn: { fontSize: font.body, color: colors.text, lineHeight: 22 },
-  moreExKo: { fontSize: font.small, color: colors.subtext, lineHeight: 20 },
 });

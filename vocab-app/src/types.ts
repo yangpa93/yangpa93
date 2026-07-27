@@ -109,21 +109,46 @@ export interface AnswerLog {
   at: number;
 }
 
+/**
+ * 문제 유형.
+ *
+ * 아래로 갈수록 어렵다. 4지선다(재인)는 보기 중에 답이 있어서 쉽고,
+ * 직접 타이핑(인출)은 스스로 떠올려야 해서 어렵다. 한 세션에서
+ * 같은 단어를 재인 → 문맥 → 인출 순으로 올려 가며 세 번 만난다.
+ */
 export type GameId =
+  // 1단계 · 재인
   | 'meaning' // 영어 → 뜻 4지선다
   | 'word' // 뜻 → 영어 4지선다
+  | 'listening' // 듣고 고르기
+  // 2단계 · 문맥
+  | 'context' // 예문 속 표제어의 뜻 고르기
+  | 'polysemy' // 다의어: 이 문장에서 쓰인 뜻 고르기
   | 'cloze' // 예문 빈칸 채우기
-  | 'synonym' // 같은 뜻의 영어 표현 고르기
-  | 'spelling' // 철자 채우기
-  | 'listening'; // 듣고 고르기
+  | 'synonym' // 문맥에 맞는 동의어 고르기
+  // 3단계 · 인출
+  | 'spelling' // 첫 글자 힌트를 보고 철자 쓰기
+  | 'recall'; // 힌트 없이 뜻만 보고 영어로 쓰기
 
 export const GAME_LABEL: Record<GameId, string> = {
   meaning: '뜻 맞히기',
   word: '단어 맞히기',
+  listening: '듣고 맞히기',
+  context: '문맥 속 뜻',
+  polysemy: '여러 뜻 구별',
   cloze: '빈칸 채우기',
   synonym: '같은 뜻 찾기',
   spelling: '철자 쓰기',
-  listening: '듣고 맞히기',
+  recall: '직접 쓰기',
+};
+
+/** 한 세션에서 단어를 만나는 단계. 라운드가 올라갈수록 어려워진다. */
+export type Stage = 'learn' | 'apply' | 'recall';
+
+export const STAGE_LABEL: Record<Stage, string> = {
+  learn: '익히기',
+  apply: '활용하기',
+  recall: '떠올리기',
 };
 
 /** 하루치 학습 기록. 날짜별로 하나. */
@@ -172,6 +197,13 @@ export interface RewardRequest {
 export interface ProfileSettings {
   /** 하루 목표 단어 수 (10~20) */
   dailyGoal: number;
+  /**
+   * 한 단어를 한 세션에서 몇 번 만날지 (2~4).
+   *
+   * 3이면 재인 → 문맥 → 인출 세 단계를 모두 거친다. 20단어 × 3라운드 =
+   * 60문제로 대략 10분 분량이 된다.
+   */
+  rounds: number;
   /** 복습 비중(%). 세션에서 복습 단어가 차지하는 비율 상한. */
   reviewRatio: number;
   /** 소리 읽어주기 */

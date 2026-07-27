@@ -1,18 +1,32 @@
 /**
  * 4지선다 게임.
  *
- * 뜻 맞히기 / 단어 맞히기 / 같은 뜻 찾기 / 듣고 맞히기가 모두 같은 구조라
- * 문제 지문과 보기 라벨만 갈아 끼워 하나로 처리한다.
+ * 여섯 유형이 같은 구조라 문제 지문과 보기만 갈아 끼워 하나로 처리한다.
+ *   meaning   영어 → 뜻
+ *   word      뜻 → 영어
+ *   listening 소리 → 영어
+ *   context   예문 속 표제어의 뜻          (문맥 단서로 풀어야 한다)
+ *   polysemy  다의어: 이 문장에서 쓰인 뜻   (보기가 전부 그 단어의 뜻이라 가장 어렵다)
+ *   synonym   문맥에 맞는 동의어
+ *
+ * 모든 문항에 "모르겠어요" 보기를 둔다. 찍어서 맞히면 학습 데이터가
+ * 오염되기 때문이다. 누르면 오답으로 기록하되 정답을 바로 보여 준다.
  */
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import { GameId, VocabEntry } from '../types';
 import { Exposure, exposure, primaryMeaning } from '../data/entry';
-import { buildChoices } from '../srs/session';
+import { buildChoices, shuffle } from '../srs/session';
 import { speak } from '../lib/feedback';
 import { colors, font, radius, spacing } from '../theme';
 import { H2, Muted } from '../components/ui';
+import { HighlightedSentence } from '../components/HighlightedSentence';
+
+export type ChoiceGameId = Extract<
+  GameId,
+  'meaning' | 'word' | 'listening' | 'context' | 'polysemy' | 'synonym'
+>;
 
 export interface GameProps {
   entry: VocabEntry;
@@ -20,7 +34,6 @@ export interface GameProps {
   /** 오답 보기를 뽑아올 같은 레벨 단어들 */
   pool: VocabEntry[];
   ttsEnabled: boolean;
-  /** 문제를 푼 결과. `chosen`은 결과 화면에 보여줄 아이가 고른 답. */
   onAnswer: (correct: boolean) => void;
 }
 
@@ -30,6 +43,8 @@ interface Choice {
   correct: boolean;
 }
 
+const DONT_KNOW = '__dontknow__';
+
 export function ChoiceGame({
   game,
   entry,
@@ -37,7 +52,7 @@ export function ChoiceGame({
   pool,
   ttsEnabled,
   onAnswer,
-}: GameProps & { game: Extract<GameId, 'meaning' | 'word' | 'synonym' | 'listening'> }) {
+}: GameProps & { game: ChoiceGameId }) {
   const [picked, setPicked] = useState<string | null>(null);
 
   const choices = useMemo(
@@ -51,10 +66,10 @@ export function ChoiceGame({
     if (game === 'listening') speak(entry.word, ttsEnabled);
   }, [game, entry.id, ttsEnabled]);
 
-  function choose(c: Choice) {
+  function choose(key: string, correct: boolean) {
     if (picked) return;
-    setPicked(c.key);
-    onAnswer(c.correct);
+    setPicked(key);
+    onAnswer(correct);
   }
 
   return (
@@ -62,42 +77,74 @@ export function ChoiceGame({
       <Muted>{PROMPT[game]}</Muted>
 
       <View style={s.stem}>
-        {game === 'listening' ? (
-          <Pressable
-            onPress={() => speak(entry.word, ttsEnabled)}
-            style={s.speaker}
-            accessibilityRole="button"
-            accessibilityLabel="다시 듣기"
-          >
-            <Text style={{ fontSize: 44 }}>🔊</Text>
-            <Muted style={{ marginTop: spacing.sm }}>다시 듣기</Muted>
-          </Pressable>
-        ) : game === 'word' ? (
-          <H2 style={{ textAlign: 'center' }}>{exp.sense.meaning}</H2>
-        ) : game === 'synonym' ? (
-          <View style={{ alignItems: 'center' }}>
-            <Text style={s.word}>{entry.word}</Text>
-            <Muted style={{ marginTop: spacing.sm }}>{exp.sense.meaning}</Muted>
-          </View>
-        ) : (
-          <Pressable onPress={() => speak(entry.word, ttsEnabled)} accessibilityRole="button">
-            <Text style={s.word}>{entry.word}</Text>
-            <Muted style={{ textAlign: 'center', marginTop: spacing.xs }}>{entry.pos}</Muted>
-          </Pressable>
-        )}
+        <Stem game={game} entry={entry} exp={exp} ttsEnabled={ttsEnabled} answered={picked !== null} />
       </View>
 
-      <View style={{ gap: spacing.md }}>
+      <View style={{ gap: spacing.sm }}>
         {choices.map((c) => (
-          <ChoiceButton
-            key={c.key}
-            choice={c}
-            picked={picked}
-            onPress={() => choose(c)}
-          />
+          <ChoiceButton key={c.key} choice={c} picked={picked} onPress={() => choose(c.key, c.correct)} />
         ))}
+
+        <Pressable
+          onPress={() => choose(DONT_KNOW, false)}
+          disabled={picked !== null}
+          accessibilityRole="button"
+          style={[s.dontKnow, picked === DONT_KNOW && s.dontKnowPicked, picked !== null && { opacity: 0.6 }]}
+        >
+          <Text style={s.dontKnowText}>모르겠어요</Text>
+        </Pressable>
       </View>
     </View>
+  );
+}
+
+function Stem({
+  game,
+  entry,
+  exp,
+  ttsEnabled,
+  answered,
+}: {
+  game: ChoiceGameId;
+  entry: VocabEntry;
+  exp: Exposure;
+  ttsEnabled: boolean;
+  answered: boolean;
+}) {
+  if (game === 'listening') {
+    return (
+      <Pressable
+        onPress={() => speak(entry.word, ttsEnabled)}
+        style={{ alignItems: 'center' }}
+        accessibilityRole="button"
+        accessibilityLabel="다시 듣기"
+      >
+        <Text style={{ fontSize: 44 }}>🔊</Text>
+        <Muted style={{ marginTop: spacing.sm }}>다시 듣기</Muted>
+      </Pressable>
+    );
+  }
+
+  if (game === 'word') {
+    return <H2 style={{ textAlign: 'center' }}>{exp.sense.meaning}</H2>;
+  }
+
+  // context / polysemy / synonym 은 모두 예문을 보여준다.
+  if (game === 'context' || game === 'polysemy' || game === 'synonym') {
+    return (
+      <View style={s.sentenceBox}>
+        <HighlightedSentence text={exp.example.en} word={entry.word} />
+        {answered ? <Text style={s.sentenceKo}>{exp.example.ko}</Text> : null}
+      </View>
+    );
+  }
+
+  // meaning
+  return (
+    <Pressable onPress={() => speak(entry.word, ttsEnabled)} accessibilityRole="button">
+      <Text style={s.word}>{entry.word}</Text>
+      <Muted style={{ textAlign: 'center', marginTop: spacing.xs }}>{entry.pos}</Muted>
+    </Pressable>
   );
 }
 
@@ -158,22 +205,43 @@ function ChoiceButton({
   );
 }
 
-const PROMPT: Record<'meaning' | 'word' | 'synonym' | 'listening', string> = {
+const PROMPT: Record<ChoiceGameId, string> = {
   meaning: '이 단어의 뜻은?',
   word: '이 뜻을 가진 단어는?',
-  synonym: '바꿔 쓸 수 있는 표현은?',
   listening: '잘 듣고 알맞은 단어를 고르세요',
+  context: '색칠한 단어는 여기서 무슨 뜻일까요?',
+  polysemy: '이 단어는 뜻이 여러 개예요. 이 문장에서는?',
+  synonym: '색칠한 단어를 바꿔 쓸 수 있는 표현은?',
 };
 
 function buildOptions(
-  game: 'meaning' | 'word' | 'synonym' | 'listening',
+  game: ChoiceGameId,
   entry: VocabEntry,
   exp: Exposure,
   pool: VocabEntry[],
 ): Choice[] {
   const others = pool.filter((e) => e.id !== entry.id);
 
-  if (game === 'meaning') {
+  // 다의어 구별: 보기가 전부 '이 단어'의 뜻이다.
+  // 문장을 제대로 읽지 않으면 고를 수 없어서 가장 어렵다.
+  if (game === 'polysemy') {
+    const own = entry.senses.map((sense, i) => ({
+      key: `s${i}`,
+      label: sense.meaning,
+      correct: i === exp.senseIndex,
+    }));
+    // 뜻이 2개뿐이면 다른 단어의 뜻을 섞어 보기를 4개로 채운다.
+    if (own.length < 4) {
+      const fillers = others
+        .slice(0, 40)
+        .map((e) => ({ key: e.id, label: primaryMeaning(e), correct: false }))
+        .filter((c) => !own.some((o) => o.label === c.label));
+      return shuffle([...own, ...fillers.slice(0, 4 - own.length)]);
+    }
+    return shuffle(own).slice(0, 4);
+  }
+
+  if (game === 'meaning' || game === 'context') {
     // 정답은 지금 노출 중인 뜻. 다의어라도 그날 배운 뜻을 묻는다.
     const picked = buildChoices(
       { key: entry.id, label: exp.sense.meaning },
@@ -192,8 +260,8 @@ function buildOptions(
     return picked.map((c) => ({ ...c, correct: c.key === entry.id }));
   }
 
-  // synonym: 정답은 이 뜻의 동의어, 오답은 다른 단어들의 동의어(없으면 표제어)
-  const answer = exp.sense.synonyms[0];
+  // synonym: 정답은 이 뜻의 동의어, 오답은 다른 단어들의 동의어
+  const answer = exp.sense.synonyms[0] ?? entry.word;
   const distractors = others
     .map((e) => {
       const otherExp = exposure(e, 0);
@@ -207,15 +275,23 @@ function buildOptions(
 
 const s = StyleSheet.create({
   stem: {
-    minHeight: 130,
+    minHeight: 120,
     alignItems: 'center',
     justifyContent: 'center',
-    marginVertical: spacing.lg,
+    marginVertical: spacing.md,
   },
   word: { fontSize: 38, fontWeight: '800', color: colors.text, textAlign: 'center' },
-  speaker: { alignItems: 'center' },
+  sentenceBox: {
+    width: '100%',
+    padding: spacing.lg,
+    backgroundColor: colors.card,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  sentenceKo: { fontSize: font.small, color: colors.subtext, marginTop: spacing.md },
   choice: {
-    minHeight: 60,
+    minHeight: 56,
     borderRadius: radius.md,
     backgroundColor: colors.card,
     borderWidth: 2,
@@ -227,4 +303,13 @@ const s = StyleSheet.create({
   choiceCorrect: { borderColor: colors.correct, backgroundColor: colors.correctSoft },
   choiceWrong: { borderColor: colors.wrong, backgroundColor: colors.wrongSoft },
   choiceText: { fontSize: font.h3, fontWeight: '600', color: colors.text, textAlign: 'center' },
+  dontKnow: {
+    minHeight: 44,
+    borderRadius: radius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: spacing.xs,
+  },
+  dontKnowPicked: { backgroundColor: colors.bg },
+  dontKnowText: { fontSize: font.small, fontWeight: '600', color: colors.muted },
 });

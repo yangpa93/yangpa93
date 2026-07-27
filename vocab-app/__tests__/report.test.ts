@@ -12,7 +12,7 @@ function makeProfile(over: Partial<Profile> = {}): Profile {
     name: '서준',
     avatar: '🦊',
     level: 'm1',
-    settings: { dailyGoal: 15, reviewRatio: 70, ttsEnabled: true, hapticsEnabled: true },
+    settings: { dailyGoal: 15, rounds: 3, reviewRatio: 70, ttsEnabled: true, hapticsEnabled: true },
     createdAt: 0,
     streak: 3,
     bestStreak: 5,

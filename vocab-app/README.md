@@ -92,7 +92,7 @@ npm start
 부모님 폰 연결과 자주 막히는 곳까지 정리해 두었습니다.
 
 ```bash
-npm test            # 로직 테스트 (181개)
+npm test            # 로직 테스트 (188개)
 npm run typecheck   # 타입 검사
 npm run data:validate   # 단어 데이터 무결성 검사
 ```
@@ -212,6 +212,30 @@ ancient  ↔ modern · recent        rural   ↔ urban
 - **동의어와 반대말이 겹치지 않는지** — 같은 표현이 '바꿔 쓸 말'이자 '반대말'이면
   둘 다 틀린 문제가 됩니다. 실제로 이 검사가 `employ ↔ hire`(둘은 유의어입니다)를
   잡아냈습니다.
+
+### 영국식·미국식 철자 짝
+
+교육부 기본 어휘 목록에는 `airplane`과 `aeroplane`이 **둘 다** 들어 있습니다.
+목록을 그대로 옮겼으니 우리 어휘에도 둘 다 있고, 짚어 주지 않으면 아이는 이 둘을
+**서로 다른 단어로** 외웁니다. (베타에서 실제로 딸이 `aeroplane`을 보고
+"오타 아니냐"고 물었습니다.)
+
+그래서 단어 카드에서 짝을 알려 줍니다.
+
+```
+aeroplane  n.
+🇬🇧 영국식 · 짝은 airplane
+airplane의 영국식 철자예요. 뜻은 같고, 우리나라 시험에는 보통 airplane이 나와요.
+```
+
+`src/data/spelling.ts`에 **20쌍**을 모아 두었습니다 — `colour/color`,
+`theatre/theater`, `favourite/favorite`, `defence/defense` 같은 것들입니다.
+**우리나라 교과서와 수능은 미국식이 기준**이라, 영국식을 만났을 때 그것을
+짚어 주는 쪽에 무게를 두었습니다.
+
+낱말 자체가 다른 것(`petrol`/`gasoline`, `cheque`/`check`)과 영국식에서만
+품사로 갈리는 것(`practise` 동사 / `practice` 명사)은 문구를 달리 적습니다.
+철자 문제가 아닌데 "철자만 다르다"고 하면 틀린 것을 가르치게 됩니다.
 
 반대말은 뜻이 아니라 **표제어**에 붙입니다. 다의어라도 반대말이 성립하는 것은 보통
 대표 뜻 하나뿐이라, 뜻마다 나누면 빈 칸만 늘어납니다. 그래서 다의어는 **대표 뜻을
@@ -676,6 +700,7 @@ src/
     plan.ts             어휘 배치표 (어떤 단어를 어느 레벨에서 — 생성 파일)
     levels/*.ts         레벨별 뜻·예문 데이터 (m1-1 … h3-4, 24개 파일)
     antonyms.ts         반대말 표 (383쌍 · 반대말도 전부 우리 어휘 안의 단어)
+    spelling.ts         영국식·미국식 철자 짝 (20쌍)
   srs/
     scheduler.ts        SM-2 변형. 채점 → 다음 간격
     session.ts          오늘의 세션 구성, 게임 배정
@@ -694,7 +719,7 @@ src/
     legacy-ids.ts       옛 단어 id → 표제어 (학습 기록 이전용, 고정)
     AppProvider.tsx     전역 상태
 
-__tests__/              로직 테스트 181개
+__tests__/              로직 테스트 188개
 data/                   어휘 원본 목록 (교육부 목록 + 교과서 빈출)
 scripts/build-plan.mjs  원본 목록 → 레벨 배치표 생성
 scripts/import-csv.mjs  CSV → 데이터 파일 변환

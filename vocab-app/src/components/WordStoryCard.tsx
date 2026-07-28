@@ -27,6 +27,7 @@ import {
 } from 'react-native';
 import { VocabEntry } from '../types';
 import { Exposure, videoUrl } from '../data/entry';
+import { variantOf } from '../data/spelling';
 import { speak, stopSpeaking } from '../lib/feedback';
 import { colors, font, radius, spacing } from '../theme';
 import { Button, Chip, Muted, Row } from './ui';
@@ -54,6 +55,7 @@ export function WordStoryCard({
 }) {
   const [typed, setTyped] = useState(0);
 
+  const variant = variantOf(entry.word);
   const slide = useRef(new Animated.Value(0)).current;
   const pop = useRef(new Animated.Value(0)).current;
 
@@ -145,6 +147,21 @@ export function WordStoryCard({
             </Muted>
           ) : null}
         </Row>
+
+        {/*
+          영국식·미국식 짝 알려 주기.
+          교육부 목록에 airplane과 aeroplane이 둘 다 있어서 우리 어휘에도
+          둘 다 있다. 짚어 주지 않으면 아이는 서로 다른 단어로 외우거나,
+          오타라고 생각한다(베타에서 실제로 그랬다).
+        */}
+        {variant ? (
+          <View style={s.variantBox}>
+            <Text style={s.variantHead}>
+              {variant.side === 'br' ? '🇬🇧 영국식' : '🇺🇸 미국식'} · 짝은 {variant.other}
+            </Text>
+            <Text style={s.variantText}>{variant.text}</Text>
+          </View>
+        ) : null}
 
         {/* 오늘 배우는 뜻 — 예문이 타이핑된다 */}
         <View style={s.todayBox}>
@@ -245,6 +262,16 @@ const s = StyleSheet.create({
     borderRadius: radius.md,
   },
   meaning: { fontSize: font.h2, fontWeight: '800', color: colors.primary, marginTop: 2 },
+  variantBox: {
+    marginTop: spacing.md,
+    padding: spacing.md,
+    borderRadius: radius.md,
+    backgroundColor: colors.bg,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  variantHead: { fontSize: font.small, fontWeight: '800', color: colors.text },
+  variantText: { fontSize: font.small, color: colors.subtext, marginTop: 2, lineHeight: 20 },
   syn: {
     paddingHorizontal: spacing.sm,
     paddingVertical: 2,

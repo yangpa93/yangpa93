@@ -7,6 +7,7 @@
 import { ALL_ENTRIES, ENTRIES_BY_LEVEL } from '../src/data';
 import { clozeSentence, exposure, meaningLine, wordForms } from '../src/data/entry';
 import { ANTONYMS, antonymsOf, hasAntonym } from '../src/data/antonyms';
+import { VARIANTS, variantOf } from '../src/data/spelling';
 import { PLAN, PLAN_COUNT } from '../src/data/plan';
 import { LEVEL_ORDER } from '../src/types';
 
@@ -310,5 +311,58 @@ describe('반대말 표(antonyms.ts)', () => {
   it('반대말 문제를 낼 수 있는 단어가 충분히 있다', () => {
     const covered = ALL_ENTRIES.filter((e) => hasAntonym(e.word));
     expect(covered.length).toBeGreaterThanOrEqual(400);
+  });
+});
+
+describe('영국식·미국식 짝(spelling.ts)', () => {
+  const words = new Set(ALL_ENTRIES.map((e) => e.word.toLowerCase()));
+
+  it('짝의 양쪽이 모두 우리 어휘 안에 있다', () => {
+    // 어휘에 없는 단어를 '짝'이라고 알려 주면 아이는 찾아볼 수가 없다.
+    const strays: string[] = [];
+    for (const v of VARIANTS) {
+      if (!words.has(v.br)) strays.push(v.br);
+      if (!words.has(v.us)) strays.push(v.us);
+    }
+    expect(strays).toEqual([]);
+  });
+
+  it('양쪽 어디서 찾아도 서로를 가리킨다', () => {
+    for (const v of VARIANTS) {
+      expect(variantOf(v.br)?.other).toBe(v.us);
+      expect(variantOf(v.us)?.other).toBe(v.br);
+      expect(variantOf(v.br)?.side).toBe('br');
+      expect(variantOf(v.us)?.side).toBe('us');
+    }
+  });
+
+  it('같은 단어가 두 짝에 걸치지 않는다', () => {
+    // 걸치면 어느 쪽을 보여줄지 정해지지 않는다.
+    const seen = VARIANTS.flatMap((v) => [v.br, v.us]);
+    const dupes = [...new Set(seen.filter((w, i) => seen.indexOf(w) !== i))];
+    expect(dupes).toEqual([]);
+  });
+
+  it('자기 자신과 짝이 되지 않는다', () => {
+    expect(VARIANTS.filter((v) => v.br === v.us)).toEqual([]);
+  });
+
+  it('짝이 없는 단어에는 아무것도 안 붙는다', () => {
+    expect(variantOf('save')).toBeNull();
+  });
+
+  it('안내 문구가 비어 있지 않다', () => {
+    for (const v of VARIANTS) {
+      expect(variantOf(v.br)!.text.length).toBeGreaterThan(10);
+      expect(variantOf(v.us)!.text.length).toBeGreaterThan(10);
+    }
+  });
+
+  it('철자만 다른 짝은 우리나라 시험 기준(미국식)을 알려 준다', () => {
+    // 교과서와 수능은 미국식이다. 영국식을 만났을 때 그것을 짚어 주는 것이
+    // 이 기능의 핵심이다.
+    const br = variantOf('aeroplane')!;
+    expect(br.other).toBe('airplane');
+    expect(br.text).toContain('airplane');
   });
 });

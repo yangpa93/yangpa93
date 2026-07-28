@@ -83,7 +83,7 @@ export function buildLabel(info: BuildInfo = buildInfo()): string {
 export function feedbackHeader(info: BuildInfo = buildInfo()): string {
   return [
     '── 아래는 지우지 말아 주세요 ──',
-    `앱: 우리 영단어 ${buildLabel(info)}`,
+    `앱: 가가_Voca ${buildLabel(info)}`,
     `보낸 때: ${new Date().toLocaleString('ko-KR')}`,
   ].join('\n');
 }

@@ -169,7 +169,7 @@ describe('backupFileName', () => {
   it('만든 날짜가 이름에 들어간다', () => {
     // 파일이 여러 개 쌓였을 때 어느 것이 최신인지 보여야 한다.
     const name = backupFileName(new Date(2026, 6, 5).getTime());
-    expect(name).toBe('우리영단어-백업-2026-07-05.json');
+    expect(name).toBe('가가Voca-백업-2026-07-05.json');
   });
 });
 
@@ -191,7 +191,7 @@ describe('readBackup', () => {
     // 엉뚱한 파일을 덮어쓰기로 밀어 넣으면 기록이 통째로 날아간다.
     const r = readBackup(JSON.stringify({ hello: 'world' }));
     expect(r.ok).toBe(false);
-    if (!r.ok) expect(r.reason).toContain('우리 영단어');
+    if (!r.ok) expect(r.reason).toContain('가가_Voca');
   });
 
   it('더 새 판에서 만든 백업은 거절한다', () => {

@@ -75,11 +75,11 @@ export function buildBackup(
   };
 }
 
-/** `우리영단어-백업-2026-07-28.json` */
+/** `가가Voca-백업-2026-07-28.json` */
 export function backupFileName(now: number): string {
   const d = new Date(now);
   const p = (n: number) => String(n).padStart(2, '0');
-  return `우리영단어-백업-${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}.json`;
+  return `가가Voca-백업-${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}.json`;
 }
 
 export function serializeBackup(backup: BackupFile): string {
@@ -115,7 +115,7 @@ export function readBackup(text: string, currentFormat: number = BACKUP_FORMAT):
   const b = parsed as Partial<BackupFile>;
 
   if (b.app !== 'urivocab') {
-    return { ok: false, reason: '우리 영단어 백업 파일이 아니에요. 다른 앱의 파일 같아요.' };
+    return { ok: false, reason: '가가_Voca 백업 파일이 아니에요. 다른 앱의 파일 같아요.' };
   }
   if (typeof b.format !== 'number') {
     return { ok: false, reason: '백업 파일이 손상됐어요.' };

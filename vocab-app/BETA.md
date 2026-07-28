@@ -138,8 +138,46 @@ npx eas-cli@latest update --branch beta --message "예문 오타 수정"
 동안 특히 편합니다.
 
 무선 업데이트로 안 되는 것도 있습니다. **네이티브 모듈이 늘거나, app.json의
-권한·아이콘·판 번호가 바뀌면 반드시 APK를 다시 만들어야** 합니다.
-(백업 기능을 넣을 때 `expo-file-system`이 늘었던 것이 그런 경우입니다.)
+앱 이름·권한·아이콘·판 번호가 바뀌면 반드시 APK를 다시 만들어야** 합니다.
+(백업 기능을 넣을 때 `expo-file-system`이 늘었던 것, 앱 이름을 `가가_Voca`로
+바꾼 것이 그런 경우입니다.)
+
+## 8. `git pull`이 충돌할 때
+
+`eas init`과 `eas update:configure`는 **그 컴퓨터에만 있는 값**을 `app.json`에
+적습니다 — 프로젝트 id와 업데이트 주소입니다. 저장소에는 그 값이 없으니
+(다른 사람 프로젝트를 가리키면 안 되므로) 새 코드를 받을 때마다 부딪힙니다.
+
+```
+error: Your local changes to the following files would be overwritten by merge:
+        vocab-app/app.json
+        vocab-app/package.json
+```
+
+이 순서로 풀면 됩니다.
+
+```powershell
+Copy-Item app.json app.json.bak
+git checkout -- app.json package.json package-lock.json
+git pull origin claude/english-vocab-learning-app-pfy9yg
+npm run relink                 # app.json.bak 에서 연결 정보만 다시 얹습니다
+npm install
+npm run preflight android
+```
+
+`npm run relink`이 이렇게 알려 줍니다.
+
+```
+app.json 에 연결 정보를 되살렸습니다.
+
+  ✅ 프로젝트 id  1a2b3c4d-...
+  ✅ 업데이트 주소 https://u.expo.dev/1a2b3c4d-...
+```
+
+새 `app.json`(권한·아이콘·이름 같은 최신 설정)에 **연결 정보만** 다시 얹는
+것이라, 손으로 json을 고치다 깨뜨릴 일이 없습니다.
+`package.json`과 `package-lock.json`은 그냥 버려도 됩니다 — 거기 있던 변경
+(`expo-updates` 추가)은 저장소에도 이미 들어가 있습니다.
 
 > **무선 업데이트를 받으면 칩에 한 칸이 더 붙습니다.**
 > `🧪 베타 0.9.0 (1) · android · 업데이트 a3f9c2`
@@ -189,7 +227,7 @@ npx eas-cli@latest submit --platform ios --latest
 선택창이 뜹니다.
 
 ```
-[우리 영단어 베타 의견]
+[가가_Voca 베타 의견]
 
 무엇이 이상했나요?
 
@@ -198,7 +236,7 @@ npx eas-cli@latest submit --platform ios --latest
 
 
 ── 아래는 지우지 말아 주세요 ──
-앱: 우리 영단어 베타 0.9.0 (3) · android
+앱: 가가_Voca 베타 0.9.0 (3) · android
 보낸 때: 2026. 7. 28. 오후 3:12
 ```
 

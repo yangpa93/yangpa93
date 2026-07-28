@@ -63,7 +63,7 @@ export default function ParentLinkScreen() {
     const url = buildLinkUrl(state.myPushToken, name);
     await Share.share({
       message:
-        `[우리 영단어] ${name} 연결하기\n\n` +
+        `[가가_Voca] ${name} 연결하기\n\n` +
         `아이 기기에서 아래 링크를 눌러 주세요.\n${url}\n\n` +
         `링크가 안 열리면 아래 주소를 복사해서\n아이 기기 → 부모님 모드 → 부모님 폰 연결 → 붙여넣기 하세요.\n\n${state.myPushToken}`,
     }).catch(() => {});

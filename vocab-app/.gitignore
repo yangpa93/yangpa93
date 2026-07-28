@@ -39,3 +39,6 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# eas init 이 적어 둔 연결 정보를 pull 전에 보관하는 파일
+app.json.bak

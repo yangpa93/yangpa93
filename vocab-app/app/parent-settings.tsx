@@ -398,7 +398,7 @@ export default function ParentSettings() {
                 variant="secondary"
                 onPress={() => {
                   Share.share({
-                    message: `[우리 영단어 베타 의견]\n\n무엇이 이상했나요?\n\n\n어떻게 하면 다시 나타나나요?\n\n\n${feedbackHeader(build)}`,
+                    message: `[가가_Voca 베타 의견]\n\n무엇이 이상했나요?\n\n\n어떻게 하면 다시 나타나나요?\n\n\n${feedbackHeader(build)}`,
                   }).catch(() => {});
                 }}
                 style={{ marginTop: spacing.md }}

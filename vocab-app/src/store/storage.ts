@@ -180,11 +180,13 @@ export function migrateData(data: ProfileData): ProfileData {
  */
 function upgradeReward(r: RewardRequest & { wish?: string }): RewardRequest {
   // 추가 요구 금액은 나중에 생긴 필드라, 예전 요청은 전부 '기본 금액만'으로 본다.
+  // origin도 나중에 생겼다. 그전에는 아이가 신청하는 길밖에 없었으므로 child.
   const withBonus = (x: RewardRequest): RewardRequest => ({
     ...x,
     baseAmount: x.baseAmount ?? x.amount,
     bonus: x.bonus ?? 0,
     bonusReason: x.bonusReason ?? '',
+    origin: x.origin ?? 'child',
   });
 
   if (r.kind) return withBonus(r);

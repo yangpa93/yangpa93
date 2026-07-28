@@ -309,7 +309,17 @@ export default function Home() {
               <Row style={{ justifyContent: 'space-between' }}>
                 <Body style={{ flex: 1, fontWeight: '800' }}>{formatWon(r.amount)}</Body>
                 <Chip
-                  label={r.status === 'approved' ? '주기로 하셨어요' : r.status === 'fulfilled' ? '받았어요' : '다음 기회에'}
+                  label={
+                    r.status === 'approved'
+                      ? // 부모가 먼저 준 것은 아이가 신청한 적이 없다.
+                        // '주기로 하셨어요'라고 하면 뭘 신청했는지 아이가 헷갈린다.
+                        r.origin === 'parent'
+                        ? '주셨어요'
+                        : '주기로 하셨어요'
+                      : r.status === 'fulfilled'
+                        ? '받았어요'
+                        : '다음 기회에'
+                  }
                   tone={r.status === 'rejected' ? 'wrong' : 'correct'}
                 />
               </Row>

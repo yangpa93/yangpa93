@@ -98,6 +98,7 @@ function makeReward(over: Partial<RewardRequest> = {}): RewardRequest {
     createdAt: 100,
     decidedAt: null,
     parentNote: '',
+    origin: 'child',
     ...over,
   };
 }

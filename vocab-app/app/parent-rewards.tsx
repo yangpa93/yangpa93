@@ -140,6 +140,10 @@ export default function ParentRewards() {
                 <Body style={{ fontWeight: '800' }}>{formatWon(r.amount)}</Body>
                 <Muted style={{ flex: 1 }}>{r.reason}</Muted>
               </Row>
+              {/* 아이가 신청한 것과 부모가 먼저 준 것은 성격이 다르다. */}
+              {r.origin === 'parent' ? (
+                <Muted style={{ marginTop: spacing.xs }}>부모님이 먼저 주셨어요</Muted>
+              ) : null}
               {r.parentNote ? <Muted style={{ marginTop: spacing.xs }}>“{r.parentNote}”</Muted> : null}
               {r.status === 'approved' ? (
                 <Button

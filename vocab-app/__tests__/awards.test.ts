@@ -1,7 +1,10 @@
 import {
+  Award,
   availableAwards,
   awardRates,
   BONUS_AWARD,
+  buildRewardRequest,
+  claimAward,
   formatWon,
   HIGH_LEVEL_AWARD,
   isPerfectMonth,
@@ -232,5 +235,187 @@ describe('부모님이 정하는 금액표', () => {
     });
     expect(onlyMonth.map((a) => a.kind)).toEqual(['perfectMonth']);
     expect(onlyMonth[0].amount).toBe(30_000);
+  });
+});
+
+/* ------------------------------------------------------------------ */
+/* 요구권 기록 만들기                                                   */
+/* ------------------------------------------------------------------ */
+
+const LEVELUP: Award = {
+  kind: 'levelup',
+  amount: 20_000,
+  earnedFrom: 'm1-1',
+  month: null,
+  reason: '중학교 레벨 하나를 끝냈어요',
+};
+
+const MONTH: Award = {
+  kind: 'perfectMonth',
+  amount: 20_000,
+  earnedFrom: null,
+  month: '2026-06',
+  reason: '6월 한 달을 하루도 빠짐없이 공부했어요',
+};
+
+describe('buildRewardRequest', () => {
+  test('아이가 신청하면 부모 판단을 기다린다', () => {
+    const r = buildRewardRequest({
+      id: 'r1',
+      profileId: 'p1',
+      award: LEVELUP,
+      origin: 'child',
+      now: 1000,
+      bonusCap: BONUS_AWARD,
+      note: '  두 달 동안 하루도 안 빠졌어요  ',
+    });
+
+    expect(r.status).toBe('pending');
+    expect(r.decidedAt).toBeNull();
+    expect(r.origin).toBe('child');
+    expect(r.amount).toBe(20_000);
+    expect(r.baseAmount).toBe(20_000);
+    expect(r.bonus).toBe(0);
+    // 앞뒤 공백은 저장 전에 턴다.
+    expect(r.note).toBe('두 달 동안 하루도 안 빠졌어요');
+    expect(r.reason).toBe(LEVELUP.reason);
+  });
+
+  test('아이가 얹은 금액은 기본 금액과 따로 남는다', () => {
+    const r = buildRewardRequest({
+      id: 'r1',
+      profileId: 'p1',
+      award: LEVELUP,
+      origin: 'child',
+      now: 1000,
+      bonusCap: 10_000,
+      bonus: 10_000,
+      bonusReason: '시험을 한 번에 다 맞혔어요',
+    });
+
+    expect(r.baseAmount).toBe(20_000);
+    expect(r.bonus).toBe(10_000);
+    expect(r.amount).toBe(30_000);
+    expect(r.bonusReason).toBe('시험을 한 번에 다 맞혔어요');
+  });
+
+  test('얹는 금액은 부모님이 정한 한 칸을 넘지 못한다', () => {
+    const over = buildRewardRequest({
+      id: 'r1',
+      profileId: 'p1',
+      award: LEVELUP,
+      origin: 'child',
+      now: 1000,
+      bonusCap: 10_000,
+      bonus: 999_999,
+    });
+    expect(over.bonus).toBe(10_000);
+    expect(over.amount).toBe(30_000);
+
+    // 음수를 넣어도 깎이지 않는다.
+    const negative = buildRewardRequest({
+      id: 'r1',
+      profileId: 'p1',
+      award: LEVELUP,
+      origin: 'child',
+      now: 1000,
+      bonusCap: 10_000,
+      bonus: -5_000,
+    });
+    expect(negative.bonus).toBe(0);
+    expect(negative.amount).toBe(20_000);
+
+    // 부모님이 추가 요구를 0으로 꺼 두면 얹을 수 없다.
+    const off = buildRewardRequest({
+      id: 'r1',
+      profileId: 'p1',
+      award: LEVELUP,
+      origin: 'child',
+      now: 1000,
+      bonusCap: 0,
+      bonus: 10_000,
+    });
+    expect(off.bonus).toBe(0);
+  });
+
+  test('얹지 않았으면 이유는 남기지 않는다', () => {
+    const r = buildRewardRequest({
+      id: 'r1',
+      profileId: 'p1',
+      award: LEVELUP,
+      origin: 'child',
+      now: 1000,
+      bonusCap: 10_000,
+      bonus: 0,
+      bonusReason: '적다 만 글',
+    });
+    expect(r.bonusReason).toBe('');
+  });
+
+  test('부모가 먼저 주면 승인된 상태로 태어난다', () => {
+    const r = buildRewardRequest({
+      id: 'r2',
+      profileId: 'p1',
+      award: MONTH,
+      origin: 'parent',
+      now: 2000,
+      bonusCap: BONUS_AWARD,
+      parentNote: '  이번 달 정말 잘했어  ',
+    });
+
+    expect(r.status).toBe('approved');
+    expect(r.decidedAt).toBe(2000);
+    expect(r.origin).toBe('parent');
+    expect(r.parentNote).toBe('이번 달 정말 잘했어');
+    expect(r.month).toBe('2026-06');
+    expect(r.amount).toBe(20_000);
+  });
+
+  test('부모가 먼저 줄 때는 얹은 금액이 붙지 않는다', () => {
+    // 아이가 신청한 적이 없으니 "더 요구했다"는 것이 있을 수 없다.
+    const r = buildRewardRequest({
+      id: 'r2',
+      profileId: 'p1',
+      award: LEVELUP,
+      origin: 'parent',
+      now: 2000,
+      bonusCap: 10_000,
+      bonus: 10_000,
+      bonusReason: '이건 들어가면 안 된다',
+    });
+    expect(r.bonus).toBe(0);
+    expect(r.bonusReason).toBe('');
+    expect(r.amount).toBe(20_000);
+  });
+});
+
+describe('claimAward', () => {
+  test('레벨업을 쓰면 그 레벨만 원장에서 빠진다', () => {
+    const profile = makeProfile({ pendingLevelUps: ['m1-1', 'm1-2'] });
+    const after = claimAward(profile, LEVELUP);
+    expect(after.pendingLevelUps).toEqual(['m1-2']);
+    expect(after.claimedMonths).toEqual([]);
+    // 원본은 건드리지 않는다.
+    expect(profile.pendingLevelUps).toEqual(['m1-1', 'm1-2']);
+  });
+
+  test('개근을 쓰면 그 달이 원장에 적힌다', () => {
+    const profile = makeProfile();
+    const after = claimAward(profile, MONTH);
+    expect(after.claimedMonths).toEqual(['2026-06']);
+  });
+
+  test('같은 요구권을 두 번 써도 두 번 적히지 않는다', () => {
+    const once = claimAward(makeProfile(), MONTH);
+    const twice = claimAward(once, MONTH);
+    expect(twice.claimedMonths).toEqual(['2026-06']);
+  });
+
+  test('쓰고 나면 다시 줄 수 있는 목록에서 사라진다', () => {
+    // 부모가 먼저 주든 아이가 신청하든 한 번만 받을 수 있어야 한다.
+    const profile = makeProfile({ pendingLevelUps: ['m1-1'] });
+    const data = makeData();
+    expect(availableAwards(profile, data, '2026-07-15')).toHaveLength(1);
+    expect(availableAwards(claimAward(profile, LEVELUP), data, '2026-07-15')).toEqual([]);
   });
 });

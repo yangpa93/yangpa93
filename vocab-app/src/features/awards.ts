@@ -21,7 +21,16 @@
  * 화면과 분리된 순수 함수라 테스트가 쉽다.
  */
 
-import { AwardRates, DailyRecord, LevelId, Profile, ProfileData, gradeOf } from '../types';
+import {
+  AwardRates,
+  DailyRecord,
+  LevelId,
+  Profile,
+  ProfileData,
+  RewardOrigin,
+  RewardRequest,
+  gradeOf,
+} from '../types';
 import { daysInMonth, monthOf } from './calendar';
 import { todayKey } from '../lib/date';
 
@@ -167,6 +176,96 @@ export function availableAwards(
   }
 
   return out;
+}
+
+/* ------------------------------------------------------------------ */
+/* 요구권 하나를 기록으로 만들기                                        */
+/* ------------------------------------------------------------------ */
+
+/**
+ * 요구권 기록 하나를 만드는 데 필요한 것 전부.
+ *
+ * id와 시각을 밖에서 받는 이유: 이 함수를 순수하게 두려고. 안에서
+ * Date.now()나 난수를 부르면 테스트에서 결과를 못 박을 수 없다.
+ */
+export interface NewReward {
+  id: string;
+  profileId: string;
+  award: Award;
+  origin: RewardOrigin;
+  now: number;
+  /** 아이가 "정말 잘했어요"라며 얹은 금액. 부모가 먼저 줄 때는 0. */
+  bonus?: number;
+  /** 왜 더 받을 만한지 아이가 적은 이유 */
+  bonusReason?: string;
+  /** 아이가 덧붙인 한마디 */
+  note?: string;
+  /** 부모가 남긴 한마디 */
+  parentNote?: string;
+  /** 얹을 수 있는 상한(원). 부모님이 정한 한 칸. */
+  bonusCap: number;
+}
+
+/**
+ * 요구권 기록을 만든다.
+ *
+ * 아이가 신청하든 부모가 먼저 주든 남는 기록의 모양은 같아야 한다.
+ * 그래야 나중에 "언제 얼마를 왜 줬는지"를 한 줄로 훑을 수 있다.
+ * 다른 점은 두 가지뿐이다.
+ *   - origin — 누가 만들었는지
+ *   - status — 아이 신청은 부모 판단을 기다리고(pending),
+ *              부모가 먼저 준 것은 이미 정해진 것이다(approved).
+ *
+ * 얹는 금액은 부모님이 정한 한 칸을 넘지 못한다. 얼마든 부르는 방식이
+ * 아니라 "한 칸만 올릴 수 있다"가 요구권의 취지다.
+ */
+export function buildRewardRequest(input: NewReward): RewardRequest {
+  const { id, profileId, award, origin, now } = input;
+
+  // 부모가 먼저 주는 자리에는 아이가 얹을 기회 자체가 없었다.
+  const cap = Math.max(0, Math.round(input.bonusCap));
+  const extra =
+    origin === 'parent' ? 0 : Math.max(0, Math.min(Math.round(input.bonus ?? 0), cap));
+
+  return {
+    id,
+    profileId,
+    kind: award.kind,
+    amount: award.amount + extra,
+    baseAmount: award.amount,
+    bonus: extra,
+    bonusReason: extra > 0 ? (input.bonusReason ?? '').trim() : '',
+    earnedFrom: award.earnedFrom,
+    month: award.month,
+    reason: award.reason,
+    note: (input.note ?? '').trim(),
+    status: origin === 'parent' ? 'approved' : 'pending',
+    createdAt: now,
+    // 부모가 먼저 준 것은 만든 순간이 곧 정해진 순간이다.
+    decidedAt: origin === 'parent' ? now : null,
+    parentNote: (input.parentNote ?? '').trim(),
+    origin,
+  };
+}
+
+/**
+ * 요구권 하나를 쓴 뒤의 프로필.
+ *
+ * 같은 요구권을 두 번 받지 못하도록 원장에서 지운다. 레벨업은
+ * `pendingLevelUps`에서 빼고, 개근은 `claimedMonths`에 적어 둔다.
+ * 아이가 신청했든 부모가 먼저 줬든 똑같이 한 번만 쓸 수 있어야 한다.
+ */
+export function claimAward(profile: Profile, award: Award): Profile {
+  if (award.kind === 'levelup') {
+    return {
+      ...profile,
+      pendingLevelUps: profile.pendingLevelUps.filter((l) => l !== award.earnedFrom),
+    };
+  }
+  if (award.month && !profile.claimedMonths.includes(award.month)) {
+    return { ...profile, claimedMonths: [...profile.claimedMonths, award.month] };
+  }
+  return profile;
 }
 
 /** 이번 달 개근까지 며칠 남았는지. 화면에 진행 상황을 보여주는 데 쓴다. */

@@ -32,7 +32,7 @@ import {
   RewardStatus,
 } from '../types';
 import { ALL_ENTRIES, entriesOf } from '../data';
-import { Award, awardRates } from '../features/awards';
+import { Award, awardRates, buildRewardRequest, claimAward } from '../features/awards';
 import { plannedWordCount } from '../srs/session';
 import { buildDailyReport, buildWeeklySummary } from '../features/report';
 import { SendResult, sendReportToParent, toPayload } from '../features/push';
@@ -81,6 +81,17 @@ interface Ctx {
    * `bonus`는 아이가 "이번엔 정말 잘했어요"라며 얹은 금액(원). 0이면 안 얹은 것.
    */
   requestReward(award: Award, note: string, bonus?: number, bonusReason?: string): void;
+  /**
+   * 부모님이 아이에게 요구권을 먼저 준다.
+   *
+   * 아이가 신청하기를 기다리지 않고 부모가 바로 주는 길. 아이가 신청하는
+   * 길(requestReward)은 그대로 둔다 — 스스로 "이만큼 했어요"라고 말하는
+   * 자리를 없애지 않으려는 것.
+   *
+   * 승인된 상태로 바로 만들어진다. 부모가 먼저 주기로 한 것을 다시
+   * 부모가 승인할 이유가 없다.
+   */
+  grantReward(profileId: string, award: Award, parentNote?: string): void;
   /**
    * 부모님의 판단.
    *
@@ -450,50 +461,60 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       const { state } = ref.current;
       const active = state.profiles.find((p) => p.id === state.activeProfileId);
       if (!active) return;
-
-      // 얹는 금액은 부모님이 정한 한 칸을 넘지 못한다. 얼마든 부르는 방식이
-      // 아니라 "한 칸만 올릴 수 있다"가 요구권의 취지다.
-      const extra = Math.max(0, Math.min(Math.round(bonus), awardRates(state.parent.awards).bonus));
-
-      const reward: RewardRequest = {
-        id: `r_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`,
-        profileId: active.id,
-        kind: award.kind,
-        amount: award.amount + extra,
-        baseAmount: award.amount,
-        bonus: extra,
-        bonusReason: extra > 0 ? bonusReason.trim() : '',
-        earnedFrom: award.earnedFrom,
-        month: award.month,
-        reason: award.reason,
-        note: note.trim(),
-        status: 'pending',
-        createdAt: Date.now(),
-        decidedAt: null,
-        parentNote: '',
-      };
-
-      // 같은 요구권을 두 번 신청하지 못하도록 원장에서 지운다.
-      const patched: Profile = {
-        ...active,
-        pendingLevelUps:
-          award.kind === 'levelup'
-            ? active.pendingLevelUps.filter((l) => l !== award.earnedFrom)
-            : active.pendingLevelUps,
-        claimedMonths:
-          award.kind === 'perfectMonth' && award.month
-            ? [...active.claimedMonths, award.month]
-            : active.claimedMonths,
-      };
-
-      persistState({
-        ...state,
-        rewards: [reward, ...state.rewards],
-        profiles: state.profiles.map((p) => (p.id === active.id ? patched : p)),
+      addReward(state, active, award, {
+        origin: 'child',
+        bonus,
+        bonusReason,
+        note,
       });
+    },
+    // addReward 는 persistState 만 붙잡는다.
+    [persistState],
+  );
+
+  const grantReward = useCallback(
+    (profileId: string, award: Award, parentNote = '') => {
+      const { state } = ref.current;
+      const target = state.profiles.find((p) => p.id === profileId);
+      if (!target) return;
+      addReward(state, target, award, { origin: 'parent', parentNote });
     },
     [persistState],
   );
+
+  /**
+   * 요구권 기록을 하나 남기고, 그 요구권을 원장에서 지운다.
+   *
+   * 아이 신청과 부모 지급이 같은 길을 타야 기록의 모양이 어긋나지 않는다.
+   * 실제 판단은 전부 features/awards.ts 의 순수 함수들이 한다.
+   */
+  function addReward(
+    state: AppState,
+    target: Profile,
+    award: Award,
+    opts: {
+      origin: 'child' | 'parent';
+      bonus?: number;
+      bonusReason?: string;
+      note?: string;
+      parentNote?: string;
+    },
+  ) {
+    const reward = buildRewardRequest({
+      id: `r_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`,
+      profileId: target.id,
+      award,
+      now: Date.now(),
+      bonusCap: awardRates(state.parent.awards).bonus,
+      ...opts,
+    });
+
+    persistState({
+      ...state,
+      rewards: [reward, ...state.rewards],
+      profiles: state.profiles.map((p) => (p.id === target.id ? claimAward(p, award) : p)),
+    });
+  }
 
   const decideReward = useCallback(
     (id: string, status: RewardStatus, parentNote: string, amount?: number) => {
@@ -623,6 +644,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     levelUp,
     recordExam,
     requestReward,
+    grantReward,
     decideReward,
     updateParent,
     readAllProfileData,

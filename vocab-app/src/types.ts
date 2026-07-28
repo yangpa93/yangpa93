@@ -216,6 +216,17 @@ export interface DailyRecord {
 export type RewardStatus = 'pending' | 'approved' | 'rejected' | 'fulfilled';
 
 /**
+ * 이 요구권을 누가 만들었는지.
+ *
+ *   child  — 아이가 신청했고 부모가 판단을 기다린다
+ *   parent — 부모가 먼저 주기로 하고 바로 만들었다 (승인된 상태로 태어난다)
+ *
+ * 나중에 목록에서 둘을 구별해 보여주려면 기록에 남아 있어야 한다.
+ * 아이가 신청한 것과 부모가 먼저 준 것은 성격이 다르다.
+ */
+export type RewardOrigin = 'child' | 'parent';
+
+/**
  * 요구권 신청.
  *
  * 갖고 싶은 것을 적어 보내는 방식이 아니라 **정해진 금액을 요구할 권리**다.
@@ -252,6 +263,8 @@ export interface RewardRequest {
   decidedAt: number | null;
   /** 부모가 남긴 한마디 */
   parentNote: string;
+  /** 아이가 신청한 것인지, 부모가 먼저 준 것인지 */
+  origin: RewardOrigin;
 }
 
 /* ------------------------------------------------------------------ */

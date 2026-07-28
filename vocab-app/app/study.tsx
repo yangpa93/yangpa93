@@ -168,6 +168,7 @@ export default function Study() {
   const shownExposure = senseExposure(shown.entry, shown.senseIndex, shown.exposureIndex);
 
   const isLast = index + 1 >= queue.length;
+  const questionKey = `${index}-${current.entry.id}-${current.senseIndex}-${current.round}`;
 
   const gameProps = {
     entry: current.entry,
@@ -218,11 +219,15 @@ export default function Study() {
               nextLabel={isLast ? '결과 보기' : '다음 문제'}
             />
           ) : current.game === 'cloze' || current.game === 'listening' ? (
-            <ClozeGame {...gameProps} listen={current.game === 'listening'} />
+            // key 로 문항마다 새로 만든다. 게임 컴포넌트는 "무엇을 눌렀는지"를
+            // 자기 안에 들고 있어서, 같은 자리에 같은 컴포넌트가 남으면 그
+            // 상태가 다음 문제로 딸려 온다. 지금은 문제 사이에 단어 카드가
+            // 끼어 있어 저절로 새로 만들어지지만, 그 화면에 기대지 않는다.
+            <ClozeGame key={questionKey} {...gameProps} listen={current.game === 'listening'} />
           ) : current.game === 'clozeType' ? (
-            <ClozeGame {...gameProps} mode="type" />
+            <ClozeGame key={questionKey} {...gameProps} mode="type" />
           ) : (
-            <ChoiceGame {...gameProps} game={current.game as ChoiceGameId} />
+            <ChoiceGame key={questionKey} {...gameProps} game={current.game as ChoiceGameId} />
           )}
         </View>
       </View>

@@ -211,6 +211,8 @@ export default function Exam() {
   // 다시 풀 때는 예문이 한 칸 넘어가 있다. 방금 본 문장을 그대로 다시
   // 내면 문장을 외운 것인지 단어를 안 것인지 구별되지 않는다.
   const exp = senseExposure(current.entry, current.senseIndex, current.exposureIndex);
+  // 문항 하나를 가리키는 값. 다시 풀기 판이 바뀌어도 달라져야 한다.
+  const questionKey = `${retries}-${index}-${current.entry.id}-${current.senseIndex}`;
   const gameProps = {
     entry: current.entry,
     exp,
@@ -250,10 +252,19 @@ export default function Exam() {
         ) : null}
 
         <View style={{ flex: 1, marginTop: spacing.lg }}>
+          {/*
+            key 를 반드시 준다. 게임 컴포넌트는 "무엇을 눌렀는지"를 자기
+            안에 들고 있는데, 시험은 문항 사이에 아무 화면도 끼지 않고
+            index 만 올린다. key 가 없으면 리액트가 같은 자리의 같은
+            컴포넌트로 보고 그 상태를 그대로 물려줘서, 이미 답한 것으로
+            남은 채 다음 문제가 뜬다 — 보기가 눌리지 않는다.
+            시험 문항은 거의 전부 같은 유형(빈칸)이라 첫 문제를 푼 뒤로
+            시험 전체가 멈춰 버렸다.
+          */}
           {current.game === 'cloze' ? (
-            <ClozeGame {...gameProps} />
+            <ClozeGame key={questionKey} {...gameProps} />
           ) : (
-            <ChoiceGame {...gameProps} game={current.game as ChoiceGameId} />
+            <ChoiceGame key={questionKey} {...gameProps} game={current.game as ChoiceGameId} />
           )}
         </View>
       </View>

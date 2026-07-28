@@ -290,10 +290,11 @@ export default function ParentSettings() {
 
             <Row style={{ justifyContent: 'space-between', marginTop: spacing.lg }}>
               <View style={{ flex: 1, paddingRight: spacing.md }}>
-                <Text style={s.label}>해석 미리 보여주기</Text>
+                <Text style={s.label}>‘해석 보기’ 버튼</Text>
                 <Muted style={{ marginTop: 2 }}>
-                  빈칸 문제에서 한국어 해석을 처음부터 보여줍니다. 아직 문장을 읽기
-                  어려우면 켜 두세요. 실력이 붙으면 끄면 난이도가 올라갑니다.
+                  빈칸 문제에서 아이가 막힐 때 눌러서 한국어 해석을 볼 수 있게 합니다.
+                  처음부터 보여주지는 않습니다 — 해석이 먼저 보이면 영어 문장을 읽지
+                  않고 답을 고르기 때문입니다. 끄면 문제를 푼 뒤에만 해석이 나옵니다.
                 </Muted>
               </View>
               <Switch

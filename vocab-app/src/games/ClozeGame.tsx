@@ -32,7 +32,15 @@ export interface GameProps {
    */
   learned?: VocabEntry[];
   ttsEnabled: boolean;
-  /** 예문 해석을 문제 풀기 전에 보여줄지 */
+  /**
+   * 문제를 풀기 전에 '해석 보기'를 내줄지.
+   *
+   * 예전에는 이 값이 켜져 있으면 해석을 처음부터 띄웠다. 그러면 아이가
+   * 영어 문장을 읽지 않고 해석만 보고 답을 고른다 — 문장으로 만나게 하려고
+   * 만든 문제 유형인데 그 목적이 사라진다. 지금은 켜져 있어도 처음에는
+   * 감추고, 아이가 '해석 보기'를 눌렀을 때만 보여준다.
+   * 꺼 두면 풀기 전에는 해석을 아예 볼 수 없다.
+   */
   showTranslation: boolean;
   onAnswer: (correct: boolean) => void;
 }
@@ -105,6 +113,8 @@ function ChoiceCloze({
   onAnswer,
 }: GameProps & { cloze: Cloze; listen: boolean }) {
   const [picked, setPicked] = useState<string | null>(null);
+  /** 아이가 '해석 보기'를 눌렀는지. 한 번 열면 그 문제 동안 계속 보인다. */
+  const [revealed, setRevealed] = useState(false);
 
   const choices = useMemo(() => {
     const answer = { key: entry.id, label: cloze.answer, meaning: exp.sense.meaning };
@@ -159,13 +169,22 @@ function ChoiceCloze({
         ) : (
           <Text style={s.sentence}>{cloze.text}</Text>
         )}
-        {/* 해석은 처음부터 보여준다. 문장을 아직 못 읽는 아이가
-            찍지 않고 어떤 단어가 들어갈지 판단할 수 있어야 한다.
-            정답은 영어 단어라서 해석을 봐도 답이 그대로 노출되지는 않는다. */}
-        {showTranslation || picked ? (
-          <Text style={s.sentenceKo}>{exp.example.ko}</Text>
-        ) : null}
+        {/* 해석은 먼저 스스로 읽어 보게 하고, 눌렀을 때만 보여준다.
+            정답은 영어 단어라서 해석을 봐도 답이 그대로 노출되지는 않는다.
+            답을 고른 뒤에는 맞든 틀리든 항상 보여준다. */}
+        {revealed || picked ? <Text style={s.sentenceKo}>{exp.example.ko}</Text> : null}
       </Pressable>
+
+      {showTranslation && !revealed && !picked ? (
+        <Pressable
+          onPress={() => setRevealed(true)}
+          accessibilityRole="button"
+          style={s.reveal}
+          hitSlop={8}
+        >
+          <Text style={s.revealText}>해석 보기</Text>
+        </Pressable>
+      ) : null}
 
       <View style={{ gap: spacing.sm }}>
         {choices.map((c) => {
@@ -226,6 +245,7 @@ function TypeCloze({
   const [value, setValue] = useState('');
   const [result, setResult] = useState<'correct' | 'wrong' | null>(null);
   const [hint, setHint] = useState(0);
+  const [revealed, setRevealed] = useState(false);
 
   function submit() {
     if (result) return;
@@ -244,9 +264,7 @@ function TypeCloze({
 
       <View style={s.sentenceBox}>
         <Text style={s.sentence}>{cloze.text}</Text>
-        {showTranslation || result !== null ? (
-          <Text style={s.hintKo}>{exp.example.ko}</Text>
-        ) : null}
+        {revealed || result !== null ? <Text style={s.hintKo}>{exp.example.ko}</Text> : null}
         {hint > 0 ? (
           <Text style={s.hint}>
             {hint === 1
@@ -287,7 +305,19 @@ function TypeCloze({
           >
             <Text style={s.submitText}>확인</Text>
           </Pressable>
-          <View style={{ flexDirection: 'row', justifyContent: 'center', gap: spacing.lg }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'center',
+              flexWrap: 'wrap',
+              gap: spacing.lg,
+            }}
+          >
+            {showTranslation && !revealed ? (
+              <Pressable onPress={() => setRevealed(true)} accessibilityRole="button" style={s.textBtn}>
+                <Text style={s.textBtnLabel}>해석 보기</Text>
+              </Pressable>
+            ) : null}
             {hint < 2 ? (
               <Pressable onPress={() => setHint((h) => h + 1)} accessibilityRole="button" style={s.textBtn}>
                 <Text style={s.textBtnLabel}>힌트 보기</Text>
@@ -326,6 +356,16 @@ const s = StyleSheet.create({
     borderColor: colors.border,
   },
   sentence: { fontSize: 20, lineHeight: 30, color: colors.text, fontWeight: '600' },
+  reveal: {
+    alignSelf: 'center',
+    marginTop: -spacing.md,
+    marginBottom: spacing.md,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    borderRadius: radius.pill,
+    backgroundColor: colors.primarySoft,
+  },
+  revealText: { fontSize: font.small, fontWeight: '700', color: colors.primary },
   sentenceKo: { fontSize: font.small, color: colors.subtext, marginTop: spacing.md },
   hintKo: { fontSize: font.small, color: colors.subtext, marginTop: spacing.md },
   hint: { fontSize: 18, letterSpacing: 2, color: colors.primary, marginTop: spacing.md, fontWeight: '700' },

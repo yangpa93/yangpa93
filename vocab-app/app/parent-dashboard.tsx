@@ -70,6 +70,20 @@ export default function ParentDashboard() {
 
   return (
     <Screen>
+      {/*
+        누구의 리포트인지 항상 위에 적는다.
+        예전에는 아이가 2명 이상일 때만 탭에 이름이 나왔고, 한 명이면
+        이름이 어디에도 없어서 레벨만 덩그러니 보였다. 아이를 바꿔 가며
+        보는 화면이라 "지금 누구를 보고 있는지"가 늘 보여야 한다.
+      */}
+      <Row style={{ paddingTop: spacing.lg, alignItems: 'center' }}>
+        <Text style={{ fontSize: 34 }}>{profile.avatar}</Text>
+        <View style={{ marginLeft: spacing.md, flex: 1 }}>
+          <Text style={s.who}>{profile.name}</Text>
+          <Muted>{LEVEL_LABEL[profile.level]}</Muted>
+        </View>
+      </Row>
+
       {/* 아이 선택 */}
       {state.profiles.length > 1 ? (
         <Row style={{ gap: spacing.sm, paddingTop: spacing.md, flexWrap: 'wrap' }}>
@@ -329,6 +343,7 @@ function Stat({ label, value }: { label: string; value: string }) {
 }
 
 const s = StyleSheet.create({
+  who: { fontSize: 22, fontWeight: '800', color: colors.text },
   tab: {
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,

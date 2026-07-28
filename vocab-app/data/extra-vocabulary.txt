@@ -1,0 +1,247 @@
+# 교육부 목록에는 없지만 교과서·시험에 자주 나와 함께 익히는 어휘.
+# 대부분 파생어(beautiful, dangerous)와 구동사(get up, take care of)다.
+# 표시:  * 기초  |  ** 중급  |  표시 없음 고급
+
+angry*
+comfortable*
+dangerous*
+enjoy*
+expensive*
+famous*
+artist*
+beautiful*
+bicycle*
+birthday*
+bored*
+candle*
+careful*
+cartoon*
+classmate*
+cloudy*
+crowded*
+dirty*
+easy*
+everyone*
+excited*
+friendly*
+important*
+interesting*
+lonely*
+mistake*
+nervous*
+hungry*
+lucky*
+outside*
+scared*
+sometimes*
+special*
+surprised*
+thirsty*
+a lot of*
+be good at*
+be interested in*
+get up*
+go to bed*
+have to*
+look for*
+take care of*
+take a walk*
+turn off*
+wake up*
+would like to*
+sunny*
+tired*
+trash*
+a few*
+as soon as*
+be afraid of*
+come from*
+for example*
+get along with*
+grow up*
+in front of*
+make friends with*
+put on*
+run away*
+take off*
+think of*
+turn on*
+wait for*
+worry about*
+ability*
+amazing*
+behavior*
+confident*
+difference*
+discover*
+environment*
+especially*
+information*
+opportunity*
+pollution*
+relationship*
+useful*
+be able to*
+be full of*
+depend on*
+find out*
+give up*
+in order to*
+instead of*
+look after*
+put off*
+take part in*
+thanks to*
+used to*
+apologize*
+convenient**
+disappear**
+effective**
+encourage**
+generation**
+gradually**
+harmful**
+nearly**
+personality**
+positive**
+realize**
+threaten**
+according to**
+as well as**
+be likely to**
+bring about**
+come up with**
+deal with**
+make up for**
+result in**
+take place**
+in spite of**
+academic**
+authority**
+beneficial**
+capacity**
+competition**
+consequence**
+essential**
+genetic**
+identify**
+inevitable**
+innovation**
+institution**
+justify**
+motivate**
+objective**
+priority**
+significant**
+sufficient**
+tolerate**
+account for**
+be based on**
+carry out**
+in terms of**
+lead to**
+rely on**
+assumption**
+compensation**
+in addition to**
+alternative
+ambiguous
+attain
+cognitive
+coherent
+competent
+comply
+consistent
+criteria
+deceive
+ensure
+exploit
+initiate
+intuition
+obstacle
+optimistic
+rigid
+simultaneously
+subsequent
+substantial
+thrive
+widespread
+be attributed to
+be exposed to
+give rise to
+in the long run
+take into account
+to some extent
+implication
+regardless of
+affluent
+aggregate
+align
+ambivalent
+apt
+articulate
+compelling
+comprehensive
+consensus
+contemplate
+conventional
+correlate
+deteriorate
+devastate
+disperse
+diverge
+empirical
+enact
+entail
+exert
+feasible
+fluctuate
+imminent
+impair
+implicit
+indispensable
+inference
+ingenious
+intricate
+intrinsic
+irrelevant
+legacy
+magnitude
+mitigate
+notion
+nurture
+obscure
+paradigm
+plausible
+preclude
+predominant
+refute
+render
+resilient
+scrutiny
+skeptical
+superficial
+suppress
+susceptible
+tangible
+transcend
+underlying
+unprecedented
+validate
+versatile
+viable
+vulnerable
+at the expense of
+by virtue of
+in light of
+on the contrary
+stem from
+with regard to
+accountable
+adhere
+arbitrary
+ascribe
+endeavor
+evoke
+perpetuate
+in accordance with

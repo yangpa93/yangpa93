@@ -7,6 +7,7 @@
  * 번호를 화면에 적어 둔다.
  */
 
+import * as Application from 'expo-application';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 
@@ -26,14 +27,14 @@ export interface BuildInfo {
 
 export function buildInfo(): BuildInfo {
   const cfg = Constants.expoConfig;
-  const version = cfg?.version ?? '0.0.0';
 
-  const build =
-    Platform.OS === 'ios'
-      ? (cfg?.ios?.buildNumber ?? '')
-      : String(cfg?.android?.versionCode ?? '');
+  // 빌드 번호는 **실제 설치된 앱**에서 읽는다. eas.json이
+  // appVersionSource를 'remote'로 두고 있어서, 번호를 정하는 것은 EAS이고
+  // app.json에는 안 적힌다. 여기서 expoConfig를 읽으면 늘 비어 있다.
+  const version = Application.nativeApplicationVersion ?? cfg?.version ?? '0.0.0';
+  const build = Application.nativeBuildVersion ?? '';
 
-  // 채널은 EAS Update를 쓸 때만 채워진다. 안 쓰면 빈 값이라
+  // 채널은 EAS Update를 쓸 때만 채워진다. 지금은 안 쓰므로 늘 빈 값이고,
   // 판 번호로 베타 여부를 판단한다(1.0.0 미만이면 베타).
   const channel = (Constants.expoConfig as { updates?: { channel?: string } } | null)?.updates?.channel ?? '';
 

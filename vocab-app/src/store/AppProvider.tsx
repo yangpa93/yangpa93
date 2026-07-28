@@ -91,6 +91,17 @@ interface Ctx {
 
   updateParent(patch: Partial<ParentSettings>): void;
 
+  /* 백업 */
+  /** 모든 아이의 학습 데이터를 읽어 온다. 내보내기에 쓴다. */
+  readAllProfileData(): Promise<Record<string, ProfileData>>;
+  /**
+   * 상태와 모든 아이의 학습 데이터를 통째로 바꾼다. 가져오기에 쓴다.
+   *
+   * 되돌리기는 한 번에 전부 성공하거나 전부 실패해야 한다. 절반만 쓰이면
+   * 프로필은 있는데 기록이 없는 상태가 되어 되돌릴 방법도 없어진다.
+   */
+  replaceAll(state: AppState, data: Record<string, ProfileData>): Promise<void>;
+
   /* 기기 역할과 페어링 */
   setRole(role: DeviceRole): void;
   setMyPushToken(token: string | null): void;
@@ -237,6 +248,36 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     },
     [persistState],
   );
+
+  /* ---------------------------------------------------------------- */
+  /* 백업                                                              */
+  /* ---------------------------------------------------------------- */
+
+  const readAllProfileData = useCallback(async () => {
+    const out: Record<string, ProfileData> = {};
+    for (const p of ref.current.state.profiles) {
+      // 지금 보고 있는 아이는 메모리 쪽이 최신이다. 방금 푼 문제가
+      // 아직 저장 중일 수 있어서 저장소에서 읽으면 한 세션이 빠진다.
+      out[p.id] =
+        p.id === ref.current.state.activeProfileId
+          ? ref.current.data
+          : await loadProfileData(p.id);
+    }
+    return out;
+  }, []);
+
+  const replaceAll = useCallback(async (state: AppState, data: Record<string, ProfileData>) => {
+    // 아이별 데이터를 먼저 다 쓰고 마지막에 상태를 쓴다. 중간에 죽어도
+    // 예전 상태가 남아 있어 '프로필은 있는데 기록이 없는' 꼴은 안 된다.
+    for (const [id, d] of Object.entries(data)) {
+      await saveProfileData(id, d);
+    }
+    await saveState(state);
+
+    const activeId = state.activeProfileId;
+    const active = activeId ? (data[activeId] ?? (await loadProfileData(activeId))) : emptyProfileData();
+    dispatch({ type: 'both', state, data: active });
+  }, []);
 
   const deleteProfile = useCallback(async (id: string) => {
     const rest = ref.current.state.profiles.filter((p) => p.id !== id);
@@ -584,6 +625,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     requestReward,
     decideReward,
     updateParent,
+    readAllProfileData,
+    replaceAll,
     setRole,
     setMyPushToken,
     linkParent,

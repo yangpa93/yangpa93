@@ -4,6 +4,21 @@
     "appVersionSource": "remote"
   },
   "build": {
+    "beta-android": {
+      "channel": "beta",
+      "distribution": "internal",
+      "autoIncrement": true,
+      "android": {
+        "buildType": "apk"
+      }
+    },
+    "beta-ios": {
+      "channel": "beta",
+      "autoIncrement": true,
+      "ios": {
+        "simulator": false
+      }
+    },
     "preview": {
       "distribution": "internal",
       "channel": "preview",
@@ -32,6 +47,7 @@
     }
   },
   "submit": {
+    "beta": {},
     "production": {}
   }
 }

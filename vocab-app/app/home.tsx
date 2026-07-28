@@ -15,6 +15,7 @@ import {
   formatWon,
   perfectMonthProgress,
 } from '../src/features/awards';
+import { buildInfo, buildLabel } from '../src/features/build-info';
 import { scheduleDailyReport } from '../src/features/notifications';
 import { loadProfileData } from '../src/store/storage';
 import { LEVEL_LABEL, LEVEL_SHORT } from '../src/types';
@@ -102,6 +103,7 @@ export default function Home() {
 
   const myRewards = state.rewards.filter((r) => r.profileId === profile.id);
   const rates = awardRates(state.parent.awards);
+  const build = buildInfo();
   const awards = availableAwards(profile, data, today, rates);
   const perfect = perfectMonthProgress(data.days, today);
   const decided = myRewards.filter((r) => r.status !== 'pending');
@@ -126,12 +128,14 @@ export default function Home() {
         </Pressable>
       </Row>
 
-      {profile.streak > 0 ? (
-        <Row style={{ marginTop: spacing.lg, gap: spacing.sm }}>
-          <Chip label={`🔥 ${profile.streak}일 연속`} tone="accent" />
+      {profile.streak > 0 || build.isBeta ? (
+        <Row style={{ marginTop: spacing.lg, gap: spacing.sm, flexWrap: 'wrap' }}>
+          {profile.streak > 0 ? <Chip label={`🔥 ${profile.streak}일 연속`} tone="accent" /> : null}
           {profile.bestStreak > profile.streak ? (
             <Chip label={`최고 ${profile.bestStreak}일`} tone="default" />
           ) : null}
+          {/* 아이가 지금 어느 빌드를 쓰는지 스스로 말할 수 있어야 한다. */}
+          {build.isBeta ? <Chip label={`🧪 ${buildLabel(build)}`} tone="default" /> : null}
         </Row>
       ) : null}
 

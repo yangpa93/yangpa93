@@ -3,7 +3,7 @@
     "name": "우리 영단어",
     "slug": "vocab-app",
     "scheme": "urivocab",
-    "version": "1.0.0",
+    "version": "0.9.0",
     "orientation": "default",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",

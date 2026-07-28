@@ -1,0 +1,72 @@
+/**
+ * 지금 돌고 있는 빌드가 무엇인지.
+ *
+ * 베타를 아이 기기에 넣어 두고 "이게 이상해요"라는 말을 들으면, 먼저
+ * **어느 빌드에서 그랬는지**를 알아야 한다. 고쳐서 새로 올렸는데 아이가
+ * 아직 예전 빌드를 쓰고 있는 경우가 흔하기 때문이다. 그래서 판과 빌드
+ * 번호를 화면에 적어 둔다.
+ */
+
+import Constants from 'expo-constants';
+import { Platform } from 'react-native';
+
+export interface BuildInfo {
+  /** 앱 판 (0.9.0) */
+  version: string;
+  /** 스토어에 올라가는 빌드 번호. Expo Go에서는 없다. */
+  build: string;
+  /** 배포 채널 (beta / preview / production). 알 수 없으면 빈 문자열 */
+  channel: string;
+  /** 베타 빌드인지 */
+  isBeta: boolean;
+  /** Expo Go로 돌고 있는지. 그러면 푸시·알림이 동작하지 않는다. */
+  isExpoGo: boolean;
+  platform: string;
+}
+
+export function buildInfo(): BuildInfo {
+  const cfg = Constants.expoConfig;
+  const version = cfg?.version ?? '0.0.0';
+
+  const build =
+    Platform.OS === 'ios'
+      ? (cfg?.ios?.buildNumber ?? '')
+      : String(cfg?.android?.versionCode ?? '');
+
+  // 채널은 EAS Update를 쓸 때만 채워진다. 안 쓰면 빈 값이라
+  // 판 번호로 베타 여부를 판단한다(1.0.0 미만이면 베타).
+  const channel = (Constants.expoConfig as { updates?: { channel?: string } } | null)?.updates?.channel ?? '';
+
+  const isExpoGo = Constants.appOwnership === 'expo';
+  const isBeta = channel === 'beta' || /^0\./.test(version);
+
+  return {
+    version,
+    build: build || '-',
+    channel,
+    isBeta,
+    isExpoGo,
+    platform: Platform.OS,
+  };
+}
+
+/** `베타 0.9.0 (12) · android` — 화면 아래에 한 줄로 적는다. */
+export function buildLabel(info: BuildInfo = buildInfo()): string {
+  const head = info.isBeta ? `베타 ${info.version}` : `v${info.version}`;
+  const parts = [`${head} (${info.build})`, info.platform];
+  if (info.isExpoGo) parts.push('Expo Go');
+  return parts.join(' · ');
+}
+
+/**
+ * 의견을 보낼 때 같이 붙일 한 줄.
+ *
+ * 어느 빌드에서 무엇이 이상했는지가 없으면 재현할 수가 없다.
+ */
+export function feedbackHeader(info: BuildInfo = buildInfo()): string {
+  return [
+    '── 아래는 지우지 말아 주세요 ──',
+    `앱: 우리 영단어 ${buildLabel(info)}`,
+    `보낸 때: ${new Date().toLocaleString('ko-KR')}`,
+  ].join('\n');
+}

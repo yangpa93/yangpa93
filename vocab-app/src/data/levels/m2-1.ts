@@ -401,7 +401,7 @@ export const M2_1 = defineLevel('m2-1', [
     ]},
   ]},
   { w: 'piano', p: 'n.', s: [
-    { m: '피아노', syn: ['instrument'], ex: [
+    { m: '피아노', syn: [], ex: [
       ['She plays the piano well.', '그녀는 피아노를 잘 친다.'],
       ['The piano is very old.', '그 피아노는 아주 낡았다.'],
       ['He learned the piano at five.', '그는 다섯 살에 피아노를 배웠다.'],
@@ -528,7 +528,7 @@ export const M2_1 = defineLevel('m2-1', [
     ]},
   ]},
   { w: 'potato', p: 'n.', s: [
-    { m: '감자', syn: ['vegetable'], ex: [
+    { m: '감자', syn: [], ex: [
       ['We boiled some potatoes.', '우리는 감자를 좀 삶았다.'],
       ['This potato is too small.', '이 감자는 너무 작다.'],
       ['Potatoes grow under the ground.', '감자는 땅속에서 자란다.'],

@@ -426,7 +426,7 @@ export const H1_4 = defineLevel('h1-4', [
     ]},
   ]},
   { w: 'towel', p: 'n.', s: [
-    { m: '수건', syn: ['cloth'], ex: [
+    { m: '수건', syn: [], ex: [
       ['Dry your hands with a towel.', '수건으로 손을 닦아라.'],
       ['The towel is still wet.', '수건이 아직 젖어 있다.'],
       ['She brought a clean towel.', '그녀는 깨끗한 수건을 가져왔다.'],
@@ -643,7 +643,7 @@ export const H1_4 = defineLevel('h1-4', [
     ]},
   ]},
   { w: 'van', p: 'n.', s: [
-    { m: '승합차, 밴', syn: ['vehicle'], ex: [
+    { m: '승합차, 밴', syn: [], ex: [
       ['The van carried our bags.', '승합차가 우리 가방을 실었다.'],
       ['He drives a small van.', '그는 작은 밴을 운전한다.'],
       ['A white van stopped outside.', '흰 승합차가 밖에 섰다.'],

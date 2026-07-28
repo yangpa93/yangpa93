@@ -10,7 +10,7 @@ import { defineLevel } from '../define';
 
 export const M2_4 = defineLevel('m2-4', [
   { w: 'ant', p: 'n.', s: [
-    { m: '개미', syn: ['insect'], ex: [
+    { m: '개미', syn: [], ex: [
       ['Ants work together all day.', '개미는 하루 종일 함께 일한다.'],
       ['An ant crawled up my arm.', '개미 한 마리가 내 팔을 기어올랐다.'],
       ['Ants live in large groups.', '개미는 큰 무리를 지어 산다.'],
@@ -322,7 +322,7 @@ export const M2_4 = defineLevel('m2-4', [
     ]},
   ]},
   { w: 'bacon', p: 'n.', s: [
-    { m: '베이컨', syn: ['meat'], ex: [
+    { m: '베이컨', syn: [], ex: [
       ['He ate bacon and eggs.', '그는 베이컨과 달걀을 먹었다.'],
       ['The bacon smells good.', '베이컨 냄새가 좋다.'],
       ['She fried some bacon.', '그녀는 베이컨을 좀 구웠다.'],
@@ -434,7 +434,7 @@ export const M2_4 = defineLevel('m2-4', [
     ]},
   ]},
   { w: 'beer', p: 'n.', s: [
-    { m: '맥주', syn: ['drink'], ex: [
+    { m: '맥주', syn: [], ex: [
       ['Adults drink beer, not children.', '맥주는 어른이 마시지 아이가 마시지 않는다.'],
       ['He ordered a glass of beer.', '그는 맥주 한 잔을 주문했다.'],
       ['This beer is too cold.', '이 맥주는 너무 차갑다.'],
@@ -989,7 +989,7 @@ export const M2_4 = defineLevel('m2-4', [
     ]},
   ]},
   { w: 'cell', p: 'n.', s: [
-    { m: '세포, 방', syn: ['unit'], ex: [
+    { m: '세포, 방', syn: [], ex: [
       ['The body is made of cells.', '몸은 세포로 이루어져 있다.'],
       ['A cell divides into two.', '세포는 둘로 나뉜다.'],
       ['The prisoner sat in a small cell.', '죄수가 작은 방에 앉아 있었다.'],

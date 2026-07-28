@@ -445,7 +445,7 @@ export const H1_3 = defineLevel('h1-3', [
     ]},
   ]},
   { w: 'spy', p: 'n.', s: [
-    { m: '간첩, 스파이', syn: ['agent'], ex: [
+    { m: '간첩, 스파이', syn: [], ex: [
       ['The story is about a spy.', '그 이야기는 스파이에 관한 것이다.'],
       ['A spy passed the message.', '스파이가 메시지를 전달했다.'],
       ['He worked as a spy.', '그는 첩보원으로 일했다.'],
@@ -616,7 +616,7 @@ export const H1_3 = defineLevel('h1-3', [
     ]},
   ]},
   { w: 'strawberry', p: 'n.', s: [
-    { m: '딸기', syn: ['fruit'], ex: [
+    { m: '딸기', syn: [], ex: [
       ['These strawberries are sweet.', '이 딸기들은 달다.'],
       ['She grows strawberry at home.', '그녀는 집에서 딸기를 기른다.'],
       ['He ate a whole strawberry cake.', '그는 딸기 케이크를 통째로 먹었다.'],
@@ -902,7 +902,7 @@ export const H1_3 = defineLevel('h1-3', [
     ]},
   ]},
   { w: 'tank', p: 'n.', s: [
-    { m: '탱크, 물통', syn: ['container'], ex: [
+    { m: '탱크, 물통', syn: [], ex: [
       ['The water tank is full.', '물탱크가 가득 찼다.'],
       ['He filled the gas tank.', '그는 연료 탱크를 채웠다.'],
       ['Fish swim in the tank.', '물고기가 수조에서 헤엄친다.'],

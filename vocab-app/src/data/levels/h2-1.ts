@@ -775,7 +775,7 @@ export const H2_1 = defineLevel('h2-1', [
     ]},
   ]},
   { w: 'cancer', p: 'n.', s: [
-    { m: '암', syn: ['tumor'], ex: [
+    { m: '암', syn: [], ex: [
       ['Cancer is a serious illness.', '암은 심각한 병이다.'],
       ['Early tests can find cancer.', '조기 검사가 암을 발견할 수 있다.'],
       ['He recovered from cancer.', '그는 암에서 회복했다.'],
@@ -817,7 +817,7 @@ export const H2_1 = defineLevel('h2-1', [
     ]},
   ]},
   { w: 'cattle', p: 'n.', s: [
-    { m: '소, 가축', syn: ['livestock'], ex: [
+    { m: '소, 가축', syn: [], ex: [
       ['They raise cattle on the farm.', '그들은 농장에서 소를 기른다.'],
       ['The cattle drank from the stream.', '소들이 시내에서 물을 마셨다.'],
       ['Cattle need wide fields.', '소는 넓은 들판이 필요하다.'],
@@ -901,7 +901,7 @@ export const H2_1 = defineLevel('h2-1', [
     ]},
   ]},
   { w: 'chemical', p: 'n.', s: [
-    { m: '화학 물질', syn: ['substance'], ex: [
+    { m: '화학 물질', syn: [], ex: [
       ['Some chemicals are dangerous.', '어떤 화학 물질은 위험하다.'],
       ['The chemical smells strong.', '그 화학 물질은 냄새가 강하다.'],
       ['Do not mix these chemicals.', '이 화학 물질들을 섞지 마라.'],

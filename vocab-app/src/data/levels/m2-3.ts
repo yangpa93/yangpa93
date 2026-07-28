@@ -467,7 +467,7 @@ export const M2_3 = defineLevel('m2-3', [
     ]},
   ]},
   { w: 'uncle', p: 'n.', s: [
-    { m: '삼촌, 외삼촌', syn: ['relative'], ex: [
+    { m: '삼촌, 외삼촌', syn: [], ex: [
       ['My uncle lives in Busan.', '우리 삼촌은 부산에 사신다.'],
       ['Her uncle is a doctor.', '그녀의 삼촌은 의사다.'],
       ['We visited my uncle last week.', '우리는 지난주에 삼촌을 찾아뵈었다.'],
@@ -537,7 +537,7 @@ export const M2_3 = defineLevel('m2-3', [
     ]},
   ]},
   { w: 'violin', p: 'n.', s: [
-    { m: '바이올린', syn: ['instrument'], ex: [
+    { m: '바이올린', syn: [], ex: [
       ['She plays the violin well.', '그녀는 바이올린을 잘 켠다.'],
       ['The violin has four strings.', '바이올린은 줄이 네 개다.'],
       ['He learned the violin at six.', '그는 여섯 살에 바이올린을 배웠다.'],
@@ -593,7 +593,7 @@ export const M2_3 = defineLevel('m2-3', [
     ]},
   ]},
   { w: 'wall', p: 'n.', s: [
-    { m: '벽, 담', syn: ['barrier'], ex: [
+    { m: '벽, 담', syn: [], ex: [
       ['The picture hangs on the wall.', '그림이 벽에 걸려 있다.'],
       ['They built a stone wall.', '그들은 돌담을 쌓았다.'],
       ['The wall is painted white.', '벽이 흰색으로 칠해져 있다.'],
@@ -642,7 +642,7 @@ export const M2_3 = defineLevel('m2-3', [
     ]},
   ]},
   { w: 'watermelon', p: 'n.', s: [
-    { m: '수박', syn: ['fruit'], ex: [
+    { m: '수박', syn: [], ex: [
       ['We ate watermelon in summer.', '우리는 여름에 수박을 먹었다.'],
       ['This watermelon is very sweet.', '이 수박은 아주 달다.'],
       ['She cut the watermelon into pieces.', '그녀는 수박을 조각으로 잘랐다.'],

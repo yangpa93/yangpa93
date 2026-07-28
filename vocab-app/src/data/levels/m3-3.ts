@@ -28,7 +28,7 @@ export const M3_3 = defineLevel('m3-3', [
       ['Follow me, please.', '저를 따라오세요.'],
       ['The dog followed him home.', '개가 그를 따라 집까지 왔다.'],
     ]},
-    { m: '(규칙을) 따르다, 지키다', syn: ['obey', 'keep'], ex: [
+    { m: '(규칙을) 따르다, 지키다', syn: ['obey'], ex: [
       ['We must follow the rules.', '우리는 규칙을 지켜야 한다.'],
       ['Follow the directions carefully.', '지시를 주의 깊게 따라라.'],
     ]},
@@ -300,7 +300,7 @@ export const M3_3 = defineLevel('m3-3', [
     ]},
   ]},
   { w: 'golf', p: 'n.', s: [
-    { m: '골프', syn: ['sport'], ex: [
+    { m: '골프', syn: [], ex: [
       ['My father plays golf.', '우리 아버지는 골프를 치신다.'],
       ['Golf takes a lot of time.', '골프는 시간이 많이 걸린다.'],
       ['They built a golf course here.', '그들은 여기에 골프장을 지었다.'],

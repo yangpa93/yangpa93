@@ -416,7 +416,7 @@ export const M1_3 = defineLevel('m1-3', [
     ]},
   ]},
   { w: 'food', p: 'n.', s: [
-    { m: '음식', syn: ['meal'], ex: [
+    { m: '음식', syn: [], ex: [
       ['Korean food is delicious.', '한국 음식은 맛있다.'],
       ['We bought food at the market.', '우리는 시장에서 음식을 샀다.'],
       ['Do not waste food.', '음식을 낭비하지 마라.'],
@@ -719,7 +719,7 @@ export const M1_3 = defineLevel('m1-3', [
     ]},
   ]},
   { w: 'grape', p: 'n.', s: [
-    { m: '포도', syn: ['fruit'], ex: [
+    { m: '포도', syn: [], ex: [
       ['These grapes are sweet.', '이 포도는 달다.'],
       ['She washed the grapes.', '그녀는 포도를 씻었다.'],
       ['We picked grapes on the farm.', '우리는 농장에서 포도를 땄다.'],
@@ -799,7 +799,7 @@ export const M1_3 = defineLevel('m1-3', [
     ]},
   ]},
   { w: 'guitar', p: 'n.', s: [
-    { m: '기타', syn: ['instrument'], ex: [
+    { m: '기타', syn: [], ex: [
       ['He plays the guitar well.', '그는 기타를 잘 친다.'],
       ['She bought a new guitar.', '그녀는 새 기타를 샀다.'],
       ['The guitar has six strings.', '기타는 줄이 여섯 개다.'],

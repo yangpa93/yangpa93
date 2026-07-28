@@ -76,7 +76,7 @@ export const M1_4 = defineLevel('m1-4', [
     ]},
   ]},
   { w: 'horse', p: 'n.', s: [
-    { m: '말', syn: ['steed'], ex: [
+    { m: '말', syn: [], ex: [
       ['The horse runs very fast.', '그 말은 아주 빨리 달린다.'],
       ['She rode a horse for the first time.', '그녀는 처음으로 말을 탔다.'],
       ['Horses eat grass and hay.', '말은 풀과 건초를 먹는다.'],

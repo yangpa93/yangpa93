@@ -17,7 +17,7 @@ export const M1_2 = defineLevel('m1-2', [
     ]},
   ]},
   { w: 'cake', p: 'n.', s: [
-    { m: '케이크', syn: ['dessert'], ex: [
+    { m: '케이크', syn: [], ex: [
       ['She baked a cake for me.', '그녀는 나를 위해 케이크를 구웠다.'],
       ['The cake tastes very sweet.', '그 케이크는 아주 달다.'],
       ['We cut the cake into eight pieces.', '우리는 케이크를 여덟 조각으로 잘랐다.'],
@@ -143,7 +143,7 @@ export const M1_2 = defineLevel('m1-2', [
     ]},
   ]},
   { w: 'cat', p: 'n.', s: [
-    { m: '고양이', syn: ['kitten'], ex: [
+    { m: '고양이', syn: [], ex: [
       ['The cat is sleeping on the sofa.', '고양이가 소파에서 자고 있다.'],
       ['My cat catches mice.', '내 고양이는 쥐를 잡는다.'],
       ['Cats do not like water.', '고양이는 물을 좋아하지 않는다.'],
@@ -218,7 +218,7 @@ export const M1_2 = defineLevel('m1-2', [
     ]},
   ]},
   { w: 'cheese', p: 'n.', s: [
-    { m: '치즈', syn: ['dairy'], ex: [
+    { m: '치즈', syn: [], ex: [
       ['I like cheese on my bread.', '나는 빵에 치즈를 얹어 먹는 것을 좋아한다.'],
       ['This cheese smells strong.', '이 치즈는 냄새가 강하다.'],
       ['She bought milk and cheese.', '그녀는 우유와 치즈를 샀다.'],
@@ -246,7 +246,7 @@ export const M1_2 = defineLevel('m1-2', [
     ]},
   ]},
   { w: 'chocolate', p: 'n.', s: [
-    { m: '초콜릿', syn: ['sweet'], ex: [
+    { m: '초콜릿', syn: [], ex: [
       ['She gave me a box of chocolate.', '그녀는 나에게 초콜릿 한 상자를 주었다.'],
       ['This chocolate is not too sweet.', '이 초콜릿은 그리 달지 않다.'],
       ['He eats chocolate every day.', '그는 매일 초콜릿을 먹는다.'],
@@ -601,7 +601,7 @@ export const M1_2 = defineLevel('m1-2', [
     ]},
   ]},
   { w: 'cream', p: 'n.', s: [
-    { m: '크림', syn: ['dairy'], ex: [
+    { m: '크림', syn: [], ex: [
       ['She put cream in her coffee.', '그녀는 커피에 크림을 넣었다.'],
       ['The cake has cream inside.', '그 케이크는 안에 크림이 들었다.'],
       ['This cream is very sweet.', '이 크림은 아주 달다.'],
@@ -950,7 +950,7 @@ export const M1_2 = defineLevel('m1-2', [
     ]},
   ]},
   { w: 'duck', p: 'n.', s: [
-    { m: '오리', syn: ['waterfowl'], ex: [
+    { m: '오리', syn: [], ex: [
       ['Ducks swim in the pond.', '오리들이 연못에서 헤엄친다.'],
       ['A duck walked across the road.', '오리 한 마리가 길을 건너갔다.'],
       ['We fed bread to the ducks.', '우리는 오리들에게 빵을 주었다.'],

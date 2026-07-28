@@ -846,7 +846,7 @@ export const H3_1 = defineLevel('h3-1', [
     ]},
   ]},
   { w: 'nephew', p: 'n.', s: [
-    { m: '조카', syn: ['relative'], ex: [
+    { m: '조카', syn: [], ex: [
       ['My nephew turns ten today.', '내 조카는 오늘 열 살이 된다.'],
       ['She sent her nephew a gift.', '그녀는 조카에게 선물을 보냈다.'],
       ['His nephews visit every summer.', '그의 조카들은 매년 여름에 찾아온다.'],

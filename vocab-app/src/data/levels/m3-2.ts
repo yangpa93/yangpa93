@@ -136,7 +136,7 @@ export const M3_2 = defineLevel('m3-2', [
       ['Please wash the dishes.', '설거지 좀 해 주세요.'],
       ['She broke a dish this morning.', '그녀는 오늘 아침에 접시를 깼다.'],
     ]},
-    { m: '요리, 음식', syn: ['food'], ex: [
+    { m: '요리, 음식', syn: [], ex: [
       ['This dish is my favorite.', '이 요리는 내가 제일 좋아하는 것이다.'],
       ['He cooked three dishes for dinner.', '그는 저녁으로 요리 세 가지를 만들었다.'],
     ]},

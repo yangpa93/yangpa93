@@ -10,7 +10,7 @@ import { defineLevel } from '../define';
 
 export const H2_2 = defineLevel('h2-2', [
   { w: 'clay', p: 'n.', s: [
-    { m: '점토, 찰흙', syn: ['earth'], ex: [
+    { m: '점토, 찰흙', syn: [], ex: [
       ['The pot is made of clay.', '그 항아리는 점토로 만들어졌다.'],
       ['Children shaped animals from clay.', '아이들이 찰흙으로 동물을 만들었다.'],
       ['Wet clay is soft.', '젖은 점토는 부드럽다.'],

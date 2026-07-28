@@ -107,7 +107,7 @@ export const H1_2 = defineLevel('h1-2', [
     ]},
   ]},
   { w: 'rat', p: 'n.', s: [
-    { m: '쥐', syn: ['rodent'], ex: [
+    { m: '쥐', syn: [], ex: [
       ['A rat ran under the box.', '쥐 한 마리가 상자 밑으로 달아났다.'],
       ['Rats live in dark places.', '쥐는 어두운 곳에 산다.'],
       ['The cat caught a rat.', '고양이가 쥐를 잡았다.'],

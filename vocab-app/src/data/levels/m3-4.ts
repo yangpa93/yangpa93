@@ -595,7 +595,7 @@ export const M3_4 = defineLevel('m3-4', [
     ]},
   ]},
   { w: 'medicine', p: 'n.', s: [
-    { m: '약', syn: ['drug', 'pill'], ex: [
+    { m: '약', syn: ['drug'], ex: [
       ['Take this medicine after meals.', '식후에 이 약을 드세요.'],
       ['The medicine tastes bitter.', '그 약은 맛이 쓰다.'],
     ]},
@@ -605,7 +605,7 @@ export const M3_4 = defineLevel('m3-4', [
     ]},
   ]},
   { w: 'melon', p: 'n.', s: [
-    { m: '멜론', syn: ['fruit'], ex: [
+    { m: '멜론', syn: [], ex: [
       ['This melon is very sweet.', '이 멜론은 아주 달다.'],
       ['She cut the melon into slices.', '그녀는 멜론을 조각으로 잘랐다.'],
       ['We grow melon in summer.', '우리는 여름에 멜론을 기른다.'],
@@ -815,7 +815,7 @@ export const M3_4 = defineLevel('m3-4', [
     ]},
   ]},
   { w: 'mushroom', p: 'n.', s: [
-    { m: '버섯', syn: ['fungus'], ex: [
+    { m: '버섯', syn: [], ex: [
       ['We picked mushrooms in the forest.', '우리는 숲에서 버섯을 땄다.'],
       ['This mushroom is not safe to eat.', '이 버섯은 먹으면 안 된다.'],
       ['She cooked mushroom soup.', '그녀는 버섯 수프를 만들었다.'],

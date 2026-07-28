@@ -106,7 +106,7 @@ export const H3_2 = defineLevel('h3-2', [
       ['Each organ has its own job.', '각 기관은 저마다 역할이 있다.'],
       ['Smoking damages several organs.', '흡연은 여러 장기를 해친다.'],
     ]},
-    { m: '오르간', syn: ['instrument'], ex: [
+    { m: '오르간', syn: [], ex: [
       ['The church has an old organ.', '그 교회에는 오래된 오르간이 있다.'],
       ['He played the organ at the wedding.', '그는 결혼식에서 오르간을 연주했다.'],
     ]},
@@ -484,7 +484,7 @@ export const H3_2 = defineLevel('h3-2', [
     ]},
   ]},
   { w: 'physics', p: 'n.', s: [
-    { m: '물리학', syn: ['science'], ex: [
+    { m: '물리학', syn: [], ex: [
       ['Physics explains how things move.', '물리학은 사물이 어떻게 움직이는지 설명한다.'],
       ['He teaches physics at our school.', '그는 우리 학교에서 물리를 가르친다.'],
       ['Physics was my favorite subject.', '물리학은 내가 가장 좋아한 과목이었다.'],

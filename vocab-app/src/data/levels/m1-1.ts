@@ -307,7 +307,7 @@ export const M1_1 = defineLevel('m1-1', [
     ]},
   ]},
   { w: 'apple', p: 'n.', s: [
-    { m: '사과', syn: ['fruit'], ex: [
+    { m: '사과', syn: [], ex: [
       ['I eat an apple every morning.', '나는 매일 아침 사과를 먹는다.'],
       ['This apple tastes sweet.', '이 사과는 달다.'],
       ['She picked apples on the farm.', '그녀는 농장에서 사과를 땄다.'],
@@ -457,7 +457,7 @@ export const M1_1 = defineLevel('m1-1', [
     ]},
   ]},
   { w: 'banana', p: 'n.', s: [
-    { m: '바나나', syn: ['fruit'], ex: [
+    { m: '바나나', syn: [], ex: [
       ['Monkeys love bananas.', '원숭이는 바나나를 아주 좋아한다.'],
       ['I ate a banana for breakfast.', '나는 아침으로 바나나를 먹었다.'],
       ['This banana is not ripe yet.', '이 바나나는 아직 익지 않았다.'],
@@ -495,7 +495,7 @@ export const M1_1 = defineLevel('m1-1', [
     ]},
   ]},
   { w: 'basketball', p: 'n.', s: [
-    { m: '농구', syn: ['ball game'], ex: [
+    { m: '농구', syn: [], ex: [
       ['They play basketball every Friday.', '그들은 금요일마다 농구를 한다.'],
       ['Basketball players are usually tall.', '농구 선수는 보통 키가 크다.'],
       ['He joined the basketball team.', '그는 농구팀에 들어갔다.'],
@@ -568,7 +568,7 @@ export const M1_1 = defineLevel('m1-1', [
     ]},
   ]},
   { w: 'bear', p: 'n.', s: [
-    { m: '곰', syn: ['animal'], ex: [
+    { m: '곰', syn: [], ex: [
       ['Bears sleep through the winter.', '곰은 겨울 내내 잠을 잔다.'],
       ['We saw a bear in the forest.', '우리는 숲에서 곰을 보았다.'],
       ['The bear caught a fish.', '곰이 물고기를 잡았다.'],
@@ -610,7 +610,7 @@ export const M1_1 = defineLevel('m1-1', [
     ]},
   ]},
   { w: 'bee', p: 'n.', s: [
-    { m: '벌', syn: ['insect'], ex: [
+    { m: '벌', syn: [], ex: [
       ['Bees make honey from flowers.', '벌은 꽃에서 꿀을 만든다.'],
       ['A bee flew into the room.', '벌 한 마리가 방으로 날아 들어왔다.'],
       ['Do not touch the bee.', '벌을 만지지 마라.'],
@@ -792,7 +792,7 @@ export const M1_1 = defineLevel('m1-1', [
     ]},
   ]},
   { w: 'bone', p: 'n.', s: [
-    { m: '뼈', syn: ['skeleton'], ex: [
+    { m: '뼈', syn: [], ex: [
       ['Milk makes your bones strong.', '우유는 뼈를 튼튼하게 한다.'],
       ['The dog buried a bone.', '개가 뼈를 묻었다.'],
       ['He broke a bone in his foot.', '그는 발뼈가 부러졌다.'],
@@ -910,7 +910,7 @@ export const M1_1 = defineLevel('m1-1', [
     ]},
   ]},
   { w: 'brother', p: 'n.', s: [
-    { m: '형, 오빠, 남동생', syn: ['sibling'], ex: [
+    { m: '형, 오빠, 남동생', syn: [], ex: [
       ['My brother is two years older.', '내 형은 두 살 많다.'],
       ['She has three brothers.', '그녀는 남자 형제가 셋이다.'],
       ['His brother plays the guitar.', '그의 동생은 기타를 친다.'],

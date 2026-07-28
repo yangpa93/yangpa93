@@ -152,7 +152,7 @@ export const H1_1 = defineLevel('h1-1', [
     ]},
   ]},
   { w: 'oven', p: 'n.', s: [
-    { m: '오븐', syn: ['baker'], ex: [
+    { m: '오븐', syn: [], ex: [
       ['Put the cake in the oven.', '케이크를 오븐에 넣어라.'],
       ['The oven is very hot.', '오븐이 아주 뜨겁다.'],
       ['She cleaned the oven yesterday.', '그녀는 어제 오븐을 청소했다.'],
@@ -260,7 +260,7 @@ export const H1_1 = defineLevel('h1-1', [
     ]},
   ]},
   { w: 'patient', p: 'n.', s: [
-    { m: '환자', syn: ['sick person'], ex: [
+    { m: '환자', syn: [], ex: [
       ['The patient is getting better.', '그 환자는 나아지고 있다.'],
       ['Doctors care for many patients.', '의사들은 많은 환자를 돌본다.'],
       ['A patient waited in the hall.', '환자 한 명이 복도에서 기다렸다.'],
@@ -288,7 +288,7 @@ export const H1_1 = defineLevel('h1-1', [
     ]},
   ]},
   { w: 'pear', p: 'n.', s: [
-    { m: '배', syn: ['fruit'], ex: [
+    { m: '배', syn: [], ex: [
       ['This pear is very juicy.', '이 배는 즙이 많다.'],
       ['She peeled a pear.', '그녀는 배 껍질을 벗겼다.'],
       ['Pears grow well here.', '배는 여기서 잘 자란다.'],
@@ -410,14 +410,14 @@ export const H1_1 = defineLevel('h1-1', [
     ]},
   ]},
   { w: 'pin', p: 'n.', s: [
-    { m: '핀', syn: ['fastener'], ex: [
+    { m: '핀', syn: [], ex: [
       ['She fixed it with a pin.', '그녀는 핀으로 그것을 고정했다.'],
       ['The pin is very sharp.', '그 핀은 아주 날카롭다.'],
       ['He lost a pin from his badge.', '그는 배지의 핀을 잃어버렸다.'],
     ]},
   ]},
   { w: 'pine', p: 'n.', s: [
-    { m: '소나무', syn: ['evergreen'], ex: [
+    { m: '소나무', syn: [], ex: [
       ['A tall pine stands there.', '큰 소나무가 거기 서 있다.'],
       ['Pine grows in cold places.', '소나무는 추운 곳에서 자란다.'],
       ['The pine smells fresh.', '소나무 향이 상쾌하다.'],
@@ -459,7 +459,7 @@ export const H1_1 = defineLevel('h1-1', [
     ]},
   ]},
   { w: 'planet', p: 'n.', s: [
-    { m: '행성', syn: ['world'], ex: [
+    { m: '행성', syn: [], ex: [
       ['Earth is our planet.', '지구는 우리 행성이다.'],
       ['The planet moves around the sun.', '그 행성은 태양 주위를 돈다.'],
       ['Life may exist on another planet.', '다른 행성에 생명이 있을지도 모른다.'],
@@ -581,7 +581,7 @@ export const H1_1 = defineLevel('h1-1', [
     ]},
   ]},
   { w: 'pork', p: 'n.', s: [
-    { m: '돼지고기', syn: ['meat'], ex: [
+    { m: '돼지고기', syn: [], ex: [
       ['We had pork for dinner.', '우리는 저녁으로 돼지고기를 먹었다.'],
       ['This pork is well cooked.', '이 돼지고기는 잘 익었다.'],
       ['She does not eat pork.', '그녀는 돼지고기를 먹지 않는다.'],
@@ -951,7 +951,7 @@ export const H1_1 = defineLevel('h1-1', [
     ]},
   ]},
   { w: 'pump', p: 'n.', s: [
-    { m: '펌프', syn: ['device'], ex: [
+    { m: '펌프', syn: [], ex: [
       ['The pump moves water.', '그 펌프는 물을 옮긴다.'],
       ['He fixed the broken pump.', '그는 고장 난 펌프를 고쳤다.'],
       ['Use a pump for the tire.', '타이어에는 펌프를 써라.'],

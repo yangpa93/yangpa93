@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { Share, StyleSheet, Text, TextInput, View } from 'react-native';
+import {Alert, Share, StyleSheet, Text, TextInput, View } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 import { Body, Button, Card, Chip, H1, H3, Muted, Row, Screen } from '../src/components/ui';
 import { useApp } from '../src/store/AppProvider';
@@ -44,7 +44,37 @@ export default function ParentLinkScreen() {
     }, [isParentDevice, state.myPushToken, setMyPushToken]),
   );
 
+  /**
+   * 이 기기를 부모님 전용으로 바꾼다.
+   *
+   * **아이가 쓰던 기기에서 이걸 누르면 그 기기의 학습 화면이 통째로
+   * 사라진다.** 부모님은 설정을 만지려고 아이 폰에서도 부모님 모드에
+   * 들어오기 때문에, 아무 확인 없이 두면 실수로 누르기 딱 좋다.
+   * 기록이 지워지지는 않지만, 되돌리는 길을 모르면 앱이 고장 난 줄 안다.
+   *
+   * 그래서 아이가 등록된 기기에서는 무엇이 일어나는지 이름까지 대며
+   * 한 번 더 묻는다.
+   */
   async function becomeParentDevice() {
+    const kids = state.profiles.map((p) => p.name).join(', ');
+
+    if (state.profiles.length > 0) {
+      const ok = await new Promise<boolean>((resolve) => {
+        Alert.alert(
+          '이 기기는 아이가 쓰던 기기예요',
+          `${kids}의 학습 화면이 이 기기에서 사라지고, 앱을 켜면 리포트만 보입니다.\n\n` +
+            '학습 기록은 지워지지 않고, 나중에 되돌릴 수 있어요. ' +
+            '그래도 아이가 쓰는 기기라면 여기서 누르면 안 됩니다.\n\n' +
+            '부모님이 따로 쓰시는 폰에서 눌러 주세요.',
+          [
+            { text: '취소', style: 'cancel', onPress: () => resolve(false) },
+            { text: '그래도 바꾸기', style: 'destructive', onPress: () => resolve(true) },
+          ],
+        );
+      });
+      if (!ok) return;
+    }
+
     setBusy(true);
     setError('');
     const { token, reason } = await fetchPushToken();
@@ -280,7 +310,10 @@ export default function ParentLinkScreen() {
       <Card style={{ marginTop: spacing.md }}>
         <H3>이 기기를 부모님 폰으로 쓰려면</H3>
         <Muted style={{ marginTop: spacing.xs }}>
-          학습 기능을 끄고 리포트만 받는 기기가 됩니다. 부모님 폰에서만 눌러 주세요.
+          학습 기능을 끄고 리포트만 받는 기기가 됩니다.
+          {state.profiles.length > 0
+            ? `\n\n⚠️ 지금 이 기기에는 ${state.profiles.map((p) => p.name).join(', ')}의 학습 기록이 있습니다. 여기서 누르면 그 아이의 학습 화면이 사라집니다. 부모님이 따로 쓰시는 폰에서 눌러 주세요.`
+            : '\n\n부모님 폰에서만 눌러 주세요.'}
         </Muted>
         <Button
           title="이 폰을 부모님 전용으로 쓰기"

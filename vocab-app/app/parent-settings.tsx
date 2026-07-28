@@ -163,6 +163,37 @@ export default function ParentSettings() {
         </View>
       </Card>
 
+      {/*
+        부모님 폰 연결.
+        예전에는 이 카드가 '아이가 있을 때만' 그려지는 블록 안에 있었다.
+        그런데 부모님 전용으로 쓸 폰에는 아이가 없다 — 그래서 정작 필요한
+        기기에서 연결 버튼이 아예 안 보였다. 아이 수와 무관하게 내놓는다.
+      */}
+        <Card style={{ marginTop: spacing.md }}>
+          <H3>부모님 폰으로 알림 받기</H3>
+          <Muted style={{ marginTop: spacing.xs }}>
+            {state.parentLink
+              ? `${state.parentLink.label}에 연결돼 있습니다. 학습이 끝나면 바로 전송됩니다.`
+              : '아직 연결된 부모님 폰이 없습니다. 지금은 이 기기에만 알림이 뜹니다.'}
+          </Muted>
+          {state.parentLink ? (
+            <Row style={{ justifyContent: 'space-between', marginTop: spacing.lg }}>
+              <Text style={s.label}>학습 후 자동 전송</Text>
+              <Switch
+                value={state.parent.pushToParent}
+                onValueChange={(v) => updateParent({ pushToParent: v })}
+                trackColor={{ true: colors.parent }}
+              />
+            </Row>
+          ) : null}
+          <Button
+            title={state.parentLink ? '연결 관리' : '부모님 폰 연결하기'}
+            variant="parent"
+            onPress={() => router.push('/parent-link')}
+            style={{ marginTop: spacing.md }}
+          />
+        </Card>
+
       {/* 아이 선택 */}
       {state.profiles.length > 1 ? (
         <Row style={{ gap: spacing.sm, marginTop: spacing.lg, flexWrap: 'wrap' }}>
@@ -330,30 +361,6 @@ export default function ParentSettings() {
             ) : null}
           </Card>
 
-          <Card style={{ marginTop: spacing.md }}>
-            <H3>부모님 폰으로 알림 받기</H3>
-            <Muted style={{ marginTop: spacing.xs }}>
-              {state.parentLink
-                ? `${state.parentLink.label}에 연결돼 있습니다. 학습이 끝나면 바로 전송됩니다.`
-                : '아직 연결된 부모님 폰이 없습니다. 지금은 이 기기에만 알림이 뜹니다.'}
-            </Muted>
-            {state.parentLink ? (
-              <Row style={{ justifyContent: 'space-between', marginTop: spacing.lg }}>
-                <Text style={s.label}>학습 후 자동 전송</Text>
-                <Switch
-                  value={state.parent.pushToParent}
-                  onValueChange={(v) => updateParent({ pushToParent: v })}
-                  trackColor={{ true: colors.parent }}
-                />
-              </Row>
-            ) : null}
-            <Button
-              title={state.parentLink ? '연결 관리' : '부모님 폰 연결하기'}
-              variant="parent"
-              onPress={() => router.push('/parent-link')}
-              style={{ marginTop: spacing.md }}
-            />
-          </Card>
 
           <Card style={{ marginTop: spacing.md }}>
             <H3>학습 기록 백업</H3>

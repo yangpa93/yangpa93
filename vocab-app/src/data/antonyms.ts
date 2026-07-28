@@ -327,7 +327,7 @@ export const ANTONYMS: Record<string, string[]> = {
   'obey': ['rebel', 'resist', 'command'],
   'odd': ['even'],
   'offer': ['demand', 'refuse'],
-  'old': ['new', 'young'],
+  'old': ['young', 'new'],
   'one': ['many'],
   'open': ['close'],
   'order': ['chaos', 'rebel'],

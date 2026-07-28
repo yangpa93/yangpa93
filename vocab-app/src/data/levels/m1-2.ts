@@ -514,10 +514,13 @@ export const M1_2 = defineLevel('m1-2', [
     ]},
   ]},
   { w: 'cool', p: 'adj.', s: [
-    { m: '시원한, 멋진', syn: [], ex: [
+    { m: '시원한', syn: [], ex: [
       ['The evening air is cool.', '저녁 공기가 시원하다.'],
-      ['That is a cool idea.', '그거 멋진 생각이다.'],
       ['Keep the milk in a cool place.', '우유를 시원한 곳에 두어라.'],
+    ]},
+    { m: '멋진', syn: ['great'], ex: [
+      ['That is a cool idea.', '그거 멋진 생각이다.'],
+      ['He wore a cool jacket to school.', '그는 멋진 재킷을 입고 학교에 왔다.'],
     ]},
   ]},
   { w: 'corner', p: 'n.', s: [

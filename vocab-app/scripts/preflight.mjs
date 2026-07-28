@@ -112,6 +112,25 @@ if (!existsSync('eas.json')) {
   if (eas.cli?.appVersionSource === 'remote') {
     ok('빌드 번호는 EAS가 자동으로 올립니다 (appVersionSource: remote)');
   }
+
+  // 빌드 프로필에 channel이 있으면 EAS Update를 쓰겠다는 뜻이고,
+  // 그러면 expo-updates가 있어야 한다. 없으면 eas build가 알아서 깔아 준
+  // 다음 "다시 실행하라"며 멈춘다 — 빌드 한 번을 그냥 버리게 된다.
+  const channels = Object.values(eas.build ?? {}).filter((p) => p?.channel);
+  if (channels.length > 0) {
+    const pkg = JSON.parse(readFileSync('package.json', 'utf8'));
+    if (!pkg.dependencies?.['expo-updates']) {
+      bad(
+        'eas.json의 빌드 프로필에 channel이 있는데 expo-updates가 설치돼 있지 않습니다. ' +
+          'eas build가 이것을 깔고 "다시 실행하라"며 멈춥니다. ' +
+          '`npm install expo-updates` 를 먼저 하거나, eas.json에서 channel을 빼세요.',
+      );
+    } else if (!app.runtimeVersion) {
+      warn('app.json에 runtimeVersion이 없습니다. 무선 업데이트가 어느 빌드에 갈지 정하지 못합니다.');
+    } else {
+      ok('무선 업데이트(EAS Update) 준비됨');
+    }
+  }
 }
 
 /* ---------- 프로젝트 연결 ---------- */

@@ -9,6 +9,7 @@
 
 import * as Application from 'expo-application';
 import Constants from 'expo-constants';
+import * as Updates from 'expo-updates';
 import { Platform } from 'react-native';
 
 export interface BuildInfo {
@@ -23,6 +24,16 @@ export interface BuildInfo {
   /** Expo Go로 돌고 있는지. 그러면 푸시·알림이 동작하지 않는다. */
   isExpoGo: boolean;
   platform: string;
+  /**
+   * 무선 업데이트(EAS Update)로 받은 판이면 그 표시.
+   *
+   * 무선 업데이트는 앱을 다시 깔지 않고 **JS만** 갈아 끼운다. 그래서 빌드
+   * 번호는 그대로인데 안의 내용은 다를 수 있다. 그것까지 안 적으면
+   * "베타 0.9.0 (1)"이라는 말이 서로 다른 두 앱을 가리키게 된다.
+   *
+   * 빌드에 들어 있던 그대로면 빈 문자열.
+   */
+  update: string;
 }
 
 export function buildInfo(): BuildInfo {
@@ -34,12 +45,14 @@ export function buildInfo(): BuildInfo {
   const version = Application.nativeApplicationVersion ?? cfg?.version ?? '0.0.0';
   const build = Application.nativeBuildVersion ?? '';
 
-  // 채널은 EAS Update를 쓸 때만 채워진다. 지금은 안 쓰므로 늘 빈 값이고,
-  // 판 번호로 베타 여부를 판단한다(1.0.0 미만이면 베타).
-  const channel = (Constants.expoConfig as { updates?: { channel?: string } } | null)?.updates?.channel ?? '';
-
+  const channel = Updates.channel ?? '';
   const isExpoGo = Constants.appOwnership === 'expo';
   const isBeta = channel === 'beta' || /^0\./.test(version);
+
+  // 빌드에 들어 있던 그대로면 적을 것이 없다. 무선 업데이트로 갈아 끼운
+  // 경우에만 그 id 앞자리를 적어 서로 구별되게 한다.
+  const update =
+    !Updates.isEmbeddedLaunch && Updates.updateId ? Updates.updateId.slice(0, 6) : '';
 
   return {
     version,
@@ -48,6 +61,7 @@ export function buildInfo(): BuildInfo {
     isBeta,
     isExpoGo,
     platform: Platform.OS,
+    update,
   };
 }
 
@@ -55,6 +69,8 @@ export function buildInfo(): BuildInfo {
 export function buildLabel(info: BuildInfo = buildInfo()): string {
   const head = info.isBeta ? `베타 ${info.version}` : `v${info.version}`;
   const parts = [`${head} (${info.build})`, info.platform];
+  // 무선 업데이트로 받은 판이면 그것까지 적어야 같은 빌드 번호끼리도 구별된다.
+  if (info.update) parts.push(`업데이트 ${info.update}`);
   if (info.isExpoGo) parts.push('Expo Go');
   return parts.join(' · ');
 }

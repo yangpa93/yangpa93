@@ -42,3 +42,8 @@ yarn-error.*
 
 # eas init 이 적어 둔 연결 정보를 pull 전에 보관하는 파일
 app.json.bak
+
+# npm run audit 이 쓰는 영어 낱말 사전 (4MB). 필요할 때 받아서 쓰는 것이라
+# 저장소에 넣지 않는다.
+#   curl -sLO https://raw.githubusercontent.com/dwyl/english-words/master/words_alpha.txt
+words_alpha.txt

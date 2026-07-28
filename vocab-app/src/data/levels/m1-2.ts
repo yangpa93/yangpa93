@@ -371,7 +371,7 @@ export const M1_2 = defineLevel('m1-2', [
     ]},
   ]},
   { w: 'coat', p: 'n.', s: [
-    { m: '코트, 외투', syn: ['jacket'], ex: [
+    { m: '코트, 외투', syn: [], ex: [
       ['Put on your coat before going out.', '나가기 전에 코트를 입어라.'],
       ['Her coat is warm and long.', '그녀의 코트는 따뜻하고 길다.'],
       ['He hung his coat on the door.', '그는 코트를 문에 걸었다.'],

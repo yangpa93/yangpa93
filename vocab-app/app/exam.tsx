@@ -180,7 +180,7 @@ export default function Exam() {
           <Text style={{ fontSize: 52 }}>💪</Text>
           <H1 style={{ marginTop: spacing.md }}>{wrongThisRound.length}개 남았어요</H1>
           <Muted style={{ marginTop: spacing.sm }}>
-            시험을 통과하려면 **모두** 맞혀야 해요. 틀린 것만 다시 풀어 볼까요?
+            시험을 통과하려면 모두 맞혀야 해요. 틀린 것만 다시 풀어 볼까요?
           </Muted>
         </View>
 

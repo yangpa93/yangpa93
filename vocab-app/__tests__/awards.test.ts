@@ -4,6 +4,8 @@ import {
   awardRates,
   BONUS_AWARD,
   buildRewardRequest,
+  levelPace,
+  levelStartedAt,
   claimAward,
   formatWon,
   HIGH_LEVEL_AWARD,
@@ -417,5 +419,165 @@ describe('claimAward', () => {
     const data = makeData();
     expect(availableAwards(profile, data, '2026-07-15')).toHaveLength(1);
     expect(availableAwards(claimAward(profile, LEVELUP), data, '2026-07-15')).toEqual([]);
+  });
+});
+
+/* ------------------------------------------------------------------ */
+/* 레벨을 얼마나 빨리 끝냈는지                                          */
+/* ------------------------------------------------------------------ */
+
+/** yyyy-mm-dd 를 그날 정오의 epoch ms 로. 시간대 경계에 걸리지 않게 정오를 쓴다. */
+function at(day: string): number {
+  const [y, m, d] = day.split('-').map(Number);
+  return new Date(y, m - 1, d, 12, 0, 0).getTime();
+}
+
+function makeCard(entryId: string, firstSeen: number) {
+  return {
+    entryId,
+    ease: 2.5,
+    intervalDays: 1,
+    streak: 0,
+    correct: 0,
+    wrong: 0,
+    lapses: 0,
+    due: '2026-07-01',
+    lastSeen: firstSeen,
+    firstSeen,
+  };
+}
+
+describe('levelStartedAt', () => {
+  test('그 레벨 단어 중 가장 먼저 본 시각', () => {
+    const cards = {
+      a: makeCard('a', at('2026-06-10')),
+      b: makeCard('b', at('2026-06-03')),
+      c: makeCard('c', at('2026-06-20')),
+    };
+    expect(levelStartedAt(['a', 'b', 'c'], cards)).toBe(at('2026-06-03'));
+  });
+
+  test('아직 안 본 단어는 세지 않는다', () => {
+    const cards = { a: makeCard('a', at('2026-06-10')) };
+    // b, c 는 카드 자체가 없다 — 아직 만나지 않은 단어다.
+    expect(levelStartedAt(['a', 'b', 'c'], cards)).toBe(at('2026-06-10'));
+  });
+
+  test('하나도 안 봤으면 null', () => {
+    expect(levelStartedAt(['a', 'b'], {})).toBeNull();
+  });
+
+  test('firstSeen 이 깨져 있으면 무시한다', () => {
+    // 예전 저장본이나 손으로 고친 파일에서 0이나 NaN 이 들어올 수 있다.
+    const cards = {
+      a: makeCard('a', 0),
+      b: makeCard('b', NaN),
+      c: makeCard('c', at('2026-06-15')),
+    };
+    expect(levelStartedAt(['a', 'b', 'c'], cards)).toBe(at('2026-06-15'));
+  });
+});
+
+describe('levelPace', () => {
+  test('계획보다 짧게 걸렸으면 앞당긴 것', () => {
+    // 100단어를 하루 10개씩이면 10일 계획. 7일에 끝냈다.
+    const p = levelPace({
+      totalWords: 100,
+      newPerDay: 10,
+      startedAt: at('2026-06-01'),
+      clearedAt: at('2026-06-07'),
+    });
+    expect(p.plannedDays).toBe(10);
+    expect(p.actualDays).toBe(7);
+    expect(p.faster).toBe(true);
+    expect(p.daysAhead).toBe(3);
+  });
+
+  test('계획대로면 앞당긴 것이 아니다', () => {
+    // 근거로 쓰는 숫자라 넉넉하게 잡지 않는다.
+    const p = levelPace({
+      totalWords: 100,
+      newPerDay: 10,
+      startedAt: at('2026-06-01'),
+      clearedAt: at('2026-06-10'),
+    });
+    expect(p.actualDays).toBe(10);
+    expect(p.faster).toBe(false);
+    expect(p.daysAhead).toBe(0);
+  });
+
+  test('계획보다 오래 걸려도 음수가 나오지 않는다', () => {
+    const p = levelPace({
+      totalWords: 100,
+      newPerDay: 10,
+      startedAt: at('2026-06-01'),
+      clearedAt: at('2026-06-30'),
+    });
+    expect(p.faster).toBe(false);
+    expect(p.daysAhead).toBe(0);
+  });
+
+  test('시작한 날과 끝낸 날을 모두 센다', () => {
+    const p = levelPace({
+      totalWords: 20,
+      newPerDay: 5,
+      startedAt: at('2026-06-01'),
+      clearedAt: at('2026-06-01'),
+    });
+    expect(p.actualDays).toBe(1);
+    expect(p.plannedDays).toBe(4);
+    expect(p.daysAhead).toBe(3);
+  });
+
+  test('하루 분량이 많으면 계획 날수가 줄어 앞당기기 어렵다', () => {
+    // 아이가 스스로 고른 속도라 유리하게만 굴러가지 않는다.
+    const slow = levelPace({
+      totalWords: 100,
+      newPerDay: 5,
+      startedAt: at('2026-06-01'),
+      clearedAt: at('2026-06-15'),
+    });
+    expect(slow.plannedDays).toBe(20);
+    expect(slow.faster).toBe(true);
+
+    const fast = levelPace({
+      totalWords: 100,
+      newPerDay: 20,
+      startedAt: at('2026-06-01'),
+      clearedAt: at('2026-06-15'),
+    });
+    expect(fast.plannedDays).toBe(5);
+    expect(fast.faster).toBe(false);
+  });
+
+  test('기록이 모자라면 앞당기지 않은 것으로 본다', () => {
+    const noStart = levelPace({
+      totalWords: 100,
+      newPerDay: 10,
+      startedAt: null,
+      clearedAt: at('2026-06-07'),
+    });
+    expect(noStart.actualDays).toBeNull();
+    expect(noStart.faster).toBe(false);
+
+    const noClear = levelPace({
+      totalWords: 100,
+      newPerDay: 10,
+      startedAt: at('2026-06-01'),
+      clearedAt: null,
+    });
+    expect(noClear.actualDays).toBeNull();
+    expect(noClear.faster).toBe(false);
+  });
+
+  test('값이 깨져 있어도 0으로 나누지 않는다', () => {
+    const p = levelPace({
+      totalWords: 0,
+      newPerDay: 0,
+      startedAt: at('2026-06-01'),
+      clearedAt: at('2026-06-02'),
+    });
+    expect(p.plannedDays).toBe(1);
+    expect(Number.isFinite(p.daysAhead)).toBe(true);
   });
 });

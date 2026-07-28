@@ -220,6 +220,9 @@ export default function ParentSettings() {
             <Muted style={{ marginTop: spacing.xs }}>
               진도를 정하는 값입니다. 하루 {profile.settings.newPerDay}개면 전체 3,286개를
               도는 데 약 {Math.round(3286 / profile.settings.newPerDay / 30)}개월 걸립니다.
+              {'\n'}이 값은 아이도 ⚙️ 설정에서 바꿉니다. 스스로 정한 속도라야 앞당겼을 때
+              그것이 자기 성과가 되기 때문입니다. 무리한 값을 골랐을 때만 여기서
+              되돌려 주세요.
             </Muted>
             <Row style={{ gap: spacing.sm, marginTop: spacing.sm, flexWrap: 'wrap' }}>
               {NEW_PER_DAY.map((g) => (

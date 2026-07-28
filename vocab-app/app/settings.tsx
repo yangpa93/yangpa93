@@ -1,10 +1,13 @@
-import { Switch, StyleSheet, Text, View } from 'react-native';
+import { Pressable, Switch, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { Button, Card, H3, Muted, Row, Screen } from '../src/components/ui';
 import { useApp } from '../src/store/AppProvider';
 import { AvatarPicker, labelOf } from '../src/components/AvatarPicker';
 import { speak, tapCorrect } from '../src/lib/feedback';
-import { colors, font, spacing } from '../src/theme';
+import { colors, font, radius, spacing } from '../src/theme';
+
+/** 하루에 새로 만날 단어 수. 아이가 고른다. */
+const NEW_PER_DAY = [5, 8, 10, 12, 15, 20];
 
 /**
  * 아이가 직접 바꾸는 설정.
@@ -19,10 +22,47 @@ export default function ChildSettings() {
 
   if (!profile) return null;
 
-  const { ttsEnabled, hapticsEnabled } = profile.settings;
+  const { ttsEnabled, hapticsEnabled, newPerDay, reviewPerDay, rounds } = profile.settings;
+
+  // 오늘 몇 문제를 풀게 되는지. 개수만 보면 감이 안 와서 시간까지 적는다.
+  const questions = (newPerDay + reviewPerDay) * rounds;
+  const minutes = Math.max(1, Math.round((questions * 10) / 60));
 
   return (
     <Screen>
+      {/*
+        하루 분량을 아이가 고른다.
+        스스로 정한 속도라야 "계획보다 빨리 끝냈다"는 말이 자기 말이 된다.
+        부모가 정해 준 숫자를 앞당긴 것과는 기분이 다르다.
+      */}
+      <Card style={{ marginTop: spacing.md }}>
+        <H3>하루에 새로 배울 단어</H3>
+        <Muted style={{ marginTop: spacing.xs }}>
+          5개부터 20개까지 고를 수 있어요. 많이 고르면 빨리 끝나지만 하루가 길어져요.
+        </Muted>
+        <Row style={{ gap: spacing.sm, marginTop: spacing.md, flexWrap: 'wrap' }}>
+          {NEW_PER_DAY.map((n) => (
+            <Pressable
+              key={n}
+              onPress={() => updateSettings(profile.id, { newPerDay: n })}
+              style={[s.chip, newPerDay === n && s.chipOn]}
+              accessibilityRole="button"
+              accessibilityState={{ selected: newPerDay === n }}
+            >
+              <Text style={[s.chipText, newPerDay === n && s.chipTextOn]}>{n}개</Text>
+            </Pressable>
+          ))}
+        </Row>
+        <View style={s.estimate}>
+          <Muted>
+            새 단어 {newPerDay}개 + 복습 {reviewPerDay}개를 {rounds}번씩 —{' '}
+            <Text style={{ fontWeight: '800', color: colors.text }}>
+              오늘 {questions}문제, 약 {minutes}분
+            </Text>
+          </Muted>
+        </View>
+      </Card>
+
       <Card style={{ marginTop: spacing.md }}>
         <H3>{profile.name} 설정</H3>
         <Muted style={{ marginTop: spacing.xs }}>
@@ -72,7 +112,7 @@ export default function ChildSettings() {
       </Card>
 
       <Muted style={{ marginTop: spacing.lg, textAlign: 'center' }}>
-        하루 학습량이나 레벨은 부모님이 정해요.
+        복습 개수와 학년·레벨은 부모님이 정해요.
       </Muted>
 
       <Button
@@ -87,4 +127,21 @@ export default function ChildSettings() {
 
 const s = StyleSheet.create({
   label: { fontSize: font.body, fontWeight: '600', color: colors.text },
+  chip: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.pill,
+    backgroundColor: colors.bg,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  chipOn: { backgroundColor: colors.primary, borderColor: colors.primary },
+  chipText: { fontSize: font.small, fontWeight: '700', color: colors.subtext },
+  chipTextOn: { color: '#fff' },
+  estimate: {
+    marginTop: spacing.md,
+    padding: spacing.md,
+    borderRadius: radius.md,
+    backgroundColor: colors.bg,
+  },
 });

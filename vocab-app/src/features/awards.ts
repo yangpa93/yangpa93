@@ -23,6 +23,7 @@
 
 import {
   AwardRates,
+  CardState,
   DailyRecord,
   LevelId,
   Profile,
@@ -32,7 +33,7 @@ import {
   gradeOf,
 } from '../types';
 import { daysInMonth, monthOf } from './calendar';
-import { todayKey } from '../lib/date';
+import { diffDays, toKey, todayKey } from '../lib/date';
 
 /** 중학교 레벨 하나를 끝냈을 때 (기본값) */
 export const MIDDLE_LEVEL_AWARD = 20_000;
@@ -176,6 +177,88 @@ export function availableAwards(
   }
 
   return out;
+}
+
+/* ------------------------------------------------------------------ */
+/* 레벨 하나를 얼마나 빨리 끝냈는지                                     */
+/* ------------------------------------------------------------------ */
+
+/**
+ * 그 레벨 단어를 처음 만난 시각(epoch ms). 아직 하나도 안 봤으면 null.
+ *
+ * 레벨을 언제 시작했는지는 따로 적어 두지 않는다. 대신 그 레벨 단어 중
+ * 가장 먼저 본 것의 시각이 곧 시작한 날이다.
+ */
+export function levelStartedAt(
+  entryIds: string[],
+  cards: Record<string, CardState>,
+): number | null {
+  let earliest: number | null = null;
+  for (const id of entryIds) {
+    const seen = cards[id]?.firstSeen;
+    if (typeof seen !== 'number' || !Number.isFinite(seen) || seen <= 0) continue;
+    if (earliest === null || seen < earliest) earliest = seen;
+  }
+  return earliest;
+}
+
+export interface LevelPace {
+  /** 그 레벨을 시작한 날. 기록이 없으면 null */
+  startedOn: string | null;
+  /** 시험에 통과한 날. 아직이면 null */
+  clearedOn: string | null;
+  /** 실제로 걸린 날수. 시작한 날과 통과한 날을 모두 센다. */
+  actualDays: number | null;
+  /** 하루 새 단어 수로 계산한 계획 날수 */
+  plannedDays: number;
+  /** 계획보다 빨리 끝냈는지 */
+  faster: boolean;
+  /** 며칠 빨랐는지. 빠르지 않았으면 0 */
+  daysAhead: number;
+}
+
+/**
+ * 레벨 하나를 계획보다 빨리 끝냈는지.
+ *
+ * 계획은 단순하다 — 그 레벨 단어를 하루 정한 개수씩 만나면 며칠이 걸리는가.
+ * 실제로 그보다 짧게 걸렸으면 앞당긴 것이다.
+ *
+ * 이 숫자를 쓰는 곳은 아이가 "만원 더 주세요"라고 말할 근거다. 그래서
+ * 넉넉하게 잡지 않는다 — 계획대로 했으면 앞당긴 것이 아니다(같은 날수는
+ * faster가 아니다). 기록이 모자라 계산할 수 없으면 앞당기지 않은 것으로 본다.
+ */
+export function levelPace(args: {
+  /** 그 레벨의 표제어 수 */
+  totalWords: number;
+  /** 하루에 새로 만나기로 한 단어 수 */
+  newPerDay: number;
+  /** 레벨을 시작한 시각 (epoch ms) */
+  startedAt: number | null;
+  /** 시험에 통과한 시각 (epoch ms) */
+  clearedAt: number | null;
+}): LevelPace {
+  const perDay = Math.max(1, Math.round(args.newPerDay));
+  const plannedDays = Math.max(1, Math.ceil(Math.max(0, args.totalWords) / perDay));
+
+  const startedOn = args.startedAt != null ? toKey(new Date(args.startedAt)) : null;
+  const clearedOn = args.clearedAt != null ? toKey(new Date(args.clearedAt)) : null;
+
+  if (startedOn === null || clearedOn === null) {
+    return { startedOn, clearedOn, actualDays: null, plannedDays, faster: false, daysAhead: 0 };
+  }
+
+  // 시작한 날과 통과한 날을 모두 센다. 하루 만에 끝냈으면 1일이다.
+  const actualDays = Math.max(1, diffDays(clearedOn, startedOn) + 1);
+  const faster = actualDays < plannedDays;
+
+  return {
+    startedOn,
+    clearedOn,
+    actualDays,
+    plannedDays,
+    faster,
+    daysAhead: faster ? plannedDays - actualDays : 0,
+  };
 }
 
 /* ------------------------------------------------------------------ */

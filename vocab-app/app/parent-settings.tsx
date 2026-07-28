@@ -7,6 +7,7 @@ import { AwardRates, LEVEL_SHORT, LevelId } from '../src/types';
 import { awardRates, formatWon } from '../src/features/awards';
 import { buildInfo, buildLabel, feedbackHeader } from '../src/features/build-info';
 import { LevelPicker } from '../src/components/LevelPicker';
+import { AvatarPicker, labelOf } from '../src/components/AvatarPicker';
 import { colors, font, radius, spacing } from '../src/theme';
 
 const NEW_PER_DAY = [5, 8, 10, 15, 20];
@@ -288,6 +289,23 @@ export default function ParentSettings() {
                 trackColor={{ true: colors.parent }}
               />
             </Row>
+          </Card>
+
+          {/*
+            이미 만든 프로필의 캐릭터를 바꾸는 곳.
+            이게 없으면 캐릭터를 바꾸려고 프로필을 지웠다 다시 만들어야 하고,
+            그러면 그동안의 학습 기록이 통째로 사라진다.
+          */}
+          <Card style={{ marginTop: spacing.md }}>
+            <H3>{profile.name} 캐릭터</H3>
+            <Muted style={{ marginTop: spacing.xs }}>
+              지금은 {profile.avatar} {labelOf(profile.avatar)}입니다. 바꿔도 학습 기록은 그대로입니다.
+            </Muted>
+            <AvatarPicker
+              value={profile.avatar}
+              onChange={(emoji) => updateProfile(profile.id, { avatar: emoji })}
+              tone="parent"
+            />
           </Card>
 
           <Card style={{ marginTop: spacing.md }}>

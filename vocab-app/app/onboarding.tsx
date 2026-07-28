@@ -1,18 +1,17 @@
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { StyleSheet, TextInput, View } from 'react-native';
 import { router } from 'expo-router';
 import { Body, Button, Card, H1, H3, Muted, Screen } from '../src/components/ui';
 import { useApp } from '../src/store/AppProvider';
 import { LevelId } from '../src/types';
 import { LevelPicker } from '../src/components/LevelPicker';
+import { AvatarPicker, DEFAULT_AVATAR } from '../src/components/AvatarPicker';
 import { colors, radius, spacing } from '../src/theme';
-
-const AVATARS = ['🦊', '🐻', '🐼', '🐨', '🦁', '🐯', '🐸', '🐧', '🦄', '🐢'];
 
 export default function Onboarding() {
   const { addProfile, state } = useApp();
   const [name, setName] = useState('');
-  const [avatar, setAvatar] = useState(AVATARS[0]);
+  const [avatar, setAvatar] = useState(DEFAULT_AVATAR);
   const [level, setLevel] = useState<LevelId>('m1-1');
   const [saving, setSaving] = useState(false);
 
@@ -50,19 +49,7 @@ export default function Onboarding() {
         />
 
         <H3 style={{ marginTop: spacing.lg }}>캐릭터</H3>
-        <View style={s.avatarRow}>
-          {AVATARS.map((a) => (
-            <Pressable
-              key={a}
-              onPress={() => setAvatar(a)}
-              style={[s.avatar, avatar === a && s.avatarOn]}
-              accessibilityRole="button"
-              accessibilityLabel={`캐릭터 ${a}`}
-            >
-              <Text style={{ fontSize: 26 }}>{a}</Text>
-            </Pressable>
-          ))}
-        </View>
+        <AvatarPicker value={avatar} onChange={setAvatar} />
 
         <H3 style={{ marginTop: spacing.lg }}>시작 학년</H3>
         <Muted style={{ marginTop: spacing.xs }}>
@@ -104,18 +91,6 @@ const s = StyleSheet.create({
     color: colors.text,
     backgroundColor: colors.bg,
   },
-  avatarRow: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, marginTop: spacing.sm },
-  avatar: {
-    width: 46,
-    height: 46,
-    borderRadius: radius.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.bg,
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  avatarOn: { borderColor: colors.primary, backgroundColor: colors.primarySoft },
   levelWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, marginTop: spacing.md },
   levelChip: {
     paddingHorizontal: spacing.md,

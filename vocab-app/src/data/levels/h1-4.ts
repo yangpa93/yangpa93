@@ -969,7 +969,7 @@ export const H1_4 = defineLevel('h1-4', [
   ]},
   { w: 'zero', p: 'num.', s: [
     { m: '영, 0', syn: ['nought'], ex: [
-      ['The temperature is below zero.', '기온이 영하다.'],
+      ['The temperature is below zero.', '기온이 영하이다.'],
       ['She scored zero on that game.', '그녀는 그 경기에서 0점을 냈다.'],
       ['Start counting from zero.', '0부터 세기 시작해라.'],
     ]},

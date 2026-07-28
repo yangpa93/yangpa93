@@ -80,7 +80,7 @@ export const M1_1 = defineLevel('m1-1', [
     ]},
   ]},
   { w: 'address', p: 'n.', s: [
-    { m: '주소', syn: ['location'], ex: [
+    { m: '주소', syn: [], ex: [
       ['Write your address here.', '여기에 주소를 쓰세요.'],
       ['I forgot her email address.', '나는 그녀의 이메일 주소를 잊어버렸다.'],
       ['This address is wrong.', '이 주소는 틀렸다.'],
@@ -103,7 +103,7 @@ export const M1_1 = defineLevel('m1-1', [
   { w: 'afraid', p: 'adj.', s: [
     { m: '두려워하는, 무서워하는', syn: ['scared', 'frightened'], ex: [
       ['She is afraid of dogs.', '그녀는 개를 무서워한다.'],
-      ["Don't be afraid to ask questions.", '질문하기를 두려워하지 마라.'],
+      ['Do not be afraid to ask questions.', '질문하기를 두려워하지 마라.'],
       ['I was afraid of the dark as a child.', '나는 어릴 때 어둠을 무서워했다.'],
     ]},
   ]},
@@ -132,18 +132,18 @@ export const M1_1 = defineLevel('m1-1', [
     { m: '~에 반대하여, ~에 맞서', syn: ['opposed to'], ex: [
       ['We played against a strong team.', '우리는 강한 팀과 맞붙었다.'],
       ['She is against the new rule.', '그녀는 새 규칙에 반대한다.'],
-      ['He leaned against the wall.', '그는 벽에 기대었다.'],
+      ['Many people voted against the plan.', '많은 사람이 그 계획에 반대했다.'],
     ]},
   ]},
   { w: 'age', p: 'n.', s: [
-    { m: '나이', syn: ['years'], ex: [
+    { m: '나이', syn: [], ex: [
       ['What is your age?', '나이가 어떻게 되나요?'],
       ['Children of the same age play together.', '같은 나이의 아이들이 함께 논다.'],
       ['He started school at the age of six.', '그는 여섯 살에 학교에 들어갔다.'],
     ]},
   ]},
   { w: 'ago', p: 'adv.', s: [
-    { m: '~ 전에', syn: ['before'], ex: [
+    { m: '~ 전에', syn: [], ex: [
       ['I met her two years ago.', '나는 2년 전에 그녀를 만났다.'],
       ['He left a moment ago.', '그는 조금 전에 떠났다.'],
       ['We moved here long ago.', '우리는 오래전에 여기로 이사했다.'],
@@ -157,8 +157,8 @@ export const M1_1 = defineLevel('m1-1', [
     ]},
   ]},
   { w: 'ahead', p: 'adv.', s: [
-    { m: '앞으로, 앞에', syn: ['forward'], ex: [
-      ['Go ahead and start.', '먼저 시작해라.'],
+    { m: '앞으로, 앞에', syn: [], ex: [
+      ['The car ahead stopped suddenly.', '앞에 있는 차가 갑자기 멈췄다.'],
       ['The bus stop is just ahead.', '버스 정류장은 바로 앞이다.'],
       ['She looked ahead and smiled.', '그녀는 앞을 보고 미소 지었다.'],
     ]},
@@ -178,14 +178,14 @@ export const M1_1 = defineLevel('m1-1', [
     ]},
   ]},
   { w: 'album', p: 'n.', s: [
-    { m: '앨범, 사진첩', syn: ['photo book'], ex: [
+    { m: '앨범, 사진첩', syn: [], ex: [
       ['She showed me her photo album.', '그녀는 나에게 사진첩을 보여 주었다.'],
       ['The band released a new album.', '그 밴드는 새 앨범을 냈다.'],
       ['I keep old pictures in this album.', '나는 이 앨범에 옛 사진을 보관한다.'],
     ]},
   ]},
   { w: 'all', p: 'adj.', s: [
-    { m: '모든, 전부의', syn: ['every'], ex: [
+    { m: '모든, 전부의', syn: [], ex: [
       ['All students must come.', '모든 학생이 와야 한다.'],
       ['She ate all the bread.', '그녀는 빵을 전부 먹었다.'],
       ['We waited all day.', '우리는 하루 종일 기다렸다.'],
@@ -206,14 +206,14 @@ export const M1_1 = defineLevel('m1-1', [
     ]},
   ]},
   { w: 'along', p: 'prep.', s: [
-    { m: '~을 따라', syn: ['beside'], ex: [
+    { m: '~을 따라', syn: [], ex: [
       ['We walked along the river.', '우리는 강을 따라 걸었다.'],
       ['Trees grow along the road.', '나무들이 길을 따라 자란다.'],
       ['She ran along the beach.', '그녀는 해변을 따라 달렸다.'],
     ]},
   ]},
   { w: 'already', p: 'adv.', s: [
-    { m: '이미, 벌써', syn: ['by now'], ex: [
+    { m: '이미, 벌써', syn: [], ex: [
       ['The bus has already left.', '버스는 이미 떠났다.'],
       ['I already finished my homework.', '나는 벌써 숙제를 끝냈다.'],
       ['It is already dark outside.', '밖은 벌써 어둡다.'],
@@ -248,7 +248,7 @@ export const M1_1 = defineLevel('m1-1', [
     ]},
   ]},
   { w: 'and', p: 'conj.', s: [
-    { m: '그리고, ~와', syn: ['plus'], ex: [
+    { m: '그리고, ~와', syn: [], ex: [
       ['I like apples and pears.', '나는 사과와 배를 좋아한다.'],
       ['She sang and danced.', '그녀는 노래하고 춤췄다.'],
       ['Bring a pen and a notebook.', '펜과 공책을 가져와라.'],
@@ -286,7 +286,7 @@ export const M1_1 = defineLevel('m1-1', [
     ]},
   ]},
   { w: 'any', p: 'adj.', s: [
-    { m: '어떤, 조금도', syn: ['some'], ex: [
+    { m: '어떤, 조금도', syn: [], ex: [
       ['Do you have any questions?', '질문이 있나요?'],
       ['There is not any milk left.', '남은 우유가 없다.'],
       ['Take any book you like.', '마음에 드는 아무 책이나 가져가라.'],
@@ -321,14 +321,14 @@ export const M1_1 = defineLevel('m1-1', [
     ]},
   ]},
   { w: 'arm', p: 'n.', s: [
-    { m: '팔', syn: ['limb'], ex: [
+    { m: '팔', syn: [], ex: [
       ['He broke his arm last week.', '그는 지난주에 팔이 부러졌다.'],
       ['She held the baby in her arms.', '그녀는 아기를 팔에 안았다.'],
       ['Raise your right arm.', '오른팔을 들어라.'],
     ]},
   ]},
   { w: 'around', p: 'prep.', s: [
-    { m: '~ 주위에, ~ 둘레에', syn: ['about'], ex: [
+    { m: '~ 주위에, ~ 둘레에', syn: [], ex: [
       ['We sat around the table.', '우리는 탁자 둘레에 앉았다.'],
       ['The earth moves around the sun.', '지구는 태양 주위를 돈다.'],
       ['She looked around the room.', '그녀는 방 안을 둘러보았다.'],
@@ -350,13 +350,13 @@ export const M1_1 = defineLevel('m1-1', [
   ]},
   { w: 'artist', p: 'n.', s: [
     { m: '예술가, 화가', syn: ['painter'], ex: [
-      ['My sister wants to be an artist.', '내 여동생은 화가가 되고 싶어 한다.'],
-      ['The artist painted the sea.', '그 화가는 바다를 그렸다.'],
+      ['My sister wants to be an artist.', '내 여동생은 예술가가 되고 싶어 한다.'],
+      ['The artist painted the sea.', '그 예술가는 바다를 그렸다.'],
       ['Many artists live in this town.', '많은 예술가가 이 마을에 산다.'],
     ]},
   ]},
-  { w: 'as', p: 'conj.', s: [
-    { m: '~처럼, ~로서', syn: ['like'], ex: [
+  { w: 'as', p: 'conj., prep.', s: [
+    { m: '~처럼, ~로서', syn: [], ex: [
       ['Do as I say.', '내가 말한 대로 해라.'],
       ['He works as a teacher.', '그는 교사로 일한다.'],
       ['She is as tall as her sister.', '그녀는 언니만큼 키가 크다.'],
@@ -380,7 +380,7 @@ export const M1_1 = defineLevel('m1-1', [
     ]},
   ]},
   { w: 'at', p: 'prep.', s: [
-    { m: '~에서, ~에', syn: ['in'], ex: [
+    { m: '~에서, ~에', syn: [], ex: [
       ['We meet at the station.', '우리는 역에서 만난다.'],
       ['The class starts at nine.', '수업은 9시에 시작한다.'],
       ['She is at home now.', '그녀는 지금 집에 있다.'],
@@ -401,10 +401,10 @@ export const M1_1 = defineLevel('m1-1', [
     ]},
   ]},
   { w: 'away', p: 'adv.', s: [
-    { m: '떨어져, 멀리', syn: ['off'], ex: [
+    { m: '떨어져, 멀리', syn: [], ex: [
       ['The school is two blocks away.', '학교는 두 블록 떨어져 있다.'],
       ['He walked away without a word.', '그는 말없이 걸어가 버렸다.'],
-      ['Put your phone away during class.', '수업 중에는 휴대폰을 치워라.'],
+      ['The lake is ten kilometers away.', '그 호수는 10킬로미터 떨어져 있다.'],
     ]},
   ]},
   { w: 'baby', p: 'n.', s: [
@@ -415,7 +415,7 @@ export const M1_1 = defineLevel('m1-1', [
     ]},
   ]},
   { w: 'back', p: 'n.', s: [
-    { m: '등, 뒤', syn: ['rear'], ex: [
+    { m: '등, 뒤', syn: [], ex: [
       ['My back hurts today.', '오늘 등이 아프다.'],
       ['He sat in the back of the bus.', '그는 버스 뒤쪽에 앉았다.'],
       ['Write your name on the back.', '뒷면에 이름을 쓰세요.'],
@@ -429,7 +429,7 @@ export const M1_1 = defineLevel('m1-1', [
     ]},
   ]},
   { w: 'badminton', p: 'n.', s: [
-    { m: '배드민턴', syn: ['racket sport'], ex: [
+    { m: '배드민턴', syn: [], ex: [
       ['We play badminton after school.', '우리는 방과 후에 배드민턴을 친다.'],
       ['She is good at badminton.', '그녀는 배드민턴을 잘한다.'],
       ['The badminton court is over there.', '배드민턴 경기장은 저쪽에 있다.'],
@@ -443,14 +443,14 @@ export const M1_1 = defineLevel('m1-1', [
     ]},
   ]},
   { w: 'bake', p: 'v.', s: [
-    { m: '굽다', syn: ['cook in an oven'], ex: [
+    { m: '굽다', syn: [], ex: [
       ['Let us bake a cake for her.', '그녀를 위해 케이크를 굽자.'],
       ['My mother baked bread this morning.', '어머니는 오늘 아침에 빵을 구우셨다.'],
       ['She is baking cookies now.', '그녀는 지금 쿠키를 굽고 있다.'],
     ]},
   ]},
   { w: 'ball', p: 'n.', s: [
-    { m: '공', syn: ['sphere'], ex: [
+    { m: '공', syn: [], ex: [
       ['He threw the ball to me.', '그는 나에게 공을 던졌다.'],
       ['The ball rolled under the desk.', '공이 책상 밑으로 굴러갔다.'],
       ['We need a new ball for the game.', '경기를 하려면 새 공이 필요하다.'],
@@ -464,7 +464,7 @@ export const M1_1 = defineLevel('m1-1', [
     ]},
   ]},
   { w: 'bank', p: 'n.', s: [
-    { m: '은행', syn: ['savings bank'], ex: [
+    { m: '은행', syn: [], ex: [
       ['She works at a bank.', '그녀는 은행에서 일한다.'],
       ['The bank closes at four.', '은행은 4시에 문을 닫는다.'],
     ]},
@@ -481,14 +481,14 @@ export const M1_1 = defineLevel('m1-1', [
     ]},
   ]},
   { w: 'baseball', p: 'n.', s: [
-    { m: '야구', syn: ['ball game'], ex: [
+    { m: '야구', syn: [], ex: [
       ['We played baseball in the park.', '우리는 공원에서 야구를 했다.'],
       ['Baseball is popular in Korea.', '야구는 한국에서 인기가 있다.'],
       ['He wants to be a baseball player.', '그는 야구 선수가 되고 싶어 한다.'],
     ]},
   ]},
   { w: 'basket', p: 'n.', s: [
-    { m: '바구니', syn: ['container'], ex: [
+    { m: '바구니', syn: [], ex: [
       ['She filled the basket with apples.', '그녀는 바구니를 사과로 채웠다.'],
       ['Put the fruit in this basket.', '과일을 이 바구니에 넣어라.'],
       ['The basket is made of wood.', '그 바구니는 나무로 만들어졌다.'],
@@ -502,24 +502,24 @@ export const M1_1 = defineLevel('m1-1', [
     ]},
   ]},
   { w: 'bat', p: 'n.', s: [
-    { m: '방망이, 배트', syn: ['club'], ex: [
+    { m: '방망이, 배트', syn: [], ex: [
       ['He hit the ball with a bat.', '그는 방망이로 공을 쳤다.'],
       ['The bat is made of wood.', '그 방망이는 나무로 만들어졌다.'],
     ]},
-    { m: '박쥐', syn: ['flying mammal'], ex: [
+    { m: '박쥐', syn: [], ex: [
       ['Bats sleep during the day.', '박쥐는 낮에 잔다.'],
       ['A bat flew out of the cave.', '박쥐 한 마리가 동굴에서 날아 나왔다.'],
     ]},
   ]},
   { w: 'bath', p: 'n.', s: [
-    { m: '목욕', syn: ['wash'], ex: [
+    { m: '목욕', syn: [], ex: [
       ['I take a bath every evening.', '나는 매일 저녁 목욕을 한다.'],
       ['The baby enjoys a warm bath.', '아기는 따뜻한 목욕을 좋아한다.'],
       ['She had a bath before bed.', '그녀는 자기 전에 목욕을 했다.'],
     ]},
   ]},
   { w: 'be', p: 'v.', s: [
-    { m: '~이다, ~에 있다', syn: ['exist'], ex: [
+    { m: '~이다, ~에 있다', syn: [], ex: [
       ['I want to be a doctor.', '나는 의사가 되고 싶다.'],
       ['She is my best friend.', '그녀는 내 가장 친한 친구다.'],
       ['The keys were on the table.', '열쇠는 탁자 위에 있었다.'],
@@ -554,8 +554,8 @@ export const M1_1 = defineLevel('m1-1', [
     ]},
   ]},
   { w: 'be interested in', p: 'phr.', s: [
-    { m: '~에 관심이 있다', syn: ['care about'], ex: [
-      ["I'm interested in science.", '나는 과학에 관심이 있다.'],
+    { m: '~에 관심이 있다', syn: ['have an interest in'], ex: [
+      ['I am interested in science.', '나는 과학에 관심이 있다.'],
       ['She is interested in learning Spanish.', '그녀는 스페인어 배우는 데 관심이 있다.'],
       ['Are you interested in joining our club?', '우리 동아리에 들어올 생각 있니?'],
     ]},
@@ -596,14 +596,14 @@ export const M1_1 = defineLevel('m1-1', [
     ]},
   ]},
   { w: 'become', p: 'v.', s: [
-    { m: '~이 되다', syn: ['turn into'], ex: [
+    { m: '~이 되다', syn: [], ex: [
       ['He wants to become a pilot.', '그는 조종사가 되고 싶어 한다.'],
       ['She became a teacher last year.', '그녀는 작년에 교사가 되었다.'],
       ['The weather became cold suddenly.', '날씨가 갑자기 추워졌다.'],
     ]},
   ]},
   { w: 'bed', p: 'n.', s: [
-    { m: '침대', syn: ['bunk'], ex: [
+    { m: '침대', syn: [], ex: [
       ['My bed is next to the window.', '내 침대는 창문 옆에 있다.'],
       ['He lay on the bed and read.', '그는 침대에 누워 책을 읽었다.'],
       ['Make your bed before breakfast.', '아침 먹기 전에 이불을 정리해라.'],
@@ -617,7 +617,7 @@ export const M1_1 = defineLevel('m1-1', [
     ]},
   ]},
   { w: 'beef', p: 'n.', s: [
-    { m: '소고기', syn: ['meat'], ex: [
+    { m: '소고기', syn: [], ex: [
       ['We had beef for dinner.', '우리는 저녁으로 소고기를 먹었다.'],
       ['This beef is very tender.', '이 소고기는 아주 부드럽다.'],
       ['She does not eat beef.', '그녀는 소고기를 먹지 않는다.'],
@@ -638,7 +638,7 @@ export const M1_1 = defineLevel('m1-1', [
     ]},
   ]},
   { w: 'behavior', p: 'n.', s: [
-    { m: '행동, 태도', syn: ['conduct', 'manner'], ex: [
+    { m: '행동, 태도', syn: ['conduct'], ex: [
       ['His behavior surprised us.', '그의 행동은 우리를 놀라게 했다.'],
       ['Good behavior is rewarded here.', '이곳에서는 바른 행동에 상을 준다.'],
       ['Scientists study animal behavior.', '과학자들은 동물의 행동을 연구한다.'],
@@ -667,7 +667,7 @@ export const M1_1 = defineLevel('m1-1', [
   ]},
   { w: 'below', p: 'prep., adv.', s: [
     { m: '~ 아래에', syn: ['under'], ex: [
-      ['The temperature is below zero.', '기온이 영하다.'],
+      ['The temperature is below zero.', '기온이 영하이다.'],
       ['Write your name below the line.', '선 아래에 이름을 쓰세요.'],
       ['We saw the town below.', '우리는 아래에 있는 마을을 보았다.'],
     ]},
@@ -687,7 +687,7 @@ export const M1_1 = defineLevel('m1-1', [
     ]},
   ]},
   { w: 'between', p: 'prep.', s: [
-    { m: '~ 사이에', syn: ['among'], ex: [
+    { m: '~ 사이에', syn: [], ex: [
       ['The store is between the bank and the park.', '그 가게는 은행과 공원 사이에 있다.'],
       ['There is a big difference between them.', '그들 사이에는 큰 차이가 있다.'],
       ['I sat between my parents.', '나는 부모님 사이에 앉았다.'],
@@ -722,14 +722,14 @@ export const M1_1 = defineLevel('m1-1', [
     ]},
   ]},
   { w: 'bird', p: 'n.', s: [
-    { m: '새', syn: ['fowl'], ex: [
+    { m: '새', syn: [], ex: [
       ['Birds sing in the morning.', '새들은 아침에 노래한다.'],
       ['A bird built a nest in the tree.', '새가 나무에 둥지를 지었다.'],
       ['That bird flies very fast.', '저 새는 아주 빨리 난다.'],
     ]},
   ]},
   { w: 'birth', p: 'n.', s: [
-    { m: '출생, 탄생', syn: ['being born'], ex: [
+    { m: '출생, 탄생', syn: [], ex: [
       ['The birth of a baby is a happy event.', '아기의 탄생은 기쁜 일이다.'],
       ['What is your date of birth?', '생년월일이 어떻게 되나요?'],
       ['She has lived here since birth.', '그녀는 태어날 때부터 여기 살았다.'],
@@ -750,21 +750,21 @@ export const M1_1 = defineLevel('m1-1', [
     ]},
   ]},
   { w: 'black', p: 'adj.', s: [
-    { m: '검은', syn: ['dark'], ex: [
+    { m: '검은', syn: [], ex: [
       ['She wore a black coat.', '그녀는 검은 코트를 입었다.'],
       ['The sky turned black before the storm.', '폭풍 전에 하늘이 새까매졌다.'],
       ['He has black hair.', '그는 검은 머리를 가졌다.'],
     ]},
   ]},
   { w: 'blood', p: 'n.', s: [
-    { m: '피, 혈액', syn: ['life fluid'], ex: [
+    { m: '피, 혈액', syn: [], ex: [
       ['Blood carries oxygen in the body.', '피는 몸에서 산소를 나른다.'],
       ['There was blood on his knee.', '그의 무릎에 피가 났다.'],
       ['She gave blood at the hospital.', '그녀는 병원에서 헌혈을 했다.'],
     ]},
   ]},
   { w: 'blue', p: 'adj.', s: [
-    { m: '파란', syn: ['azure'], ex: [
+    { m: '파란', syn: [], ex: [
       ['The sky is blue today.', '오늘 하늘이 파랗다.'],
       ['She painted the wall blue.', '그녀는 벽을 파랗게 칠했다.'],
       ['He wore a blue shirt.', '그는 파란 셔츠를 입었다.'],
@@ -774,18 +774,18 @@ export const M1_1 = defineLevel('m1-1', [
     { m: '칠판, 판', syn: ['blackboard'], ex: [
       ['The teacher wrote on the board.', '선생님이 칠판에 썼다.'],
       ['Look at the board, please.', '칠판을 봐 주세요.'],
-      ['He put a photo on the board.', '그는 게시판에 사진을 붙였다.'],
+      ['He put a photo on the board.', '그는 칠판에 사진을 붙였다.'],
     ]},
   ]},
   { w: 'boat', p: 'n.', s: [
-    { m: '배, 보트', syn: ['ship'], ex: [
+    { m: '배, 보트', syn: [], ex: [
       ['We crossed the lake by boat.', '우리는 배로 호수를 건넜다.'],
       ['The boat is tied to the dock.', '배가 부두에 묶여 있다.'],
       ['Small boats filled the harbor.', '작은 배들이 항구를 채웠다.'],
     ]},
   ]},
   { w: 'body', p: 'n.', s: [
-    { m: '몸, 신체', syn: ['figure'], ex: [
+    { m: '몸, 신체', syn: [], ex: [
       ['Exercise keeps the body strong.', '운동은 몸을 튼튼하게 한다.'],
       ['Water makes up most of our body.', '물이 우리 몸의 대부분을 이룬다.'],
       ['He washed his whole body.', '그는 온몸을 씻었다.'],
@@ -799,28 +799,28 @@ export const M1_1 = defineLevel('m1-1', [
     ]},
   ]},
   { w: 'book', p: 'n.', s: [
-    { m: '책', syn: ['volume'], ex: [
+    { m: '책', syn: [], ex: [
       ['I read a book every week.', '나는 매주 책을 한 권 읽는다.'],
       ['This book is about animals.', '이 책은 동물에 관한 것이다.'],
       ['She borrowed three books.', '그녀는 책 세 권을 빌렸다.'],
     ]},
   ]},
   { w: 'bored', p: 'adj.', s: [
-    { m: '지루해하는, 심심한', syn: ['tired of'], ex: [
+    { m: '지루해하는, 심심한', syn: [], ex: [
       ['I am bored with this game.', '나는 이 게임이 지겹다.'],
       ['The children looked bored.', '아이들은 지루해 보였다.'],
       ['He gets bored easily.', '그는 쉽게 지루해한다.'],
     ]},
   ]},
   { w: 'borrow', p: 'v.', s: [
-    { m: '빌리다', syn: ['take out'], ex: [
+    { m: '빌리다', syn: [], ex: [
       ['Can I borrow your pencil?', '네 연필을 빌려도 될까?'],
       ['I borrowed two books from the library.', '나는 도서관에서 책 두 권을 빌렸다.'],
       ['He borrowed money from his brother.', '그는 형에게서 돈을 빌렸다.'],
     ]},
   ]},
   { w: 'both', p: 'adj.', s: [
-    { m: '둘 다의', syn: ['the two'], ex: [
+    { m: '둘 다의', syn: [], ex: [
       ['Both children are studying.', '두 아이 모두 공부하고 있다.'],
       ['I like both colors.', '나는 두 색깔 다 좋아한다.'],
       ['Both of my parents are teachers.', '우리 부모님은 두 분 다 교사다.'],
@@ -841,14 +841,14 @@ export const M1_1 = defineLevel('m1-1', [
     ]},
   ]},
   { w: 'box', p: 'n.', s: [
-    { m: '상자', syn: ['carton'], ex: [
+    { m: '상자', syn: [], ex: [
       ['Put the toys in this box.', '장난감을 이 상자에 넣어라.'],
       ['The box is too heavy to lift.', '그 상자는 들기에 너무 무겁다.'],
       ['She opened the box slowly.', '그녀는 상자를 천천히 열었다.'],
     ]},
   ]},
   { w: 'boy', p: 'n.', s: [
-    { m: '소년, 남자아이', syn: ['lad'], ex: [
+    { m: '소년, 남자아이', syn: [], ex: [
       ['The boy is playing outside.', '남자아이가 밖에서 놀고 있다.'],
       ['Two boys ran to the gate.', '두 소년이 정문으로 달려갔다.'],
       ['That boy is my brother.', '저 소년은 내 남동생이다.'],
@@ -862,14 +862,14 @@ export const M1_1 = defineLevel('m1-1', [
     ]},
   ]},
   { w: 'bread', p: 'n.', s: [
-    { m: '빵', syn: ['loaf'], ex: [
+    { m: '빵', syn: [], ex: [
       ['She bakes bread every morning.', '그녀는 매일 아침 빵을 굽는다.'],
       ['I ate bread and milk.', '나는 빵과 우유를 먹었다.'],
       ['This bread is still warm.', '이 빵은 아직 따뜻하다.'],
     ]},
   ]},
   { w: 'break', p: 'v., n.', s: [
-    { m: '깨뜨리다, 부수다', syn: ['damage'], ex: [
+    { m: '깨뜨리다, 부수다', syn: [], ex: [
       ['Do not break the window.', '창문을 깨지 마라.'],
       ['He broke his arm last week.', '그는 지난주에 팔이 부러졌다.'],
     ]},
@@ -893,17 +893,17 @@ export const M1_1 = defineLevel('m1-1', [
     ]},
   ]},
   { w: 'bright', p: 'adj.', s: [
-    { m: '밝은, 빛나는', syn: ['shining'], ex: [
+    { m: '밝은, 빛나는', syn: [], ex: [
       ['The room is very bright.', '그 방은 아주 밝다.'],
       ['The stars were bright last night.', '어젯밤 별들이 밝았다.'],
     ]},
     { m: '똑똑한, 영리한', syn: ['clever'], ex: [
       ['She is a bright student.', '그녀는 똑똑한 학생이다.'],
-      ['That is a bright idea.', '그것은 좋은 생각이다.'],
+      ['That is a bright idea.', '그것은 기발한 생각이다.'],
     ]},
   ]},
   { w: 'bring', p: 'v.', s: [
-    { m: '가져오다, 데려오다', syn: ['carry', 'take along'], ex: [
+    { m: '가져오다, 데려오다', syn: ['take along'], ex: [
       ['Bring your book tomorrow.', '내일 책을 가져와라.'],
       ['She brought her little sister.', '그녀는 여동생을 데려왔다.'],
       ['Can you bring me some water?', '물 좀 가져다줄 수 있니?'],
@@ -917,14 +917,14 @@ export const M1_1 = defineLevel('m1-1', [
     ]},
   ]},
   { w: 'brown', p: 'adj.', s: [
-    { m: '갈색의', syn: ['tan'], ex: [
+    { m: '갈색의', syn: [], ex: [
       ['She has brown eyes.', '그녀는 갈색 눈을 가졌다.'],
       ['The leaves turned brown.', '잎이 갈색으로 변했다.'],
       ['He wore brown shoes.', '그는 갈색 신발을 신었다.'],
     ]},
   ]},
-  { w: 'brush', p: 'v., n.', s: [
-    { m: '(솔로) 닦다, 빗질하다', syn: ['clean with a brush'], ex: [
+  { w: 'brush', p: 'v.', s: [
+    { m: '(솔로) 닦다, 빗질하다', syn: [], ex: [
       ['Brush your teeth before bed.', '자기 전에 이를 닦아라.'],
       ['She brushed her hair quickly.', '그녀는 머리를 빠르게 빗었다.'],
       ['He is brushing his shoes.', '그는 신발을 솔질하고 있다.'],
@@ -938,21 +938,21 @@ export const M1_1 = defineLevel('m1-1', [
     ]},
   ]},
   { w: 'burn', p: 'v.', s: [
-    { m: '타다, 태우다', syn: ['be on fire'], ex: [
+    { m: '타다, 태우다', syn: [], ex: [
       ['Paper burns quickly.', '종이는 빨리 탄다.'],
       ['The candle burned all night.', '초가 밤새 탔다.'],
       ['Be careful not to burn the bread.', '빵을 태우지 않도록 조심해라.'],
     ]},
   ]},
   { w: 'bus', p: 'n.', s: [
-    { m: '버스', syn: ['coach'], ex: [
+    { m: '버스', syn: [], ex: [
       ['I take the bus to school.', '나는 버스를 타고 학교에 간다.'],
       ['The bus stops in front of the bank.', '버스는 은행 앞에 선다.'],
       ['We waited for the bus in the rain.', '우리는 빗속에서 버스를 기다렸다.'],
     ]},
   ]},
   { w: 'business', p: 'n.', s: [
-    { m: '사업, 일', syn: ['trade'], ex: [
+    { m: '사업, 일', syn: [], ex: [
       ['He started a small business.', '그는 작은 사업을 시작했다.'],
       ['My father is away on business.', '아버지는 일 때문에 출장 중이다.'],
       ['Business is good this year.', '올해는 사업이 잘된다.'],
@@ -969,21 +969,21 @@ export const M1_1 = defineLevel('m1-1', [
     ]},
   ]},
   { w: 'but', p: 'conj.', s: [
-    { m: '그러나, 하지만', syn: ['however'], ex: [
+    { m: '그러나, 하지만', syn: ['yet'], ex: [
       ['It is small but useful.', '그것은 작지만 쓸모 있다.'],
       ['I called her, but she did not answer.', '나는 그녀에게 전화했지만 받지 않았다.'],
       ['He is tired but happy.', '그는 피곤하지만 행복하다.'],
     ]},
   ]},
   { w: 'butter', p: 'n.', s: [
-    { m: '버터', syn: ['spread'], ex: [
+    { m: '버터', syn: [], ex: [
       ['She put butter on the bread.', '그녀는 빵에 버터를 발랐다.'],
       ['This cake needs more butter.', '이 케이크는 버터가 더 필요하다.'],
       ['Keep the butter in the fridge.', '버터를 냉장고에 보관해라.'],
     ]},
   ]},
   { w: 'button', p: 'n.', s: [
-    { m: '단추, 버튼', syn: ['knob'], ex: [
+    { m: '단추, 버튼', syn: [], ex: [
       ['Push this button to start.', '시작하려면 이 버튼을 눌러라.'],
       ['A button fell off my coat.', '내 코트에서 단추가 떨어졌다.'],
       ['She pressed the wrong button.', '그녀는 잘못된 버튼을 눌렀다.'],

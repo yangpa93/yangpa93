@@ -973,7 +973,7 @@ export const H1_3 = defineLevel('h1-3', [
   ]},
   { w: 'temperature', p: 'n.', s: [
     { m: '온도, 기온, 체온', syn: [], ex: [
-      ['The temperature is below zero today.', '오늘 기온은 영하다.'],
+      ['The temperature is below zero today.', '오늘 기온은 영하이다.'],
       ['The nurse checked my temperature.', '간호사가 내 체온을 쟀다.'],
       ['Water boils at a high temperature.', '물은 높은 온도에서 끓는다.'],
     ]},

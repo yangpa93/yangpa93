@@ -25,6 +25,14 @@ export interface ExamItem {
   game: GameId;
   /** 이 문항을 다시 푸는 중인지 */
   isRetry: boolean;
+  /**
+   * 예문 인덱스. 다시 풀 때마다 한 칸씩 넘어간다.
+   *
+   * 틀린 문항을 똑같은 문장으로 다시 내면, 아이가 단어를 알게 된 것인지
+   * 방금 본 문장을 외운 것인지 구별되지 않는다. 문장을 바꿔서 물어야
+   * "이 단어를 안다"가 확인된다.
+   */
+  exposureIndex: number;
 }
 
 /**
@@ -50,14 +58,9 @@ export function buildExam(
       const canCloze = clozeSentence(entry, exp.example.en) != null;
 
       // 다의어는 뜻을 구별하는지가 핵심이라 그 유형을 우선한다.
-      const game: GameId =
-        entry.senses.length >= 2 && !canCloze
-          ? 'polysemy'
-          : canCloze
-            ? 'cloze'
-            : 'context';
+      const game = gameFor(entry, canCloze);
 
-      items.push({ entry, senseIndex, game, isRetry: false });
+      items.push({ entry, senseIndex, game, isRetry: false, exposureIndex: 0 });
     }
   }
 
@@ -76,12 +79,33 @@ export interface ExamProgress {
   retries: number;
 }
 
-/** 아직 못 맞힌 문항만 모아 다음 판을 만든다. */
+/**
+ * 아직 못 맞힌 문항만 모아 다음 판을 만든다.
+ *
+ * 예문을 한 칸 넘겨서, 방금 본 문장이 아니라 **다른 문장으로** 다시 묻는다.
+ * 빈칸을 만들 수 없는 문장으로 넘어갈 수 있어서 유형도 다시 고른다.
+ */
 export function nextRetryRound(wrong: ExamItem[], rand: () => number = Math.random): ExamItem[] {
   return shuffle(
-    wrong.map((it) => ({ ...it, isRetry: true })),
+    wrong.map((it) => {
+      const exposureIndex = it.exposureIndex + 1;
+      const exp = senseExposure(it.entry, it.senseIndex, exposureIndex);
+      const canCloze = clozeSentence(it.entry, exp.example.en) != null;
+      return {
+        ...it,
+        isRetry: true,
+        exposureIndex,
+        game: gameFor(it.entry, canCloze),
+      };
+    }),
     rand,
   );
+}
+
+/** 그 단어에 낼 수 있는 시험 유형. 빈칸이 기본, 안 되면 뜻으로 돌린다. */
+function gameFor(entry: VocabEntry, canCloze: boolean): GameId {
+  if (entry.senses.length >= 2 && !canCloze) return 'polysemy';
+  return canCloze ? 'cloze' : 'context';
 }
 
 /** 시험을 볼 수 있는지. 아직 진도가 안 되면 응시할 수 없다. */

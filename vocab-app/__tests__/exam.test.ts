@@ -1,3 +1,4 @@
+import { clozeSentence, senseExposure } from '../src/data/entry';
 import { buildExam, canTakeExam, examWeakWords, nextRetryRound } from '../src/srs/exam';
 import { createCard, grade } from '../src/srs/scheduler';
 import { entriesOf } from '../src/data';
@@ -118,7 +119,53 @@ describe('examWeakWords', () => {
       senseIndex,
       game: 'cloze' as GameId,
       isRetry: false,
+      exposureIndex: 0,
     }));
     expect(examWeakWords(wrong)).toEqual([multi.id]);
+  });
+});
+
+describe('다시 풀기 — 문장을 바꿔서 묻는다', () => {
+  it('다시 풀 때는 예문이 한 칸 넘어간다', () => {
+    // 방금 틀린 그 문장을 그대로 다시 내면, 단어를 알게 된 것인지
+    // 문장을 외운 것인지 구별되지 않는다.
+    const items = buildExam(POOL, 'm1-1', () => 0.5).slice(0, 5);
+    expect(items.every((i) => i.exposureIndex === 0)).toBe(true);
+
+    const second = nextRetryRound(items, () => 0.5);
+    expect(second.every((i) => i.exposureIndex === 1)).toBe(true);
+    expect(second.every((i) => i.isRetry)).toBe(true);
+
+    const third = nextRetryRound(second, () => 0.5);
+    expect(third.every((i) => i.exposureIndex === 2)).toBe(true);
+  });
+
+  it('예문이 여러 개면 실제로 다른 문장이 나온다', () => {
+    const many = POOL.filter((e) => e.senses[0].examples.length >= 2).slice(0, 20);
+    const first = many.map((entry) => ({
+      entry,
+      senseIndex: 0,
+      game: 'cloze' as GameId,
+      isRetry: false,
+      exposureIndex: 0,
+    }));
+    const second = nextRetryRound(first, () => 0.5);
+
+    for (const it of second) {
+      const before = senseExposure(it.entry, 0, 0).example.en;
+      const after = senseExposure(it.entry, 0, it.exposureIndex).example.en;
+      expect(after).not.toBe(before);
+    }
+  });
+
+  it('넘어간 문장으로 빈칸을 못 만들면 유형을 바꾼다', () => {
+    // 예문마다 표제어가 들어 있는 방식이 달라서, 빈칸이 되던 단어도
+    // 다음 문장에서는 안 될 수 있다. 그대로 두면 빈칸 없는 빈칸 문제가 된다.
+    const items = buildExam(POOL, 'm1-1', () => 0.5);
+    for (const it of nextRetryRound(items, () => 0.5)) {
+      const exp = senseExposure(it.entry, it.senseIndex, it.exposureIndex);
+      const canCloze = clozeSentence(it.entry, exp.example.en) != null;
+      if (it.game === 'cloze') expect(canCloze).toBe(true);
+    }
   });
 });

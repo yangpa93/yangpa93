@@ -4,9 +4,15 @@
  *   context   이 문장에서 그 단어가 무슨 뜻인지
  *   polysemy  다의어: 여러 뜻 중 이 문장에서 쓰인 뜻 (보기가 전부 그 단어의 뜻이라 가장 어렵다)
  *   synonym   문맥에 맞게 바꿔 쓸 수 있는 표현
+ *   antonym   그 단어와 뜻이 반대인 표현
  *
- * 셋 다 지문이 문장이다. 단어만 덩그러니 보여주는 문제는 두지 않았다.
+ * 넷 다 지문이 문장이다. 단어만 덩그러니 보여주는 문제는 두지 않았다.
  * 빈칸 채우기는 ClozeGame에 따로 있다.
+ *
+ * **오답 보기는 이미 배운 단어에서 먼저 뽑는다.** 처음 보는 단어가 보기에
+ * 섞이면 아이는 뜻을 견주는 대신 "아는 단어 하나"를 찍게 된다. 배운 단어끼리
+ * 겨루게 해야 유의어·반대말이 실제로 시험된다. 배운 단어가 아직 적으면
+ * 그 레벨 단어로 채운다.
  *
  * 모든 문항에 "모르겠어요" 보기를 둔다. 찍어서 맞히면 학습 데이터가
  * 오염되기 때문이다. 누르면 오답으로 기록하되 정답을 바로 보여 준다.
@@ -16,6 +22,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import { GameId, VocabEntry } from '../types';
 import { exposure, Exposure, primaryMeaning } from '../data/entry';
+import { antonymsOf } from '../data/antonyms';
 import type { GameProps } from './ClozeGame';
 import { buildChoices, shuffle } from '../srs/session';
 import { speak } from '../lib/feedback';
@@ -23,7 +30,7 @@ import { colors, font, radius, spacing } from '../theme';
 import { Muted } from '../components/ui';
 import { HighlightedSentence } from '../components/HighlightedSentence';
 
-export type ChoiceGameId = Extract<GameId, 'context' | 'polysemy' | 'synonym'>;
+export type ChoiceGameId = Extract<GameId, 'context' | 'polysemy' | 'synonym' | 'antonym'>;
 
 export type { GameProps } from './ClozeGame';
 
@@ -40,6 +47,7 @@ export function ChoiceGame({
   entry,
   exp,
   pool,
+  learned,
   ttsEnabled,
   showTranslation,
   onAnswer,
@@ -47,9 +55,9 @@ export function ChoiceGame({
   const [picked, setPicked] = useState<string | null>(null);
 
   const choices = useMemo(
-    () => buildOptions(game, entry, exp, pool),
+    () => buildOptions(game, entry, exp, pool, learned ?? []),
     // 문항이 바뀔 때만 보기를 다시 뽑는다. 오답을 눌렀다고 보기가 섞이면 안 된다.
-    [game, entry.id, exp.senseIndex, exp.exampleIndex, pool],
+    [game, entry.id, exp.senseIndex, exp.exampleIndex, pool, learned],
   );
 
   function choose(key: string, correct: boolean) {
@@ -68,8 +76,9 @@ export function ChoiceGame({
           exp={exp}
           ttsEnabled={ttsEnabled}
           // 해석에 정답(한국어 뜻)이 그대로 들어 있는 유형은 미리 보여줄 수 없다.
-          // '바꿔 쓰기'는 정답이 영어 표현이라 해석을 봐도 답이 드러나지 않는다.
-          showKo={picked !== null || (showTranslation && game === 'synonym')}
+          // '바꿔 쓰기'와 '반대말 찾기'는 정답이 영어 표현이라 해석을 봐도
+          // 답이 드러나지 않는다. 오히려 해석이 있어야 반대를 판단할 수 있다.
+          showKo={picked !== null || (showTranslation && (game === 'synonym' || game === 'antonym'))}
         />
       </View>
 
@@ -177,15 +186,35 @@ const PROMPT: Record<ChoiceGameId, string> = {
   context: '색칠한 단어는 여기서 무슨 뜻일까요?',
   polysemy: '이 단어는 뜻이 여러 개예요. 이 문장에서는?',
   synonym: '색칠한 단어를 바꿔 쓸 수 있는 표현은?',
+  antonym: '색칠한 단어와 뜻이 반대인 것은?',
 };
+
+/**
+ * 오답 보기를 뽑을 단어 풀.
+ *
+ * 이미 배운 단어를 먼저 쓴다. 처음 보는 단어가 보기에 섞이면 뜻을 견주는
+ * 대신 "아는 단어"를 찍게 되기 때문이다. 배운 게 아직 얼마 없는 초반에는
+ * 보기 4개도 못 채우므로 그 레벨 단어로 메운다.
+ */
+function distractorPool(pool: VocabEntry[], learned: VocabEntry[], exclude: string): VocabEntry[] {
+  const seen = new Set([exclude]);
+  const out: VocabEntry[] = [];
+  for (const e of [...learned, ...pool]) {
+    if (seen.has(e.id)) continue;
+    seen.add(e.id);
+    out.push(e);
+  }
+  return out;
+}
 
 function buildOptions(
   game: ChoiceGameId,
   entry: VocabEntry,
   exp: Exposure,
   pool: VocabEntry[],
+  learned: VocabEntry[],
 ): Choice[] {
-  const others = pool.filter((e) => e.id !== entry.id);
+  const others = distractorPool(pool, learned, entry.id);
 
   // 다의어 구별: 보기가 전부 '이 단어'의 뜻이다.
   // 문장을 제대로 읽지 않으면 고를 수 없어서 가장 어렵다.
@@ -216,14 +245,37 @@ function buildOptions(
     return picked.map((c) => ({ ...c, correct: c.key === entry.id }));
   }
 
+  if (game === 'antonym') {
+    // 정답은 이 단어의 반대말. 반대말 표에 실린 것은 모두 우리 어휘 안의
+    // 단어라, 아이가 배웠거나 앞으로 배울 단어끼리 겨루게 된다.
+    const answer = antonymsOf(entry.word)[0] ?? entry.word;
+    // 오답에 이 단어의 다른 반대말이나 동의어가 섞이면 정답이 둘이 된다.
+    const banned = new Set(
+      [entry.word, ...antonymsOf(entry.word), ...entry.senses.flatMap((s) => s.synonyms)].map((w) =>
+        w.toLowerCase(),
+      ),
+    );
+    const distractors = others
+      .map((e) => ({ key: e.id, label: e.word }))
+      .filter((c) => !banned.has(c.label.toLowerCase()));
+
+    const picked = buildChoices({ key: entry.id, label: answer }, distractors, (c) => c.label);
+    return picked.map((c) => ({ ...c, correct: c.key === entry.id }));
+  }
+
   // synonym: 정답은 이 뜻의 동의어, 오답은 다른 단어들의 동의어
   const answer = exp.sense.synonyms[0] ?? entry.word;
+  // 이 단어의 반대말이 보기에 있으면 안 된다. 바꿔 쓸 표현을 묻는데
+  // 정반대 뜻이 섞여 있으면 문제가 아니라 함정이 된다.
+  const banned = new Set(
+    [answer, entry.word, ...antonymsOf(entry.word)].map((w) => w.toLowerCase()),
+  );
   const distractors = others
     .map((e) => {
       const otherExp = exposure(e, 0);
       return { key: e.id, label: otherExp.sense.synonyms[0] ?? e.word };
     })
-    .filter((c) => c.label.toLowerCase() !== answer.toLowerCase());
+    .filter((c) => !banned.has(c.label.toLowerCase()));
 
   const picked = buildChoices({ key: entry.id, label: answer }, distractors, (c) => c.label);
   return picked.map((c) => ({ ...c, correct: c.key === entry.id }));

@@ -208,11 +208,14 @@ export default function Exam() {
 
   if (!current) return null;
 
-  const exp = senseExposure(current.entry, current.senseIndex, 0);
+  // 다시 풀 때는 예문이 한 칸 넘어가 있다. 방금 본 문장을 그대로 다시
+  // 내면 문장을 외운 것인지 단어를 안 것인지 구별되지 않는다.
+  const exp = senseExposure(current.entry, current.senseIndex, current.exposureIndex);
   const gameProps = {
     entry: current.entry,
     exp,
     pool,
+    learned: pool,
     ttsEnabled: profile.settings.ttsEnabled,
     showTranslation: profile.settings.showTranslation,
     onAnswer,

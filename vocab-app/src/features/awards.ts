@@ -9,19 +9,51 @@
  *   고등학교 레벨업 3만원
  *   한 달 개근      2만원
  *
+ * 이 금액은 **부모님 모드에서 바꿀 수 있다**(AwardRates). 집집마다 사정이
+ * 달라서 숫자를 코드에 박아 두면 쓸 수 없기 때문이다. 0원으로 두면 그
+ * 요구권은 아예 생기지 않는다.
+ *
+ * 여기에 더해 아이가 "이번엔 정말 잘했어요"라며 **정해진 금액만큼 더**
+ * 요구할 수 있다(기본 1만원). 얼마든 부르는 방식이 아니라 한 칸만 올릴 수
+ * 있게 한 것은, 매번 금액을 흥정하지 않게 하려는 요구권의 취지를 지키면서도
+ * 아이가 스스로 잘했다고 말할 자리를 주기 위해서다.
+ *
  * 화면과 분리된 순수 함수라 테스트가 쉽다.
  */
 
-import { DailyRecord, LevelId, Profile, ProfileData, gradeOf } from '../types';
+import { AwardRates, DailyRecord, LevelId, Profile, ProfileData, gradeOf } from '../types';
 import { daysInMonth, monthOf } from './calendar';
 import { todayKey } from '../lib/date';
 
-/** 중학교 레벨 하나를 끝냈을 때 */
+/** 중학교 레벨 하나를 끝냈을 때 (기본값) */
 export const MIDDLE_LEVEL_AWARD = 20_000;
-/** 고등학교 레벨 하나를 끝냈을 때 */
+/** 고등학교 레벨 하나를 끝냈을 때 (기본값) */
 export const HIGH_LEVEL_AWARD = 30_000;
-/** 한 달을 하루도 빠짐없이 학습했을 때 */
+/** 한 달을 하루도 빠짐없이 학습했을 때 (기본값) */
 export const PERFECT_MONTH_AWARD = 20_000;
+/** 아이가 "정말 잘했어요"라며 더 요구할 수 있는 금액 (기본값) */
+export const BONUS_AWARD = 10_000;
+
+/** 부모님이 아무것도 안 바꿨을 때 쓰는 금액표. */
+export const DEFAULT_AWARD_RATES: AwardRates = {
+  middleLevel: MIDDLE_LEVEL_AWARD,
+  highLevel: HIGH_LEVEL_AWARD,
+  perfectMonth: PERFECT_MONTH_AWARD,
+  bonus: BONUS_AWARD,
+};
+
+/** 저장된 값이 비었거나 깨져 있어도 항상 온전한 금액표를 돌려준다. */
+export function awardRates(rates?: Partial<AwardRates> | null): AwardRates {
+  const r = { ...DEFAULT_AWARD_RATES, ...(rates ?? {}) };
+  const clean = (n: unknown, fallback: number) =>
+    typeof n === 'number' && Number.isFinite(n) && n >= 0 ? Math.round(n) : fallback;
+  return {
+    middleLevel: clean(r.middleLevel, MIDDLE_LEVEL_AWARD),
+    highLevel: clean(r.highLevel, HIGH_LEVEL_AWARD),
+    perfectMonth: clean(r.perfectMonth, PERFECT_MONTH_AWARD),
+    bonus: clean(r.bonus, BONUS_AWARD),
+  };
+}
 
 export type AwardKind = 'levelup' | 'perfectMonth';
 
@@ -30,9 +62,10 @@ export const AWARD_LABEL: Record<AwardKind, string> = {
   perfectMonth: '한 달 개근',
 };
 
-/** 레벨 하나를 끝냈을 때 받는 금액. 중학교 2만원, 고등학교 3만원. */
-export function levelUpAmount(level: LevelId): number {
-  return gradeOf(level).startsWith('m') ? MIDDLE_LEVEL_AWARD : HIGH_LEVEL_AWARD;
+/** 레벨 하나를 끝냈을 때 받는 금액. 중학교와 고등학교 금액이 다르다. */
+export function levelUpAmount(level: LevelId, rates?: Partial<AwardRates> | null): number {
+  const r = awardRates(rates);
+  return gradeOf(level).startsWith('m') ? r.middleLevel : r.highLevel;
 }
 
 /** 아직 요청하지 않은 요구권 하나. */
@@ -100,13 +133,19 @@ export function availableAwards(
   profile: Profile,
   data: ProfileData,
   today: string = todayKey(),
+  rates?: Partial<AwardRates> | null,
 ): Award[] {
+  const r = awardRates(rates);
   const out: Award[] = [];
 
   for (const level of profile.pendingLevelUps) {
+    const amount = levelUpAmount(level, r);
+    // 0원으로 꺼 둔 요구권은 만들지 않는다. 금액이 없는 요구권을 보내면
+    // 아이도 부모도 무엇을 판단해야 하는지 알 수 없다.
+    if (amount <= 0) continue;
     out.push({
       kind: 'levelup',
-      amount: levelUpAmount(level),
+      amount,
       earnedFrom: level,
       month: null,
       reason: `${gradeOf(level).startsWith('m') ? '중학교' : '고등학교'} 레벨 하나를 끝냈어요`,
@@ -116,10 +155,11 @@ export function availableAwards(
   const claimed = new Set(profile.claimedMonths ?? []);
   for (const month of perfectMonths(data.days, today)) {
     if (claimed.has(month)) continue;
+    if (r.perfectMonth <= 0) continue;
     const [, m] = month.split('-');
     out.push({
       kind: 'perfectMonth',
-      amount: PERFECT_MONTH_AWARD,
+      amount: r.perfectMonth,
       earnedFrom: null,
       month,
       reason: `${Number(m)}월 한 달을 하루도 빠짐없이 공부했어요`,

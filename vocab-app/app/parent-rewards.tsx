@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { Body, Button, Card, Chip, EmptyState, H3, Muted, Row, Screen } from '../src/components/ui';
 import { useApp } from '../src/store/AppProvider';
-import { formatWon } from '../src/features/awards';
+import { awardRates, formatWon } from '../src/features/awards';
 import { LEVEL_SHORT, RewardRequest } from '../src/types';
 import { colors, radius, spacing } from '../src/theme';
 
@@ -32,6 +32,7 @@ export default function ParentRewards() {
   }
 
   if (state.rewards.length === 0) {
+    const r = awardRates(state.parent.awards);
     return (
       <Screen>
         <EmptyState
@@ -39,7 +40,9 @@ export default function ParentRewards() {
           title="아직 보상 요청이 없어요"
           hint={
             '레벨 시험에 통과하거나 한 달을 개근하면 요구권이 생깁니다.\n' +
-            '중학교 레벨업 2만원 · 고등학교 레벨업 3만원 · 한 달 개근 2만원'
+            `중학교 레벨업 ${formatWon(r.middleLevel)} · 고등학교 레벨업 ${formatWon(r.highLevel)} · ` +
+            `한 달 개근 ${formatWon(r.perfectMonth)}\n` +
+            '금액은 설정에서 바꿀 수 있습니다.'
           }
         />
       </Screen>
@@ -60,6 +63,21 @@ export default function ParentRewards() {
 
               <Text style={s.amount}>{formatWon(r.amount)}</Text>
               <Muted style={{ marginTop: spacing.xs }}>{r.reason}</Muted>
+
+              {r.bonus > 0 ? (
+                <View style={s.bonusBox}>
+                  <Row style={{ justifyContent: 'space-between' }}>
+                    <Text style={s.bonusLabel}>⭐️ 아이가 더 요구했어요</Text>
+                    <Text style={s.bonusAmount}>
+                      {formatWon(r.baseAmount)} + {formatWon(r.bonus)}
+                    </Text>
+                  </Row>
+                  <Muted style={{ marginTop: spacing.xs }}>
+                    {r.bonusReason ? `“${r.bonusReason}”` : '이유는 적지 않았어요.'}
+                  </Muted>
+                </View>
+              ) : null}
+
               {r.note ? <Muted style={{ marginTop: spacing.sm }}>“{r.note}”</Muted> : null}
 
               <TextInput
@@ -73,7 +91,7 @@ export default function ParentRewards() {
 
               <Row style={{ gap: spacing.sm, marginTop: spacing.md }}>
                 <Button
-                  title="주기로 하기"
+                  title={r.bonus > 0 ? `${formatWon(r.amount)} 주기` : '주기로 하기'}
                   onPress={() => decideReward(r.id, 'approved', (notes[r.id] ?? '').trim())}
                   style={{ flex: 1 }}
                 />
@@ -84,6 +102,21 @@ export default function ParentRewards() {
                   style={{ flex: 1 }}
                 />
               </Row>
+
+              {/*
+                얹은 금액만 빼고 승인하는 길. 아이의 요구를 통째로 거절하지
+                않고 "잘하긴 했지만 기본 금액으로 하자"고 말할 수 있어야 한다.
+              */}
+              {r.bonus > 0 ? (
+                <Button
+                  title={`기본 ${formatWon(r.baseAmount)}만 주기`}
+                  variant="ghost"
+                  onPress={() =>
+                    decideReward(r.id, 'approved', (notes[r.id] ?? '').trim(), r.baseAmount)
+                  }
+                  style={{ marginTop: spacing.sm }}
+                />
+              ) : null}
             </Card>
           ))}
         </>
@@ -126,6 +159,16 @@ export default function ParentRewards() {
 
 const s = StyleSheet.create({
   amount: { fontSize: 32, fontWeight: '800', color: colors.text, marginTop: spacing.md },
+  bonusBox: {
+    marginTop: spacing.md,
+    padding: spacing.md,
+    borderRadius: radius.md,
+    backgroundColor: colors.accentSoft,
+    borderWidth: 1,
+    borderColor: colors.accent,
+  },
+  bonusLabel: { fontSize: 14, fontWeight: '800', color: '#B45309' },
+  bonusAmount: { fontSize: 14, fontWeight: '800', color: '#B45309' },
   input: {
     marginTop: spacing.lg,
     borderWidth: 1,

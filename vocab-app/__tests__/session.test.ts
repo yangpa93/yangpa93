@@ -2,6 +2,8 @@ import { buildSession, buildChoices, buildRounds, pickGame, SessionItem } from '
 import { createCard, grade } from '../src/srs/scheduler';
 import { ALL_ENTRIES, entriesOf } from '../src/data';
 import { CardState, GameId, Stage, VocabEntry } from '../src/types';
+import { senseExposure } from '../src/data/entry';
+import { hasAntonym } from '../src/data/antonyms';
 
 const TODAY = '2026-07-27';
 const POOL = entriesOf('m1-1');
@@ -166,6 +168,7 @@ function item(entry: VocabEntry, over: Partial<SessionItem> = {}): SessionItem {
     game: 'cloze',
     stage: 'learn',
     round: 0,
+    exposureIndex: 0,
     firstMeeting: false,
     ...over,
   };
@@ -257,6 +260,7 @@ describe('pickGame', () => {
       'context',
       'polysemy',
       'synonym',
+      'antonym',
     ];
     for (const entry of POOL) {
       for (const stage of ['learn', 'apply', 'recall'] as Stage[]) {
@@ -359,5 +363,113 @@ describe('buildChoices', () => {
 
     const labels = choices.map((c) => c.label);
     expect(labels.filter((l) => l === '같은뜻')).toHaveLength(1);
+  });
+});
+
+describe('예문 회전 — 라운드마다 다른 문장', () => {
+  it('라운드가 올라가면 예문 인덱스가 1씩만 올라간다', () => {
+    // 예전에는 화면이 '카드 누적 노출 + 라운드'로 그때그때 계산했다.
+    // 카드는 문제를 풀 때마다 갱신되므로 인덱스가 2씩 뛰었고, 뜻마다
+    // 예문이 2개인 다의어는 세 라운드 내내 같은 문장이 나왔다.
+    const one = POOL.filter((e) => e.senses.length === 1).slice(0, 3).map((e) => item(e));
+    const q = buildRounds(one, 3, fixedRand);
+
+    for (const entry of one.map((i) => i.entry)) {
+      const mine = q.filter((i) => i.entry.id === entry.id).sort((a, b) => a.round - b.round);
+      expect(mine.map((i) => i.exposureIndex)).toEqual([0, 1, 2]);
+    }
+  });
+
+  it('예문이 2개인 뜻도 라운드마다 문장이 번갈아 나온다', () => {
+    const twoEx = ALL_ENTRIES.find((e) => e.senses.some((s) => s.examples.length === 2))!;
+    const senseIndex = twoEx.senses.findIndex((s) => s.examples.length === 2);
+    const q = buildRounds([item(twoEx, { senseIndex })], 3, fixedRand);
+
+    const sentences = q
+      .sort((a, b) => a.round - b.round)
+      .map((i) => senseExposure(i.entry, i.senseIndex, i.exposureIndex).example.en);
+
+    // 2개뿐이라 세 번째에 첫 문장으로 돌아오지만, 연달아 같은 문장은 안 나온다.
+    expect(sentences[0]).not.toBe(sentences[1]);
+    expect(sentences[1]).not.toBe(sentences[2]);
+  });
+
+  it('다의어는 뜻마다 자기 예문을 돈다', () => {
+    const multi = ALL_ENTRIES.find(
+      (e) => e.senses.length >= 2 && e.senses.every((s) => s.examples.length >= 2),
+    )!;
+    const items = multi.senses.map((_, senseIndex) => item(multi, { senseIndex }));
+    const q = buildRounds(items, 2, fixedRand);
+
+    // (뜻, 라운드) 짝마다 문장이 하나씩 나오고, 한 라운드 안에서 뜻이
+    // 다르면 문장도 달라야 한다. 같으면 뜻 구별 문제가 성립하지 않는다.
+    for (const round of [0, 1]) {
+      const inRound = q.filter((i) => i.round === round);
+      const sentences = inRound.map(
+        (i) => senseExposure(i.entry, i.senseIndex, i.exposureIndex).example.en,
+      );
+      expect(new Set(sentences).size).toBe(sentences.length);
+    }
+  });
+
+  it('어제까지 본 횟수만큼 밀어서 시작한다', () => {
+    // 오늘도 어제와 같은 문장에서 시작하면 복습이 아니라 암송이 된다.
+    const target = POOL.filter((e) => e.senses.length === 1)[0];
+    let card = createCard(target.id);
+    card = { ...card, correct: 3, wrong: 1 };
+
+    const session = buildSession({
+      entries: [target],
+      cards: { [target.id]: card },
+      level: 'm1-1',
+      newPerDay: 0,
+      reviewPerDay: 5,
+      today: TODAY,
+      rand: fixedRand,
+    });
+
+    expect(session[0].exposureIndex).toBe(4);
+  });
+});
+
+describe('반대말 문제', () => {
+  it('반대말이 있는 단어는 활용·떠올리기 단계에서 반대말 문제가 나올 수 있다', () => {
+    const withAnt = POOL.find((e) => hasAntonym(e.word) && e.senses.length === 1)!;
+    const games = new Set<GameId>();
+    // 유형은 후보 중에서 무작위로 고르므로 여러 번 돌려 본다.
+    for (let i = 0; i < 200; i++) {
+      const r = () => i / 200;
+      games.add(pickGame(item(withAnt, { stage: 'apply' }), r));
+      games.add(pickGame(item(withAnt, { stage: 'recall' }), r));
+    }
+    expect(games.has('antonym')).toBe(true);
+  });
+
+  it('익히기 단계에서는 반대말 문제를 내지 않는다', () => {
+    const withAnt = POOL.find((e) => hasAntonym(e.word))!;
+    for (let i = 0; i < 200; i++) {
+      const g = pickGame(item(withAnt, { stage: 'learn' }), () => i / 200);
+      expect(g).not.toBe('antonym');
+    }
+  });
+
+  it('반대말이 없는 단어에는 반대말 문제를 내지 않는다', () => {
+    const noAnt = POOL.find((e) => !hasAntonym(e.word))!;
+    for (let i = 0; i < 200; i++) {
+      for (const stage of ['learn', 'apply', 'recall'] as Stage[]) {
+        expect(pickGame(item(noAnt, { stage }), () => i / 200)).not.toBe('antonym');
+      }
+    }
+  });
+
+  it('다의어는 대표 뜻일 때만 반대말을 묻는다', () => {
+    // 'save(저축하다)'를 놓고 'spend'의 반대라고 하면 뜻이 어긋난다.
+    const multi = ALL_ENTRIES.find((e) => e.senses.length >= 2 && hasAntonym(e.word));
+    if (!multi) return;
+    for (let i = 0; i < 200; i++) {
+      for (const stage of ['apply', 'recall'] as Stage[]) {
+        expect(pickGame(item(multi, { stage, senseIndex: 1 }), () => i / 200)).not.toBe('antonym');
+      }
+    }
   });
 });

@@ -1,5 +1,7 @@
 import {
   availableAwards,
+  awardRates,
+  BONUS_AWARD,
   formatWon,
   HIGH_LEVEL_AWARD,
   isPerfectMonth,
@@ -180,5 +182,55 @@ describe('perfectMonthProgress', () => {
     const p = perfectMonthProgress(studiedDays('2026-07', 27, [3]), '2026-07-27');
     expect(p.studied).toBe(26);
     expect(p.alive).toBe(false);
+  });
+});
+
+describe('부모님이 정하는 금액표', () => {
+  it('금액을 바꾸면 요구권 금액도 따라 바뀐다', () => {
+    const rates = { middleLevel: 5_000, highLevel: 50_000, perfectMonth: 0, bonus: 20_000 };
+    expect(levelUpAmount('m2-3', rates)).toBe(5_000);
+    expect(levelUpAmount('h1-1', rates)).toBe(50_000);
+  });
+
+  it('아무것도 안 정했으면 기본값을 쓴다', () => {
+    expect(awardRates(null)).toEqual({
+      middleLevel: MIDDLE_LEVEL_AWARD,
+      highLevel: HIGH_LEVEL_AWARD,
+      perfectMonth: PERFECT_MONTH_AWARD,
+      bonus: BONUS_AWARD,
+    });
+  });
+
+  it('저장된 값이 깨져 있어도 기본값으로 메운다', () => {
+    // 예전 저장본에는 이 설정이 아예 없고, 손으로 고친 파일은 깨질 수 있다.
+    const r = awardRates({ middleLevel: -1, highLevel: NaN, perfectMonth: 15_000 } as never);
+    expect(r.middleLevel).toBe(MIDDLE_LEVEL_AWARD);
+    expect(r.highLevel).toBe(HIGH_LEVEL_AWARD);
+    expect(r.perfectMonth).toBe(15_000);
+    expect(r.bonus).toBe(BONUS_AWARD);
+  });
+
+  it('0원으로 꺼 둔 요구권은 생기지 않는다', () => {
+    // 돈 대신 다른 약속으로 대신하고 싶은 집을 위한 것.
+    const profile = makeProfile({ pendingLevelUps: ['m1-1'] });
+    const data = makeData(studiedDays('2026-06', 30));
+
+    const off = availableAwards(profile, data, '2026-07-01', {
+      middleLevel: 0,
+      highLevel: 0,
+      perfectMonth: 0,
+      bonus: 0,
+    });
+    expect(off).toEqual([]);
+
+    // 개근만 켜 두면 개근 요구권만 생긴다.
+    const onlyMonth = availableAwards(profile, data, '2026-07-01', {
+      middleLevel: 0,
+      highLevel: 0,
+      perfectMonth: 30_000,
+      bonus: 0,
+    });
+    expect(onlyMonth.map((a) => a.kind)).toEqual(['perfectMonth']);
+    expect(onlyMonth[0].amount).toBe(30_000);
   });
 });

@@ -32,7 +32,7 @@ import {
   RewardStatus,
 } from '../types';
 import { ALL_ENTRIES, entriesOf } from '../data';
-import { Award } from '../features/awards';
+import { Award, awardRates } from '../features/awards';
 import { plannedWordCount } from '../srs/session';
 import { buildDailyReport, buildWeeklySummary } from '../features/report';
 import { SendResult, sendReportToParent, toPayload } from '../features/push';
@@ -75,9 +75,19 @@ interface Ctx {
   /** 레벨 시험 결과를 남긴다. */
   recordExam(result: ExamResult): void;
 
-  /** 요구권 하나를 부모님께 신청한다. */
-  requestReward(award: Award, note: string): void;
-  decideReward(id: string, status: RewardStatus, parentNote: string): void;
+  /**
+   * 요구권 하나를 부모님께 신청한다.
+   *
+   * `bonus`는 아이가 "이번엔 정말 잘했어요"라며 얹은 금액(원). 0이면 안 얹은 것.
+   */
+  requestReward(award: Award, note: string, bonus?: number, bonusReason?: string): void;
+  /**
+   * 부모님의 판단.
+   *
+   * `amount`를 주면 그 금액으로 확정한다. 아이가 얹은 금액은 빼고 기본
+   * 금액만 주기로 할 때 쓴다.
+   */
+  decideReward(id: string, status: RewardStatus, parentNote: string, amount?: number): void;
 
   updateParent(patch: Partial<ParentSettings>): void;
 
@@ -395,16 +405,23 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   /* ---------------------------------------------------------------- */
 
   const requestReward = useCallback(
-    (award: Award, note: string) => {
+    (award: Award, note: string, bonus = 0, bonusReason = '') => {
       const { state } = ref.current;
       const active = state.profiles.find((p) => p.id === state.activeProfileId);
       if (!active) return;
+
+      // 얹는 금액은 부모님이 정한 한 칸을 넘지 못한다. 얼마든 부르는 방식이
+      // 아니라 "한 칸만 올릴 수 있다"가 요구권의 취지다.
+      const extra = Math.max(0, Math.min(Math.round(bonus), awardRates(state.parent.awards).bonus));
 
       const reward: RewardRequest = {
         id: `r_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`,
         profileId: active.id,
         kind: award.kind,
-        amount: award.amount,
+        amount: award.amount + extra,
+        baseAmount: award.amount,
+        bonus: extra,
+        bonusReason: extra > 0 ? bonusReason.trim() : '',
         earnedFrom: award.earnedFrom,
         month: award.month,
         reason: award.reason,
@@ -438,12 +455,23 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   );
 
   const decideReward = useCallback(
-    (id: string, status: RewardStatus, parentNote: string) => {
+    (id: string, status: RewardStatus, parentNote: string, amount?: number) => {
       const { state } = ref.current;
       persistState({
         ...state,
         rewards: state.rewards.map((r) =>
-          r.id === id ? { ...r, status, parentNote, decidedAt: Date.now() } : r,
+          r.id === id
+            ? {
+                ...r,
+                status,
+                parentNote,
+                decidedAt: Date.now(),
+                // 금액을 줄여 승인하면 얹었던 금액도 그만큼 줄어든다.
+                ...(amount != null
+                  ? { amount, bonus: Math.max(0, amount - r.baseAmount) }
+                  : {}),
+              }
+            : r,
         ),
       });
     },

@@ -7,7 +7,7 @@
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AppState, LevelId, ProfileData, RewardRequest } from '../types';
-import { levelUpAmount, MIDDLE_LEVEL_AWARD } from '../features/awards';
+import { awardRates, DEFAULT_AWARD_RATES, levelUpAmount, MIDDLE_LEVEL_AWARD } from '../features/awards';
 import { LEGACY_ID_WORD } from './legacy-ids';
 
 const ROOT_KEY = 'urivocab:root:v1';
@@ -19,8 +19,10 @@ const DATA_KEY = (profileId: string) => `urivocab:data:v1:${profileId}`;
  *  2 → 3  교육부 기본 어휘 목록 기준으로 24레벨 재편, id에서 레벨을 뗌,
  *         하루 목표를 '새 단어 / 복습' 두 값으로 분리
  *  3 → 4  보상을 '갖고 싶은 것 적어 보내기'에서 '정해진 금액 요구권'으로
+ *  4 → 5  요구권 금액을 부모님이 정할 수 있게(ParentSettings.awards),
+ *         아이가 1만원 더 요구할 수 있게(RewardRequest.bonus)
  */
-export const STATE_VERSION = 4;
+export const STATE_VERSION = 5;
 
 /** 하루에 새로 만날 단어 수 기본값. 10개면 3,286개를 약 1년에 돈다. */
 export const DEFAULT_NEW_PER_DAY = 10;
@@ -34,6 +36,7 @@ export function emptyState(): AppState {
     activeProfileId: null,
     parent: {
       pin: null,
+      awards: { ...DEFAULT_AWARD_RATES },
       notifyHour: 21,
       notifyMinute: 0,
       notifyEnabled: true,
@@ -176,18 +179,31 @@ export function migrateData(data: ProfileData): ProfileData {
  * 남긴다. 이미 부모가 판단한 기록까지 지울 이유는 없다.
  */
 function upgradeReward(r: RewardRequest & { wish?: string }): RewardRequest {
-  if (r.kind) return r;
+  // 추가 요구 금액은 나중에 생긴 필드라, 예전 요청은 전부 '기본 금액만'으로 본다.
+  const withBonus = (x: RewardRequest): RewardRequest => ({
+    ...x,
+    baseAmount: x.baseAmount ?? x.amount,
+    bonus: x.bonus ?? 0,
+    bonusReason: x.bonusReason ?? '',
+  });
+
+  if (r.kind) return withBonus(r);
+
   const level = r.earnedFrom ? upgradeLevel(r.earnedFrom) : null;
   const wish = (r.wish ?? '').trim();
-  return {
+  const amount = level ? levelUpAmount(level) : MIDDLE_LEVEL_AWARD;
+  return withBonus({
     ...r,
     kind: 'levelup',
-    amount: level ? levelUpAmount(level) : MIDDLE_LEVEL_AWARD,
+    amount,
+    baseAmount: amount,
+    bonus: 0,
+    bonusReason: '',
     earnedFrom: level,
     month: null,
     reason: wish ? `예전 요청: ${wish}` : '레벨 하나를 끝냈어요',
     note: r.note ?? '',
-  };
+  });
 }
 
 /** 저장 포맷이 바뀌면 여기서 올려준다. */
@@ -197,7 +213,13 @@ function migrate(state: AppState): AppState {
     ...base,
     ...state,
     version: STATE_VERSION,
-    parent: { ...base.parent, ...(state.parent ?? {}) },
+    parent: {
+      ...base.parent,
+      ...(state.parent ?? {}),
+      // 금액표는 나중에 생긴 설정이라 예전 저장본에는 없다. 값이 깨져
+      // 있어도(숫자가 아니거나 음수) 기본값으로 메운다.
+      awards: awardRates(state.parent?.awards),
+    },
     // rounds는 나중에 추가된 설정이라 예전에 저장된 프로필에는 없다.
     profiles: (state.profiles ?? []).map((p) => ({
       ...p,

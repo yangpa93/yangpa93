@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Easing, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Animated, Easing, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Body, Button, Card, Chip, H1, H3, Muted, Row, Screen } from '../src/components/ui';
@@ -7,7 +7,7 @@ import { useApp } from '../src/store/AppProvider';
 import { ALL_ENTRIES } from '../src/data';
 import { levelProgress, nextLevel } from '../src/srs/progress';
 import { notifyNow } from '../src/features/notifications';
-import { Award, availableAwards, formatWon } from '../src/features/awards';
+import { Award, availableAwards, awardRates, formatWon } from '../src/features/awards';
 import { LEVEL_LABEL, LEVEL_SHORT } from '../src/types';
 import { colors, radius, spacing } from '../src/theme';
 
@@ -23,7 +23,7 @@ import { colors, radius, spacing } from '../src/theme';
  * 부모는 매번 협상하지 않아도 된다.
  */
 export default function LevelUp() {
-  const { profile, data, requestReward } = useApp();
+  const { state, profile, data, requestReward } = useApp();
 
   const progress = useMemo(
     () => (profile ? levelProgress(ALL_ENTRIES, data.cards, profile.level) : null),
@@ -34,10 +34,15 @@ export default function LevelUp() {
 
   const [note, setNote] = useState('');
   const [sent, setSent] = useState(false);
+  /** '정말 잘했어요' 추가 요구를 켰는지 */
+  const [askBonus, setAskBonus] = useState(false);
+  const [bonusReason, setBonusReason] = useState('');
+
+  const rates = awardRates(state.parent.awards);
 
   const awards = useMemo(
-    () => (profile ? availableAwards(profile, data) : []),
-    [profile, data],
+    () => (profile ? availableAwards(profile, data, undefined, rates) : []),
+    [profile, data, rates.middleLevel, rates.highLevel, rates.perfectMonth],
   );
 
   const bounce = useRef(new Animated.Value(0)).current;
@@ -110,6 +115,9 @@ export default function LevelUp() {
   // 2단계: 얻은 요구권을 부모님께 신청
   if (canRequest && !sent) {
     const award: Award = awards[0];
+    const bonusAmount = rates.bonus;
+    const bonus = askBonus ? bonusAmount : 0;
+    const total = award.amount + bonus;
     return (
       <Screen>
         <View style={{ paddingTop: spacing.xl }}>
@@ -130,14 +138,63 @@ export default function LevelUp() {
             label={award.kind === 'levelup' ? `${LEVEL_SHORT[award.earnedFrom!]} 완료` : '한 달 개근'}
             tone="accent"
           />
-          <Text style={s.amount}>{formatWon(award.amount)}</Text>
-          <Muted>요구권</Muted>
+          <Text style={s.amount}>{formatWon(total)}</Text>
+          <Muted>
+            {bonus > 0 ? `기본 ${formatWon(award.amount)} + 더 요구 ${formatWon(bonus)}` : '요구권'}
+          </Muted>
         </Card>
 
         {awards.length > 1 ? (
           <Muted style={{ marginTop: spacing.md, textAlign: 'center' }}>
             신청할 수 있는 요구권이 {awards.length}장 있어요. 하나씩 보내면 돼요.
           </Muted>
+        ) : null}
+
+        {/*
+          '정말 잘했어요' 추가 요구.
+          얼마든 부르는 방식이 아니라 부모님이 정한 한 칸만 올릴 수 있다.
+          매번 금액을 흥정하지 않게 하려는 요구권의 취지를 지키면서도,
+          아이가 스스로 잘했다고 말할 자리를 만들어 주는 것.
+        */}
+        {bonusAmount > 0 ? (
+          <Pressable
+            onPress={() => setAskBonus((v) => !v)}
+            accessibilityRole="checkbox"
+            accessibilityState={{ checked: askBonus }}
+            style={[s.bonusBox, askBonus && s.bonusBoxOn]}
+          >
+            <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+              <View style={{ flex: 1, paddingRight: spacing.md }}>
+                <Text style={s.bonusTitle}>
+                  {askBonus ? '⭐️' : '☆'} 이번엔 정말 잘했어요
+                </Text>
+                <Muted style={{ marginTop: 2 }}>
+                  {formatWon(bonusAmount)}을 더 요구할래요. 부모님이 보고 정해요.
+                </Muted>
+              </View>
+              <Text style={[s.bonusPlus, askBonus && { color: '#B45309' }]}>
+                +{formatWon(bonusAmount)}
+              </Text>
+            </Row>
+          </Pressable>
+        ) : null}
+
+        {askBonus ? (
+          <Card style={{ marginTop: spacing.md, borderColor: colors.accent }}>
+            <H3>왜 더 받을 만한지 알려 주세요</H3>
+            <Muted style={{ marginTop: spacing.xs }}>
+              부모님이 이 글을 보고 정합니다. 안 적으면 그냥 기본 금액으로 가요.
+            </Muted>
+            <TextInput
+              value={bonusReason}
+              onChangeText={setBonusReason}
+              placeholder="예) 시험을 한 번에 다 맞혔고, 이번 달은 하루도 안 빠졌어요."
+              placeholderTextColor={colors.muted}
+              style={[s.input, { height: 92, textAlignVertical: 'top' }]}
+              multiline
+              maxLength={200}
+            />
+          </Card>
         ) : null}
 
         <Card style={{ marginTop: spacing.lg }}>
@@ -154,13 +211,14 @@ export default function LevelUp() {
         </Card>
 
         <Button
-          title={`${formatWon(award.amount)} 요구하기`}
+          title={`${formatWon(total)} 요구하기`}
           onPress={async () => {
-            requestReward(award, note);
+            requestReward(award, note, bonus, bonusReason);
             setSent(true);
             await notifyNow(
               '🎟️ 요구권 신청이 도착했어요',
-              `${profile.name} · ${award.reason} — ${formatWon(award.amount)}`,
+              `${profile.name} · ${award.reason} — ${formatWon(total)}` +
+                (bonus > 0 ? ` (기본 ${formatWon(award.amount)} + 더 요구 ${formatWon(bonus)})` : ''),
             ).catch(() => {});
           }}
           style={{ marginTop: spacing.xl }}
@@ -205,6 +263,17 @@ const s = StyleSheet.create({
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: spacing.lg },
   emoji: { fontSize: 64 },
   amount: { fontSize: 44, fontWeight: '800', color: '#B45309', marginTop: spacing.sm },
+  bonusBox: {
+    marginTop: spacing.md,
+    padding: spacing.lg,
+    borderRadius: radius.lg,
+    borderWidth: 2,
+    borderColor: colors.border,
+    backgroundColor: colors.card,
+  },
+  bonusBoxOn: { borderColor: colors.accent, backgroundColor: colors.accentSoft },
+  bonusTitle: { fontSize: 16, fontWeight: '800', color: colors.text },
+  bonusPlus: { fontSize: 20, fontWeight: '800', color: colors.muted },
   input: {
     marginTop: spacing.sm,
     borderWidth: 1,

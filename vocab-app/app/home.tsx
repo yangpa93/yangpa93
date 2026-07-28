@@ -11,9 +11,9 @@ import { buildDailyReport } from '../src/features/report';
 import { buildMonth, monthOf } from '../src/features/calendar';
 import {
   availableAwards,
+  awardRates,
   formatWon,
   perfectMonthProgress,
-  PERFECT_MONTH_AWARD,
 } from '../src/features/awards';
 import { scheduleDailyReport } from '../src/features/notifications';
 import { loadProfileData } from '../src/store/storage';
@@ -101,7 +101,8 @@ export default function Home() {
   if (!profile || !progress) return null;
 
   const myRewards = state.rewards.filter((r) => r.profileId === profile.id);
-  const awards = availableAwards(profile, data, today);
+  const rates = awardRates(state.parent.awards);
+  const awards = availableAwards(profile, data, today, rates);
   const perfect = perfectMonthProgress(data.days, today);
   const decided = myRewards.filter((r) => r.status !== 'pending');
 
@@ -272,9 +273,11 @@ export default function Home() {
           />
         </View>
         <Muted style={{ marginTop: spacing.sm }}>
-          {perfect.alive
-            ? `한 달을 하루도 빠짐없이 하면 ${formatWon(PERFECT_MONTH_AWARD)} 요구권이 생겨요. ${perfect.total - perfect.elapsed}일 남았어요!`
-            : '이번 달은 빠진 날이 있어요. 다음 달에 다시 도전해요!'}
+          {!perfect.alive
+            ? '이번 달은 빠진 날이 있어요. 다음 달에 다시 도전해요!'
+            : rates.perfectMonth > 0
+              ? `한 달을 하루도 빠짐없이 하면 ${formatWon(rates.perfectMonth)} 요구권이 생겨요. ${perfect.total - perfect.elapsed}일 남았어요!`
+              : `이번 달 개근까지 ${perfect.total - perfect.elapsed}일 남았어요!`}
         </Muted>
       </Card>
 

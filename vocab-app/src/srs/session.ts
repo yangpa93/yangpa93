@@ -21,6 +21,7 @@
 import { CardState, GameId, LevelId, Stage, VocabEntry } from '../types';
 import { isDue, todayKey } from '../lib/date';
 import { clozeSentence, exposureCount, senseExposure } from '../data/entry';
+import { hasAntonym } from '../data/antonyms';
 import { isMastered, priority } from './scheduler';
 
 export interface SessionItem {
@@ -34,6 +35,16 @@ export interface SessionItem {
   stage: Stage;
   /** 이 단어를 이번 세션에서 몇 번째로 만나는지 (0부터) */
   round: number;
+  /**
+   * 이 문항에 쓸 예문을 고르는 인덱스.
+   *
+   * **세션을 만들 때 한 번 정하고 그 뒤로 바뀌지 않는다.** 예전에는 화면이
+   * 그때그때 `카드의 누적 노출 수 + 라운드`로 계산했는데, 카드는 문제를 풀
+   * 때마다 갱신되므로 라운드가 올라갈 때 인덱스가 2씩 뛰었다. 뜻마다 예문이
+   * 2개인 다의어는 2씩 뛰면 나머지가 늘 같아서 **세 라운드 내내 똑같은
+   * 문장**이 나왔다. 여기서 미리 못박아 라운드마다 1씩만 올라가게 한다.
+   */
+  exposureIndex: number;
   /**
    * 이번 세션에서 이 단어를 처음 만나는 문항인지.
    *
@@ -146,15 +157,20 @@ function expandSenses(
 ): SessionItem[] {
   const out: SessionItem[] = [];
   for (const entry of entries) {
+    const card = cards[entry.id] ?? null;
+    // 세션이 시작하는 시점의 누적 노출 수를 기준점으로 굳힌다. 어제까지
+    // 본 횟수만큼 밀어 두면 오늘도 어제와 다른 문장에서 시작한다.
+    const base = exposureCount(card);
     for (let senseIndex = 0; senseIndex < entry.senses.length; senseIndex++) {
       const item: SessionItem = {
         entry,
-        card: cards[entry.id] ?? null,
+        card,
         senseIndex,
         mode: modes.get(entry.id) ?? 'new',
         game: 'cloze',
         stage: 'learn',
         round: 0,
+        exposureIndex: base,
         firstMeeting: false,
       };
       out.push({ ...item, game: pickGame(item, rand) });
@@ -169,6 +185,10 @@ function expandSenses(
  * 라운드 안에서는 순서를 섞는다. 같은 단어를 연달아 묻지 않고 다른 문제를
  * 푸는 사이에 잊었다가 다시 떠올리게 하려는 것 — 바로 다시 물으면
  * 단기 기억에 남아 있어서 시험이 되지 않는다.
+ *
+ * **라운드마다 예문이 한 칸씩 넘어간다.** 예문이 3개면 세 라운드가 모두
+ * 다른 문장이고, 2개면 첫 문장으로 되돌아온다. 같은 뜻이라도 문장이 바뀌어야
+ * "그 문장을 통째로 외운 것"과 "단어를 아는 것"이 구별된다.
  */
 export function buildRounds(
   items: SessionItem[],
@@ -188,7 +208,15 @@ export function buildRounds(
       const firstMeeting = r === 0 && item.mode === 'new' && !metOnce.has(item.entry.id);
       if (firstMeeting) metOnce.add(item.entry.id);
 
-      const staged: SessionItem = { ...item, stage, round: r, firstMeeting, game: 'cloze' };
+      const staged: SessionItem = {
+        ...item,
+        stage,
+        round: r,
+        // 라운드가 올라가면 예문도 한 칸 넘어간다.
+        exposureIndex: item.exposureIndex + r,
+        firstMeeting,
+        game: 'cloze',
+      };
       out.push({ ...staged, game: pickGame(staged, rand) });
     }
   }
@@ -203,9 +231,12 @@ export function buildRounds(
  * 흩어져 있는 경우)에는 빈칸 유형을 내지 않고 뜻·동의어 유형으로 돌린다.
  */
 export function pickGame(item: SessionItem, rand: () => number = Math.random): GameId {
-  const exp = senseExposure(item.entry, item.senseIndex, exposureCount(item.card) + item.round);
+  const exp = senseExposure(item.entry, item.senseIndex, item.exposureIndex);
   const canCloze = clozeSentence(item.entry, exp.example.en) != null;
   const isPolysemous = item.entry.senses.length >= 2;
+  // 반대말은 표제어 단위라, 다의어면 대표 뜻(첫 뜻)을 다룰 때만 낸다.
+  // 'save(저축하다)'를 놓고 'spend'의 반대라고 하면 뜻이 어긋난다.
+  const canAntonym = hasAntonym(item.entry.word) && item.senseIndex === 0;
 
   const candidates: GameId[] = [];
 
@@ -214,9 +245,10 @@ export function pickGame(item: SessionItem, rand: () => number = Math.random): G
     if (canCloze) candidates.push('cloze', 'cloze');
     candidates.push('context');
   } else if (item.stage === 'apply') {
-    // 뜻을 구별하고 바꿔 쓰는 단계.
+    // 뜻을 구별하고, 바꿔 쓰고, 반대말과 견주는 단계.
     if (isPolysemous) candidates.push('polysemy', 'polysemy');
     if (exp.hasSynonym) candidates.push('synonym');
+    if (canAntonym) candidates.push('antonym');
     if (canCloze) candidates.push('cloze', 'listening');
     candidates.push('context');
   } else {
@@ -224,6 +256,7 @@ export function pickGame(item: SessionItem, rand: () => number = Math.random): G
     if (canCloze) candidates.push('clozeType', 'clozeType', 'clozeType');
     if (isPolysemous) candidates.push('polysemy');
     if (exp.hasSynonym) candidates.push('synonym');
+    if (canAntonym) candidates.push('antonym');
     if (candidates.length === 0) candidates.push('context');
   }
 

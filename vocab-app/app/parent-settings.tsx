@@ -3,7 +3,8 @@ import { Alert, Pressable, StyleSheet, Switch, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { Button, Card, Chip, H3, Muted, Row, Screen } from '../src/components/ui';
 import { useApp } from '../src/store/AppProvider';
-import { LEVEL_SHORT, LevelId } from '../src/types';
+import { AwardRates, LEVEL_SHORT, LevelId } from '../src/types';
+import { awardRates, formatWon } from '../src/features/awards';
 import { LevelPicker } from '../src/components/LevelPicker';
 import { colors, font, radius, spacing } from '../src/theme';
 
@@ -15,11 +16,45 @@ const ROUNDS = [
   { value: 4, label: '4회 (집중)' },
 ];
 
+/** 요구권 금액 항목. 값은 원 단위. */
+const AWARD_FIELDS: {
+  key: keyof AwardRates;
+  label: string;
+  hint: string;
+  options: number[];
+}[] = [
+  {
+    key: 'middleLevel',
+    label: '중학교 레벨 하나를 끝냈을 때',
+    hint: '중1-1부터 중3-4까지 12개 레벨',
+    options: [0, 5_000, 10_000, 20_000, 30_000, 50_000],
+  },
+  {
+    key: 'highLevel',
+    label: '고등학교 레벨 하나를 끝냈을 때',
+    hint: '고1-1부터 고3-4까지 12개 레벨. 단어가 어려워 보통 더 높게 둡니다.',
+    options: [0, 10_000, 20_000, 30_000, 50_000, 100_000],
+  },
+  {
+    key: 'perfectMonth',
+    label: '한 달 개근',
+    hint: '그달을 하루도 빠짐없이 학습했을 때. 목표를 채웠는지가 아니라 그날 했는지로 봅니다.',
+    options: [0, 5_000, 10_000, 20_000, 30_000, 50_000],
+  },
+  {
+    key: 'bonus',
+    label: '아이가 더 요구할 수 있는 금액',
+    hint: '“이번엔 정말 잘했어요”라며 한 칸 올려 요구할 수 있습니다. 승인할 때 기본 금액만 주는 것도 됩니다.',
+    options: [0, 5_000, 10_000, 20_000],
+  },
+];
+
 export default function ParentSettings() {
   const { state, updateParent, updateSettings, updateProfile, deleteProfile } = useApp();
   const [selectedId, setSelectedId] = useState(state.activeProfileId ?? state.profiles[0]?.id ?? null);
 
   const profile = state.profiles.find((p) => p.id === selectedId) ?? null;
+  const rates = awardRates(state.parent.awards);
 
   function confirmDelete() {
     if (!profile) return;
@@ -82,6 +117,47 @@ export default function ParentSettings() {
             </Pressable>
           ))}
         </Row>
+      </Card>
+
+      {/* 요구권 금액 — 기기 전체에 하나. 아이별로 다르게 두지 않는다. */}
+      <Card style={{ marginTop: spacing.md }}>
+        <H3>요구권 금액</H3>
+        <Muted style={{ marginTop: spacing.xs }}>
+          아이가 레벨 시험에 통과하거나 한 달을 개근하면 금액이 정해진 요구권이
+          생깁니다. 매번 흥정하지 않도록 조건별 금액을 미리 정해 두는 것입니다.
+          {'\n'}0원으로 두면 그 요구권은 아예 생기지 않습니다.
+        </Muted>
+
+        {AWARD_FIELDS.map((f) => (
+          <View key={f.key} style={{ marginTop: spacing.lg }}>
+            <Text style={s.label}>{f.label}</Text>
+            <Muted style={{ marginTop: 2 }}>{f.hint}</Muted>
+            <Row style={{ gap: spacing.sm, marginTop: spacing.sm, flexWrap: 'wrap' }}>
+              {f.options.map((won) => (
+                <Pressable
+                  key={won}
+                  onPress={() => updateParent({ awards: { ...rates, [f.key]: won } })}
+                  style={[s.chip, rates[f.key] === won && s.chipOn]}
+                  accessibilityRole="button"
+                >
+                  <Text style={[s.chipText, rates[f.key] === won && s.chipTextOn]}>
+                    {won === 0 ? '안 함' : formatWon(won)}
+                  </Text>
+                </Pressable>
+              ))}
+            </Row>
+          </View>
+        ))}
+
+        <View style={s.awardSummary}>
+          <Muted>
+            24개 레벨을 다 끝내면 레벨업 보상만 합계{' '}
+            <Text style={{ fontWeight: '800', color: colors.text }}>
+              {formatWon(rates.middleLevel * 12 + rates.highLevel * 12)}
+            </Text>
+            입니다. 여기에 개근 보상이 달마다 최대 {formatWon(rates.perfectMonth)} 더해집니다.
+          </Muted>
+        </View>
       </Card>
 
       {/* 아이 선택 */}
@@ -293,6 +369,12 @@ const s = StyleSheet.create({
     backgroundColor: colors.bg,
     borderWidth: 1,
     borderColor: colors.border,
+  },
+  awardSummary: {
+    marginTop: spacing.lg,
+    padding: spacing.md,
+    borderRadius: radius.md,
+    backgroundColor: colors.bg,
   },
   chipOn: { backgroundColor: colors.parent, borderColor: colors.parent },
   chipText: { fontSize: font.small, fontWeight: '700', color: colors.subtext },

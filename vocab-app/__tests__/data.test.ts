@@ -6,6 +6,7 @@
 
 import { ALL_ENTRIES, ENTRIES_BY_LEVEL } from '../src/data';
 import { clozeSentence, exposure, meaningLine, wordForms } from '../src/data/entry';
+import { ANTONYMS, antonymsOf, hasAntonym } from '../src/data/antonyms';
 import { PLAN, PLAN_COUNT } from '../src/data/plan';
 import { LEVEL_ORDER } from '../src/types';
 
@@ -252,5 +253,62 @@ describe('meaningLine', () => {
   it('다의어는 뜻을 모두 이어 붙인다', () => {
     const multi = ALL_ENTRIES.find((e) => e.senses.length >= 2)!;
     expect(meaningLine(multi)).toContain(' ; ');
+  });
+});
+
+describe('반대말 표(antonyms.ts)', () => {
+  const words = new Set(ALL_ENTRIES.map((e) => e.word.toLowerCase()));
+
+  it('표제어가 모두 우리 어휘 안에 있다', () => {
+    const strays = Object.keys(ANTONYMS).filter((w) => !words.has(w));
+    expect(strays).toEqual([]);
+  });
+
+  it('반대말도 모두 우리 어휘 안에 있다', () => {
+    // 아이가 배우지 않을 단어를 정답으로 내면 찍는 문제가 되어 버린다.
+    const strays = new Set<string>();
+    for (const list of Object.values(ANTONYMS)) {
+      for (const a of list) if (!words.has(a.toLowerCase())) strays.add(a);
+    }
+    expect([...strays]).toEqual([]);
+  });
+
+  it('자기 자신을 반대말로 두지 않는다', () => {
+    const bad = Object.entries(ANTONYMS).filter(([w, list]) =>
+      list.some((a) => a.toLowerCase() === w),
+    );
+    expect(bad.map(([w]) => w)).toEqual([]);
+  });
+
+  it('짝이 양방향으로 들어 있다', () => {
+    // increase의 반대가 decrease면 decrease의 반대에도 increase가 있어야
+    // 어느 쪽을 배우든 문제가 나온다.
+    const missing: string[] = [];
+    for (const [w, list] of Object.entries(ANTONYMS)) {
+      for (const a of list) {
+        if (!antonymsOf(a).includes(w)) missing.push(`${w} → ${a}`);
+      }
+    }
+    expect(missing).toEqual([]);
+  });
+
+  it('동의어와 반대말이 겹치지 않는다', () => {
+    // 같은 표현이 '바꿔 쓸 수 있는 말'이자 '반대말'이면 둘 다 틀린 문제가 된다.
+    const clashes: string[] = [];
+    for (const e of ALL_ENTRIES) {
+      const ants = new Set(antonymsOf(e.word).map((a) => a.toLowerCase()));
+      if (ants.size === 0) continue;
+      for (const sense of e.senses) {
+        for (const syn of sense.synonyms) {
+          if (ants.has(syn.toLowerCase())) clashes.push(`${e.word}: ${syn}`);
+        }
+      }
+    }
+    expect(clashes).toEqual([]);
+  });
+
+  it('반대말 문제를 낼 수 있는 단어가 충분히 있다', () => {
+    const covered = ALL_ENTRIES.filter((e) => hasAntonym(e.word));
+    expect(covered.length).toBeGreaterThanOrEqual(400);
   });
 });

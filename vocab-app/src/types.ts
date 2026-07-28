@@ -169,7 +169,8 @@ export type GameId =
   | 'listening' // 문장을 듣고 빈칸에 알맞은 단어 고르기
   | 'context' // 문장 속 그 단어가 여기서 무슨 뜻인지
   | 'polysemy' // 다의어: 여러 뜻 중 이 문장에서 쓰인 뜻
-  | 'synonym'; // 문맥에 맞게 바꿔 쓸 수 있는 표현
+  | 'synonym' // 문맥에 맞게 바꿔 쓸 수 있는 표현
+  | 'antonym'; // 문장 속 그 단어와 뜻이 반대인 표현
 
 export const GAME_LABEL: Record<GameId, string> = {
   cloze: '빈칸 채우기',
@@ -178,6 +179,7 @@ export const GAME_LABEL: Record<GameId, string> = {
   context: '문맥 속 뜻',
   polysemy: '여러 뜻 구별',
   synonym: '바꿔 쓰기',
+  antonym: '반대말 찾기',
 };
 
 /** 한 세션에서 단어를 만나는 단계. 라운드가 올라갈수록 어려워진다. */
@@ -224,8 +226,19 @@ export interface RewardRequest {
   profileId: string;
   /** 'levelup' | 'perfectMonth' */
   kind: string;
-  /** 요구 금액(원) */
+  /** 실제로 요구한 총 금액(원). 기본 금액 + 더 요구한 금액. */
   amount: number;
+  /**
+   * 조건에 따라 정해진 기본 금액.
+   *
+   * `amount`와 따로 두는 이유: 아이가 "이번엔 정말 잘했다"며 얹은 금액을
+   * 부모가 구분해서 볼 수 있어야 하고, 기본 금액만 주기로 할 수도 있어서다.
+   */
+  baseAmount: number;
+  /** 아이가 더 얹은 금액(원). 안 얹었으면 0. */
+  bonus: number;
+  /** 왜 더 받을 만한지 아이가 적은 이유 (bonus가 0이면 빈 문자열) */
+  bonusReason: string;
   /** levelup이면 어떤 레벨을 끝냈는지 */
   earnedFrom: LevelId | null;
   /** perfectMonth면 어느 달인지 (yyyy-mm) */
@@ -372,10 +385,35 @@ export interface ReceivedReport {
   receivedAt: number;
 }
 
+/**
+ * 요구권 금액표. 부모님 모드에서 정한다.
+ *
+ * 기본값은 중학 2만 · 고등 3만 · 개근 2만 · 추가 요구 1만이지만, 집집마다
+ * 사정이 달라서 화면에서 바꿀 수 있게 해 두었다. 0원으로 두면 그 요구권은
+ * 생기지 않는다 — 돈 대신 다른 약속으로 대신하고 싶을 때 쓴다.
+ */
+export interface AwardRates {
+  /** 중학교 레벨 하나를 끝냈을 때 */
+  middleLevel: number;
+  /** 고등학교 레벨 하나를 끝냈을 때 */
+  highLevel: number;
+  /** 한 달 개근 */
+  perfectMonth: number;
+  /**
+   * 아이가 "이번엔 정말 잘했어요"라며 더 요구할 수 있는 금액.
+   *
+   * 0이면 추가 요구 버튼 자체가 안 보인다. 부모는 승인할 때
+   * 기본 금액만 줄지 얹어 줄지 고를 수 있다.
+   */
+  bonus: number;
+}
+
 /** 부모 모드 설정. 기기 전체에 하나. */
 export interface ParentSettings {
   /** 4자리 PIN. null이면 아직 설정 안 함. */
   pin: string | null;
+  /** 요구권 금액표 */
+  awards: AwardRates;
   /** 매일 리포트 알림 시각 */
   notifyHour: number;
   notifyMinute: number;

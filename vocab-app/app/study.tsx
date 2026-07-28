@@ -7,8 +7,8 @@ import { ClozeGame } from '../src/games/ClozeGame';
 import { WordStoryCard } from '../src/components/WordStoryCard';
 import { CONTENT_MAX_WIDTH, ProgressBar, Row } from '../src/components/ui';
 import { useApp } from '../src/store/AppProvider';
-import { entriesOf } from '../src/data';
-import { exposureCount, senseExposure } from '../src/data/entry';
+import { ALL_ENTRIES, entriesOf } from '../src/data';
+import { senseExposure } from '../src/data/entry';
 import { buildRounds, buildSession, SessionItem } from '../src/srs/session';
 import { tapCorrect, tapWrong, stopSpeaking } from '../src/lib/feedback';
 import { GAME_LABEL, STAGE_LABEL } from '../src/types';
@@ -18,7 +18,6 @@ import { colors, font, radius, spacing } from '../src/theme';
 interface Feedback {
   item: SessionItem;
   correct: boolean;
-  exposureIndex: number;
 }
 
 export default function Study() {
@@ -51,13 +50,19 @@ export default function Study() {
 
   const pool = useMemo(() => (profile ? entriesOf(profile.level) : []), [profile]);
 
+  /**
+   * 이미 배운 단어들. 유의어·반대말 문제의 오답 보기를 여기서 먼저 뽑는다.
+   *
+   * 세션을 시작한 순간으로 굳힌다. 카드는 문제를 풀 때마다 갱신되는데,
+   * 그때마다 다시 계산하면 보기 후보가 문항 중간에 바뀐다.
+   */
+  const [learned] = useState(() => ALL_ENTRIES.filter((e) => data.cards[e.id] != null));
+
   const current = queue[index];
 
   const onAnswer = useCallback(
     (correct: boolean) => {
       if (!current || !profile) return;
-
-      const exposureIndex = exposureCount(data.cards[current.entry.id]) + current.round;
 
       recordAnswer({
         entryId: current.entry.id,
@@ -83,14 +88,23 @@ export default function Study() {
           requeued.current.add(current.entry.id);
           setQueue((q) => [
             ...q,
-            { ...current, round: current.round + 1, stage: 'learn', game: 'cloze', firstMeeting: false },
+            {
+              ...current,
+              round: current.round + 1,
+              // 방금 틀린 그 문장으로 다시 물으면 문장을 외운 것인지
+              // 단어를 안 것인지 구별되지 않는다. 예문을 한 칸 넘긴다.
+              exposureIndex: current.exposureIndex + 1,
+              stage: 'learn',
+              game: 'cloze',
+              firstMeeting: false,
+            },
           ]);
         }
       }
 
-      setFeedback({ item: current, correct, exposureIndex });
+      setFeedback({ item: current, correct });
     },
-    [current, profile, data.cards, recordAnswer],
+    [current, profile, recordAnswer],
   );
 
   const next = useCallback(() => {
@@ -147,15 +161,11 @@ export default function Study() {
     );
   }
 
-  // 피드백 카드는 문제를 풀기 직전의 노출 인덱스를 써야
-  // 방금 본 문장과 같은 문장이 나온다.
-  const shownExposure = feedback
-    ? senseExposure(feedback.item.entry, feedback.item.senseIndex, feedback.exposureIndex)
-    : senseExposure(
-        current.entry,
-        current.senseIndex,
-        exposureCount(data.cards[current.entry.id]) + current.round,
-      );
+  // 예문 인덱스는 세션을 만들 때 문항에 못박아 두었다. 화면에서 다시
+  // 계산하면 카드가 갱신될 때마다 값이 튀어서, 라운드가 올라가도 같은
+  // 문장이 나오는 일이 생긴다.
+  const shown = feedback ? feedback.item : current;
+  const shownExposure = senseExposure(shown.entry, shown.senseIndex, shown.exposureIndex);
 
   const isLast = index + 1 >= queue.length;
 
@@ -163,6 +173,7 @@ export default function Study() {
     entry: current.entry,
     exp: shownExposure,
     pool,
+    learned,
     ttsEnabled: profile.settings.ttsEnabled,
     showTranslation: profile.settings.showTranslation,
     onAnswer,

@@ -24,6 +24,13 @@ export interface GameProps {
   exp: Exposure;
   /** 오답 보기를 뽑아올 같은 레벨 단어들 */
   pool: VocabEntry[];
+  /**
+   * 이미 배운 단어들. 오답 보기를 여기서 먼저 뽑는다.
+   *
+   * 유의어·반대말 문제는 "아는 단어끼리 견주기"라야 시험이 된다. 처음 보는
+   * 단어가 보기에 섞이면 뜻을 비교하는 대신 아는 것을 찍게 된다.
+   */
+  learned?: VocabEntry[];
   ttsEnabled: boolean;
   /** 예문 해석을 문제 풀기 전에 보여줄지 */
   showTranslation: boolean;

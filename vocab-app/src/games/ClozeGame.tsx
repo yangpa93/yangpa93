@@ -13,8 +13,8 @@
 import { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { VocabEntry } from '../types';
-import { clozeSentence, Exposure } from '../data/entry';
-import { buildChoices } from '../srs/session';
+import { clozeSentence, Exposure, primaryMeaning } from '../data/entry';
+import { buildChoices, meaningKeys } from '../srs/session';
 import { speak } from '../lib/feedback';
 import { colors, font, radius, spacing } from '../theme';
 import { Muted } from '../components/ui';
@@ -107,14 +107,23 @@ function ChoiceCloze({
   const [picked, setPicked] = useState<string | null>(null);
 
   const choices = useMemo(() => {
-    const answer = { key: entry.id, label: cloze.answer };
+    const answer = { key: entry.id, label: cloze.answer, meaning: exp.sense.meaning };
     // 오답도 같은 문장에 넣었을 때 말이 안 되는 것으로 고른다.
     // 같은 품사끼리 섞으면 난이도가 올라간다.
     const samePos = pool.filter((e) => e.id !== entry.id && e.pos === entry.pos);
     const others = (samePos.length >= 5 ? samePos : pool.filter((e) => e.id !== entry.id)).map(
-      (e) => ({ key: e.id, label: e.word }),
+      (e) => ({ key: e.id, label: e.word, meaning: primaryMeaning(e) }),
     );
-    return buildChoices(answer, others, (c) => c.label).map((c) => ({
+    // 뜻이 같은 단어는 빈칸에 넣어도 말이 된다. 그런 것을 오답이라고
+    // 내면 아이는 맞게 읽고도 틀렸다는 말을 듣는다.
+    return buildChoices(
+      answer,
+      others,
+      (c) => c.label,
+      4,
+      Math.random,
+      (c) => [c.label.toLowerCase(), ...meaningKeys(c.meaning)],
+    ).map((c) => ({
       ...c,
       correct: c.key === entry.id,
     }));

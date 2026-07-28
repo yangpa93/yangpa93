@@ -24,7 +24,7 @@ import { GameId, VocabEntry } from '../types';
 import { exposure, Exposure, primaryMeaning } from '../data/entry';
 import { antonymsOf } from '../data/antonyms';
 import type { GameProps } from './ClozeGame';
-import { buildChoices, shuffle } from '../srs/session';
+import { buildChoices, meaningKeys, shuffle } from '../srs/session';
 import { speak } from '../lib/feedback';
 import { colors, font, radius, spacing } from '../theme';
 import { Muted } from '../components/ui';
@@ -225,11 +225,13 @@ function buildOptions(
       correct: i === exp.senseIndex,
     }));
     // 뜻이 2개뿐이면 다른 단어의 뜻을 섞어 보기를 4개로 채운다.
+    // 채우는 뜻이 이 단어의 어떤 뜻과도 겹치면 안 된다 — 겹치면 그것도 정답이다.
     if (own.length < 4) {
+      const ownKeys = new Set(own.flatMap((o) => meaningKeys(o.label)).map((k) => k.toLowerCase()));
       const fillers = others
-        .slice(0, 40)
+        .slice(0, 80)
         .map((e) => ({ key: e.id, label: primaryMeaning(e), correct: false }))
-        .filter((c) => !own.some((o) => o.label === c.label));
+        .filter((c) => !meaningKeys(c.label).some((k) => ownKeys.has(k.toLowerCase())));
       return shuffle([...own, ...fillers.slice(0, 4 - own.length)]);
     }
     return shuffle(own).slice(0, 4);
@@ -237,10 +239,15 @@ function buildOptions(
 
   if (game === 'context') {
     // 정답은 지금 노출 중인 뜻. 다의어라도 그날 배운 뜻을 묻는다.
+    // 뜻이 한 조각이라도 겹치는 단어는 보기에서 뺀다. '목표'와
+    // '목표, 목적'이 나란히 있으면 아이가 무엇을 골라도 맞다.
     const picked = buildChoices(
       { key: entry.id, label: exp.sense.meaning },
       others.map((e) => ({ key: e.id, label: primaryMeaning(e) })),
       (c) => c.label,
+      4,
+      Math.random,
+      (c) => meaningKeys(c.label),
     );
     return picked.map((c) => ({ ...c, correct: c.key === entry.id }));
   }
@@ -255,11 +262,23 @@ function buildOptions(
         w.toLowerCase(),
       ),
     );
+    // 반대말의 뜻 — 이것과 같은 뜻의 단어가 오답에 있으면 정답이 둘이 된다.
+    const answerEntry = others.find((e) => e.word.toLowerCase() === answer.toLowerCase());
+    const answerMeaning = answerEntry ? primaryMeaning(answerEntry) : '';
+
     const distractors = others
-      .map((e) => ({ key: e.id, label: e.word }))
+      .map((e) => ({ key: e.id, label: e.word, meaning: primaryMeaning(e) }))
       .filter((c) => !banned.has(c.label.toLowerCase()));
 
-    const picked = buildChoices({ key: entry.id, label: answer }, distractors, (c) => c.label);
+    const picked = buildChoices(
+      { key: entry.id, label: answer, meaning: answerMeaning },
+      distractors,
+      (c) => c.label,
+      4,
+      Math.random,
+      // 낱말이 겹치는 것은 물론, 반대말과 **뜻이 같은** 단어도 뺀다.
+      (c) => [c.label.toLowerCase(), ...meaningKeys(c.meaning)],
+    );
     return picked.map((c) => ({ ...c, correct: c.key === entry.id }));
   }
 
@@ -273,11 +292,23 @@ function buildOptions(
   const distractors = others
     .map((e) => {
       const otherExp = exposure(e, 0);
-      return { key: e.id, label: otherExp.sense.synonyms[0] ?? e.word };
+      return {
+        key: e.id,
+        label: otherExp.sense.synonyms[0] ?? e.word,
+        meaning: otherExp.sense.meaning,
+      };
     })
     .filter((c) => !banned.has(c.label.toLowerCase()));
 
-  const picked = buildChoices({ key: entry.id, label: answer }, distractors, (c) => c.label);
+  // 뜻이 겹치는 표현은 바꿔 써도 말이 되므로 오답이 될 수 없다.
+  const picked = buildChoices(
+    { key: entry.id, label: answer, meaning: exp.sense.meaning },
+    distractors,
+    (c) => c.label,
+    4,
+    Math.random,
+    (c) => [c.label.toLowerCase(), ...meaningKeys(c.meaning)],
+  );
   return picked.map((c) => ({ ...c, correct: c.key === entry.id }));
 }
 

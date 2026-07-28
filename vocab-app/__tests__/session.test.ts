@@ -1,4 +1,11 @@
-import { buildSession, buildChoices, buildRounds, pickGame, SessionItem } from '../src/srs/session';
+import {
+  buildSession,
+  buildChoices,
+  buildRounds,
+  meaningKeys,
+  pickGame,
+  SessionItem,
+} from '../src/srs/session';
 import { createCard, grade } from '../src/srs/scheduler';
 import { ALL_ENTRIES, entriesOf } from '../src/data';
 import { CardState, GameId, Stage, VocabEntry } from '../src/types';
@@ -471,5 +478,96 @@ describe('반대말 문제', () => {
         expect(pickGame(item(multi, { stage, senseIndex: 1 }), () => i / 200)).not.toBe('antonym');
       }
     }
+  });
+});
+
+describe('보기에 정답이 둘이 되지 않게', () => {
+  // 검사에서 실제로 나온 것들: 같은 레벨 안에 뜻이 겹치는 단어가 89쌍,
+  // 대표 동의어가 같은 단어가 73쌍 있었다. 글자가 똑같은 것만 걸러서는
+  // 이것들이 나란히 보기에 올라온다. 아이는 맞게 이해하고도 틀렸다는
+  // 말을 듣고, 앱은 그 단어를 '모르는 단어'로 기록해 계속 다시 낸다.
+
+  it('뜻이 한 조각이라도 겹치면 보기에 함께 올리지 않는다', () => {
+    const answer = { key: 'a', label: '목표' };
+    const pool = [
+      { key: 'b', label: '목표, 목적' }, // 겹친다 — 빠져야 한다
+      { key: 'c', label: '기술, 능력' },
+      { key: 'd', label: '냄비, 항아리' },
+      { key: 'e', label: '항구' },
+    ];
+    const picked = buildChoices(answer, pool, (c) => c.label, 4, fixedRand, (c) =>
+      meaningKeys(c.label),
+    );
+    expect(picked.map((c) => c.key)).not.toContain('b');
+    expect(picked).toHaveLength(4);
+  });
+
+  it('글자가 똑같은 뜻도 여전히 걸러진다', () => {
+    const answer = { key: 'a', label: '분명한, 명백한' };
+    const pool = [
+      { key: 'b', label: '분명한, 명백한' },
+      { key: 'c', label: '기술' },
+      { key: 'd', label: '항구' },
+      { key: 'e', label: '냄비' },
+    ];
+    const picked = buildChoices(answer, pool, (c) => c.label, 4, fixedRand, (c) =>
+      meaningKeys(c.label),
+    );
+    expect(picked.map((c) => c.key)).not.toContain('b');
+  });
+
+  it('오답끼리도 뜻이 겹치지 않는다', () => {
+    // 오답 둘이 같은 뜻이면 보기가 사실상 셋이 되어 찍기 쉬워진다.
+    const answer = { key: 'a', label: '항구' };
+    const pool = [
+      { key: 'b', label: '기술, 능력' },
+      { key: 'c', label: '기법, 기술' }, // b와 겹친다
+      { key: 'd', label: '냄비' },
+      { key: 'e', label: '무대' },
+    ];
+    const picked = buildChoices(answer, pool, (c) => c.label, 4, fixedRand, (c) =>
+      meaningKeys(c.label),
+    );
+    const labels = picked.map((c) => c.label);
+    expect(labels).not.toEqual(expect.arrayContaining(['기술, 능력', '기법, 기술']));
+  });
+
+  it('물결표와 대소문자 차이는 같은 뜻으로 본다', () => {
+    const answer = { key: 'a', label: '~해야 한다' };
+    const pool = [
+      { key: 'b', label: '해야 한다' },
+      { key: 'c', label: '항구' },
+      { key: 'd', label: '냄비' },
+      { key: 'e', label: '무대' },
+    ];
+    const picked = buildChoices(answer, pool, (c) => c.label, 4, fixedRand, (c) =>
+      meaningKeys(c.label),
+    );
+    expect(picked.map((c) => c.key)).not.toContain('b');
+  });
+
+  it('키를 안 넘기면 예전처럼 보기 글자로만 거른다', () => {
+    const answer = { key: 'a', label: '목표' };
+    const pool = [
+      { key: 'b', label: '목표, 목적' },
+      { key: 'c', label: '기술' },
+      { key: 'd', label: '항구' },
+    ];
+    const picked = buildChoices(answer, pool, (c) => c.label, 4, fixedRand);
+    expect(picked.map((c) => c.key)).toContain('b');
+  });
+});
+
+describe('meaningKeys', () => {
+  it('쉼표와 가운뎃점으로 뜻을 쪼갠다', () => {
+    expect(meaningKeys('기술, 능력')).toEqual(['기술, 능력', '기술', '능력']);
+  });
+
+  it('쪼갤 것이 없으면 통째로 하나다', () => {
+    expect(meaningKeys('항구')).toEqual(['항구']);
+  });
+
+  it('같은 조각이 두 번 나와도 한 번만 센다', () => {
+    expect(meaningKeys('기술, 기술')).toEqual(['기술, 기술', '기술']);
   });
 });

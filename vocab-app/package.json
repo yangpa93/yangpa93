@@ -46,7 +46,8 @@
     "data:validate": "jest __tests__/data.test.ts",
     "data:import": "node scripts/import-csv.mjs",
     "preflight": "node scripts/preflight.mjs",
-    "relink": "node scripts/relink-eas.mjs"
+    "relink": "node scripts/relink-eas.mjs",
+    "audit": "node scripts/audit.mjs"
   },
   "private": true
 }

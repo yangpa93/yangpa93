@@ -277,20 +277,47 @@ export function buildChoices<T>(
   label: (item: T) => string,
   count = 4,
   rand: () => number = Math.random,
+  /**
+   * 그 보기가 '어떤 뜻을 차지하는지'. 하나라도 겹치면 정답이 둘이 된다.
+   *
+   * 글자가 똑같은 것만 걸러서는 부족하다. `목표`와 `목표, 목적`은 다른
+   * 문자열이지만 둘 다 정답이다. 아이는 맞게 이해하고도 틀렸다는 말을
+   * 듣고, 앱은 그 단어를 '모르는 단어'로 기록해 계속 다시 낸다.
+   * 기본값은 보기 글자 자체라, 안 넘기면 예전과 똑같이 동작한다.
+   */
+  keysOf: (item: T) => string[] = (item) => [label(item)],
 ): T[] {
-  const answerLabel = label(answer);
-  const seen = new Set([answerLabel]);
+  const taken = new Set(keysOf(answer).map(norm));
   const others: T[] = [];
 
   for (const item of shuffle(pool, rand)) {
     if (others.length >= count - 1) break;
-    const l = label(item);
-    if (seen.has(l)) continue;
-    seen.add(l);
+    const keys = keysOf(item).map(norm);
+    if (keys.some((k) => taken.has(k))) continue;
+    for (const k of keys) taken.add(k);
     others.push(item);
   }
 
   return shuffle([answer, ...others], rand);
+}
+
+/** 비교할 때 눈에 안 보이는 차이(대소문자·공백·물결표)를 지운다. */
+function norm(s: string): string {
+  return s.trim().toLowerCase().replace(/^~+|~+$/g, '').replace(/\s+/g, ' ');
+}
+
+/**
+ * 한국어 뜻을 '차지하는 뜻' 목록으로 쪼갠다.
+ *
+ * `기술, 능력` 과 `기법, 기술` 은 겹친다. 쉼표로 나눠 보면 그것이 보인다.
+ * 전체 문자열도 함께 넣어, 쪼갤 것이 없는 뜻도 서로 비교된다.
+ */
+export function meaningKeys(meaning: string): string[] {
+  const parts = meaning
+    .split(/[,·/]/)
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
+  return [...new Set([meaning.trim(), ...parts])];
 }
 
 export function shuffle<T>(arr: T[], rand: () => number = Math.random): T[] {

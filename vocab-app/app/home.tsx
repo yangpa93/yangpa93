@@ -118,14 +118,29 @@ export default function Home() {
             <Muted>{LEVEL_LABEL[profile.level]} · 바꾸기</Muted>
           </View>
         </Pressable>
-        <Pressable
-          onPress={() => router.push('/parent')}
-          style={s.parentBtn}
-          accessibilityRole="button"
-          accessibilityLabel="부모님 모드"
-        >
-          <Text style={s.parentBtnText}>👨‍👩‍👧 부모님</Text>
-        </Pressable>
+        <Row style={{ gap: spacing.sm }}>
+          {/*
+            소리·진동·캐릭터는 아이가 직접 바꾸는 것이라 홈에 둔다.
+            부모님 PIN 뒤에 있으면 소리를 끄고 싶을 때마다 부모를 불러야 해서
+            아이가 그냥 참고 쓴다.
+          */}
+          <Pressable
+            onPress={() => router.push('/settings')}
+            style={s.iconBtn}
+            accessibilityRole="button"
+            accessibilityLabel="내 설정"
+          >
+            <Text style={s.iconBtnText}>⚙️ 설정</Text>
+          </Pressable>
+          <Pressable
+            onPress={() => router.push('/parent')}
+            style={s.parentBtn}
+            accessibilityRole="button"
+            accessibilityLabel="부모님 모드"
+          >
+            <Text style={s.parentBtnText}>👨‍👩‍👧 부모님</Text>
+          </Pressable>
+        </Row>
       </Row>
 
       {profile.streak > 0 || build.isBeta ? (
@@ -326,6 +341,13 @@ const s = StyleSheet.create({
     backgroundColor: colors.parentSoft,
   },
   parentBtnText: { fontSize: 13, fontWeight: '700', color: colors.parent },
+  iconBtn: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.pill,
+    backgroundColor: colors.primarySoft,
+  },
+  iconBtnText: { fontSize: 13, fontWeight: '700', color: colors.primary },
   count: { fontSize: 26, fontWeight: '800', color: colors.primary },
   countTotal: { fontSize: 16, fontWeight: '600', color: colors.muted },
   tile: {

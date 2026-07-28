@@ -7,7 +7,6 @@ import { AwardRates, LEVEL_SHORT, LevelId } from '../src/types';
 import { awardRates, formatWon } from '../src/features/awards';
 import { buildInfo, buildLabel, feedbackHeader } from '../src/features/build-info';
 import { LevelPicker } from '../src/components/LevelPicker';
-import { AvatarPicker, labelOf } from '../src/components/AvatarPicker';
 import { colors, font, radius, spacing } from '../src/theme';
 
 const NEW_PER_DAY = [5, 8, 10, 15, 20];
@@ -304,40 +303,18 @@ export default function ParentSettings() {
               />
             </Row>
 
-            <Row style={{ justifyContent: 'space-between', marginTop: spacing.lg }}>
-              <Text style={s.label}>소리로 읽어주기</Text>
-              <Switch
-                value={profile.settings.ttsEnabled}
-                onValueChange={(v) => updateSettings(profile.id, { ttsEnabled: v })}
-                trackColor={{ true: colors.parent }}
-              />
-            </Row>
-
-            <Row style={{ justifyContent: 'space-between', marginTop: spacing.md }}>
-              <Text style={s.label}>진동 피드백</Text>
-              <Switch
-                value={profile.settings.hapticsEnabled}
-                onValueChange={(v) => updateSettings(profile.id, { hapticsEnabled: v })}
-                trackColor={{ true: colors.parent }}
-              />
-            </Row>
-          </Card>
-
-          {/*
-            이미 만든 프로필의 캐릭터를 바꾸는 곳.
-            이게 없으면 캐릭터를 바꾸려고 프로필을 지웠다 다시 만들어야 하고,
-            그러면 그동안의 학습 기록이 통째로 사라진다.
-          */}
-          <Card style={{ marginTop: spacing.md }}>
-            <H3>{profile.name} 캐릭터</H3>
-            <Muted style={{ marginTop: spacing.xs }}>
-              지금은 {profile.avatar} {labelOf(profile.avatar)}입니다. 바꿔도 학습 기록은 그대로입니다.
-            </Muted>
-            <AvatarPicker
-              value={profile.avatar}
-              onChange={(emoji) => updateProfile(profile.id, { avatar: emoji })}
-              tone="parent"
-            />
+            {/*
+              소리·진동·캐릭터는 아이 홈 화면(⚙️ 설정)으로 옮겼다.
+              아이 취향이고 잘못 눌러도 학습에 영향이 없는데 PIN 뒤에 두면
+              소리를 끄고 싶을 때마다 부모를 불러야 해서 그냥 참고 쓴다.
+              여기 남은 것은 진도와 돈이 걸린 설정들이다.
+            */}
+            <View style={s.movedNote}>
+              <Muted>
+                소리로 읽어주기 · 진동 피드백 · 캐릭터는 아이 홈 화면의 ⚙️ 설정에서
+                아이가 직접 바꿉니다.
+              </Muted>
+            </View>
           </Card>
 
           <Card style={{ marginTop: spacing.md }}>
@@ -439,6 +416,12 @@ const s = StyleSheet.create({
     backgroundColor: colors.bg,
     borderWidth: 1,
     borderColor: colors.border,
+  },
+  movedNote: {
+    marginTop: spacing.lg,
+    padding: spacing.md,
+    borderRadius: radius.md,
+    backgroundColor: colors.bg,
   },
   awardSummary: {
     marginTop: spacing.lg,

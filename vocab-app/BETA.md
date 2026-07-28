@@ -16,19 +16,34 @@
 ## 1. 준비 (컴퓨터에서 한 번만)
 
 [INSTALL.md의 0단계](./INSTALL.md#0단계--컴퓨터-준비-두-경로-공통)를 아직 안 하셨으면 먼저 하세요
-(`node` 설치 → 코드 받기 → `npm install` → Expo 계정 → `eas login` → `eas init`).
+(`node` 설치 → 코드 받기 → `npm install`).
 
-이미 하셨다면 최신 코드만 받으면 됩니다.
+그다음 아래를 순서대로 하시면 됩니다.
 
-```bash
-cd yangpa93/vocab-app
+```powershell
+cd yangpa93\vocab-app
 git pull origin claude/english-vocab-learning-app-pfy9yg
 npm install
+
+npx eas-cli@latest login    # Expo 계정 (없으면 https://expo.dev/signup)
+npx eas-cli@latest init     # 프로젝트 ID를 app.json에 박습니다
 ```
 
 > **`npm install`을 꼭 다시 하세요.** 네이티브 모듈이 세 개 늘었습니다
 > (`expo-file-system`, `expo-sharing`, `expo-application`). 예전에 만든 APK에는
 > 이 모듈이 없어서 **백업 화면을 열면 앱이 꺼집니다.** 반드시 다시 빌드해야 합니다.
+
+> **`eas`는 프로젝트가 아니라 컴퓨터에 따로 있는 도구입니다.** `npm install`을
+> 했다고 생기지 않습니다. 위처럼 `npx eas-cli@latest` 로 부르면 설치 없이 바로
+> 쓸 수 있습니다. 처음 한 번 `Ok to proceed?`를 물으면 Enter를 누르세요.
+>
+> 매번 `npx`를 붙이기 싫으면 `npm install -g eas-cli` 로 깔고 **PowerShell 창을
+> 완전히 닫았다 새로 여세요.** 열려 있던 창은 예전 PATH를 들고 있어서 방금 깐
+> `eas`를 계속 못 찾습니다. 새 창에서 `eas --version` 이 뜨면 그때부터는
+> `eas build ...` 처럼 짧게 쓰셔도 됩니다.
+>
+> `eas init`은 **꼭 해야 합니다.** 안 하면 앱은 멀쩡히 설치되고 학습도 되는데
+> **부모님 폰 전송만 조용히 안 됩니다.** 아래 점검이 이것을 잡아 줍니다.
 
 ## 2. 빌드 전 점검 — 몇 초면 끝납니다
 
@@ -62,8 +77,8 @@ npm run typecheck
 
 ## 3. 빌드
 
-```bash
-eas build --platform android --profile beta-android
+```powershell
+npx eas-cli@latest build --platform android --profile beta-android
 ```
 
 처음 한 번만 묻습니다.
@@ -115,10 +130,10 @@ eas build --platform android --profile beta-android
 
 안드로이드로 충분히 굴려 보고 넘어오세요. 준비는 [INSTALL.md 경로 1](./INSTALL.md#경로-1--큰딸-아이폰-testflight)에 있습니다.
 
-```bash
+```powershell
 npm run preflight ios
-eas build --platform ios --profile beta-ios
-eas submit --platform ios --latest
+npx eas-cli@latest build --platform ios --profile beta-ios
+npx eas-cli@latest submit --platform ios --latest
 ```
 
 | 프로필 | 나오는 것 | 쓰는 곳 |

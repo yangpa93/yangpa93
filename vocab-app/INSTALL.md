@@ -41,7 +41,7 @@ npm run web
 
 | | 컴퓨터 브라우저 |
 |---|---|
-| 단어 학습, 문제 6종, 단어 카드 | ✅ |
+| 단어 학습, 문제 7종, 단어 카드 | ✅ |
 | 오답 노트, 단어장, 학습 달력, 레벨 시험, 요구권 | ✅ |
 | 부모님 모드, 리포트 화면 | ✅ |
 | 발음 듣기 🔊 · 🎬 영상 보기 | ✅ (크롬 기준) |
@@ -149,18 +149,35 @@ npm install
 
 1. **Expo 계정 만들기 (무료)** — https://expo.dev/signup, 이메일만 있으면 됩니다.
 
-2. **빌드 도구 설치**
+2. **빌드 도구 준비**
+
+   `eas`는 **프로젝트가 아니라 컴퓨터에 따로 있는 도구**입니다. `npm install` 을
+   했다고 생기지 않습니다. 설치 없이 바로 쓰려면 `npx` 로 부르면 됩니다.
+
+   ```bash
+   npx eas-cli@latest --version
+   ```
+
+   처음 한 번 `Ok to proceed?` 를 물으면 Enter를 누르세요. 아래 명령들도 전부
+   `npx eas-cli@latest ...` 형태로 쓰시면 됩니다.
+
+   매번 `npx` 를 붙이기 싫으면 컴퓨터에 깔아 두셔도 됩니다.
 
    ```bash
    npm install -g eas-cli
    ```
 
+   > **깔고 나면 터미널 창을 완전히 닫고 새로 여세요.** 열려 있던 창은 예전
+   > PATH를 들고 있어서 방금 깐 `eas` 를 계속 못 찾습니다. 윈도우에서
+   > `'eas' 용어가 ... 인식되지 않습니다` 가 나오는 이유가 대부분 이것입니다.
+   > 새 창에서 `eas --version` 이 뜨면 그때부터 `eas build ...` 로 짧게 쓰시면 됩니다.
+   >
    > 맥/리눅스에서 권한 오류가 나면 앞에 `sudo` 를 붙이세요.
 
 3. **로그인**
 
    ```bash
-   eas login
+   npx eas-cli@latest login
    ```
 
    비밀번호는 화면에 안 보이는 게 정상입니다.
@@ -168,7 +185,7 @@ npm install
 4. **프로젝트 연결** — `vocab-app` 폴더 안에서
 
    ```bash
-   eas init
+   npx eas-cli@latest init
    ```
 
    - `Would you like to create a project?` → **y**
@@ -223,7 +240,7 @@ Apple Developer Program 가입 (1~2일)
 |---|---|---|
 | 앱 이름 | 우리 영단어 | `app.json` → `expo.name` |
 | Bundle ID | `com.yangpa93.urivocab` | `app.json` → `expo.ios.bundleIdentifier` |
-| 버전 | 1.0.0 | `app.json` → `expo.version` |
+| 버전 | 0.9.0 (베타) | `app.json` → `expo.version` |
 
 > **Bundle ID는 전 세계에서 유일해야 합니다.** `com.yangpa93.urivocab` 은 이미
 > 개인 식별자가 들어 있어 겹칠 가능성이 거의 없습니다. 혹시 "이미 사용 중"이라고 나오면
@@ -235,7 +252,7 @@ Apple Developer Program 가입 (1~2일)
 `vocab-app` 폴더에서:
 
 ```bash
-eas build --platform ios --profile production
+npx eas-cli@latest build --platform ios --profile production
 ```
 
 처음 한 번만 묻는 것들:
@@ -264,7 +281,7 @@ eas build --platform ios --profile production
 빌드가 끝나면:
 
 ```bash
-eas submit --platform ios --latest
+npx eas-cli@latest submit --platform ios --latest
 ```
 
 - 애플 계정을 다시 물으면 같은 계정으로 로그인
@@ -308,8 +325,8 @@ App Store Connect → `TestFlight` 탭에서 상태가 `처리 중` → `테스�
 만료 전에 이 두 줄만 다시 실행하면 됩니다.
 
 ```bash
-eas build --platform ios --profile production
-eas submit --platform ios --latest
+npx eas-cli@latest build --platform ios --profile production
+npx eas-cli@latest submit --platform ios --latest
 ```
 
 큰딸의 TestFlight 앱에 `업데이트` 버튼이 뜹니다. 달력에 90일 알림을 걸어 두세요.
@@ -329,7 +346,7 @@ Expo 서버가 대신 빌드해 주고, 완성된 `.apk` 파일을 받아 폰에
 `vocab-app` 폴더에서:
 
 ```bash
-eas build --platform android --profile preview
+npx eas-cli@latest build --platform android --profile preview
 ```
 
 처음 한 번만 묻는 것:
@@ -538,14 +555,14 @@ cd C:\gagavoca\yangpa93\vocab-app
 
 ```bash
 # 큰딸 아이폰
-eas build --platform ios --profile production
-eas submit --platform ios --latest
+npx eas-cli@latest build --platform ios --profile production
+npx eas-cli@latest submit --platform ios --latest
 
 # 작은딸 안드로이드
-eas build --platform android --profile preview
+npx eas-cli@latest build --platform android --profile preview
 
 # 둘 다 한 번에 빌드
-eas build --platform all --profile preview
+npx eas-cli@latest build --platform all --profile preview
 ```
 
 > `git pull` 을 직접 쓰셔도 되지만, Expo가 `tsconfig.json` 을 자동으로 고쳐 놓아서
@@ -604,8 +621,20 @@ git 문제가 아니라 네트워크 문제입니다.
 `node --version` 으로 18 이상인지 확인하세요. 그래도 안 되면 `vocab-app` 폴더의
 `node_modules` 폴더와 `package-lock.json` 파일을 지우고 다시 `npm install`.
 
-**`eas: command not found`**
-`npm install -g eas-cli` 가 실패한 것입니다. 맥/리눅스면 `sudo npm install -g eas-cli`.
+**`eas: command not found`** 또는 **`'eas' 용어가 ... 인식되지 않습니다`**
+
+`eas` 는 프로젝트가 아니라 컴퓨터에 따로 있는 도구라, `npm install` 을 했다고 생기지 않습니다.
+가장 빠른 해결은 **설치 없이 `npx` 로 부르는 것**입니다.
+
+```bash
+npx eas-cli@latest login
+npx eas-cli@latest init
+npx eas-cli@latest build --platform android --profile beta-android
+```
+
+깔아서 쓰고 싶으시면 `npm install -g eas-cli` 뒤에 **터미널을 완전히 닫고 새로 여세요.**
+열려 있던 창은 예전 PATH를 들고 있어서 계속 못 찾습니다. 맥/리눅스에서 권한 오류가 나면
+`sudo npm install -g eas-cli`.
 
 **`eas build` 가 project ID를 찾을 수 없다고 합니다**
 `eas init` 을 먼저 실행하세요 (0-4).

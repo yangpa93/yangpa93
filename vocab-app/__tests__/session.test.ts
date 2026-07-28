@@ -8,8 +8,8 @@ import {
 } from '../src/srs/session';
 import { createCard, grade } from '../src/srs/scheduler';
 import { ALL_ENTRIES, entriesOf } from '../src/data';
-import { CardState, GameId, Stage, VocabEntry } from '../src/types';
-import { senseExposure } from '../src/data/entry';
+import { CardState, GameId, LEVEL_ORDER, Stage, VocabEntry } from '../src/types';
+import { primaryMeaning, senseExposure } from '../src/data/entry';
 import { hasAntonym } from '../src/data/antonyms';
 
 const TODAY = '2026-07-27';
@@ -569,5 +569,45 @@ describe('meaningKeys', () => {
 
   it('같은 조각이 두 번 나와도 한 번만 센다', () => {
     expect(meaningKeys('기술, 기술')).toEqual(['기술, 기술', '기술']);
+  });
+});
+
+describe('보기가 모자라지 않는지 (전 레벨)', () => {
+  // 뜻이 겹치는 보기를 빼기 시작하면, 후보가 마르는 레벨에서 보기가
+  // 3개나 2개로 줄어들 수 있다. 그러면 찍어서 맞을 확률이 올라가고
+  // 아이는 문장을 안 읽게 된다. 3,286개 전부를 확인한다.
+  it('모든 레벨 모든 단어에서 보기 4개가 채워진다', () => {
+    const thin: string[] = [];
+
+    for (const level of LEVEL_ORDER) {
+      const pool = entriesOf(level);
+      for (const e of pool) {
+        const others = pool.filter((o) => o.id !== e.id);
+
+        const context = buildChoices(
+          { key: e.id, label: primaryMeaning(e) },
+          others.map((o) => ({ key: o.id, label: primaryMeaning(o) })),
+          (c) => c.label,
+          4,
+          fixedRand,
+          (c) => meaningKeys(c.label),
+        );
+        if (context.length < 4) thin.push(`${level} ${e.word} 문맥 ${context.length}개`);
+
+        const samePos = others.filter((o) => o.pos === e.pos);
+        const src = samePos.length >= 5 ? samePos : others;
+        const cloze = buildChoices(
+          { key: e.id, label: e.word, meaning: primaryMeaning(e) },
+          src.map((o) => ({ key: o.id, label: o.word, meaning: primaryMeaning(o) })),
+          (c) => c.label,
+          4,
+          fixedRand,
+          (c) => [c.label.toLowerCase(), ...meaningKeys(c.meaning)],
+        );
+        if (cloze.length < 4) thin.push(`${level} ${e.word} 빈칸 ${cloze.length}개`);
+      }
+    }
+
+    expect(thin).toEqual([]);
   });
 });

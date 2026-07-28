@@ -931,10 +931,8 @@ export const M2_1 = defineLevel('m2-1', [
     ]},
   ]},
   { w: 'save', p: 'v.', s: [
-    { m: '구하다', syn: ['rescue'], ex: [
-      ['The doctor saved his life.', '의사가 그의 목숨을 구했다.'],
-      ['He saved a puppy from the river.', '그는 강에서 강아지를 구했다.'],
-    ]},
+    // '아끼다'가 먼저다. 반대말 spend·waste 가 이 뜻에만 성립하는데
+    // 반대말 문제는 대표 뜻에만 나오기 때문이다.
     { m: '아끼다, 절약하다', syn: ['conserve'], ex: [
       ['We should save water.', '우리는 물을 아껴야 한다.'],
       ['Turn off the light to save energy.', '에너지를 아끼려면 불을 꺼라.'],
@@ -942,6 +940,10 @@ export const M2_1 = defineLevel('m2-1', [
     { m: '저축하다, 모으다', syn: ['put aside'], ex: [
       ['I am saving money for a bike.', '나는 자전거를 사려고 돈을 모으고 있다.'],
       ['She saves ten dollars every week.', '그녀는 매주 10달러를 저축한다.'],
+    ]},
+    { m: '구하다', syn: ['rescue'], ex: [
+      ['The doctor saved his life.', '의사가 그의 목숨을 구했다.'],
+      ['He saved a puppy from the river.', '그는 강에서 강아지를 구했다.'],
     ]},
   ]},
   { w: 'say', p: 'v.', s: [

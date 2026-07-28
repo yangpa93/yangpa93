@@ -542,13 +542,15 @@ export const M1_4 = defineLevel('m1-4', [
     ]},
   ]},
   { w: 'lie', p: 'v.', s: [
-    { m: '눕다', syn: [], ex: [
-      ['He lay on the grass.', '그는 잔디에 누웠다.'],
-      ['The cat lies in the sun.', '고양이가 햇볕에 누워 있다.'],
-    ]},
+    // '거짓말하다'가 먼저다. 반대말(truth 등)이 이 뜻에만 성립하는데
+    // 반대말 문제는 대표 뜻에만 나오기 때문이다.
     { m: '거짓말하다', syn: [], ex: [
       ['Do not lie to your parents.', '부모님께 거짓말하지 마라.'],
       ['She lied about her age.', '그녀는 나이에 대해 거짓말했다.'],
+    ]},
+    { m: '눕다', syn: [], ex: [
+      ['He lay on the grass.', '그는 잔디에 누웠다.'],
+      ['The cat lies in the sun.', '고양이가 햇볕에 누워 있다.'],
     ]},
   ]},
   { w: 'life', p: 'n.', s: [

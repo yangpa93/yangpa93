@@ -13,6 +13,9 @@ import { LEVEL_LABEL, LEVEL_SHORT, Profile, ProfileData } from '../src/types';
 import { colors, font, radius, spacing } from '../src/theme';
 import { NudgeCard } from '../src/components/NudgeCard';
 import { LinkedChildren } from '../src/components/LinkedChildren';
+import { MonthlyCard } from '../src/components/MonthlyCard';
+import { buildMonthlyReport } from '../src/features/monthly';
+import { monthOf } from '../src/features/calendar';
 
 /** 부모용 대시보드. 아이별 일일 리포트와 주간 요약을 보여준다. */
 export default function ParentDashboard() {
@@ -39,6 +42,14 @@ export default function ParentDashboard() {
 
   const profile = state.profiles.find((p) => p.id === selectedId) ?? null;
   const pdata = profile ? dataById[profile.id] : undefined;
+
+  const monthly = useMemo(
+    () =>
+      profile && pdata
+        ? buildMonthlyReport(monthOf(today), pdata.days, pdata.cards, pdata.exams, ALL_ENTRIES, today)
+        : null,
+    [profile, pdata, today],
+  );
 
   const report: DailyReport | null = useMemo(
     () => (profile && pdata ? buildDailyReport(profile, pdata, ALL_ENTRIES, today) : null),
@@ -265,6 +276,10 @@ export default function ParentDashboard() {
         이 폰이 공부도 하고 리포트도 받는 경우다. 위에는 이 폰에서 공부한
         기록이, 여기에는 다른 아이 폰이 보내 온 것이 쌓인다.
       */}
+      {/* 한 달을 놓고 보면 하루 리포트가 안 보여 주는 것이 보인다 —
+          개근했나, 새 단어를 몇 개 익혔나, 레벨이 올라갔나. */}
+      {monthly ? <MonthlyCard report={monthly} name={profile.name} /> : null}
+
       {alsoReceives ? <LinkedChildren /> : null}
       {alsoReceives ? <NudgeCard /> : null}
 

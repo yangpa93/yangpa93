@@ -3,7 +3,6 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { Body, Card, Chip, EmptyState, H3, Muted, Row, Screen } from '../src/components/ui';
 import { useApp } from '../src/store/AppProvider';
-import { ALL_ENTRIES } from '../src/data';
 import { meaningLine } from '../src/data/entry';
 import { loadProfileData } from '../src/store/storage';
 import {
@@ -17,6 +16,9 @@ import {
 import { formatKo, todayKey } from '../src/lib/date';
 import { ProfileData } from '../src/types';
 import { colors, font, radius, spacing } from '../src/theme';
+import { MonthlyCard } from '../src/components/MonthlyCard';
+import { buildMonthlyReport } from '../src/features/monthly';
+import { ALL_ENTRIES } from '../src/data';
 
 /**
  * 학습 달력.
@@ -57,6 +59,20 @@ export default function Calendar() {
 
   const summary = useMemo(
     () => buildMonth(pdata?.days ?? {}, month, today),
+    [pdata, month, today],
+  );
+
+  // 개근·새 단어·레벨은 달력 요약이 안 담는다. 따로 셈한다.
+  const monthly = useMemo(
+    () =>
+      buildMonthlyReport(
+        month,
+        pdata?.days ?? {},
+        pdata?.cards ?? {},
+        pdata?.exams ?? [],
+        ALL_ENTRIES,
+        today,
+      ),
     [pdata, month, today],
   );
 
@@ -203,6 +219,9 @@ export default function Calendar() {
           <Muted style={{ marginTop: spacing.lg }}>이 달에는 아직 학습 기록이 없어요.</Muted>
         )}
       </Card>
+
+      {/* 한 달 성적표 — 개근·새 단어·레벨 */}
+      <MonthlyCard report={monthly} name={profile.name} />
 
       {/* 고른 날의 자세한 기록 */}
       {selected ? (

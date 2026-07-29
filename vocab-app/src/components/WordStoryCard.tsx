@@ -26,7 +26,7 @@ import {
   View,
 } from 'react-native';
 import { VocabEntry } from '../types';
-import { Exposure, videoUrl } from '../data/entry';
+import { Exposure, posLabel, SYNONYM_LABEL, synonymLine, videoUrl } from '../data/entry';
 import { variantOf } from '../data/spelling';
 import { speak, stopSpeaking } from '../lib/feedback';
 import { colors, font, radius, spacing } from '../theme';
@@ -140,7 +140,7 @@ export function WordStoryCard({
           </Pressable>
         </Row>
         <Row style={{ gap: spacing.sm }}>
-          <Muted>{entry.pos}</Muted>
+          <Muted>{posLabel(entry.pos)}</Muted>
           {entry.senses.length > 1 ? (
             <Muted style={{ color: colors.accent, fontWeight: '700' }}>
               뜻이 {entry.senses.length}개예요
@@ -168,14 +168,16 @@ export function WordStoryCard({
           <Muted style={{ color: colors.primary, fontWeight: '800' }}>오늘 배우는 뜻</Muted>
           <Text style={s.meaning}>{exp.sense.meaning}</Text>
           {exp.sense.synonyms.length > 0 ? (
-            <Row style={{ marginTop: spacing.sm, gap: spacing.xs, flexWrap: 'wrap' }}>
-              <Muted>= </Muted>
-              {exp.sense.synonyms.map((syn) => (
-                <View key={syn} style={s.syn}>
-                  <Text style={s.synText}>{syn}</Text>
-                </View>
-              ))}
-            </Row>
+            <View style={{ marginTop: spacing.sm }}>
+              <Muted>{SYNONYM_LABEL}</Muted>
+              <Row style={{ marginTop: spacing.xs, gap: spacing.xs, flexWrap: 'wrap' }}>
+                {exp.sense.synonyms.map((syn) => (
+                  <View key={syn} style={s.syn}>
+                    <Text style={s.synText}>{syn}</Text>
+                  </View>
+                ))}
+              </Row>
+            </View>
           ) : null}
 
           <Pressable
@@ -208,7 +210,7 @@ export function WordStoryCard({
                 </Row>
 
                 {sense.synonyms.length > 0 ? (
-                  <Muted style={{ marginTop: 2 }}>= {sense.synonyms.join(', ')}</Muted>
+                  <Muted style={{ marginTop: 2 }}>{synonymLine(sense.synonyms)}</Muted>
                 ) : null}
 
                 {sense.examples.map((ex, ei) => (

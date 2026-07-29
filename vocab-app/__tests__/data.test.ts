@@ -5,7 +5,14 @@
  */
 
 import { ALL_ENTRIES, ENTRIES_BY_LEVEL } from '../src/data';
-import { clozeSentence, exposure, meaningLine, wordForms } from '../src/data/entry';
+import {
+  clozeSentence,
+  exposure,
+  meaningLine,
+  posLabel,
+  synonymLine,
+  wordForms,
+} from '../src/data/entry';
 import { ANTONYMS, antonymsOf, hasAntonym } from '../src/data/antonyms';
 import { VARIANTS, variantOf } from '../src/data/spelling';
 import { PLAN, PLAN_COUNT } from '../src/data/plan';
@@ -254,6 +261,44 @@ describe('meaningLine', () => {
   it('다의어는 뜻을 모두 이어 붙인다', () => {
     const multi = ALL_ENTRIES.find((e) => e.senses.length >= 2)!;
     expect(meaningLine(multi)).toContain(' ; ');
+  });
+});
+
+describe('posLabel', () => {
+  it('약어를 한국어로 바꾼다', () => {
+    expect(posLabel('n.')).toBe('명사');
+    expect(posLabel('aux.')).toBe('조동사');
+    expect(posLabel('phr.')).toBe('숙어');
+  });
+
+  it('쉼표로 여럿이 오면 가운뎃점으로 잇는다', () => {
+    expect(posLabel('v., adj.')).toBe('동사 · 형용사');
+    expect(posLabel('adj., adv.')).toBe('형용사 · 부사');
+  });
+
+  it('모르는 값은 원래 문자열을 그대로 돌려준다', () => {
+    // 빈칸이 되면 아이 화면에서 품사가 사라진다.
+    expect(posLabel('xyz.')).toBe('xyz.');
+    expect(posLabel('n., xyz.')).toBe('n., xyz.');
+    expect(posLabel('')).toBe('');
+  });
+
+  it('실제로 쓰이는 품사 값이 전부 한국어로 바뀐다', () => {
+    for (const e of ALL_ENTRIES) {
+      expect({ word: e.word, pos: e.pos, label: posLabel(e.pos) }).toEqual({
+        word: e.word,
+        pos: e.pos,
+        label: expect.stringMatching(/^[가-힣]+( · [가-힣]+)*$/),
+      });
+    }
+  });
+});
+
+describe('synonymLine', () => {
+  it("'=' 대신 그 뜻일 때만 바꿔 쓸 수 있다고 말한다", () => {
+    expect(synonymLine(['firm'])).toBe('이 뜻일 때 : firm');
+    expect(synonymLine(['firm', 'hard'])).toBe('이 뜻일 때 : firm, hard');
+    expect(synonymLine(['firm'])).not.toContain('=');
   });
 });
 

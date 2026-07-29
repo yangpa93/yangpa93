@@ -4,7 +4,7 @@ import { Body, Card, Chip, EmptyState, H3, Muted, ProgressBar, Row, Screen } fro
 import { useApp } from '../src/store/AppProvider';
 import { entriesOf } from '../src/data';
 import { PLAN_COUNT } from '../src/data/plan';
-import { meaningLine, videoUrl } from '../src/data/entry';
+import { meaningLine, posLabel, synonymLine, videoUrl } from '../src/data/entry';
 import { isMastered } from '../src/srs/scheduler';
 import { LevelPicker } from '../src/components/LevelPicker';
 import { speak } from '../src/lib/feedback';
@@ -98,7 +98,7 @@ export default function Wordbook() {
                     <View style={{ flex: 1 }}>
                       <Row style={{ gap: spacing.sm }}>
                         <H3>{e.word}</H3>
-                        <Muted>{e.pos}</Muted>
+                        <Muted>{posLabel(e.pos)}</Muted>
                       </Row>
                       <Muted style={{ marginTop: 2 }}>{meaningLine(e)}</Muted>
                     </View>
@@ -118,7 +118,7 @@ export default function Wordbook() {
                       <View key={i} style={{ marginBottom: spacing.md }}>
                         <Body style={{ fontWeight: '700' }}>
                           {i + 1}. {sense.meaning}
-                          {sense.synonyms.length > 0 ? `  (= ${sense.synonyms.join(', ')})` : ''}
+                          {sense.synonyms.length > 0 ? `  (${synonymLine(sense.synonyms)})` : ''}
                         </Body>
                         {sense.examples.map((ex, j) => (
                           <Pressable

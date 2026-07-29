@@ -9,6 +9,66 @@
 import { CardState, Example, Sense, VocabEntry } from '../types';
 import { irregularOf } from './irregular';
 
+/**
+ * 품사 약어 → 한국어 이름.
+ *
+ * 데이터의 `p` 값은 `n.` `aux.` 같은 약어로 두고 화면에서만 풀어 쓴다.
+ * `p` 자체를 한국어로 바꾸면 표제어 파일 3,286줄을 건드리게 되고,
+ * 사전 대조의 기준도 흔들린다.
+ */
+const POS_NAMES: Record<string, string> = {
+  'n.': '명사',
+  'v.': '동사',
+  'adj.': '형용사',
+  'adv.': '부사',
+  'prep.': '전치사',
+  'conj.': '접속사',
+  'pron.': '대명사',
+  'art.': '관사',
+  'num.': '수사',
+  'int.': '감탄사',
+  'aux.': '조동사',
+  'phr.': '숙어',
+};
+
+/**
+ * 품사 표기를 아이가 읽을 수 있는 말로 바꾼다. `'v., adj.'` → `'동사 · 형용사'`
+ *
+ * 중학생은 `phr.` `art.` `num.` `int.` `aux.` 를 바로 알아보지 못한다.
+ * 모르는 값이 하나라도 섞이면 **원래 문자열을 그대로** 돌려준다.
+ * 반쯤 번역해서 내보내면 빈칸이나 뒤죽박죽이 화면에 남기 때문이다.
+ */
+export function posLabel(pos: string): string {
+  const parts = pos
+    .split(',')
+    .map((p) => p.trim())
+    .filter((p) => p.length > 0);
+  if (parts.length === 0) return pos;
+
+  const names = parts.map((p) => POS_NAMES[p]);
+  if (names.some((n) => n === undefined)) return pos;
+
+  return names.join(' · ');
+}
+
+/**
+ * 유의어 앞에 붙이는 말.
+ *
+ * 예전에는 `= firm` 이라고 찍었다. `=` 는 "이 둘은 언제나 같다"로 읽혀서,
+ * 아이가 문장을 떼고 `solid = firm` 으로 외운다. 실제로는 **그 뜻일 때만**
+ * 바꿔 쓸 수 있다. 유의어는 표제어가 아니라 뜻(sense)마다 붙어 있으므로
+ * 조건을 말로 드러내 준다.
+ *
+ * 카드는 자리가 넓어 긴 쪽, 단어장·오답 노트는 한 줄이라 짧은 쪽을 쓴다.
+ */
+export const SYNONYM_LABEL = '이 뜻일 때 바꿔 쓸 수 있어요';
+export const SYNONYM_LABEL_SHORT = '이 뜻일 때';
+
+/** 한 줄로 보여줄 유의어. `'이 뜻일 때 : firm, hard'` */
+export function synonymLine(synonyms: string[]): string {
+  return `${SYNONYM_LABEL_SHORT} : ${synonyms.join(', ')}`;
+}
+
 /** 화면에 한 줄로 보여줄 뜻. 다의어는 `;`로 이어 붙인다. */
 export function meaningLine(entry: VocabEntry): string {
   return entry.senses.map((s) => s.meaning).join(' ; ');

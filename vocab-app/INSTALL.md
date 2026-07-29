@@ -239,12 +239,12 @@ Apple Developer Program 가입 (1~2일)
 | 항목 | 값 | 어디에 |
 |---|---|---|
 | 앱 이름 | 곰탱이보카 | `app.json` → `expo.name` |
-| Bundle ID | `com.yangpa93.urivocab` | `app.json` → `expo.ios.bundleIdentifier` |
+| Bundle ID | `com.yangpa93.gomtangvoca` | `app.json` → `expo.ios.bundleIdentifier` |
 | 버전 | 0.9.0 (베타) | `app.json` → `expo.version` |
 
-> **Bundle ID는 전 세계에서 유일해야 합니다.** `com.yangpa93.urivocab` 은 이미
+> **Bundle ID는 전 세계에서 유일해야 합니다.** `com.yangpa93.gomtangvoca` 은 이미
 > 개인 식별자가 들어 있어 겹칠 가능성이 거의 없습니다. 혹시 "이미 사용 중"이라고 나오면
-> `app.json` 의 `ios.bundleIdentifier` 와 `android.package` 를 `com.yangpa93.urivocab2`
+> `app.json` 의 `ios.bundleIdentifier` 와 `android.package` 를 `com.yangpa93.gomtangvoca2`
 > 처럼 바꾸고 다시 빌드하세요.
 
 ## 1-3. 빌드 만들기
@@ -666,7 +666,7 @@ npx eas-cli@latest build --platform android --profile beta-android
 **`No suitable application records were found`**
 App Store Connect에 앱 항목이 아직 없습니다. `eas submit` 이 다시 물을 때
 `Would you like to register a new app?` → **y** 를 고르거나,
-App Store Connect → `나의 앱` → `+` → 신규 앱에서 Bundle ID `com.yangpa93.urivocab` 로 직접 만드세요.
+App Store Connect → `나의 앱` → `+` → 신규 앱에서 Bundle ID `com.yangpa93.gomtangvoca` 로 직접 만드세요.
 
 **TestFlight에 빌드가 안 보입니다**
 애플의 `처리 중(Processing)` 이 끝나지 않은 것입니다. 10~30분 기다리세요.

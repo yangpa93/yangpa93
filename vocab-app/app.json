@@ -12,10 +12,10 @@
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.yangpa93.urivocab"
+      "bundleIdentifier": "com.yangpa93.gomtangvoca"
     },
     "android": {
-      "package": "com.yangpa93.urivocab",
+      "package": "com.yangpa93.gomtangvoca",
       "permissions": [
         "android.permission.POST_NOTIFICATIONS"
       ],

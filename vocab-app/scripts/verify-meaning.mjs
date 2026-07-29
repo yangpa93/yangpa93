@@ -127,15 +127,23 @@ if (entries.length === 0) {
   process.exit(1);
 }
 
-const found = { unknown: [], pos: [], meaning: [], exWord: [] };
+/**
+ * 확신도로 나눈다. 검사 종류로 나누면 무엇부터 봐야 할지 알 수 없다.
+ *
+ *   sure  ❌ 사전의 어느 뜻과도 겹치지 않는다. 먼저 본다.
+ *   maybe ?  자료가 애매하거나 일부만 겹친다.
+ *   none     대조할 자료가 없다. 조용히 센다 — 우리 잘못이 아니다.
+ */
+const found = { sure: [], maybe: [] };
+const none = { word: 0, ko: 0 };
 
 for (const e of entries) {
   const at = `${e.level}:${e.line} ${e.word}`;
   const ref = REF[e.word.toLowerCase()];
 
-  /* 1. 사전에 아예 없는 표제어 */
+  /* 1. 사전에 아예 없는 표제어 — 자료가 없는 것이지 틀린 것이 아니다 */
   if (!ref) {
-    found.unknown.push(`${at} — 위키낱말사전에 표제어가 없음 (품사 '${e.pos}')`);
+    none.word++;
     continue;
   }
 
@@ -147,7 +155,8 @@ for (const e of entries) {
     if (want === undefined) continue; // 모르는 약어는 audit.mjs 가 잡는다
     if (want === null) continue; // 사전과 견줄 수 없는 품사
     if (!want.some((w) => refPos.has(w))) {
-      found.pos.push(`${at} — '${p}' 인데 사전에는 [${[...refPos].join(', ')}] 뿐`);
+      // 사전이 그 낱말을 알면서 그 품사를 안 준 것이다. 신호가 세다.
+      found.sure.push(`품사 · ${at} — '${p}' 인데 사전에는 [${[...refPos].join(', ')}] 뿐`);
     }
   }
 
@@ -168,6 +177,7 @@ for (const e of entries) {
     for (const sn of r.senses) for (const k of sn.ko) refKo.add(k);
   }
 
+  if (refKo.size === 0) none.ko++;
   if (refKo.size > 0) {
     const stems = [...refKo].map(koStem).filter(Boolean);
     const ours = e.senses.flatMap((s) =>
@@ -178,8 +188,10 @@ for (const e of entries) {
     // 고르게 달아 두지 않는다 — pool 에는 '포켓볼' 만 있는 식이다. 뜻 단위로
     // 따지면 멀쩡한 자리가 무더기로 걸린다. 하나도 안 맞을 때만 올린다.
     if (ours.length > 0 && !ours.some((o) => stems.some((r) => koSame(o, r)))) {
-      found.meaning.push(
-        `${at} — 우리 뜻 [${e.senses.map((s) => s.meaning).join(' / ')}] / 사전은 [${[...refKo].slice(0, 8).join(', ')}]`,
+      // 위키낱말사전은 번역을 뜻마다 고르게 달지 않는다. 안 겹친다고
+      // 틀린 것이 아니라 사전이 그 뜻을 안 담았을 뿐인 경우가 훨씬 많다.
+      found.maybe.push(
+        `뜻 · ${at} — 우리 [${e.senses.map((s) => s.meaning).join(' / ')}] / 사전 [${[...refKo].slice(0, 8).join(', ')}]`,
       );
     }
   }
@@ -190,7 +202,7 @@ for (const e of entries) {
   for (const s of e.senses) {
     for (const ex of s.examples) {
       if (!usesWord(ex.en, forms)) {
-        found.exWord.push(`${e.level}:${ex.line} ${e.word} — 예문에 표제어가 안 보임: "${ex.en}"`);
+        found.sure.push(`예문 · ${e.level}:${ex.line} ${e.word} — 표제어가 안 보임: "${ex.en}"`);
       }
     }
   }
@@ -217,27 +229,34 @@ function usesWord(sentence, forms) {
 
 /* ---------- 보고 ---------- */
 
-/** 화면에 다 쏟으면 읽을 수가 없다. 파일로 받을 때는 VERIFY_FULL=1. */
-const LIMIT = process.env.VERIFY_FULL ? Infinity : 60;
+/**
+ * 화면에 다 쏟으면 읽을 수가 없다. 갈래마다 이만큼만 찍는다.
+ * 파일로 받아 훑을 때는 `LIMIT=2000 npm run verify:meaning …` 처럼 늘린다.
+ */
+const LIMIT = Number(process.env.LIMIT ?? 60);
 
 const scope = onlyLevel ? `레벨 ${onlyLevel}` : '전체';
 console.log(`\n뜻·품사 사전 대조 — ${scope} · 표제어 ${entries.length}\n`);
 
 const sections = [
-  ['사전에 없는 표제어', found.unknown],
-  ['품사', found.pos],
-  ['뜻', found.meaning],
-  ['예문에 표제어 없음', found.exWord],
+  ['❌', '확실한 오류 — 사전이 그 낱말을 아는데 우리와 어긋난다', found.sure],
+  ['?', '확인 필요 — 사전 쪽 자료가 성길 수 있다', found.maybe],
 ];
 
 let total = 0;
-for (const [title, list] of sections) {
+for (const [mark, title, list] of sections) {
   const uniq = [...new Set(list)];
   total += uniq.length;
-  console.log(`${uniq.length === 0 ? '✅' : '⚠️ '} ${title}: ${uniq.length}건`);
+  console.log(`${uniq.length === 0 ? '✅' : mark} ${title}: ${uniq.length}건`);
   for (const line of uniq.slice(0, LIMIT)) console.log(`     ${line}`);
-  if (uniq.length > LIMIT) console.log(`     … 그 밖에 ${uniq.length - LIMIT}건 (VERIFY_FULL=1 로 다 봅니다)`);
+  if (uniq.length > LIMIT) {
+    console.log(`     … 그 밖에 ${uniq.length - LIMIT}건 (LIMIT=2000 으로 다 봅니다)`);
+  }
   console.log('');
 }
 
-console.log(`합계 ${total}건 — 전부 '사람이 봐야 할 것'이지 '틀린 것'이 아닙니다.`);
+console.log(
+  `대조할 자료가 없어 넘어간 것 — 표제어가 사전에 없음 ${none.word}개 · ` +
+    `그 품사에 한국어 번역이 없음 ${none.ko}개`,
+);
+console.log(`\n합계 ${total}건. 자동으로 고치지 않았습니다 — 판단은 사람이 합니다.`);

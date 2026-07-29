@@ -49,6 +49,8 @@
     "relink": "node scripts/relink-eas.mjs",
     "audit": "node scripts/audit.mjs",
     "verify": "node scripts/verify-relations.mjs",
+    "verify:meaning": "node scripts/verify-meaning.mjs",
+    "reference": "node scripts/fetch-reference.mjs",
     "export": "node scripts/export-review.mjs"
   },
   "private": true

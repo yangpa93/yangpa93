@@ -7,9 +7,16 @@
  */
 
 import { DailyReport, reportHeadline, reportText, WeeklySummary } from './report';
+import appJson from '../../app.json';
 
-/** 딥링크 스킴. app.json의 `scheme`과 같아야 한다. */
-export const LINK_SCHEME = 'urivocab';
+/**
+ * 딥링크 스킴.
+ *
+ * `app.json` 의 `scheme` 을 **직접 읽는다.** 두 곳에 따로 적어 두면 한쪽만
+ * 바꿨을 때 링크가 조용히 안 열린다 — 앱은 멀쩡히 뜨고 아무 일도 안 일어나서
+ * 무엇이 잘못됐는지 알기 어렵다. 한 곳만 보게 해서 어긋날 자리를 없앤다.
+ */
+export const LINK_SCHEME: string = appJson.expo.scheme;
 
 export const EXPO_PUSH_ENDPOINT = 'https://exp.host/--/api/v2/push/send';
 

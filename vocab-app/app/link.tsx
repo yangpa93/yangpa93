@@ -7,7 +7,7 @@ import { fetchPushToken, isValidPushToken, sendHelloToParent } from '../src/feat
 import { colors, spacing } from '../src/theme';
 
 /**
- * 부모님 폰이 보낸 연결 링크(`urivocab://link?token=...`)를 처리한다.
+ * 부모님 폰이 보낸 연결 링크(`gomtangvoca://link?token=...`)를 처리한다.
  *
  * 바로 연결해 버리지 않고 한 번 확인을 받는다. 부모님이 자기 폰에서
  * 실수로 링크를 누르면 자기 자신과 연결되어 버리기 때문이다.

@@ -4,6 +4,7 @@ import {
   buildNudgeBody,
   buildPushBody,
   isValidPushToken,
+  LINK_SCHEME,
   NUDGE_PRESETS,
   parseHello,
   parseIncoming,
@@ -14,6 +15,7 @@ import {
 import { buildDailyReport } from '../src/features/report';
 import { ALL_ENTRIES, entriesOf } from '../src/data';
 import { Profile, ProfileData } from '../src/types';
+import appJson from '../app.json';
 
 const TODAY = '2026-07-27';
 const TOKEN = 'ExponentPushToken[abcd1234EFGH5678ijkl]';
@@ -69,7 +71,8 @@ describe('isValidPushToken', () => {
 describe('buildLinkUrl', () => {
   it('앱 스킴으로 된 링크를 만든다', () => {
     const url = buildLinkUrl(TOKEN, '엄마 폰');
-    expect(url.startsWith('urivocab://link?')).toBe(true);
+    // app.json 의 scheme 을 그대로 쓴다. 두 곳에 적어 두면 한쪽만 바뀐다.
+    expect(url.startsWith(`${LINK_SCHEME}://link?`)).toBe(true);
   });
 
   it('한글 이름과 대괄호를 안전하게 인코딩한다', () => {
@@ -254,5 +257,18 @@ describe('리포트에 아이 주소 싣기', () => {
     const report = buildDailyReport(makeProfile(), makeData(), ALL_ENTRIES, TODAY);
     const body = buildPushBody('부모주소', toPayload(report, undefined, TOKEN));
     expect(parseIncoming(body.data)?.childToken).toBe(TOKEN);
+  });
+});
+
+describe('딥링크 스킴', () => {
+  it('app.json 의 scheme 과 같다', () => {
+    // 두 곳에 따로 적어 두면 한쪽만 바꿨을 때 링크가 조용히 안 열린다.
+    // 앱은 멀쩡히 뜨고 아무 일도 안 일어나서 원인을 찾기 어렵다.
+    expect(LINK_SCHEME).toBe(appJson.expo.scheme);
+    expect(LINK_SCHEME.length).toBeGreaterThan(0);
+  });
+
+  it('링크가 그 스킴으로 시작한다', () => {
+    expect(buildLinkUrl(TOKEN, '엄마 폰').startsWith(`${LINK_SCHEME}://`)).toBe(true);
   });
 });

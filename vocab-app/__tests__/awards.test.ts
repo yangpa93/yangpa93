@@ -166,6 +166,32 @@ describe('availableAwards', () => {
     expect(awards).toEqual([]);
   });
 
+  it('레벨 시험 하나를 통과하면 요구권이 딱 한 장 생긴다', () => {
+    // 아이 화면의 '🎟️ 요구권 N장 신청하기'가 이 규칙으로 셈된다.
+    const one = availableAwards(
+      makeProfile({ pendingLevelUps: ['m1-1' as LevelId] }),
+      makeData(),
+      '2026-07-27',
+    );
+    expect(one).toHaveLength(1);
+    expect(one[0].kind).toBe('levelup');
+
+    // 두 레벨을 끝냈으면 두 장. 레벨 하나에 한 장이다.
+    const two = availableAwards(
+      makeProfile({ pendingLevelUps: ['m1-1' as LevelId, 'm1-2' as LevelId] }),
+      makeData(),
+      '2026-07-27',
+    );
+    expect(two).toHaveLength(2);
+    expect(two.every((a) => a.kind === 'levelup')).toBe(true);
+  });
+
+  it('한 달 개근하면 요구권이 딱 한 장 생긴다', () => {
+    const one = availableAwards(makeProfile(), makeData(studiedDays('2026-06', 30)), '2026-07-27');
+    expect(one).toHaveLength(1);
+    expect(one[0].kind).toBe('perfectMonth');
+  });
+
   it('레벨업과 개근이 겹치면 둘 다 나온다', () => {
     const days = studiedDays('2026-06', 30);
     const awards = availableAwards(

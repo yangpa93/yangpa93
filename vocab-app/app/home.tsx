@@ -13,6 +13,7 @@ import {
   availableAwards,
   awardRates,
   formatWon,
+  levelUpAmount,
   perfectMonthProgress,
 } from '../src/features/awards';
 import { buildInfo, buildLabel } from '../src/features/build-info';
@@ -106,6 +107,8 @@ export default function Home() {
   const build = buildInfo();
   const awards = availableAwards(profile, data, today, rates);
   const perfect = perfectMonthProgress(data.days, today);
+  // 지금 레벨을 끝내면 얼마인지. 중학교와 고등학교 금액이 다르다.
+  const levelAward = levelUpAmount(profile.level, rates);
   const decided = myRewards.filter((r) => r.status !== 'pending');
 
   return (
@@ -330,14 +333,59 @@ export default function Home() {
         </Card>
       ) : null}
 
-      {awards.length > 0 ? (
-        <Button
-          title={`🎟️ 요구권 ${awards.length}장 신청하기 (${formatWon(awards.reduce((n, a) => n + a.amount, 0))})`}
-          variant="secondary"
-          onPress={() => router.push('/levelup')}
-          style={{ marginTop: spacing.md }}
-        />
-      ) : null}
+      {/*
+        요구권 자리는 **늘 보여준다.**
+
+        예전에는 받을 것이 하나도 없으면 이 자리가 통째로 사라졌다. 그러면
+        아이는 요구권이라는 것이 있는 줄도 모른 채 공부한다. 보상은 받을 때가
+        아니라 **바라볼 때** 힘이 된다. 0장이어도 어떻게 하면 한 장이 생기는지,
+        얼마인지를 적어 둔다.
+      */}
+      <Card style={{ marginTop: spacing.md }}>
+        <H3>🎟️ 내 요구권</H3>
+
+        {awards.length > 0 ? (
+          <>
+            <Muted style={{ marginTop: spacing.sm }}>
+              {awards.length}장이 생겼어요. 신청하면 부모님이 확인하세요.
+            </Muted>
+            <Button
+              title={`🎟️ 요구권 ${awards.length}장 신청하기 (${formatWon(
+                awards.reduce((n, a) => n + a.amount, 0),
+              )})`}
+              variant="secondary"
+              onPress={() => router.push('/levelup')}
+              style={{ marginTop: spacing.md }}
+            />
+          </>
+        ) : (
+          <>
+            <Muted style={{ marginTop: spacing.sm }}>
+              아직 받을 요구권이 없어요. 이렇게 하면 한 장씩 생겨요.
+            </Muted>
+            <View style={{ marginTop: spacing.md, gap: spacing.sm }}>
+              <Row style={{ justifyContent: 'space-between' }}>
+                <Body style={{ flex: 1 }}>
+                  🏅 레벨 시험 통과 —{' '}
+                  {progress.canTakeExam
+                    ? '지금 볼 수 있어요!'
+                    : `${progress.remaining}개 더 외우면 볼 수 있어요`}
+                </Body>
+                <Body style={{ fontWeight: '800' }}>{formatWon(levelAward)}</Body>
+              </Row>
+              <Row style={{ justifyContent: 'space-between' }}>
+                <Body style={{ flex: 1 }}>
+                  🗓️ 한 달 개근 —{' '}
+                  {!perfect.alive
+                    ? '다음 달에 다시 도전해요'
+                    : `${perfect.total - perfect.elapsed}일 남았어요`}
+                </Body>
+                <Body style={{ fontWeight: '800' }}>{formatWon(rates.perfectMonth)}</Body>
+              </Row>
+            </View>
+          </>
+        )}
+      </Card>
     </Screen>
   );
 }

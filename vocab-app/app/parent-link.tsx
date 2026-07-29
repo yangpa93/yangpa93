@@ -6,6 +6,7 @@ import { useApp } from '../src/store/AppProvider';
 import { buildLinkUrl, fetchPushToken, isValidPushToken } from '../src/features/push';
 import { formatKo } from '../src/lib/date';
 import { colors, radius, spacing } from '../src/theme';
+import { APP_NAME } from '../src/features/build-info';
 
 /**
  * 부모님 폰과 아이 기기를 연결하는 화면.
@@ -93,7 +94,7 @@ export default function ParentLinkScreen() {
     const url = buildLinkUrl(state.myPushToken, name);
     await Share.share({
       message:
-        `[가가_Voca] ${name} 연결하기\n\n` +
+        `[${APP_NAME}] ${name} 연결하기\n\n` +
         `아이 기기에서 아래 링크를 눌러 주세요.\n${url}\n\n` +
         `링크가 안 열리면 아래 주소를 복사해서\n아이 기기 → 부모님 모드 → 부모님 폰 연결 → 붙여넣기 하세요.\n\n${state.myPushToken}`,
     }).catch(() => {});

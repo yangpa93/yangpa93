@@ -2,6 +2,8 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
+    // app.json 에서 앱 이름을 읽어 온다 (src/features/app-name.ts)
+    "resolveJsonModule": true,
     "types": [
       "jest"
     ]

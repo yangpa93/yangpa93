@@ -17,6 +17,7 @@ import {
 } from '../src/features/backup';
 import { emptyProfileData, emptyState } from '../src/store/storage';
 import { AppState, CardState, DailyRecord, Profile, ProfileData, RewardRequest } from '../src/types';
+import { APP_NAME } from '../src/features/app-name';
 
 function makeProfile(over: Partial<Profile> = {}): Profile {
   return {
@@ -192,7 +193,9 @@ describe('readBackup', () => {
     // 엉뚱한 파일을 덮어쓰기로 밀어 넣으면 기록이 통째로 날아간다.
     const r = readBackup(JSON.stringify({ hello: 'world' }));
     expect(r.ok).toBe(false);
-    if (!r.ok) expect(r.reason).toContain('가가_Voca');
+    // 앱 이름은 app.json 하나에서 온다. 여기에 이름을 박아 두면
+    // 이름을 바꿀 때마다 테스트가 깨진다.
+    if (!r.ok) expect(r.reason).toContain(APP_NAME);
   });
 
   it('더 새 판에서 만든 백업은 거절한다', () => {

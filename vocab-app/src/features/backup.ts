@@ -13,6 +13,7 @@
 
 import { AppState, Profile, ProfileData, RewardRequest } from '../types';
 import { emptyProfileData } from '../store/storage';
+import { APP_NAME } from './app-name';
 
 /**
  * 백업 파일 판.
@@ -115,7 +116,7 @@ export function readBackup(text: string, currentFormat: number = BACKUP_FORMAT):
   const b = parsed as Partial<BackupFile>;
 
   if (b.app !== 'urivocab') {
-    return { ok: false, reason: '가가_Voca 백업 파일이 아니에요. 다른 앱의 파일 같아요.' };
+    return { ok: false, reason: `${APP_NAME} 백업 파일이 아니에요. 다른 앱의 파일 같아요.` };
   }
   if (typeof b.format !== 'number') {
     return { ok: false, reason: '백업 파일이 손상됐어요.' };

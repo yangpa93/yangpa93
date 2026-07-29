@@ -5,7 +5,7 @@ import { Button, Card, Chip, H3, Muted, Row, Screen } from '../src/components/ui
 import { useApp } from '../src/store/AppProvider';
 import { AwardRates, LEVEL_SHORT, LevelId } from '../src/types';
 import { awardRates, formatWon } from '../src/features/awards';
-import { buildInfo, buildLabel, feedbackHeader } from '../src/features/build-info';
+import { APP_NAME, buildInfo, buildLabel, feedbackHeader } from '../src/features/build-info';
 import { LevelPicker } from '../src/components/LevelPicker';
 import { colors, font, radius, spacing } from '../src/theme';
 
@@ -386,7 +386,7 @@ export default function ParentSettings() {
                 variant="secondary"
                 onPress={() => {
                   Share.share({
-                    message: `[가가_Voca 베타 의견]\n\n무엇이 이상했나요?\n\n\n어떻게 하면 다시 나타나나요?\n\n\n${feedbackHeader(build)}`,
+                    message: `[${APP_NAME} 베타 의견]\n\n무엇이 이상했나요?\n\n\n어떻게 하면 다시 나타나나요?\n\n\n${feedbackHeader(build)}`,
                   }).catch(() => {});
                 }}
                 style={{ marginTop: spacing.md }}

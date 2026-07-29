@@ -11,6 +11,10 @@ import * as Application from 'expo-application';
 import Constants from 'expo-constants';
 import * as Updates from 'expo-updates';
 import { Platform } from 'react-native';
+import { APP_NAME } from './app-name';
+
+// 예전부터 여기서 가져다 쓰던 자리가 있어 그대로 내보낸다.
+export { APP_NAME };
 
 export interface BuildInfo {
   /** 앱 판 (0.9.0) */
@@ -83,7 +87,7 @@ export function buildLabel(info: BuildInfo = buildInfo()): string {
 export function feedbackHeader(info: BuildInfo = buildInfo()): string {
   return [
     '── 아래는 지우지 말아 주세요 ──',
-    `앱: 가가_Voca ${buildLabel(info)}`,
+    `앱: ${APP_NAME} ${buildLabel(info)}`,
     `보낸 때: ${new Date().toLocaleString('ko-KR')}`,
   ].join('\n');
 }

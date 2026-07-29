@@ -139,7 +139,7 @@ npx eas-cli@latest update --branch beta --message "예문 오타 수정"
 
 무선 업데이트로 안 되는 것도 있습니다. **네이티브 모듈이 늘거나, app.json의
 앱 이름·권한·아이콘·판 번호가 바뀌면 반드시 APK를 다시 만들어야** 합니다.
-(백업 기능을 넣을 때 `expo-file-system`이 늘었던 것, 앱 이름을 `가가_Voca`로
+(백업 기능을 넣을 때 `expo-file-system`이 늘었던 것, 앱 이름을 `곰탱이보카`로
 바꾼 것이 그런 경우입니다.)
 
 ## 8. `git pull`이 충돌할 때
@@ -227,7 +227,7 @@ npx eas-cli@latest submit --platform ios --latest
 선택창이 뜹니다.
 
 ```
-[가가_Voca 베타 의견]
+[곰탱이보카 베타 의견]
 
 무엇이 이상했나요?
 
@@ -236,7 +236,7 @@ npx eas-cli@latest submit --platform ios --latest
 
 
 ── 아래는 지우지 말아 주세요 ──
-앱: 가가_Voca 베타 0.9.0 (3) · android
+앱: 곰탱이보카 베타 0.9.0 (3) · android
 보낸 때: 2026. 7. 28. 오후 3:12
 ```
 

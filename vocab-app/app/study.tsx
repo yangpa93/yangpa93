@@ -11,7 +11,7 @@ import { useApp } from '../src/store/AppProvider';
 import { ALL_ENTRIES, entriesOf } from '../src/data';
 import { senseExposure } from '../src/data/entry';
 import { buildRounds, buildSession, SessionItem } from '../src/srs/session';
-import { tapCorrect, tapWrong, stopSpeaking } from '../src/lib/feedback';
+import { soundCorrect, soundWrong, tapCorrect, tapWrong, stopSpeaking } from '../src/lib/feedback';
 import { GAME_LABEL, STAGE_LABEL } from '../src/types';
 import { colors, font, radius, spacing } from '../src/theme';
 
@@ -80,8 +80,11 @@ export default function Study() {
       }));
 
       if (correct) {
+        // 딩동댕은 소리 스위치를, 진동은 진동 스위치를 따른다.
+        soundCorrect(profile.settings.ttsEnabled);
         tapCorrect(profile.settings.hapticsEnabled);
       } else {
+        soundWrong(profile.settings.ttsEnabled);
         tapWrong(profile.settings.hapticsEnabled);
         // 마지막 라운드에서 틀린 단어는 세션 끝에 한 번 더 만난다.
         const isLastRound = current.round >= profile.settings.rounds - 1;

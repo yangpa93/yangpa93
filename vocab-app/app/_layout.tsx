@@ -1,12 +1,20 @@
+import { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppProvider } from '../src/store/AppProvider';
 import { PushBridge } from '../src/features/PushBridge';
+import { prepareSounds } from '../src/lib/feedback';
 import { colors } from '../src/theme';
 
 export default function RootLayout() {
+  // 효과음을 미리 열어 둔다. 첫 문제를 풀 때 소리가 늦게 나오지 않도록,
+  // 그리고 무음 스위치를 켠 아이폰에서도 들리도록.
+  useEffect(() => {
+    void prepareSounds();
+  }, []);
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>

@@ -18,12 +18,13 @@
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
-import { buildPushBody, EXPO_PUSH_ENDPOINT, PushPayload } from './pairing';
+import { buildPushBody, EXPO_PUSH_ENDPOINT, pushFailureReason, PushPayload } from './pairing';
 
 // 순수 로직은 pairing.ts에 있다. 호출부가 한 곳만 보면 되도록 다시 내보낸다.
 export {
   buildLinkUrl,
   isValidPushToken,
+  pushFailureReason,
   LINK_SCHEME,
   parseIncoming,
   toPayload,
@@ -33,10 +34,15 @@ export type { PushPayload } from './pairing';
 /**
  * 이 기기의 Expo 푸시 토큰을 발급받는다. 부모 기기에서만 쓴다.
  *
- * 실패하면 null. 실패 이유는 대개 셋 중 하나다.
- *  - Expo Go로 실행 중 (실제 빌드가 아님)
- *  - 알림 권한을 거부함
- *  - `eas init`을 하지 않아 프로젝트 ID가 없음
+ * 실패하면 null과 함께 **왜 실패했는지**를 돌려준다. 예전에는 어떤 오류가
+ * 나든 "Expo Go에서는 받을 수 없습니다"라고만 했다. EAS로 제대로 빌드한
+ * 앱에서도 그 말이 나와서, 무엇이 잘못됐는지 알 길이 없었다. 실제로 그렇게
+ * 한나절을 잃었다.
+ *
+ * 안드로이드에서 가장 흔한 원인은 **FCM 설정이 없는 것**이다. 구글이 안드로이드
+ * 푸시를 FCM으로만 받게 해 두어서, 파이어베이스 설정 파일(google-services.json)
+ * 과 EAS에 올린 열쇠가 둘 다 있어야 토큰이 나온다. 그 경우 원래 오류에
+ * 'FCM' 또는 'FirebaseApp' 이 들어 있다.
  */
 export async function fetchPushToken(): Promise<{ token: string | null; reason?: string }> {
   const perm = await Notifications.getPermissionsAsync();
@@ -59,11 +65,7 @@ export async function fetchPushToken(): Promise<{ token: string | null; reason?:
     const res = await Notifications.getExpoPushTokenAsync({ projectId });
     return { token: res.data };
   } catch (e) {
-    return {
-      token: null,
-      reason:
-        'Expo Go에서는 푸시 토큰을 받을 수 없습니다. EAS로 빌드한 앱에서 다시 시도해 주세요.',
-    };
+    return { token: null, reason: pushFailureReason(e, Constants.appOwnership === 'expo') };
   }
 }
 

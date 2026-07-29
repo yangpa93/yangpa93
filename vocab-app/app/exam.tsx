@@ -21,7 +21,7 @@ import { useApp } from '../src/store/AppProvider';
 import { entriesOf } from '../src/data';
 import { senseExposure } from '../src/data/entry';
 import { buildExam, ExamItem, nextRetryRound } from '../src/srs/exam';
-import { tapCorrect, tapWrong, stopSpeaking } from '../src/lib/feedback';
+import { soundCorrect, soundWrong, tapCorrect, tapWrong, stopSpeaking } from '../src/lib/feedback';
 import { GAME_LABEL, LEVEL_SHORT } from '../src/types';
 import { colors, font, radius, spacing } from '../src/theme';
 
@@ -62,9 +62,12 @@ export default function Exam() {
       });
 
       if (correct) {
+        // 딩동댕은 소리 스위치를, 진동은 진동 스위치를 따른다.
+        soundCorrect(profile.settings.ttsEnabled);
         tapCorrect(profile.settings.hapticsEnabled);
         if (!current.isRetry) setFirstTryCorrect((n) => n + 1);
       } else {
+        soundWrong(profile.settings.ttsEnabled);
         tapWrong(profile.settings.hapticsEnabled);
         setWrongThisRound((w) => [...w, current]);
       }

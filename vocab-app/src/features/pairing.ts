@@ -78,3 +78,42 @@ export function buildPushBody(token: string, payload: PushPayload) {
     data: { kind: 'daily-report', ...payload },
   };
 }
+
+
+/**
+ * 푸시 토큰 발급이 실패한 까닭을 사람이 읽을 수 있는 말로.
+ *
+ * 예전에는 어떤 오류가 나든 "Expo Go에서는 받을 수 없습니다"라고만 했다.
+ * EAS로 제대로 빌드한 앱에서도 그 말이 나와서, 무엇이 잘못됐는지 알 길이
+ * 없었다. 실제로 그렇게 한나절을 잃었다.
+ *
+ * 짐작되는 원인을 앞에 적고 **원래 오류도 함께** 남긴다. 짐작이 틀렸을 때
+ * 원래 오류가 없으면 더 볼 것이 없어진다.
+ *
+ * 안드로이드에서 가장 흔한 원인은 FCM 설정이 없는 것이다. 구글이 안드로이드
+ * 푸시를 FCM으로만 받게 해 두어서, 파이어베이스 설정 파일과 EAS에 올린 열쇠가
+ * 둘 다 있어야 토큰이 나온다.
+ *
+ * @param isExpoGo Expo Go로 돌고 있는지. 네이티브 모듈을 여기서 읽지 않으려고
+ *                 밖에서 받는다 — 이 파일은 기기 없이 테스트할 수 있어야 한다.
+ */
+export function pushFailureReason(e: unknown, isExpoGo = false): string {
+  const raw = e instanceof Error ? e.message : String(e);
+
+  if (isExpoGo) {
+    return 'Expo Go에서는 푸시 토큰을 받을 수 없습니다. EAS로 빌드한 앱에서 다시 시도해 주세요.';
+  }
+
+  if (/FCM|FirebaseApp|google-services/i.test(raw)) {
+    return (
+      '안드로이드 푸시(FCM) 설정이 없습니다. 컴퓨터에서 파이어베이스 설정을 마치고 ' +
+      `앱을 다시 빌드해 주세요.\n\n원래 오류: ${raw}`
+    );
+  }
+
+  if (/network|timeout|ENOTFOUND|fetch/i.test(raw)) {
+    return `인터넷 연결을 확인해 주세요.\n\n원래 오류: ${raw}`;
+  }
+
+  return `푸시 토큰을 받지 못했습니다.\n\n원래 오류: ${raw}`;
+}

@@ -1,4 +1,10 @@
-import { buildLinkUrl, isValidPushToken, parseIncoming, toPayload } from '../src/features/pairing';
+import {
+  buildLinkUrl,
+  isValidPushToken,
+  parseIncoming,
+  pushFailureReason,
+  toPayload,
+} from '../src/features/pairing';
 import { buildDailyReport } from '../src/features/report';
 import { ALL_ENTRIES, entriesOf } from '../src/data';
 import { Profile, ProfileData } from '../src/types';
@@ -146,5 +152,31 @@ describe('parseIncoming', () => {
   it('빠진 필드는 안전한 기본값으로 채운다', () => {
     const r = parseIncoming({ kind: 'daily-report', childName: '지호', date: TODAY });
     expect(r).toEqual({ childName: '지호', date: TODAY, headline: '', detail: '', completed: false });
+  });
+});
+
+describe('푸시 토큰 실패 이유', () => {
+  it('FCM 설정이 없으면 그것을 짚어 준다', () => {
+    // 안드로이드에서 가장 흔한 원인이다. 예전에는 이것도 "Expo Go" 라고 했다.
+    const r = pushFailureReason(new Error('Default FirebaseApp is not initialized'));
+    expect(r).toContain('FCM');
+    expect(r).not.toContain('Expo Go');
+  });
+
+  it('원래 오류를 반드시 함께 남긴다', () => {
+    // 짐작이 틀렸을 때 원래 오류가 없으면 더 볼 것이 없어진다.
+    for (const msg of ['something odd', 'network request failed', 'FCM missing']) {
+      expect(pushFailureReason(new Error(msg))).toContain(msg);
+    }
+  });
+
+  it('Error 가 아닌 것이 와도 견딘다', () => {
+    expect(pushFailureReason('그냥 문자열')).toContain('그냥 문자열');
+    expect(pushFailureReason(undefined)).toBeTruthy();
+  });
+
+  it('Expo Go 일 때만 Expo Go 를 탓한다', () => {
+    expect(pushFailureReason(new Error('아무거나'), true)).toContain('Expo Go');
+    expect(pushFailureReason(new Error('아무거나'), false)).not.toContain('Expo Go');
   });
 });

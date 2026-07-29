@@ -86,18 +86,36 @@ function koStem(s) {
 }
 
 /**
+ * 받침을 뗀다. '어둡' → '어두', '파랗' → '파라'.
+ *
+ * 한국어의 ㅂ·ㅎ 불규칙 때문이다. 우리는 '어두운·파란' 으로 적고 사전은
+ * '어둡다·파랗다' 로 적는데, 어간의 받침이 활용에서 사라진다. 받침을 떼고
+ * 견주면 '어두'와 '어두', '파라'와 '파라'로 같아진다.
+ */
+function bare(s) {
+  let out = '';
+  for (const ch of s) {
+    const c = ch.codePointAt(0);
+    if (c >= 0xac00 && c <= 0xd7a3) out += String.fromCodePoint(c - ((c - 0xac00) % 28));
+    else out += ch;
+  }
+  return out;
+}
+
+/**
  * 두 뜻이 같은 말인가.
  *
  * 한쪽이 다른 쪽을 품으면 같은 말로 본다 ('되' ⊂ '이 되'). 그것도 아니면
- * 앞 두 음절이 같은지 본다 — '아름다운'과 '아름답다'는 어미만 다르고
- * 앞은 같다. 한 음절짜리는 우연히 겹치기 쉬우므로 이 규칙에서 뺀다.
+ * 받침을 떼고 앞 두 음절을 견준다 — '어두운'과 '어둡다'는 어미만 다르고
+ * 어간은 같다. 한 음절짜리는 우연히 겹치기 쉬우므로 이 규칙에서 뺀다.
  */
 function koSame(a, b) {
   if (!a || !b) return false;
   if (a === b || a.includes(b) || b.includes(a)) return true;
-  const ha = a.replace(/[^가-힣]/g, '');
-  const hb = b.replace(/[^가-힣]/g, '');
-  return ha.length >= 2 && hb.length >= 2 && ha.slice(0, 2) === hb.slice(0, 2);
+  const ha = bare(a).replace(/[^가-힣]/g, '');
+  const hb = bare(b).replace(/[^가-힣]/g, '');
+  if (ha.length < 2 || hb.length < 2) return false;
+  return ha.slice(0, 2) === hb.slice(0, 2);
 }
 
 /* ---------- 검사 ---------- */
@@ -134,13 +152,21 @@ for (const e of entries) {
 
   /* 3. 우리 뜻이 사전의 한국어 번역과 한 군데도 안 맞음 */
 
+  /**
+   * 사전 쪽 한국어 번역을 모은다. **우리가 실은 품사에 해당하는 것만** 본다.
+   *
+   * brush 를 우리는 동사로 실었는데(솔로 닦다) 사전의 명사 번역(솔, 브러시)과
+   * 맞대면 어긋난 것처럼 보인다. 품사가 다르면 뜻이 다른 게 당연하다.
+   * 해당 품사에 번역이 하나도 없으면 할 말이 없으니 넘어간다.
+   */
+  const want = new Set(ourPosParts(e.pos).flatMap((p) => POS_MAP[p] ?? []));
   const refKo = new Set();
   for (const r of ref) {
+    if (want.size > 0 && !want.has(r.pos)) continue;
     for (const k of r.ko) refKo.add(k);
     for (const sn of r.senses) for (const k of sn.ko) refKo.add(k);
   }
 
-  // 번역이 아예 없는 낱말이 많다. 없으면 할 말이 없으니 넘어간다.
   if (refKo.size > 0) {
     const stems = [...refKo].map(koStem).filter(Boolean);
     const ours = e.senses.flatMap((s) =>
@@ -148,9 +174,8 @@ for (const e of entries) {
     );
 
     // 뜻 하나하나가 아니라 낱말 단위로 본다. 위키낱말사전은 번역을 뜻마다
-    // 고르게 달아 두지 않는다 — pool 에는 '포켓볼' 만, overall 에는 '멜빵바지'
-    // 만 있는 식이다. 그래서 뜻 단위로 따지면 멀쩡한 자리가 무더기로 걸린다.
-    // 하나도 안 맞을 때만, 즉 낱말을 통째로 잘못 봤을 때만 올린다.
+    // 고르게 달아 두지 않는다 — pool 에는 '포켓볼' 만 있는 식이다. 뜻 단위로
+    // 따지면 멀쩡한 자리가 무더기로 걸린다. 하나도 안 맞을 때만 올린다.
     if (ours.length > 0 && !ours.some((o) => stems.some((r) => koSame(o, r)))) {
       found.meaning.push(
         `${at} — 우리 뜻 [${e.senses.map((s) => s.meaning).join(' / ')}] / 사전은 [${[...refKo].slice(0, 8).join(', ')}]`,

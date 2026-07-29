@@ -42,6 +42,14 @@ function names(list) {
   return (list ?? []).map((x) => x?.word).filter((w) => typeof w === 'string');
 }
 
+/** 한국어 번역만 골라 낱말을 뽑는다. 한글이 아닌 것(로마자 표기)은 버린다. */
+function korean(list) {
+  return (list ?? [])
+    .filter((t) => t?.lang_code === 'ko' && typeof t.word === 'string')
+    .map((t) => t.word)
+    .filter((w) => /[가-힣]/.test(w));
+}
+
 const KEY = '"word": "';
 
 /** 줄 안에 우리가 찾는 낱말이 하나라도 보이는가. */
@@ -169,13 +177,15 @@ for await (const line of rl) {
       gloss: (s.glosses ?? s.raw_glosses ?? []).join(' '),
       tags: s.tags ?? [],
       topics: s.topics ?? [],
-      // 뜻마다 붙은 유의어. 우리 데이터의 syn 과 맞대 볼 유일한 기계 신호다.
       syn: names(s.synonyms),
+      // 뜻마다 붙은 한국어 번역. 우리 뜻과 곧바로 맞대 볼 수 있는 유일한 것이다.
+      ko: korean(s.translations),
     }))
     .filter((s) => s.gloss);
 
-  // 뜻이 아니라 낱말 전체에 붙은 유의어도 있다. 둘 다 모은다.
+  // 뜻이 아니라 낱말 전체에 붙은 것도 있다. 둘 다 모은다.
   const wordSyn = names(o.synonyms);
+  const wordKo = korean(o.translations);
   if (senses.length === 0) continue;
 
   if (!found.has(word)) found.set(word, []);
@@ -183,6 +193,7 @@ for await (const line of rl) {
     pos: o.pos,
     senses,
     syn: wordSyn,
+    ko: wordKo,
     forms: (o.forms ?? []).map((f) => f.form).filter(Boolean).slice(0, 12),
   });
   kept++;

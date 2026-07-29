@@ -165,41 +165,53 @@ export default function ParentSettings() {
       </Card>
 
       {/*
-        부모님 폰 연결.
-        예전에는 이 카드가 '아이가 있을 때만' 그려지는 블록 안에 있었다.
-        그런데 부모님 전용으로 쓸 폰에는 아이가 없다 — 그래서 정작 필요한
-        기기에서 연결 버튼이 아예 안 보였다. 아이 수와 무관하게 내놓는다.
+        연결 카드는 **한 번에 하나만** 보인다.
+
+        예전에는 '부모님 폰 연결하기'(이 폰의 기록을 남에게 보낸다)와
+        '아이 기기와 연결하기'(남의 기록을 이 폰이 받는다)가 나란히 있었다.
+        방향이 정반대인 두 가지가 같은 화면에 있으니, 부모님 폰에서 자기
+        폰을 또 연결하라는 말처럼 읽혔다.
+
+        이 폰이 무엇인지 이미 정해졌으면 그쪽만 보여준다.
+         · 아이들 리포트를 받고 있다  → 부모님 폰이다
+         · 부모님 폰에 연결돼 있다    → 아이 폰이다
+        아직 아무것도 아니면 무엇을 고를지 묻는다.
       */}
+      {state.receivesReports ? (
+        <InviteChildCard />
+      ) : state.parentLink ? (
         <Card style={{ marginTop: spacing.md }}>
           <H3>부모님 폰으로 알림 받기</H3>
           <Muted style={{ marginTop: spacing.xs }}>
-            {state.parentLink
-              ? `${state.parentLink.label}에 연결돼 있습니다. 학습이 끝나면 바로 전송됩니다.`
-              : '아직 연결된 부모님 폰이 없습니다. 지금은 이 기기에만 알림이 뜹니다.'}
+            {state.parentLink.label}에 연결돼 있습니다. 학습이 끝나면 바로 전송됩니다.
           </Muted>
-          {state.parentLink ? (
-            <Row style={{ justifyContent: 'space-between', marginTop: spacing.lg }}>
-              <Text style={s.label}>학습 후 자동 전송</Text>
-              <Switch
-                value={state.parent.pushToParent}
-                onValueChange={(v) => updateParent({ pushToParent: v })}
-                trackColor={{ true: colors.parent }}
-              />
-            </Row>
-          ) : null}
+          <Row style={{ justifyContent: 'space-between', marginTop: spacing.lg }}>
+            <Text style={s.label}>학습 후 자동 전송</Text>
+            <Switch
+              value={state.parent.pushToParent}
+              onValueChange={(v) => updateParent({ pushToParent: v })}
+              trackColor={{ true: colors.parent }}
+            />
+          </Row>
           <Button
-            title={state.parentLink ? '연결 관리' : '부모님 폰 연결하기'}
+            title="연결 관리"
             variant="parent"
             onPress={() => router.push('/parent-link')}
             style={{ marginTop: spacing.md }}
           />
         </Card>
-
-        {/*
-          아이 기기를 부르는 쪽. 준비하는 이야기는 전부 여기 있고, 아이
-          화면에는 '승인하기'만 남긴다.
-        */}
-        <InviteChildCard />
+      ) : (
+        <>
+          <Card style={{ marginTop: spacing.md, backgroundColor: colors.bg }}>
+            <H3>이 폰은 어느 쪽인가요?</H3>
+            <Muted style={{ marginTop: spacing.xs }}>
+              부모님 폰이면 아래에서 아이에게 연결 요청을 보내세요.{'\n'}
+              아이 폰이면 부모님이 보낸 링크를 누르면 됩니다.
+            </Muted>
+          </Card>
+          <InviteChildCard />
+        </>
+      )}
 
       {/* 아이 선택 */}
       {state.profiles.length > 1 ? (

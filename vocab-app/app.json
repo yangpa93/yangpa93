@@ -47,6 +47,15 @@
           "color": "#4F46E5"
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "0be0c89b-8196-42a1-868a-d991e6180882"
+      }
+    },
+    "updates": {
+      "url": "https://u.expo.dev/0be0c89b-8196-42a1-868a-d991e6180882"
+    },
+    "owner": "yangpa93s-team"
   }
 }

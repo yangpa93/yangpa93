@@ -59,14 +59,23 @@ export function posLabel(pos: string): string {
  * 바꿔 쓸 수 있다. 유의어는 표제어가 아니라 뜻(sense)마다 붙어 있으므로
  * 조건을 말로 드러내 준다.
  *
- * 카드는 자리가 넓어 긴 쪽, 단어장·오답 노트는 한 줄이라 짧은 쪽을 쓴다.
+ * '이 뜻일 때' 라고만 하면 '이 뜻'이 어느 뜻인지 아이가 되짚어야 한다.
+ * 뜻이 여러 개인 단어에서는 바로 위 줄을 다시 봐야 한다. 그래서 뜻을
+ * 직접 부른다 — 한 줄만 봐도 어느 뜻에 걸리는 말인지 알 수 있다.
+ *
+ * 유의어를 문장 안에 넣지 않고 뒤에 붙이는 것은 조사 때문이다.
+ * `firm 로` 는 틀렸다 — '펌'이라 `으로`가 맞다. `hard`는 '하드'라 `로`가
+ * 맞다. 받침이 붙는지는 영어 낱말을 한글로 어떻게 읽느냐에 달렸고
+ * (look→룩, put→풋), 유의어 목록 끝에 오는 낱말이 1,600가지다.
+ * 규칙으로 고르면 반드시 틀린 자리가 생기고, 아이 화면에 틀린 조사가 남는다.
  */
-export const SYNONYM_LABEL = '이 뜻일 때 바꿔 쓸 수 있어요';
-export const SYNONYM_LABEL_SHORT = '이 뜻일 때';
+export function synonymLead(meaning: string): string {
+  return `"${meaning}" 이라는 뜻일 때 이렇게 바꿔 쓸 수 있어요`;
+}
 
-/** 한 줄로 보여줄 유의어. `'이 뜻일 때 : firm, hard'` */
-export function synonymLine(synonyms: string[]): string {
-  return `${SYNONYM_LABEL_SHORT} : ${synonyms.join(', ')}`;
+/** 유의어까지 한 줄로. `'"단단한" 이라는 뜻일 때 이렇게 바꿔 쓸 수 있어요 : firm, hard'` */
+export function synonymSentence(meaning: string, synonyms: string[]): string {
+  return `${synonymLead(meaning)} : ${synonyms.join(', ')}`;
 }
 
 /** 화면에 한 줄로 보여줄 뜻. 다의어는 `;`로 이어 붙인다. */

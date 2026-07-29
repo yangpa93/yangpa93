@@ -26,7 +26,7 @@ import {
   View,
 } from 'react-native';
 import { VocabEntry } from '../types';
-import { Exposure, posLabel, SYNONYM_LABEL, synonymLine, videoUrl } from '../data/entry';
+import { Exposure, posLabel, synonymLead, synonymSentence, videoUrl } from '../data/entry';
 import { variantOf } from '../data/spelling';
 import { speak, stopSpeaking } from '../lib/feedback';
 import { colors, font, radius, spacing } from '../theme';
@@ -174,7 +174,7 @@ export function WordStoryCard({
           <Text style={s.meaning}>{exp.sense.meaning}</Text>
           {exp.sense.synonyms.length > 0 ? (
             <View style={{ marginTop: spacing.sm }}>
-              <Muted>{SYNONYM_LABEL}</Muted>
+              <Muted>{synonymLead(exp.sense.meaning)}</Muted>
               <Row style={{ marginTop: spacing.xs, gap: spacing.xs, flexWrap: 'wrap' }}>
                 {exp.sense.synonyms.map((syn) => (
                   <View key={syn} style={s.syn}>
@@ -215,7 +215,7 @@ export function WordStoryCard({
                 </Row>
 
                 {sense.synonyms.length > 0 ? (
-                  <Muted style={{ marginTop: 2 }}>{synonymLine(sense.synonyms)}</Muted>
+                  <Muted style={{ marginTop: 2 }}>{synonymSentence(sense.meaning, sense.synonyms)}</Muted>
                 ) : null}
 
                 {sense.examples.map((ex, ei) => (

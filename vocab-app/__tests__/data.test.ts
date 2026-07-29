@@ -10,7 +10,8 @@ import {
   exposure,
   meaningLine,
   posLabel,
-  synonymLine,
+  synonymLead,
+  synonymSentence,
   wordForms,
 } from '../src/data/entry';
 import { ANTONYMS, antonymsOf, hasAntonym } from '../src/data/antonyms';
@@ -294,11 +295,39 @@ describe('posLabel', () => {
   });
 });
 
-describe('synonymLine', () => {
-  it("'=' 대신 그 뜻일 때만 바꿔 쓸 수 있다고 말한다", () => {
-    expect(synonymLine(['firm'])).toBe('이 뜻일 때 : firm');
-    expect(synonymLine(['firm', 'hard'])).toBe('이 뜻일 때 : firm, hard');
-    expect(synonymLine(['firm'])).not.toContain('=');
+describe('유의어 문구', () => {
+  it("'=' 대신 어느 뜻일 때 바꿔 쓸 수 있는지 말한다", () => {
+    expect(synonymSentence('단단한', ['firm'])).toBe(
+      '"단단한" 이라는 뜻일 때 이렇게 바꿔 쓸 수 있어요 : firm',
+    );
+    expect(synonymSentence('단단한', ['firm', 'hard'])).toBe(
+      '"단단한" 이라는 뜻일 때 이렇게 바꿔 쓸 수 있어요 : firm, hard',
+    );
+    expect(synonymSentence('단단한', ['firm'])).not.toContain('=');
+  });
+
+  it('뜻을 직접 불러 준다 — 다의어에서 어느 뜻인지 되짚지 않아도 된다', () => {
+    const multi = ALL_ENTRIES.find(
+      (e) => e.senses.length >= 2 && e.senses.every((s) => s.synonyms.length > 0),
+    );
+    if (!multi) return;
+    for (const sense of multi.senses) {
+      expect(synonymSentence(sense.meaning, sense.synonyms)).toContain(sense.meaning);
+    }
+  });
+
+  it('조사를 쓰지 않는다 — 영어 낱말마다 로/으로 가 갈린다', () => {
+    // firm 은 '펌'이라 으로, hard 는 '하드'라 로. 규칙으로 고를 수 없다.
+    for (const syn of [['firm'], ['hard'], ['look'], ['put up']]) {
+      const line = synonymSentence('단단한', syn);
+      expect(line).not.toMatch(/(으로|로) 바꿔/);
+    }
+  });
+
+  it('칩으로 늘어놓는 자리에서는 유의어를 문장에 넣지 않는다', () => {
+    // 단어 카드의 '오늘 배우는 뜻' 칸은 유의어가 칩으로 따로 나온다.
+    expect(synonymLead('단단한')).toBe('"단단한" 이라는 뜻일 때 이렇게 바꿔 쓸 수 있어요');
+    expect(synonymLead('단단한')).not.toContain('firm');
   });
 });
 

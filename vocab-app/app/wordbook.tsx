@@ -4,7 +4,7 @@ import { Body, Card, Chip, EmptyState, H3, Muted, ProgressBar, Row, Screen } fro
 import { useApp } from '../src/store/AppProvider';
 import { entriesOf } from '../src/data';
 import { PLAN_COUNT } from '../src/data/plan';
-import { meaningLine, posLabel, synonymLine, videoUrl } from '../src/data/entry';
+import { meaningLine, posLabel, synonymSentence, videoUrl } from '../src/data/entry';
 import { isMastered } from '../src/srs/scheduler';
 import { LevelPicker } from '../src/components/LevelPicker';
 import { speak } from '../src/lib/feedback';
@@ -118,8 +118,17 @@ export default function Wordbook() {
                       <View key={i} style={{ marginBottom: spacing.md }}>
                         <Body style={{ fontWeight: '700' }}>
                           {i + 1}. {sense.meaning}
-                          {sense.synonyms.length > 0 ? `  (${synonymLine(sense.synonyms)})` : ''}
                         </Body>
+                        {/*
+                          유의어는 뜻 줄에 괄호로 붙이지 않고 아래 줄로 내린다.
+                          문구가 뜻을 직접 부르므로, 같은 줄에 두면 '단단한'이
+                          한 줄에 두 번 나온다.
+                        */}
+                        {sense.synonyms.length > 0 ? (
+                          <Muted style={{ marginTop: 2 }}>
+                            {synonymSentence(sense.meaning, sense.synonyms)}
+                          </Muted>
+                        ) : null}
                         {sense.examples.map((ex, j) => (
                           <Pressable
                             key={j}

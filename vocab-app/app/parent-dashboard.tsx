@@ -12,6 +12,7 @@ import { formatKo, todayKey } from '../src/lib/date';
 import { LEVEL_LABEL, LEVEL_SHORT, Profile, ProfileData } from '../src/types';
 import { colors, font, radius, spacing } from '../src/theme';
 import { NudgeCard } from '../src/components/NudgeCard';
+import { LinkedChildren } from '../src/components/LinkedChildren';
 
 /** 부모용 대시보드. 아이별 일일 리포트와 주간 요약을 보여준다. */
 export default function ParentDashboard() {
@@ -72,6 +73,7 @@ export default function ParentDashboard() {
     return (
       <Screen>
         <Muted style={{ paddingTop: spacing.lg }}>이 기기에 등록된 아이가 없습니다.</Muted>
+        {alsoReceives ? <LinkedChildren /> : null}
         {alsoReceives ? <NudgeCard /> : null}
       </Screen>
     );
@@ -263,6 +265,7 @@ export default function ParentDashboard() {
         이 폰이 공부도 하고 리포트도 받는 경우다. 위에는 이 폰에서 공부한
         기록이, 여기에는 다른 아이 폰이 보내 온 것이 쌓인다.
       */}
+      {alsoReceives ? <LinkedChildren /> : null}
       {alsoReceives ? <NudgeCard /> : null}
 
       {alsoReceives ? (
@@ -430,7 +433,9 @@ function ReceivedInbox() {
 
   return (
     <Screen>
-      {/* 리포트가 안 온 날 부모가 할 수 있는 일. 맨 위에 둔다. */}
+      {/* 들어와서 가장 먼저 알고 싶은 것은 "오늘 했나"다. */}
+      <LinkedChildren />
+      {/* 그다음이 "안 했으면 부르기". */}
       <NudgeCard />
       <Card
         style={{

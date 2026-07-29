@@ -298,44 +298,42 @@ export default function ParentLinkScreen() {
         </Card>
       ) : (
         <>
+          {/*
+            아이 화면에는 **아이가 할 일만** 적는다.
+
+            예전에는 '부모님 폰에서 준비하기' 안내가 여기 있었다. 아이는 그
+            단계를 할 수 없고, 읽어도 자기가 뭘 해야 하는지 알 수 없다.
+            그 안내는 부모님 설정으로 옮겼다.
+          */}
           <Card style={{ marginTop: spacing.lg }}>
-            <H3>1. 부모님 폰에서 준비하기</H3>
+            <H3>부모님이 보낸 요청 승인하기</H3>
             <Muted style={{ marginTop: spacing.sm }}>
-              부모님 폰에도 이 앱을 설치하고, 부모님 모드 → 부모님 폰 연결에서{'\n'}
-              <Text style={{ fontWeight: '700' }}>이 폰을 부모님 전용으로 쓰기</Text>를 누른 뒤{'\n'}
-              <Text style={{ fontWeight: '700' }}>연결 링크 보내기</Text>로 이 기기에 보내 주세요.
-            </Muted>
-          </Card>
-
-          <Card style={{ marginTop: spacing.md }}>
-            <H3>2. 이 기기에서 연결하기</H3>
-            <Muted style={{ marginTop: spacing.sm }}>
-              카카오톡으로 받은 링크를 누르면 자동으로 연결됩니다.{'\n'}
-              링크가 안 열리면 주소를 복사해 아래에 붙여넣으세요.
+              부모님이 보내 주신 링크를 누르면 바로 연결돼요.{'\n'}
+              링크가 안 열리면, 함께 온 주소를 복사해 아래에 붙여넣으세요.
             </Muted>
 
-            <TextInput
-              value={label}
-              onChangeText={setLabel}
-              placeholder="부모님 폰 이름 (예: 엄마 폰)"
-              placeholderTextColor={colors.muted}
-              style={s.input}
-              maxLength={20}
-            />
             <TextInput
               value={pasted}
               onChangeText={setPasted}
-              placeholder="ExponentPushToken[...] 붙여넣기"
+              placeholder="부모님이 보낸 주소 붙여넣기"
               placeholderTextColor={colors.muted}
               style={[s.input, { height: 84, textAlignVertical: 'top' }]}
               multiline
               autoCapitalize="none"
               autoCorrect={false}
             />
+            <TextInput
+              value={label}
+              onChangeText={setLabel}
+              placeholder="누구 폰인가요? (예: 엄마 폰)"
+              placeholderTextColor={colors.muted}
+              style={s.input}
+              maxLength={20}
+            />
             {error ? <Body style={{ color: colors.wrong, marginTop: spacing.sm }}>{error}</Body> : null}
 
             <Button
-              title="연결하기"
+              title="승인하기"
               onPress={linkByPaste}
               disabled={pasted.trim().length === 0}
               style={{ marginTop: spacing.md }}
@@ -344,93 +342,12 @@ export default function ParentLinkScreen() {
         </>
       )}
 
-      {/*
-        공부도 하고 리포트도 받는 폰.
-
-        부모님이 아이와 같이 공부하면서 아이들 리포트도 받고 싶을 때 쓴다.
-        '부모님 전용'과 달리 학습 화면이 그대로 남는다.
-      */}
-      <Card style={{ marginTop: spacing.md, borderColor: colors.parent }}>
-        <H3>📥 이 폰에서도 리포트 받기</H3>
-        {state.receivesReports ? (
-          <>
-            <Muted style={{ marginTop: spacing.xs }}>
-              켜져 있어요. 이 폰은 공부도 하고 아이들 리포트도 받습니다.
-              아래 링크를 아이 기기에 보내면 그 기기가 여기로 결과를 보냅니다.
-            </Muted>
-            <TextInput
-              value={label}
-              onChangeText={setLabel}
-              placeholder="이 폰 이름 (예: 아빠 폰)"
-              placeholderTextColor={colors.muted}
-              style={s.input}
-              maxLength={20}
-            />
-            <Button
-              title="연결 링크 보내기"
-              variant="parent"
-              onPress={shareLink}
-              style={{ marginTop: spacing.md }}
-            />
-            <Button
-              title="리포트 보러 가기"
-              variant="secondary"
-              onPress={() => router.push('/parent-dashboard')}
-              style={{ marginTop: spacing.sm }}
-            />
-            <View style={s.tokenBox}>
-              <Muted style={{ fontSize: 11 }}>내 푸시 주소</Muted>
-              <Text style={s.token} selectable>
-                {state.myPushToken}
-              </Text>
-            </View>
-          </>
-        ) : (
-          <>
-            <Muted style={{ marginTop: spacing.xs }}>
-              이 폰에서 공부도 하고, 아이들이 보내는 리포트도 함께 받습니다.
-              학습 화면은 그대로 남아요.
-            </Muted>
-            <Button
-              title="이 폰에서도 리포트 받기"
-              variant="parent"
-              onPress={alsoReceiveReports}
-              loading={busy}
-              style={{ marginTop: spacing.md }}
-            />
-            {error ? (
-              <Body style={{ color: colors.wrong, marginTop: spacing.md }}>{error}</Body>
-            ) : null}
-          </>
-        )}
-      </Card>
-
-      <Card style={{ marginTop: spacing.md }}>
-        <H3>이 기기를 부모님 폰으로 쓰려면</H3>
-        <Muted style={{ marginTop: spacing.xs }}>
-          학습 기능을 끄고 리포트만 받는 기기가 됩니다.
-          {state.profiles.length > 0
-            ? `\n\n⚠️ 지금 이 기기에는 ${state.profiles.map((p) => p.name).join(', ')}의 학습 기록이 있습니다. 여기서 누르면 그 아이의 학습 화면이 사라집니다. 부모님이 따로 쓰시는 폰에서 눌러 주세요.`
-            : '\n\n부모님 폰에서만 눌러 주세요.'}
-        </Muted>
-        <Button
-          title="이 폰을 부모님 전용으로 쓰기"
-          variant="secondary"
-          onPress={becomeParentDevice}
-          loading={busy}
-          style={{ marginTop: spacing.md }}
-        />
-        {error && !link ? (
-          <Body style={{ color: colors.wrong, marginTop: spacing.md }}>{error}</Body>
-        ) : null}
-      </Card>
-
       <Card style={{ marginTop: spacing.md, backgroundColor: colors.bg }}>
-        <H3>알아 두세요</H3>
+        <H3>무엇이 가나요?</H3>
         <Muted style={{ marginTop: spacing.sm }}>
-          · 리포트는 Expo 푸시 서비스를 한 번 거쳐 전달됩니다. 앱에서 유일하게 밖으로 나가는 통신입니다.{'\n'}
-          · Expo Go에서는 동작하지 않습니다. APK로 설치한 앱이어야 합니다.{'\n'}
-          · 아이 기기가 꺼져 있으면 전송되지 않습니다. 그럴 때는 부모님 폰이 정해진 시각에 “리포트가 오지 않았어요”라고 알려 줍니다.
+          연결하면 공부를 마칠 때마다 <Text style={{ fontWeight: '700' }}>이름 · 날짜 · 오늘 푼 개수 ·
+          정답률 · 오늘 틀린 단어 · 레벨 진도</Text>가 부모님 폰으로 갑니다.
+          그 밖에는 아무것도 보내지 않아요.
         </Muted>
       </Card>
     </Screen>

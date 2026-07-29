@@ -9,6 +9,7 @@ import { buildInfo, buildLabel } from '../src/features/build-info';
 import { FeedbackCard } from '../src/components/FeedbackCard';
 import { LevelPicker } from '../src/components/LevelPicker';
 import { colors, font, radius, spacing } from '../src/theme';
+import { InviteChildCard } from '../src/components/InviteChildCard';
 
 const NEW_PER_DAY = [5, 8, 10, 15, 20];
 const REVIEW_PER_DAY = [5, 10, 15, 20, 30];
@@ -193,6 +194,12 @@ export default function ParentSettings() {
             style={{ marginTop: spacing.md }}
           />
         </Card>
+
+        {/*
+          아이 기기를 부르는 쪽. 준비하는 이야기는 전부 여기 있고, 아이
+          화면에는 '승인하기'만 남긴다.
+        */}
+        <InviteChildCard />
 
       {/* 아이 선택 */}
       {state.profiles.length > 1 ? (

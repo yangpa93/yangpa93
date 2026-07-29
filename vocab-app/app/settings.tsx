@@ -18,11 +18,12 @@ const NEW_PER_DAY = [5, 8, 10, 12, 15, 20];
  * 진도와 돈이 걸려 있어 부모님 모드에 그대로 둔다.
  */
 export default function ChildSettings() {
-  const { profile, updateSettings, updateProfile } = useApp();
+  const { state, profile, updateSettings, updateProfile } = useApp();
 
   if (!profile) return null;
 
   const { ttsEnabled, hapticsEnabled, newPerDay, reviewPerDay, rounds } = profile.settings;
+  const linkedParent = state.parentLink;
 
   // 오늘 몇 문제를 풀게 되는지. 개수만 보면 감이 안 와서 시간까지 적는다.
   const questions = (newPerDay + reviewPerDay) * rounds;
@@ -108,6 +109,43 @@ export default function ChildSettings() {
         <AvatarPicker
           value={profile.avatar}
           onChange={(emoji) => updateProfile(profile.id, { avatar: emoji })}
+        />
+      </Card>
+
+      {/*
+        부모 폰 연결을 아이 설정에 둔다.
+
+        지금까지는 부모님 PIN 뒤에만 있어서, 아이 폰에서 연결하려면 부모를
+        불러 PIN 을 받아야 했다. 정작 링크를 붙여넣는 쪽은 아이 폰이다.
+
+        무엇이 나가는지 아이에게 그대로 적어 둔다. 자기 기록이 어디로 가는지
+        모르는 채 켜지는 것은, 상대가 부모라도 옳지 않다.
+      */}
+      <Card style={{ marginTop: spacing.md }}>
+        <H3>👨‍👩‍👧 부모님 폰에 알려주기</H3>
+        {linkedParent ? (
+          <>
+            <Muted style={{ marginTop: spacing.xs }}>
+              지금 <Text style={{ fontWeight: '700' }}>{linkedParent.label}</Text>에 연결돼 있어요.
+              공부를 마치면 오늘 기록이 자동으로 갑니다.
+            </Muted>
+            <Muted style={{ marginTop: spacing.sm }}>
+              가는 것 — {profile.name} · 날짜 · 오늘 푼 개수 · 정답률 · 오늘 틀린 단어 ·
+              지금 레벨 진도. 그 밖에는 아무것도 보내지 않아요.
+            </Muted>
+          </>
+        ) : (
+          <Muted style={{ marginTop: spacing.xs }}>
+            연결하면 공부를 마칠 때마다 {profile.name}의 오늘 기록(푼 개수 · 정답률 ·
+            틀린 단어 · 레벨 진도)이 부모님 폰으로 갑니다. 부모님 폰에서 받은 연결
+            링크를 여기서 붙여넣으면 돼요.
+          </Muted>
+        )}
+        <Button
+          title={linkedParent ? '연결 상태 보기' : '부모님 폰 연결하기'}
+          variant="secondary"
+          onPress={() => router.push('/parent-link')}
+          style={{ marginTop: spacing.md }}
         />
       </Card>
 

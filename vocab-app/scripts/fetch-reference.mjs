@@ -194,7 +194,16 @@ for await (const line of rl) {
     senses,
     syn: wordSyn,
     ko: wordKo,
-    forms: (o.forms ?? []).map((f) => f.form).filter(Boolean).slice(0, 12),
+    // 굴절형을 자르면 안 된다. be 는 39개인데 12개에서 끊었더니 is 가
+    // 빠져서 "She is my best friend." 가 '예문에 표제어 없음' 으로 걸렸다.
+    // 대신 표에 섞여 오는 표시(no-table-tags 따위)는 걸러낸다.
+    forms: [
+      ...new Set(
+        (o.forms ?? [])
+          .map((f) => f.form)
+          .filter((f) => typeof f === 'string' && /^[a-z' -]+$/i.test(f) && f !== '-'),
+      ),
+    ],
   });
   kept++;
 }

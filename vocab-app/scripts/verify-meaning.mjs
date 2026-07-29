@@ -159,19 +159,34 @@ for (const e of entries) {
   }
 
   /* 4. 예문에 표제어가 안 나옴 */
-  const forms = new Set([e.word.toLowerCase(), ...ref.flatMap((r) => r.forms).map((f) => f.toLowerCase())]);
+
+  const forms = new Set([e.word.toLowerCase(), ...ref.flatMap((r) => r.forms)]);
   for (const s of e.senses) {
     for (const ex of s.examples) {
-      const hay = ` ${norm(ex.en)} `;
-      const hit = [...forms].some((f) => {
-        const k = norm(f);
-        return k && hay.includes(` ${k} `);
-      });
-      if (!hit) {
+      if (!usesWord(ex.en, forms)) {
         found.exWord.push(`${e.level}:${ex.line} ${e.word} — 예문에 표제어가 안 보임: "${ex.en}"`);
       }
     }
   }
+}
+
+/**
+ * 예문이 표제어를 쓰고 있는가.
+ *
+ * 숙어는 붙어 있지 않다. 'take into account' 는 "Take the weather into
+ * account." 로 갈라지고 'wake up' 은 "wake me up" 이 된다. 그러니 통째로
+ * 찾으면 안 되고, 낱말이 **순서대로** 나오는지를 본다.
+ */
+function usesWord(sentence, forms) {
+  const words = norm(sentence).split(/\s+/).filter(Boolean);
+  for (const form of forms) {
+    const want = norm(form).split(/\s+/).filter(Boolean);
+    if (want.length === 0) continue;
+    let i = 0;
+    for (const w of words) if (w === want[i] && ++i === want.length) break;
+    if (i === want.length) return true;
+  }
+  return false;
 }
 
 /* ---------- 보고 ---------- */

@@ -170,7 +170,8 @@ export type GameId =
   | 'context' // 문장 속 그 단어가 여기서 무슨 뜻인지
   | 'polysemy' // 다의어: 여러 뜻 중 이 문장에서 쓰인 뜻
   | 'synonym' // 문맥에 맞게 바꿔 쓸 수 있는 표현
-  | 'antonym'; // 문장 속 그 단어와 뜻이 반대인 표현
+  | 'antonym' // 문장 속 그 단어와 뜻이 반대인 표현
+  | 'scramble'; // 뒤섞인 낱말을 순서대로 놓아 문장 만들기
 
 export const GAME_LABEL: Record<GameId, string> = {
   cloze: '빈칸 채우기',
@@ -180,14 +181,26 @@ export const GAME_LABEL: Record<GameId, string> = {
   polysemy: '여러 뜻 구별',
   synonym: '바꿔 쓰기',
   antonym: '반대말 찾기',
+  scramble: '문장 배열',
 };
 
 /** 한 세션에서 단어를 만나는 단계. 라운드가 올라갈수록 어려워진다. */
-export type Stage = 'learn' | 'apply' | 'recall';
+/**
+ * 문항의 단계. 뒤로 갈수록 스스로 꺼내야 한다.
+ *
+ * `build` 는 낱말을 순서대로 놓아 문장을 만드는 단계다. 뜻을 고르는 것과
+ * 철자를 쓰는 것 사이에 있다 — 낱말은 다 주어지지만 어디에 놓을지는
+ * 스스로 정해야 한다.
+ */
+export type Stage = 'learn' | 'apply' | 'build' | 'recall';
+
+/** 쉬운 것부터. 이 순서가 곧 난이도다. */
+export const STAGE_ORDER: Stage[] = ['learn', 'apply', 'build', 'recall'];
 
 export const STAGE_LABEL: Record<Stage, string> = {
   learn: '익히기',
   apply: '활용하기',
+  build: '문장 만들기',
   recall: '떠올리기',
 };
 

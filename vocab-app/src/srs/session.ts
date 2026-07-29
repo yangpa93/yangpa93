@@ -18,10 +18,11 @@
  * 다른 뜻으로 쓰인 문장에서 막히기 때문이다.
  */
 
-import { CardState, GameId, LevelId, Stage, VocabEntry } from '../types';
+import { CardState, GameId, LevelId, Stage, STAGE_ORDER, VocabEntry } from '../types';
 import { isDue, todayKey } from '../lib/date';
 import { clozeSentence, exposureCount, senseExposure } from '../data/entry';
 import { hasAntonym } from '../data/antonyms';
+import { canScramble } from '../games/scramble';
 import { isMastered, priority } from './scheduler';
 
 export interface SessionItem {
@@ -190,16 +191,51 @@ function expandSenses(
  * 다른 문장이고, 2개면 첫 문장으로 되돌아온다. 같은 뜻이라도 문장이 바뀌어야
  * "그 문장을 통째로 외운 것"과 "단어를 아는 것"이 구별된다.
  */
+/**
+ * 그 단어에 지금까지 몇 번 연달아 성공했는지로 **열리는 최고 난이도**가 정해진다.
+ *
+ * 예전에는 라운드만 보고 단계를 올렸다. 그래서 처음 만난 단어도 그날 세 번째
+ * 라운드에서 곧바로 철자를 쳐야 했다. 오늘 처음 본 단어를 외워서 쓰라는 것은
+ * 시험이 아니라 벌이다.
+ *
+ * 이제 만날수록 어려운 유형이 열린다.
+ *
+ *   연속 정답 0회   익히기        빈칸 채우기 · 문맥 속 뜻
+ *   1~2회          + 활용하기     뜻 구별 · 바꿔 쓰기 · 반대말 · 듣고 빈칸
+ *   3~4회          + 문장 만들기   어순 배열
+ *   5회 이상        + 떠올리기     빈칸에 직접 쓰기
+ *
+ * **틀리면 연속 정답이 0으로 돌아가므로 난이도도 함께 내려온다.** 못 외운
+ * 단어를 계속 어려운 유형으로 물으면 아이는 찍기 시작하고, 찍기 시작하면
+ * 그 세션은 학습이 아니라 운이 된다.
+ *
+ * 세션을 만들 때 한 번 정하고 그 세션 동안 바뀌지 않는다. 문제를 푸는 대로
+ * 카드가 갱신되므로, 그때그때 계산하면 한 세션 안에서 난이도가 올라간다.
+ */
+export function ceilingOf(card: CardState | null): Stage {
+  const streak = card?.streak ?? 0;
+  if (streak <= 0) return 'learn';
+  if (streak <= 2) return 'apply';
+  if (streak <= 4) return 'build';
+  return 'recall';
+}
+
+/** 둘 중 쉬운 쪽. 라운드가 원하는 단계와 그 단어에 열린 단계를 견준다. */
+function easier(a: Stage, b: Stage): Stage {
+  return STAGE_ORDER.indexOf(a) <= STAGE_ORDER.indexOf(b) ? a : b;
+}
+
 export function buildRounds(
   items: SessionItem[],
   rounds: number,
   rand: () => number = Math.random,
 ): SessionItem[] {
-  const stages: Stage[] = ['learn', 'apply', 'recall'];
+  // 라운드가 바라는 단계. '문장 만들기'는 라운드가 아니라 숙련도로만 열린다.
+  const wanted: Stage[] = ['learn', 'apply', 'recall'];
   const out: SessionItem[] = [];
 
   for (let r = 0; r < rounds; r++) {
-    const stage = stages[Math.min(r, stages.length - 1)];
+    const want = wanted[Math.min(r, wanted.length - 1)];
     // 처음 보는 단어는 첫 라운드에서 단어 카드를 먼저 펼쳐 준다.
     // 뜻이 여러 개여도 '처음 만남'은 첫 문항 하나에만 붙인다.
     const metOnce = new Set<string>();
@@ -210,7 +246,7 @@ export function buildRounds(
 
       const staged: SessionItem = {
         ...item,
-        stage,
+        stage: easier(want, ceilingOf(item.card)),
         round: r,
         // 라운드가 올라가면 예문도 한 칸 넘어간다.
         exposureIndex: item.exposureIndex + r,
@@ -251,9 +287,18 @@ export function pickGame(item: SessionItem, rand: () => number = Math.random): G
     if (canAntonym) candidates.push('antonym');
     if (canCloze) candidates.push('cloze', 'listening');
     candidates.push('context');
+  } else if (item.stage === 'build') {
+    // 낱말을 순서대로 놓아 문장을 만드는 단계.
+    // 문장이 너무 짧거나 길면 배열 문제가 되지 않으므로 앞 단계로 돌린다.
+    if (canScramble(exp.example.en)) candidates.push('scramble', 'scramble', 'scramble');
+    if (isPolysemous) candidates.push('polysemy');
+    if (exp.hasSynonym) candidates.push('synonym');
+    if (canCloze) candidates.push('cloze');
+    if (candidates.length === 0) candidates.push('context');
   } else {
     // 스스로 떠올려 쓰는 단계.
     if (canCloze) candidates.push('clozeType', 'clozeType', 'clozeType');
+    if (canScramble(exp.example.en)) candidates.push('scramble');
     if (isPolysemous) candidates.push('polysemy');
     if (exp.hasSynonym) candidates.push('synonym');
     if (canAntonym) candidates.push('antonym');

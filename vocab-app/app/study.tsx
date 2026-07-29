@@ -4,6 +4,7 @@ import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChoiceGame, ChoiceGameId } from '../src/games/ChoiceGame';
 import { ClozeGame } from '../src/games/ClozeGame';
+import { ScrambleGame } from '../src/games/ScrambleGame';
 import { WordStoryCard } from '../src/components/WordStoryCard';
 import { CONTENT_MAX_WIDTH, ProgressBar, Row } from '../src/components/ui';
 import { useApp } from '../src/store/AppProvider';
@@ -226,6 +227,8 @@ export default function Study() {
             <ClozeGame key={questionKey} {...gameProps} listen={current.game === 'listening'} />
           ) : current.game === 'clozeType' ? (
             <ClozeGame key={questionKey} {...gameProps} mode="type" />
+          ) : current.game === 'scramble' ? (
+            <ScrambleGame key={questionKey} {...gameProps} />
           ) : (
             <ChoiceGame key={questionKey} {...gameProps} game={current.game as ChoiceGameId} />
           )}

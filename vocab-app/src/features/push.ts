@@ -188,7 +188,9 @@ export async function scheduleMissingReportAlert(args: {
     identifier: MISSING_ID,
     content: {
       title: '📭 오늘 학습 리포트가 오지 않았어요',
-      body: '아이가 아직 공부를 시작하지 않았거나 기기가 꺼져 있을 수 있어요.',
+      // 눌렀을 때 할 일을 적어 준다. 알림만 뜨고 끝나면 부모는 손으로
+      // 앱을 열고 부모님 모드를 찾아 들어가야 한다.
+      body: '여기를 눌러 아이에게 공부하자고 알려 줄 수 있어요.',
       data: { kind: 'missing-report' },
     },
     trigger: {

@@ -89,8 +89,17 @@ export function PushBridge() {
     if (!ready) return;
 
     const open = (data: unknown) => {
-      if (!parseNudge(data)) return;
-      router.push('/study');
+      // 아이 쪽 — 부모가 부른 것. 바로 공부 화면으로.
+      if (parseNudge(data)) {
+        router.push('/study');
+        return;
+      }
+      // 부모 쪽 — 리포트가 안 왔다는 알림. 부르는 화면으로 데려간다.
+      // 알림만 뜨고 끝나면 앱을 열고 부모님 모드를 찾아 들어가야 한다.
+      const d = data as { kind?: unknown } | null;
+      if (d && typeof d === 'object' && d.kind === 'missing-report') {
+        router.push('/parent-dashboard');
+      }
     };
 
     const responded = Notifications.addNotificationResponseReceivedListener((r) =>

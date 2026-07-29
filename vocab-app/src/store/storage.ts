@@ -37,7 +37,8 @@ export function emptyState(): AppState {
     parent: {
       pin: null,
       awards: { ...DEFAULT_AWARD_RATES },
-      notifyHour: 21,
+      // 밤 10시. 그때까지 소식이 없으면 오늘은 안 한 것으로 본다.
+      notifyHour: 22,
       notifyMinute: 0,
       notifyEnabled: true,
       notifyOnlyWhenMissed: false,

@@ -88,6 +88,25 @@ export default function ParentLinkScreen() {
     setRole('parent');
   }
 
+  /**
+   * 역할은 그대로 두고 **리포트 받는 기능만** 켠다.
+   *
+   * 부모님도 같이 공부하면서 아이 리포트를 받고 싶을 수 있다. 예전에는
+   * '부모님 전용'으로 바꾸는 길밖에 없어서 학습 화면을 포기해야 했다.
+   * 리포트를 받는 것과 학습 화면을 감추는 것은 원래 다른 이야기다.
+   */
+  async function alsoReceiveReports() {
+    setBusy(true);
+    setError('');
+    const { token, reason } = await fetchPushToken();
+    setBusy(false);
+    if (!token) {
+      setError(reason ?? '푸시 주소를 만들지 못했습니다.');
+      return;
+    }
+    setMyPushToken(token);
+  }
+
   async function shareLink() {
     if (!state.myPushToken) return;
     const name = label.trim() || '부모님 폰';
@@ -105,6 +124,13 @@ export default function ParentLinkScreen() {
     setError('');
     if (!isValidPushToken(token)) {
       setError('주소 형식이 올바르지 않습니다. 부모님 폰에서 보낸 주소를 그대로 붙여넣어 주세요.');
+      return;
+    }
+    // 자기 주소를 붙여넣으면 자기에게 보내게 된다. 이 폰이 리포트를 받기도
+    // 하게 되면서 생긴 자리다 — 링크로 들어올 때는 link.tsx 가 막고 있었는데
+    // 붙여넣기에는 그 확인이 없었다.
+    if (state.myPushToken != null && state.myPushToken === token) {
+      setError('이 폰의 주소예요. 아이 기기에 붙여넣어야 합니다.');
       return;
     }
     linkParent({
@@ -307,6 +333,67 @@ export default function ParentLinkScreen() {
           </Card>
         </>
       )}
+
+      {/*
+        공부도 하고 리포트도 받는 폰.
+
+        부모님이 아이와 같이 공부하면서 아이들 리포트도 받고 싶을 때 쓴다.
+        '부모님 전용'과 달리 학습 화면이 그대로 남는다.
+      */}
+      <Card style={{ marginTop: spacing.md, borderColor: colors.parent }}>
+        <H3>📥 이 폰에서도 리포트 받기</H3>
+        {state.myPushToken ? (
+          <>
+            <Muted style={{ marginTop: spacing.xs }}>
+              켜져 있어요. 이 폰은 공부도 하고 아이들 리포트도 받습니다.
+              아래 링크를 아이 기기에 보내면 그 기기가 여기로 결과를 보냅니다.
+            </Muted>
+            <TextInput
+              value={label}
+              onChangeText={setLabel}
+              placeholder="이 폰 이름 (예: 아빠 폰)"
+              placeholderTextColor={colors.muted}
+              style={s.input}
+              maxLength={20}
+            />
+            <Button
+              title="연결 링크 보내기"
+              variant="parent"
+              onPress={shareLink}
+              style={{ marginTop: spacing.md }}
+            />
+            <Button
+              title="리포트 보러 가기"
+              variant="secondary"
+              onPress={() => router.push('/parent-dashboard')}
+              style={{ marginTop: spacing.sm }}
+            />
+            <View style={s.tokenBox}>
+              <Muted style={{ fontSize: 11 }}>내 푸시 주소</Muted>
+              <Text style={s.token} selectable>
+                {state.myPushToken}
+              </Text>
+            </View>
+          </>
+        ) : (
+          <>
+            <Muted style={{ marginTop: spacing.xs }}>
+              이 폰에서 공부도 하고, 아이들이 보내는 리포트도 함께 받습니다.
+              학습 화면은 그대로 남아요.
+            </Muted>
+            <Button
+              title="이 폰에서도 리포트 받기"
+              variant="parent"
+              onPress={alsoReceiveReports}
+              loading={busy}
+              style={{ marginTop: spacing.md }}
+            />
+            {error ? (
+              <Body style={{ color: colors.wrong, marginTop: spacing.md }}>{error}</Body>
+            ) : null}
+          </>
+        )}
+      </Card>
 
       <Card style={{ marginTop: spacing.md }}>
         <H3>이 기기를 부모님 폰으로 쓰려면</H3>

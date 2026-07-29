@@ -17,7 +17,19 @@ import { todayKey } from '../lib/date';
 
 export function PushBridge() {
   const { ready, state, addReceivedReport } = useApp();
-  const isParentDevice = state.role === 'parent';
+
+  /**
+   * 리포트를 받는 기기인가.
+   *
+   * 예전에는 `role === 'parent'` 로 판단했다. 그런데 역할은 **학습 화면을
+   * 감출지**를 정하는 값이고, 리포트를 받는 것과는 다른 이야기다. 부모님도
+   * 같이 공부하면서 아이 리포트를 받고 싶을 수 있는데, 하나로 묶여 있어서
+   * 둘 중 하나를 포기해야 했다.
+   *
+   * 이제는 **자기 푸시 주소를 가진 기기**면 받는다. 주소를 만든 것 자체가
+   * "나에게 보내 달라"는 뜻이다.
+   */
+  const isParentDevice = state.myPushToken != null;
 
   // 알림이 도착했을 때 (앱이 떠 있든 백그라운드든)
   useEffect(() => {

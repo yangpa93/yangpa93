@@ -61,6 +61,10 @@ export default function ParentDashboard() {
     return <ReceivedInbox />;
   }
 
+  // 공부도 하고 리포트도 받는 폰이면, 이 기기의 학습 리포트를 먼저 보여주고
+  // 다른 기기가 보내 온 것은 아래에 이어 붙인다. 둘 다 봐야 하기 때문이다.
+  const alsoReceives = state.myPushToken != null;
+
   if (!profile) {
     return (
       <Screen>
@@ -248,6 +252,32 @@ export default function ParentDashboard() {
         onPress={() => router.push('/parent-settings')}
         style={{ marginTop: spacing.sm }}
       />
+
+      {/*
+        다른 기기에서 온 리포트.
+
+        이 폰이 공부도 하고 리포트도 받는 경우다. 위에는 이 폰에서 공부한
+        기록이, 여기에는 다른 아이 폰이 보내 온 것이 쌓인다.
+      */}
+      {alsoReceives ? (
+        <View style={{ marginTop: spacing.xl }}>
+          <H3>📥 다른 기기에서 온 리포트</H3>
+          <Muted style={{ marginTop: spacing.xs }}>
+            {state.receivedReports.length === 0
+              ? '아직 받은 것이 없어요. 아이 기기에서 연결하고 학습을 마치면 여기에 쌓입니다.'
+              : `${state.receivedReports.length}건 보관 중`}
+          </Muted>
+          {state.receivedReports.slice(0, 5).map((r, i) => (
+            <Card key={`${r.date}-${r.childName}-${i}`} style={{ marginTop: spacing.sm }}>
+              <Row style={{ justifyContent: 'space-between' }}>
+                <Body style={{ fontWeight: '800' }}>{r.childName}</Body>
+                <Muted>{formatKo(r.date)}</Muted>
+              </Row>
+              <Muted style={{ marginTop: 2 }}>{r.headline}</Muted>
+            </Card>
+          ))}
+        </View>
+      ) : null}
     </Screen>
   );
 }

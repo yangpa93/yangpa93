@@ -47,3 +47,14 @@ app.json.bak
 # 저장소에 넣지 않는다.
 #   curl -sLO https://raw.githubusercontent.com/dwyl/english-words/master/words_alpha.txt
 words_alpha.txt
+
+# 파이어베이스 서비스 계정 키 — 이건 비밀번호에 해당한다.
+# 이 파일 하나면 누구나 우리 아이들 폰으로 알림을 보낼 수 있고,
+# 파이어베이스 프로젝트를 통째로 만질 수 있다. 저장소에 올리지 않는다.
+# (EAS 에 한 번 올려 두면 빌드할 때는 이 파일이 필요 없다.)
+*-firebase-adminsdk-*.json
+service-account*.json
+
+# google-services.json 은 일부러 올린다.
+# 비밀이 아니고(APK 안에 그대로 들어간다) app.json 이 이 파일을 가리키므로,
+# 빠지면 새로 clone 한 곳에서 빌드가 실패한다.

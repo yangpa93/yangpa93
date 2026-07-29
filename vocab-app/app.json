@@ -16,6 +16,7 @@
     },
     "android": {
       "package": "com.yangpa93.gomtangvoca",
+      "googleServicesFile": "./google-services.json",
       "permissions": [
         "android.permission.POST_NOTIFICATIONS"
       ],

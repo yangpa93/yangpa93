@@ -69,9 +69,15 @@ export function buildInfo(): BuildInfo {
   };
 }
 
-/** `베타 0.9.0 (12) · android` — 화면 아래에 한 줄로 적는다. */
+/**
+ * `0.9.0 (12) · android` — 화면 아래에 한 줄로 적는다.
+ *
+ * '베타'라고 적지 않는다. 아이가 모르는 말이고, 안다고 해도 "아직 덜 만든 것"
+ * 으로 들려 이상한 것을 말하기 어려워진다. 판과 빌드 번호만 있으면 어느
+ * 앱인지 가리는 데는 충분하다.
+ */
 export function buildLabel(info: BuildInfo = buildInfo()): string {
-  const head = info.isBeta ? `베타 ${info.version}` : `v${info.version}`;
+  const head = info.version;
   const parts = [`${head} (${info.build})`, info.platform];
   // 무선 업데이트로 받은 판이면 그것까지 적어야 같은 빌드 번호끼리도 구별된다.
   if (info.update) parts.push(`업데이트 ${info.update}`);

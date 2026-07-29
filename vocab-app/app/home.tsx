@@ -146,16 +146,18 @@ export default function Home() {
         </Row>
       </Row>
 
-      {profile.streak > 0 || build.isBeta ? (
-        <Row style={{ marginTop: spacing.lg, gap: spacing.sm, flexWrap: 'wrap' }}>
-          {profile.streak > 0 ? <Chip label={`🔥 ${profile.streak}일 연속`} tone="accent" /> : null}
-          {profile.bestStreak > profile.streak ? (
-            <Chip label={`최고 ${profile.bestStreak}일`} tone="default" />
-          ) : null}
-          {/* 아이가 지금 어느 빌드를 쓰는지 스스로 말할 수 있어야 한다. */}
-          {build.isBeta ? <Chip label={`🧪 ${buildLabel(build)}`} tone="default" /> : null}
-        </Row>
-      ) : null}
+      {/*
+        빌드 칩은 늘 띄운다. 예전에는 베타일 때만 띄웠는데, 판이 올라가도
+        "고친 게 안 보여요"는 그대로 생긴다. 그때 이 줄이 없으면 아이가
+        어느 앱을 쓰는지 가릴 수가 없다.
+      */}
+      <Row style={{ marginTop: spacing.lg, gap: spacing.sm, flexWrap: 'wrap' }}>
+        {profile.streak > 0 ? <Chip label={`🔥 ${profile.streak}일 연속`} tone="accent" /> : null}
+        {profile.bestStreak > profile.streak ? (
+          <Chip label={`최고 ${profile.bestStreak}일`} tone="default" />
+        ) : null}
+        <Chip label={`📱 ${buildLabel(build)}`} tone="default" />
+      </Row>
 
       {/* 오늘의 학습 */}
       <Card style={{ marginTop: spacing.lg }}>

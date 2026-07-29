@@ -3,6 +3,8 @@ import { router } from 'expo-router';
 import { Button, Card, H3, Muted, Row, Screen } from '../src/components/ui';
 import { useApp } from '../src/store/AppProvider';
 import { AvatarPicker, labelOf } from '../src/components/AvatarPicker';
+import { FeedbackCard } from '../src/components/FeedbackCard';
+import { APP_NAME, buildInfo, buildLabel } from '../src/features/build-info';
 import { speak, tapCorrect } from '../src/lib/feedback';
 import { colors, font, radius, spacing } from '../src/theme';
 
@@ -24,6 +26,7 @@ export default function ChildSettings() {
 
   const { ttsEnabled, hapticsEnabled, newPerDay, reviewPerDay, rounds } = profile.settings;
   const linkedParent = state.parentLink;
+  const build = buildInfo();
 
   // 오늘 몇 문제를 풀게 되는지. 개수만 보면 감이 안 와서 시간까지 적는다.
   const questions = (newPerDay + reviewPerDay) * rounds;
@@ -173,7 +176,24 @@ export default function ChildSettings() {
         />
       </Card>
 
+      {/*
+        이상한 것을 처음 만나는 사람은 아이다. 부모 PIN 뒤에만 두면
+        아이는 부모를 부를 때까지 기다려야 하고, 그 사이에 무엇이 어떻게
+        이상했는지를 잊는다. 대부분은 말하지 않고 넘어간다.
+      */}
+      <FeedbackCard />
+
+      {/*
+        지금 어느 앱을 쓰고 있는지 아이 스스로 말할 수 있어야 한다.
+        고쳐서 새로 올렸는데 아직 옛 앱을 쓰고 있는 경우가 흔한데,
+        그때 이 줄을 읽어 주면 바로 가려진다. 부모님 모드 안에만 있으면
+        아이에게 물어볼 때마다 부모를 거쳐야 한다.
+      */}
       <Muted style={{ marginTop: spacing.lg, textAlign: 'center' }}>
+        {APP_NAME} {buildLabel(build)}
+      </Muted>
+
+      <Muted style={{ marginTop: spacing.sm, textAlign: 'center' }}>
         복습 개수와 학년·레벨은 부모님이 정해요.
       </Muted>
 

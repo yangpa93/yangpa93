@@ -5,7 +5,8 @@ import { Button, Card, Chip, H3, Muted, Row, Screen } from '../src/components/ui
 import { useApp } from '../src/store/AppProvider';
 import { AwardRates, LEVEL_SHORT, LevelId } from '../src/types';
 import { awardRates, formatWon } from '../src/features/awards';
-import { APP_NAME, buildInfo, buildLabel, feedbackHeader } from '../src/features/build-info';
+import { buildInfo, buildLabel } from '../src/features/build-info';
+import { FeedbackCard } from '../src/components/FeedbackCard';
 import { LevelPicker } from '../src/components/LevelPicker';
 import { colors, font, radius, spacing } from '../src/theme';
 
@@ -370,29 +371,7 @@ export default function ParentSettings() {
             />
           </Card>
 
-          {/*
-            베타 동안만 보이는 카드. 아이가 "이게 이상해요"라고 할 때
-            어느 빌드에서 그랬는지가 없으면 재현할 수가 없다.
-          */}
-          {build.isBeta ? (
-            <Card style={{ marginTop: spacing.md, borderColor: colors.accent }}>
-              <H3>🧪 베타 의견 보내기</H3>
-              <Muted style={{ marginTop: spacing.xs }}>
-                이상한 점이나 불편한 점을 적어 보내 주세요. 어느 빌드에서 그랬는지가
-                자동으로 붙습니다.
-              </Muted>
-              <Button
-                title="의견 적어 보내기"
-                variant="secondary"
-                onPress={() => {
-                  Share.share({
-                    message: `[${APP_NAME} 베타 의견]\n\n무엇이 이상했나요?\n\n\n어떻게 하면 다시 나타나나요?\n\n\n${feedbackHeader(build)}`,
-                  }).catch(() => {});
-                }}
-                style={{ marginTop: spacing.md }}
-              />
-            </Card>
-          ) : null}
+          <FeedbackCard />
 
           <Button
             title={`${profile.name} 프로필 삭제`}

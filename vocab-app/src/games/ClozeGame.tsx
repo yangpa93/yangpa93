@@ -18,6 +18,7 @@ import { buildChoices, meaningKeys } from '../srs/session';
 import { speak } from '../lib/feedback';
 import { colors, font, radius, spacing } from '../theme';
 import { Muted } from '../components/ui';
+import { RevealKo } from './RevealKo';
 
 export interface GameProps {
   entry: VocabEntry;
@@ -175,16 +176,7 @@ function ChoiceCloze({
         {revealed || picked ? <Text style={s.sentenceKo}>{exp.example.ko}</Text> : null}
       </Pressable>
 
-      {showTranslation && !revealed && !picked ? (
-        <Pressable
-          onPress={() => setRevealed(true)}
-          accessibilityRole="button"
-          style={s.reveal}
-          hitSlop={8}
-        >
-          <Text style={s.revealText}>해석 보기</Text>
-        </Pressable>
-      ) : null}
+      {showTranslation && !revealed && !picked ? <RevealKo onPress={() => setRevealed(true)} /> : null}
 
       <View style={{ gap: spacing.sm }}>
         {choices.map((c) => {
@@ -356,16 +348,6 @@ const s = StyleSheet.create({
     borderColor: colors.border,
   },
   sentence: { fontSize: 20, lineHeight: 30, color: colors.text, fontWeight: '600' },
-  reveal: {
-    alignSelf: 'center',
-    marginTop: -spacing.md,
-    marginBottom: spacing.md,
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.lg,
-    borderRadius: radius.pill,
-    backgroundColor: colors.primarySoft,
-  },
-  revealText: { fontSize: font.small, fontWeight: '700', color: colors.primary },
   sentenceKo: { fontSize: font.small, color: colors.subtext, marginTop: spacing.md },
   hintKo: { fontSize: font.small, color: colors.subtext, marginTop: spacing.md },
   hint: { fontSize: 18, letterSpacing: 2, color: colors.primary, marginTop: spacing.md, fontWeight: '700' },

@@ -29,6 +29,7 @@ import { speak } from '../lib/feedback';
 import { colors, font, radius, spacing } from '../theme';
 import { Muted } from '../components/ui';
 import { HighlightedSentence } from '../components/HighlightedSentence';
+import { RevealKo } from './RevealKo';
 
 export type ChoiceGameId = Extract<GameId, 'context' | 'polysemy' | 'synonym' | 'antonym'>;
 
@@ -53,12 +54,17 @@ export function ChoiceGame({
   onAnswer,
 }: GameProps & { game: ChoiceGameId }) {
   const [picked, setPicked] = useState<string | null>(null);
+  /** 아이가 '해석 보기'를 눌렀는지. 한 번 열면 그 문제 동안 계속 보인다. */
+  const [revealed, setRevealed] = useState(false);
 
   const choices = useMemo(
     () => buildOptions(game, entry, exp, pool, learned ?? []),
     // 문항이 바뀔 때만 보기를 다시 뽑는다. 오답을 눌렀다고 보기가 섞이면 안 된다.
     [game, entry.id, exp.senseIndex, exp.exampleIndex, pool, learned],
   );
+
+  /** 해석에 정답이 들어 있는 유형은 열어 줄 수 없다. */
+  const canReveal = game === 'synonym' || game === 'antonym';
 
   function choose(key: string, correct: boolean) {
     if (picked) return;
@@ -71,16 +77,22 @@ export function ChoiceGame({
       <Muted>{PROMPT[game]}</Muted>
 
       <View style={s.stem}>
-        <Stem
-          entry={entry}
-          exp={exp}
-          ttsEnabled={ttsEnabled}
-          // 해석에 정답(한국어 뜻)이 그대로 들어 있는 유형은 미리 보여줄 수 없다.
-          // '바꿔 쓰기'와 '반대말 찾기'는 정답이 영어 표현이라 해석을 봐도
-          // 답이 드러나지 않는다. 오히려 해석이 있어야 반대를 판단할 수 있다.
-          showKo={picked !== null || (showTranslation && (game === 'synonym' || game === 'antonym'))}
-        />
+        <Stem entry={entry} exp={exp} ttsEnabled={ttsEnabled} showKo={picked !== null || revealed} />
       </View>
+
+      {/*
+        '문맥 속 뜻'은 보기가 곧 한국어 뜻이라 해석을 보여주면 답이 그대로
+        드러난다("I have a few questions."의 해석에 '몇 개'가 들어 있다).
+        그래서 이 유형만 버튼을 내주지 않는다.
+
+        '바꿔 쓰기'와 '반대말'은 정답이 영어 표현이라 해석을 봐도 답이
+        드러나지 않는다. 예전에는 이 둘의 해석을 **처음부터 띄우고** 있었는데,
+        그러면 아이가 영어 문장을 읽지 않는다. 빈칸 채우기와 똑같이
+        눌렀을 때만 보여준다.
+      */}
+      {canReveal && showTranslation && !revealed && picked === null ? (
+        <RevealKo onPress={() => setRevealed(true)} />
+      ) : null}
 
       <View style={{ gap: spacing.sm }}>
         {choices.map((c) => (

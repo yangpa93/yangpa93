@@ -47,7 +47,9 @@ export function emptyState(): AppState {
     role: 'child',
     parentLink: null,
     myPushToken: null,
+    receivesReports: false,
     receivedReports: [],
+    knownChildren: [],
   };
 }
 
@@ -241,7 +243,11 @@ function migrate(state: AppState): AppState {
     role: state.role ?? 'child',
     parentLink: state.parentLink ?? null,
     myPushToken: state.myPushToken ?? null,
+    // 예전 판에는 이 값이 없다. 부모 전용 기기였다면 받고 있었던 것이므로
+    // 역할로 미루어 채운다.
+    receivesReports: state.receivesReports ?? state.role === 'parent',
     // 받은 리포트는 최근 60건만 남긴다.
     receivedReports: (state.receivedReports ?? []).slice(0, 60),
+    knownChildren: state.knownChildren ?? [],
   };
 }

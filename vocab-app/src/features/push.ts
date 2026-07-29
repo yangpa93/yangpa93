@@ -18,18 +18,30 @@
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
-import { buildPushBody, EXPO_PUSH_ENDPOINT, pushFailureReason, PushPayload } from './pairing';
+import {
+  buildHelloBody,
+  buildNudgeBody,
+  buildPushBody,
+  EXPO_PUSH_ENDPOINT,
+  type NudgePayload,
+  pushFailureReason,
+  PushPayload,
+} from './pairing';
 
 // 순수 로직은 pairing.ts에 있다. 호출부가 한 곳만 보면 되도록 다시 내보낸다.
 export {
   buildLinkUrl,
+  buildNudgeBody,
   isValidPushToken,
+  NUDGE_PRESETS,
+  parseHello,
+  parseNudge,
   pushFailureReason,
   LINK_SCHEME,
   parseIncoming,
   toPayload,
 } from './pairing';
-export type { PushPayload } from './pairing';
+export type { HelloPayload, NudgePayload, PushPayload } from './pairing';
 
 /**
  * 이 기기의 Expo 푸시 토큰을 발급받는다. 부모 기기에서만 쓴다.
@@ -84,6 +96,30 @@ export async function sendReportToParent(
   parentToken: string,
   payload: PushPayload,
 ): Promise<SendResult> {
+  return sendPush(buildPushBody(parentToken, payload));
+}
+
+/** 아이 기기가 연결하면서 자기 주소를 부모에게 알린다. */
+export async function sendHelloToParent(
+  parentToken: string,
+  childName: string,
+  childToken: string,
+): Promise<SendResult> {
+  return sendPush(buildHelloBody(parentToken, { childName, childToken }));
+}
+
+/**
+ * 부모가 아이 기기로 "공부하자"고 보낸다. 리포트와 반대 방향이다.
+ */
+export async function sendNudgeToChild(
+  childToken: string,
+  payload: NudgePayload,
+): Promise<SendResult> {
+  return sendPush(buildNudgeBody(childToken, payload));
+}
+
+/** 실제 전송. 보내는 내용만 다르고 오류를 읽는 방법은 같다. */
+async function sendPush(body: unknown): Promise<SendResult> {
   try {
     const res = await fetch(EXPO_PUSH_ENDPOINT, {
       method: 'POST',
@@ -91,7 +127,7 @@ export async function sendReportToParent(
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(buildPushBody(parentToken, payload)),
+      body: JSON.stringify(body),
     });
 
     if (!res.ok) {

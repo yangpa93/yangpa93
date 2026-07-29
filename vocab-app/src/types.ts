@@ -386,6 +386,16 @@ export interface ProfileData {
 export type DeviceRole = 'child' | 'parent';
 
 /** 아이 기기가 들고 있는 '부모님 폰' 정보. */
+/** 부모가 알림을 보낼 수 있는 아이 기기 하나. */
+export interface KnownChild {
+  /** 아이 이름. 같은 이름이 둘이면 나중 것이 앞의 것을 덮는다. */
+  name: string;
+  /** 그 기기의 푸시 주소 */
+  token: string;
+  /** 마지막으로 소식을 들은 때 (epoch ms) */
+  lastSeen: number;
+}
+
 export interface ParentLink {
   /** 부모 기기의 Expo 푸시 토큰 */
   token: string;
@@ -462,8 +472,24 @@ export interface AppState {
   role: DeviceRole;
   /** child일 때: 연결된 부모 기기 */
   parentLink: ParentLink | null;
-  /** parent일 때: 이 기기가 남에게 보여줄 자기 푸시 토큰 */
+  /** 이 기기가 남에게 보여줄 자기 푸시 토큰. 아이 기기도 갖는다(부모가 알림을 보낼 수 있도록). */
   myPushToken: string | null;
-  /** parent일 때: 받아 둔 리포트 (최신순) */
+  /**
+   * 이 기기가 아이들 리포트를 받는가.
+   *
+   * 주소를 가졌는지로 판단하면 안 된다. 아이 기기도 자기 주소를 갖는다 —
+   * 부모가 "공부하자"고 보낼 수 있어야 하기 때문이다. 받는 것은 사람이
+   * 켠 것이므로 따로 적어 둔다.
+   */
+  receivesReports: boolean;
+  /** 받아 둔 리포트 (최신순) */
   receivedReports: ReceivedReport[];
+  /**
+   * 알림을 보낼 수 있는 아이 기기들.
+   *
+   * 아이 기기가 부모와 연결할 때 자기 주소를 한 번 보내 온다. 그것을 여기
+   * 모아 두어야 부모가 "공부하자"고 되보낼 수 있다. 리포트가 오기를
+   * 기다릴 수는 없다 — 리포트가 안 왔을 때 부르고 싶은 것이기 때문이다.
+   */
+  knownChildren: KnownChild[];
 }

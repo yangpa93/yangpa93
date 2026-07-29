@@ -118,8 +118,12 @@ interface Ctx {
   setMyPushToken(token: string | null): void;
   linkParent(link: ParentLink): void;
   unlinkParent(): void;
+  /** 이 기기가 아이들 리포트를 받을지 켜고 끈다. */
+  setReceivesReports(on: boolean): void;
   /** 부모 기기가 받은 리포트를 쌓는다. 같은 아이·같은 날짜는 최신 것으로 덮는다. */
   addReceivedReport(report: Omit<ReceivedReport, 'id' | 'receivedAt'>): void;
+  /** 알림을 보낼 수 있는 아이 기기를 기억한다. 같은 이름이면 주소를 갱신한다. */
+  rememberChild(name: string, token: string): void;
   /** 지금 리포트를 부모 기기로 보낸다. 결과를 돌려준다. */
   pushReportNow(profileId?: string): Promise<SendResult>;
 }
@@ -406,7 +410,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       const link = ref.current.state.parentLink;
       if (link && state.parent.pushToParent) {
         const report = buildDailyReport(updated, nextData, ALL_ENTRIES, today);
-        void sendReportToParent(link.token, toPayload(report, buildWeeklySummary(nextData, today)))
+        // 아이 기기 주소를 같이 싣는다. 부모가 "공부하자"고 되보내려면 필요하다.
+        void sendReportToParent(
+          link.token,
+          toPayload(report, buildWeeklySummary(nextData, today), ref.current.state.myPushToken),
+        )
           .then((res) => {
             if (res.ok) {
               persistState({
@@ -564,6 +572,25 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     [persistState],
   );
 
+  const setReceivesReports = useCallback(
+    (receivesReports: boolean) => persistState({ ...ref.current.state, receivesReports }),
+    [persistState],
+  );
+
+  const rememberChild = useCallback(
+    (name: string, token: string) => {
+      const { state } = ref.current;
+      const rest = (state.knownChildren ?? []).filter((c) => c.name !== name);
+      persistState({
+        ...state,
+        // 같은 이름이 이미 있으면 주소를 갱신한다. 앱을 다시 깔면 주소가
+        // 바뀌는데, 옛 주소로 보내면 조용히 사라진다.
+        knownChildren: [{ name, token, lastSeen: Date.now() }, ...rest].slice(0, 10),
+      });
+    },
+    [persistState],
+  );
+
   const linkParent = useCallback(
     (link: ParentLink) => persistState({ ...ref.current.state, parentLink: link }),
     [persistState],
@@ -617,7 +644,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
     const result = await sendReportToParent(
       link.token,
-      toPayload(report, buildWeeklySummary(pdata, today)),
+      toPayload(report, buildWeeklySummary(pdata, today), state.myPushToken),
     );
 
     if (result.ok) {
@@ -651,6 +678,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     replaceAll,
     setRole,
     setMyPushToken,
+    setReceivesReports,
+    rememberChild,
     linkParent,
     unlinkParent,
     addReceivedReport,

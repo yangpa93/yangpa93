@@ -11,6 +11,7 @@ import { Award, availableAwards, awardRates, formatWon } from '../src/features/a
 import { formatKo, todayKey } from '../src/lib/date';
 import { LEVEL_LABEL, LEVEL_SHORT, Profile, ProfileData } from '../src/types';
 import { colors, font, radius, spacing } from '../src/theme';
+import { NudgeCard } from '../src/components/NudgeCard';
 
 /** 부모용 대시보드. 아이별 일일 리포트와 주간 요약을 보여준다. */
 export default function ParentDashboard() {
@@ -63,12 +64,15 @@ export default function ParentDashboard() {
 
   // 공부도 하고 리포트도 받는 폰이면, 이 기기의 학습 리포트를 먼저 보여주고
   // 다른 기기가 보내 온 것은 아래에 이어 붙인다. 둘 다 봐야 하기 때문이다.
-  const alsoReceives = state.myPushToken != null;
+  const alsoReceives = state.receivesReports;
 
   if (!profile) {
+    // 이 폰에 학습자가 없어도 아이를 부를 수는 있어야 한다. 부모님이 자기
+    // 프로필을 안 만들었을 뿐이지, 아이 기기는 연결돼 있을 수 있다.
     return (
       <Screen>
-        <Muted style={{ paddingTop: spacing.lg }}>등록된 아이가 없습니다.</Muted>
+        <Muted style={{ paddingTop: spacing.lg }}>이 기기에 등록된 아이가 없습니다.</Muted>
+        {alsoReceives ? <NudgeCard /> : null}
       </Screen>
     );
   }
@@ -259,6 +263,8 @@ export default function ParentDashboard() {
         이 폰이 공부도 하고 리포트도 받는 경우다. 위에는 이 폰에서 공부한
         기록이, 여기에는 다른 아이 폰이 보내 온 것이 쌓인다.
       */}
+      {alsoReceives ? <NudgeCard /> : null}
+
       {alsoReceives ? (
         <View style={{ marginTop: spacing.xl }}>
           <H3>📥 다른 기기에서 온 리포트</H3>
@@ -424,6 +430,8 @@ function ReceivedInbox() {
 
   return (
     <Screen>
+      {/* 리포트가 안 온 날 부모가 할 수 있는 일. 맨 위에 둔다. */}
+      <NudgeCard />
       <Card
         style={{
           marginTop: spacing.md,

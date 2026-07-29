@@ -19,7 +19,15 @@ import { APP_NAME } from '../src/features/build-info';
  * 않기 위해서다. 링크는 카카오톡으로 아이 기기에 보내고 한 번 누르면 된다.
  */
 export default function ParentLinkScreen() {
-  const { state, setRole, setMyPushToken, unlinkParent, linkParent, pushReportNow } = useApp();
+  const {
+    state,
+    setRole,
+    setMyPushToken,
+    setReceivesReports,
+    unlinkParent,
+    linkParent,
+    pushReportNow,
+  } = useApp();
   const isParentDevice = state.role === 'parent';
 
   const [busy, setBusy] = useState(false);
@@ -85,6 +93,7 @@ export default function ParentLinkScreen() {
       return;
     }
     setMyPushToken(token);
+    setReceivesReports(true);
     setRole('parent');
   }
 
@@ -105,6 +114,7 @@ export default function ParentLinkScreen() {
       return;
     }
     setMyPushToken(token);
+    setReceivesReports(true);
   }
 
   async function shareLink() {
@@ -342,7 +352,7 @@ export default function ParentLinkScreen() {
       */}
       <Card style={{ marginTop: spacing.md, borderColor: colors.parent }}>
         <H3>📥 이 폰에서도 리포트 받기</H3>
-        {state.myPushToken ? (
+        {state.receivesReports ? (
           <>
             <Muted style={{ marginTop: spacing.xs }}>
               켜져 있어요. 이 폰은 공부도 하고 아이들 리포트도 받습니다.

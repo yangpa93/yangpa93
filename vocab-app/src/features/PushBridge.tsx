@@ -11,12 +11,13 @@
 
 import { useEffect } from 'react';
 import * as Notifications from 'expo-notifications';
+import { router } from 'expo-router';
 import { useApp } from '../store/AppProvider';
-import { parseIncoming, scheduleMissingReportAlert } from './push';
+import { parseHello, parseIncoming, parseNudge, scheduleMissingReportAlert } from './push';
 import { todayKey } from '../lib/date';
 
 export function PushBridge() {
-  const { ready, state, addReceivedReport } = useApp();
+  const { ready, state, addReceivedReport, rememberChild } = useApp();
 
   /**
    * 리포트를 받는 기기인가.
@@ -29,13 +30,23 @@ export function PushBridge() {
    * 이제는 **자기 푸시 주소를 가진 기기**면 받는다. 주소를 만든 것 자체가
    * "나에게 보내 달라"는 뜻이다.
    */
-  const isParentDevice = state.myPushToken != null;
+  // 주소를 가졌는지로 판단하면 안 된다. 아이 기기도 자기 주소를 갖는다 —
+  // 부모가 "공부하자"고 보낼 수 있어야 하기 때문이다. 받는 것은 사람이 켠
+  // 것이므로 따로 적어 둔 값을 본다.
+  const isParentDevice = state.receivesReports;
 
   // 알림이 도착했을 때 (앱이 떠 있든 백그라운드든)
   useEffect(() => {
     if (!isParentDevice) return;
 
     const handle = (payloadData: unknown) => {
+      // 연결 인사 — 아이 기기가 자기 주소를 알려 온 것이다.
+      const hello = parseHello(payloadData);
+      if (hello) {
+        rememberChild(hello.childName, hello.childToken);
+        return;
+      }
+
       const report = parseIncoming(payloadData);
       if (!report) return;
       addReceivedReport({
@@ -45,6 +56,9 @@ export function PushBridge() {
         detail: report.detail,
         completed: report.completed,
       });
+      // 리포트에 실려 온 아이 기기 주소를 기억한다. 나중에 "공부하자"고
+      // 되보낼 때 쓴다.
+      if (report.childToken) rememberChild(report.childName, report.childToken);
     };
 
     const received = Notifications.addNotificationReceivedListener((n) =>
@@ -59,7 +73,31 @@ export function PushBridge() {
       received.remove();
       responded.remove();
     };
-  }, [isParentDevice, addReceivedReport]);
+  }, [isParentDevice, addReceivedReport, rememberChild]);
+
+  /**
+   * 아이 쪽 — 부모가 보낸 "공부하자" 알림을 눌렀을 때.
+   *
+   * 알림 자체는 OS가 띄운다. 여기서는 **눌렀을 때 무엇을 할지**만 맡는다.
+   * 알림을 누르고도 홈 화면에 머무르면 아이가 다시 '공부 시작하기'를 찾아야
+   * 하는데, 그 한 번이 아이를 돌려세운다.
+   *
+   * 리포트를 받는 기기인지와 무관하게 건다. 부모가 같이 공부하는 폰이면
+   * 양쪽 다 해당한다.
+   */
+  useEffect(() => {
+    if (!ready) return;
+
+    const open = (data: unknown) => {
+      if (!parseNudge(data)) return;
+      router.push('/study');
+    };
+
+    const responded = Notifications.addNotificationResponseReceivedListener((r) =>
+      open(r.notification.request.content.data),
+    );
+    return () => responded.remove();
+  }, [ready]);
 
   // 리포트가 안 왔을 때 알려 주는 예약을 최신 상태로 유지한다.
   useEffect(() => {

@@ -19,6 +19,32 @@ export interface PushPayload {
   headline: string;
   detail: string;
   completed: boolean;
+  /**
+   * 보낸 아이 기기의 푸시 주소.
+   *
+   * 부모가 "공부하자"고 되보내려면 아이 기기 주소를 알아야 한다. 리포트에
+   * 실어 보내면 부모가 따로 물어볼 일이 없다. 아이 기기가 주소를 못 받은
+   * 경우(권한 거부 등)에는 없을 수 있다.
+   */
+  childToken?: string;
+}
+
+/**
+ * 아이 기기가 연결하면서 자기 주소를 알리는 인사.
+ *
+ * 리포트로 대신할 수는 없다. 부모가 부르고 싶은 때가 바로 리포트가 안 온
+ * 날이기 때문이다. 연결하는 순간에 한 번 보내 둔다.
+ */
+export interface HelloPayload {
+  childName: string;
+  childToken: string;
+}
+
+/** 부모가 아이에게 보내는 알림. 리포트와 반대 방향이다. */
+export interface NudgePayload {
+  /** 보낸 사람 표시. '엄마 폰' 처럼 */
+  from: string;
+  message: string;
 }
 
 /** 페어링용 딥링크. 부모 기기가 만들어 카톡 등으로 아이 기기에 보낸다. */
@@ -40,13 +66,18 @@ export function isValidPushToken(token: string): boolean {
 }
 
 /** 리포트를 전송용 페이로드로 만든다. */
-export function toPayload(report: DailyReport, weekly?: WeeklySummary): PushPayload {
+export function toPayload(
+  report: DailyReport,
+  weekly?: WeeklySummary,
+  childToken?: string | null,
+): PushPayload {
   return {
     childName: report.profileName,
     date: report.date,
     headline: reportHeadline(report),
     detail: reportText(report, weekly),
     completed: report.completed,
+    ...(childToken ? { childToken } : {}),
   };
 }
 
@@ -59,6 +90,7 @@ export function parseIncoming(data: unknown): PushPayload | null {
   return {
     childName: d.childName,
     date: d.date,
+    ...(typeof d.childToken === 'string' ? { childToken: d.childToken } : {}),
     headline: typeof d.headline === 'string' ? d.headline : '',
     detail: typeof d.detail === 'string' ? d.detail : '',
     completed: d.completed === true,
@@ -78,6 +110,63 @@ export function buildPushBody(token: string, payload: PushPayload) {
     data: { kind: 'daily-report', ...payload },
   };
 }
+
+/**
+ * 부모 → 아이 알림.
+ *
+ * 리포트가 안 왔을 때 부모가 부를 수 있어야 한다. 문자를 따로 보내는 것보다
+ * 앱 알림이 낫다 — 누르면 바로 공부 화면으로 들어간다.
+ */
+export function buildNudgeBody(token: string, payload: NudgePayload) {
+  return {
+    to: token,
+    title: `📚 ${payload.from}`,
+    body: payload.message,
+    sound: 'default' as const,
+    priority: 'high' as const,
+    channelId: 'child-nudge',
+    data: { kind: 'nudge', ...payload },
+  };
+}
+
+/** 받은 푸시에서 부모의 알림을 꺼낸다. 우리 형식이 아니면 null. */
+export function parseNudge(data: unknown): NudgePayload | null {
+  if (!data || typeof data !== 'object') return null;
+  const d = data as Record<string, unknown>;
+  if (d.kind !== 'nudge') return null;
+  if (typeof d.message !== 'string' || d.message.length === 0) return null;
+  return { from: typeof d.from === 'string' ? d.from : '부모님', message: d.message };
+}
+
+export function buildHelloBody(parentToken: string, payload: HelloPayload) {
+  return {
+    to: parentToken,
+    title: '🔗 연결됐어요',
+    body: `${payload.childName}의 기기가 연결됐어요.`,
+    sound: 'default' as const,
+    priority: 'normal' as const,
+    channelId: 'parent-report',
+    data: { kind: 'hello', ...payload },
+  };
+}
+
+/** 받은 푸시에서 연결 인사를 꺼낸다. 우리 형식이 아니면 null. */
+export function parseHello(data: unknown): HelloPayload | null {
+  if (!data || typeof data !== 'object') return null;
+  const d = data as Record<string, unknown>;
+  if (d.kind !== 'hello') return null;
+  if (typeof d.childName !== 'string' || typeof d.childToken !== 'string') return null;
+  if (d.childName.length === 0 || d.childToken.length === 0) return null;
+  return { childName: d.childName, childToken: d.childToken };
+}
+
+/** 부모가 고를 수 있는 문구. 직접 쓰는 것보다 누르기 쉽다. */
+export const NUDGE_PRESETS = [
+  '오늘 공부 시작할 시간이에요! 📚',
+  '10분만 해 볼까요? 😊',
+  '오늘 아직 안 했네요. 같이 해요!',
+  '조금만 더 하면 레벨업이에요! 🎉',
+] as const;
 
 
 /**

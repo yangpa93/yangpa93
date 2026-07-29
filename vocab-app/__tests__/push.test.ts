@@ -1,7 +1,13 @@
 import {
+  buildHelloBody,
   buildLinkUrl,
+  buildNudgeBody,
+  buildPushBody,
   isValidPushToken,
+  NUDGE_PRESETS,
+  parseHello,
   parseIncoming,
+  parseNudge,
   pushFailureReason,
   toPayload,
 } from '../src/features/pairing';
@@ -178,5 +184,75 @@ describe('푸시 토큰 실패 이유', () => {
   it('Expo Go 일 때만 Expo Go 를 탓한다', () => {
     expect(pushFailureReason(new Error('아무거나'), true)).toContain('Expo Go');
     expect(pushFailureReason(new Error('아무거나'), false)).not.toContain('Expo Go');
+  });
+});
+
+describe('부모 → 아이 부르기', () => {
+  it('부르는 알림은 아이 기기로 간다', () => {
+    const body = buildNudgeBody(TOKEN, { from: '엄마 폰', message: '오늘 공부 시작!' });
+    expect(body.to).toBe(TOKEN);
+    expect(body.title).toContain('엄마 폰');
+    expect(body.body).toBe('오늘 공부 시작!');
+    expect(body.data.kind).toBe('nudge');
+  });
+
+  it('리포트와 부르기를 서로 헷갈리지 않는다', () => {
+    // 같은 통로로 오가므로 kind 로 갈라야 한다. 섞이면 아이 폰이 자기
+    // 리포트를 받아 쌓거나, 부모 폰이 공부 화면으로 끌려간다.
+    const nudge = buildNudgeBody(TOKEN, { from: '엄마', message: '하자' }).data;
+    const hello = buildHelloBody(TOKEN, { childName: '가가', childToken: TOKEN }).data;
+
+    expect(parseNudge(nudge)).not.toBeNull();
+    expect(parseIncoming(nudge)).toBeNull();
+    expect(parseHello(nudge)).toBeNull();
+
+    expect(parseHello(hello)).not.toBeNull();
+    expect(parseNudge(hello)).toBeNull();
+    expect(parseIncoming(hello)).toBeNull();
+  });
+
+  it('빈 메시지는 부르기로 보지 않는다', () => {
+    expect(parseNudge({ kind: 'nudge', from: '엄마', message: '' })).toBeNull();
+    expect(parseNudge({ kind: 'nudge', from: '엄마' })).toBeNull();
+  });
+
+  it('보낸 사람 이름이 없으면 부모님으로 둔다', () => {
+    expect(parseNudge({ kind: 'nudge', message: '하자' })?.from).toBe('부모님');
+  });
+
+  it('고를 수 있는 문구가 준비돼 있다', () => {
+    expect(NUDGE_PRESETS.length).toBeGreaterThanOrEqual(3);
+    for (const m of NUDGE_PRESETS) expect(m.length).toBeGreaterThan(0);
+  });
+});
+
+describe('연결 인사 — 아이 주소 알리기', () => {
+  it('아이 이름과 주소를 함께 보낸다', () => {
+    // 부모가 부르려면 주소가 있어야 하는데, 리포트를 기다릴 수는 없다.
+    // 부르고 싶은 때가 바로 리포트가 안 온 날이기 때문이다.
+    const p = parseHello(buildHelloBody('X', { childName: '가가', childToken: TOKEN }).data);
+    expect(p).toEqual({ childName: '가가', childToken: TOKEN });
+  });
+
+  it('한쪽이라도 비면 받아들이지 않는다', () => {
+    expect(parseHello({ kind: 'hello', childName: '', childToken: TOKEN })).toBeNull();
+    expect(parseHello({ kind: 'hello', childName: '가가', childToken: '' })).toBeNull();
+    expect(parseHello({ kind: 'hello', childName: '가가' })).toBeNull();
+  });
+});
+
+describe('리포트에 아이 주소 싣기', () => {
+  it('주소를 주면 함께 실리고, 안 주면 아예 없다', () => {
+    const report = buildDailyReport(makeProfile(), makeData(), ALL_ENTRIES, TODAY);
+    expect(toPayload(report, undefined, TOKEN).childToken).toBe(TOKEN);
+    expect(toPayload(report).childToken).toBeUndefined();
+    // 빈 문자열은 주소가 아니다. 실어 보내면 부모가 그 주소로 보내려 한다.
+    expect(toPayload(report, undefined, '').childToken).toBeUndefined();
+  });
+
+  it('실어 보낸 주소가 반대편에서 그대로 나온다', () => {
+    const report = buildDailyReport(makeProfile(), makeData(), ALL_ENTRIES, TODAY);
+    const body = buildPushBody('부모주소', toPayload(report, undefined, TOKEN));
+    expect(parseIncoming(body.data)?.childToken).toBe(TOKEN);
   });
 });

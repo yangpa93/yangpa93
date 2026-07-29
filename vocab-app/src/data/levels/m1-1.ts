@@ -102,7 +102,7 @@ export const M1_1 = defineLevel('m1-1', [
   ]},
   { w: 'afraid', p: 'adj.', s: [
     { m: '두려워하는, 무서워하는', syn: ['scared', 'frightened'], ex: [
-      ['She is afraid of dogs.', '그녀는 개를 무서워한다.'],
+      ['The little boy looked afraid.', '어린 소년은 무서워 보였다.'],
       ['Do not be afraid to ask questions.', '질문하기를 두려워하지 마라.'],
       ['I was afraid of the dark as a child.', '나는 어릴 때 어둠을 무서워했다.'],
     ]},
@@ -322,7 +322,7 @@ export const M1_1 = defineLevel('m1-1', [
   ]},
   { w: 'arm', p: 'n.', s: [
     { m: '팔', syn: [], ex: [
-      ['He broke his arm last week.', '그는 지난주에 팔이 부러졌다.'],
+      ['My arm hurts after the game.', '경기가 끝나고 팔이 아프다.'],
       ['She held the baby in her arms.', '그녀는 아기를 팔에 안았다.'],
       ['Raise your right arm.', '오른팔을 들어라.'],
     ]},

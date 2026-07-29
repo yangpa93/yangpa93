@@ -54,7 +54,7 @@ export const M2_2 = defineLevel('m2-2', [
   { w: 'shoe', p: 'n.', s: [
     { m: '신발', syn: [], ex: [
       ['My shoe is too small.', '내 신발이 너무 작다.'],
-      ['Take off your shoes at the door.', '문에서 신발을 벗어라.'],
+      ['These shoes are very comfortable.', '이 신발은 아주 편하다.'],
       ['She bought new shoes.', '그녀는 새 신발을 샀다.'],
     ]},
   ]},
@@ -356,7 +356,7 @@ export const M2_2 = defineLevel('m2-2', [
   ]},
   { w: 'spoon', p: 'n.', s: [
     { m: '숟가락', syn: [], ex: [
-      ['Eat the soup with a spoon.', '숟가락으로 국을 떠 먹어라.'],
+      ['He ate the rice with a spoon.', '그는 숟가락으로 밥을 먹었다.'],
       ['The spoon fell on the floor.', '숟가락이 바닥에 떨어졌다.'],
       ['Put the spoon next to the bowl.', '숟가락을 그릇 옆에 놓아라.'],
     ]},
@@ -961,7 +961,7 @@ export const M2_2 = defineLevel('m2-2', [
   { w: 'tree', p: 'n.', s: [
     { m: '나무', syn: [], ex: [
       ['We planted a tree in the garden.', '우리는 정원에 나무를 심었다.'],
-      ['Birds are singing in the tree.', '새들이 나무에서 노래하고 있다.'],
+      ['The tree gives us cool shade.', '그 나무는 우리에게 시원한 그늘을 준다.'],
       ['The old tree fell in the storm.', '그 오래된 나무가 폭풍에 쓰러졌다.'],
     ]},
   ]},

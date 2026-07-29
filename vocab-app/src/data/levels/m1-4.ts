@@ -312,7 +312,7 @@ export const M1_4 = defineLevel('m1-4', [
   { w: 'job', p: 'n.', s: [
     { m: '직업, 일', syn: ['work'], ex: [
       ['My father has a new job.', '아버지는 새 직업을 얻으셨다.'],
-      ['She is looking for a part-time job.', '그녀는 아르바이트를 찾고 있다.'],
+      ['He found a job at the library.', '그는 도서관에서 일자리를 얻었다.'],
       ['You did a good job today.', '오늘 일을 잘했다.'],
     ]},
   ]},
@@ -975,7 +975,7 @@ export const M1_4 = defineLevel('m1-4', [
   ]},
   { w: 'music', p: 'n.', s: [
     { m: '음악', syn: [], ex: [
-      ['I listen to music before bed.', '나는 자기 전에 음악을 듣는다.'],
+      ['Music makes me feel calm.', '음악은 나를 차분하게 해 준다.'],
       ['She studies music at school.', '그녀는 학교에서 음악을 공부한다.'],
       ['The music was too loud.', '음악이 너무 컸다.'],
     ]},

@@ -764,7 +764,7 @@ export const M2_3 = defineLevel('m2-3', [
     { m: '흰', syn: [], ex: [
       ['She wore a white shirt.', '그녀는 흰 셔츠를 입었다.'],
       ['Snow is white and cold.', '눈은 희고 차갑다.'],
-      ['The wall is painted white.', '벽이 흰색으로 칠해져 있다.'],
+      ['The clouds were big and white.', '구름은 크고 하얬다.'],
     ]},
   ]},
   { w: 'who', p: 'pron.', s: [

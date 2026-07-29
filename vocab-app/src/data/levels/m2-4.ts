@@ -339,7 +339,7 @@ export const M2_4 = defineLevel('m2-4', [
     { m: '풍선', syn: [], ex: [
       ['The balloon flew into the sky.', '풍선이 하늘로 날아갔다.'],
       ['She gave the child a red balloon.', '그녀는 아이에게 빨간 풍선을 주었다.'],
-      ['The balloon burst suddenly.', '풍선이 갑자기 터졌다.'],
+      ['The balloon is full of air.', '풍선이 공기로 가득 차 있다.'],
     ]},
   ]},
   { w: 'band', p: 'n.', s: [

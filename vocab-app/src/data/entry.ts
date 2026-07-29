@@ -70,7 +70,25 @@ export function posLabel(pos: string): string {
  * 규칙으로 고르면 반드시 틀린 자리가 생기고, 아이 화면에 틀린 조사가 남는다.
  */
 export function synonymLead(meaning: string): string {
-  return `"${meaning}" 이라는 뜻일 때 이렇게 바꿔 쓸 수 있어요`;
+  return `"${meaning}"${iRaNeun(meaning)} 뜻일 때 이렇게 바꿔 쓸 수 있어요`;
+}
+
+/**
+ * 앞말에 맞는 `이라는` / `라는`.
+ *
+ * 받침이 있으면 `이라는`, 없으면 `라는`이다. '단단한'은 받침 ㄴ이 있어
+ * `"단단한"이라는`, '~에 대하여'는 없어서 `"~에 대하여"라는`.
+ * 3,462개 뜻 중 2,018개가 받침이 없어서, 한쪽으로 박아 두면 절반 넘게 틀린다.
+ *
+ * 뒤에 괄호 주석이 붙는 뜻이 많으므로(`'조금, 약간의 (몇 개의)'`)
+ * **마지막 한글 글자**를 찾아 본다. 한글이 하나도 없으면 `라는`으로 둔다 —
+ * 영어나 숫자 뒤에는 무엇을 붙여도 어색하고, 그런 뜻은 audit 이 따로 잡는다.
+ */
+export function iRaNeun(word: string): string {
+  const hangul = word.replace(/[^가-힣]/g, '');
+  if (hangul.length === 0) return '라는';
+  const code = hangul.charCodeAt(hangul.length - 1) - 0xac00;
+  return code % 28 === 0 ? '라는' : '이라는';
 }
 
 /** 유의어까지 한 줄로. `'"단단한" 이라는 뜻일 때 이렇게 바꿔 쓸 수 있어요 : firm, hard'` */

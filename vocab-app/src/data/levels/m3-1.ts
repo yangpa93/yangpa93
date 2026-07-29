@@ -728,7 +728,7 @@ export const M3_1 = defineLevel('m3-1', [
     { m: '군중, 무리', syn: ['group'], ex: [
       ['A crowd gathered at the gate.', '군중이 문 앞에 모였다.'],
       ['He disappeared into the crowd.', '그는 군중 속으로 사라졌다.'],
-      ['The crowd cheered loudly.', '군중은 크게 환호했다.'],
+      ['A large crowd waited outside.', '많은 사람들이 밖에서 기다렸다.'],
     ]},
   ]},
   { w: 'crown', p: 'n.', s: [

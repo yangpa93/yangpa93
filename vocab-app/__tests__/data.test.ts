@@ -10,6 +10,7 @@ import {
   exposure,
   meaningLine,
   posLabel,
+  iRaNeun,
   synonymLead,
   synonymSentence,
   wordForms,
@@ -298,10 +299,10 @@ describe('posLabel', () => {
 describe('유의어 문구', () => {
   it("'=' 대신 어느 뜻일 때 바꿔 쓸 수 있는지 말한다", () => {
     expect(synonymSentence('단단한', ['firm'])).toBe(
-      '"단단한" 이라는 뜻일 때 이렇게 바꿔 쓸 수 있어요 : firm',
+      '"단단한"이라는 뜻일 때 이렇게 바꿔 쓸 수 있어요 : firm',
     );
     expect(synonymSentence('단단한', ['firm', 'hard'])).toBe(
-      '"단단한" 이라는 뜻일 때 이렇게 바꿔 쓸 수 있어요 : firm, hard',
+      '"단단한"이라는 뜻일 때 이렇게 바꿔 쓸 수 있어요 : firm, hard',
     );
     expect(synonymSentence('단단한', ['firm'])).not.toContain('=');
   });
@@ -316,6 +317,33 @@ describe('유의어 문구', () => {
     }
   });
 
+  it('받침에 맞는 이라는/라는 를 쓴다', () => {
+    // 3,462개 뜻 중 2,018개가 받침이 없다. 한쪽으로 박아 두면 절반 넘게 틀린다.
+    expect(iRaNeun('단단한')).toBe('이라는'); // 한 — 받침 ㄴ
+    expect(iRaNeun('~에 대하여')).toBe('라는'); // 여 — 받침 없음
+    expect(iRaNeun('약, 대략')).toBe('이라는'); // 략 — 받침 ㄱ
+    // 괄호 주석이 뒤에 붙어도 마지막 한글 글자를 본다.
+    expect(iRaNeun('조금, 약간의 (몇 개의)')).toBe('라는');
+    // 한글이 없으면 어느 쪽도 어색하다. 기본값으로 둔다.
+    expect(iRaNeun('???')).toBe('라는');
+  });
+
+  it('모든 뜻에 대해 조사가 자연스럽다', () => {
+    // 화면에 나가는 3,462줄 전부를 훑는다.
+    for (const e of ALL_ENTRIES) {
+      for (const sense of e.senses) {
+        const line = synonymLead(sense.meaning);
+        const hangul = sense.meaning.replace(/[^가-힣]/g, '');
+        if (hangul.length === 0) continue;
+        const 받침 = (hangul.charCodeAt(hangul.length - 1) - 0xac00) % 28 !== 0;
+        expect({ m: sense.meaning, ok: line.includes(받침 ? '"이라는' : '"라는') }).toEqual({
+          m: sense.meaning,
+          ok: true,
+        });
+      }
+    }
+  });
+
   it('조사를 쓰지 않는다 — 영어 낱말마다 로/으로 가 갈린다', () => {
     // firm 은 '펌'이라 으로, hard 는 '하드'라 로. 규칙으로 고를 수 없다.
     for (const syn of [['firm'], ['hard'], ['look'], ['put up']]) {
@@ -326,7 +354,7 @@ describe('유의어 문구', () => {
 
   it('칩으로 늘어놓는 자리에서는 유의어를 문장에 넣지 않는다', () => {
     // 단어 카드의 '오늘 배우는 뜻' 칸은 유의어가 칩으로 따로 나온다.
-    expect(synonymLead('단단한')).toBe('"단단한" 이라는 뜻일 때 이렇게 바꿔 쓸 수 있어요');
+    expect(synonymLead('단단한')).toBe('"단단한"이라는 뜻일 때 이렇게 바꿔 쓸 수 있어요');
     expect(synonymLead('단단한')).not.toContain('firm');
   });
 });

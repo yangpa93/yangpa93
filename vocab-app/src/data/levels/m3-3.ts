@@ -244,7 +244,7 @@ export const M3_3 = defineLevel('m3-3', [
     ]},
   ]},
   { w: 'ghost', p: 'n.', s: [
-    { m: '유령', syn: ['spirit'], ex: [
+    { m: '유령', syn: [], ex: [
       ['She is afraid of ghosts.', '그녀는 유령을 무서워한다.'],
       ['The old house has a ghost story.', '그 낡은 집에는 유령 이야기가 있다.'],
       ['No one has seen a ghost.', '아무도 유령을 본 적이 없다.'],

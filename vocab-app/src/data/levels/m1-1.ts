@@ -31,7 +31,7 @@ export const M1_1 = defineLevel('m1-1', [
     ]},
   ]},
   { w: 'ability', p: 'n.', s: [
-    { m: '능력', syn: ['skill', 'talent'], ex: [
+    { m: '능력', syn: ['skill'], ex: [
       ['She has the ability to lead.', '그녀는 이끄는 능력이 있다.'],
       ['Birds have the ability to fly long distances.', '새는 먼 거리를 나는 능력이 있다.'],
       ['Reading improves your thinking ability.', '독서는 사고 능력을 향상시킨다.'],

@@ -72,7 +72,7 @@ export const M2_2 = defineLevel('m2-2', [
       ['The meeting was short.', '회의는 짧았다.'],
     ]},
   ]},
-  { w: 'should', p: 'v.', s: [
+  { w: 'should', p: 'aux.', s: [
     { m: '~해야 한다', syn: ['ought to'], ex: [
       ['You should sleep early.', '너는 일찍 자야 한다.'],
       ['We should help each other.', '우리는 서로 도와야 한다.'],

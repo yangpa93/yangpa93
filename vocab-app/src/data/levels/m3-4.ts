@@ -76,7 +76,7 @@ export const M3_4 = defineLevel('m3-4', [
     ]},
   ]},
   { w: 'knowledge', p: 'n.', s: [
-    { m: '지식', syn: ['understanding', 'learning'], ex: [
+    { m: '지식', syn: [], ex: [
       ['He has deep knowledge of history.', '그는 역사에 대한 깊은 지식이 있다.'],
       ['Knowledge grows when you share it.', '지식은 나눌 때 자란다.'],
       ['She has little knowledge of computers.', '그녀는 컴퓨터에 대한 지식이 거의 없다.'],
@@ -647,7 +647,7 @@ export const M3_4 = defineLevel('m3-4', [
     ]},
   ]},
   { w: 'message', p: 'n.', s: [
-    { m: '메시지, 전언', syn: ['note'], ex: [
+    { m: '메시지, 전언', syn: [], ex: [
       ['I left a message for her.', '나는 그녀에게 메시지를 남겼다.'],
       ['He sent me a message this morning.', '그는 오늘 아침 나에게 메시지를 보냈다.'],
       ['The message was very short.', '그 메시지는 아주 짧았다.'],

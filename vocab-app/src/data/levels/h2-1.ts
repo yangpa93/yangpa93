@@ -181,7 +181,7 @@ export const H2_1 = defineLevel('h2-1', [
     ]},
   ]},
   { w: 'allocate', p: 'v.', s: [
-    { m: '할당하다, 배분하다', syn: ['assign', 'distribute'], ex: [
+    { m: '할당하다, 배분하다', syn: ['assign'], ex: [
       ['They allocated funds to each school.', '그들은 각 학교에 자금을 배분했다.'],
       ['Allocate more time to reading.', '읽기에 더 많은 시간을 배정해라.'],
       ['Resources were allocated unevenly.', '자원이 고르지 않게 배분되었다.'],

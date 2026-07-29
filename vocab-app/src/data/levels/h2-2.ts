@@ -338,7 +338,7 @@ export const H2_2 = defineLevel('h2-2', [
     ]},
   ]},
   { w: 'congress', p: 'n.', s: [
-    { m: '의회, 회의', syn: ['assembly'], ex: [
+    { m: '의회, 회의', syn: [], ex: [
       ['Congress passed a new law.', '의회가 새 법을 통과시켰다.'],
       ['The congress meets each year.', '그 회의는 해마다 열린다.'],
       ['She spoke before congress.', '그녀는 의회 앞에서 연설했다.'],

@@ -65,7 +65,7 @@ export const M2_4 = defineLevel('m2-4', [
     ]},
   ]},
   { w: 'appreciate', p: 'v.', s: [
-    { m: '감사하다', syn: ['be grateful for', 'thank'], ex: [
+    { m: '감사하다', syn: ['be grateful for'], ex: [
       ['I appreciate your help.', '당신의 도움에 감사합니다.'],
       ['We appreciate everything you did.', '해 주신 모든 것에 감사드립니다.'],
     ]},
@@ -256,7 +256,7 @@ export const M2_4 = defineLevel('m2-4', [
     ]},
   ]},
   { w: 'authority', p: 'n.', s: [
-    { m: '권위, 권한', syn: ['power', 'control'], ex: [
+    { m: '권위, 권한', syn: ['control'], ex: [
       ['He has the authority to decide.', '그는 결정할 권한이 있다.'],
       ['She spoke with authority.', '그녀는 권위 있게 말했다.'],
     ]},
@@ -343,7 +343,7 @@ export const M2_4 = defineLevel('m2-4', [
     ]},
   ]},
   { w: 'band', p: 'n.', s: [
-    { m: '밴드, 무리', syn: ['group'], ex: [
+    { m: '밴드, 무리', syn: [], ex: [
       ['He plays in a school band.', '그는 학교 밴드에서 연주한다.'],
       ['The band played for an hour.', '밴드가 한 시간 동안 연주했다.'],
       ['A band of birds flew past.', '새 떼가 날아 지나갔다.'],
@@ -976,7 +976,7 @@ export const M2_4 = defineLevel('m2-4', [
       ['Smoking causes many diseases.', '흡연은 많은 질병을 유발한다.'],
       ['The heavy rain caused a flood.', '폭우가 홍수를 일으켰다.'],
     ]},
-    { m: '원인, 이유', syn: ['reason', 'source'], ex: [
+    { m: '원인, 이유', syn: ['reason'], ex: [
       ['We do not know the cause of the fire.', '우리는 화재의 원인을 모른다.'],
       ['Stress is a common cause of headaches.', '스트레스는 두통의 흔한 원인이다.'],
     ]},

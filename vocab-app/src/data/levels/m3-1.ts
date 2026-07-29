@@ -192,7 +192,7 @@ export const M3_1 = defineLevel('m3-1', [
     ]},
   ]},
   { w: 'claim', p: 'v., n.', s: [
-    { m: '주장하다; 주장', syn: ['assert', 'state'], ex: [
+    { m: '주장하다; 주장', syn: ['assert'], ex: [
       ['He claimed he was innocent.', '그는 자신이 결백하다고 주장했다.'],
       ['The company claims its product is safe.', '그 회사는 자사 제품이 안전하다고 주장한다.'],
       ['There is no proof for that claim.', '그 주장에는 증거가 없다.'],
@@ -370,7 +370,7 @@ export const M3_1 = defineLevel('m3-1', [
     ]},
   ]},
   { w: 'compensation', p: 'n.', s: [
-    { m: '보상, 배상', syn: ['payment', 'repayment'], ex: [
+    { m: '보상, 배상', syn: ['repayment'], ex: [
       ['They received compensation for the damage.', '그들은 피해에 대한 보상을 받았다.'],
       ['She asked for fair compensation.', '그녀는 정당한 보상을 요구했다.'],
       ['No compensation was offered.', '어떤 보상도 제시되지 않았다.'],
@@ -554,7 +554,7 @@ export const M3_1 = defineLevel('m3-1', [
     ]},
   ]},
   { w: 'contract', p: 'n.', s: [
-    { m: '계약', syn: ['agreement'], ex: [
+    { m: '계약', syn: [], ex: [
       ['They signed a contract.', '그들은 계약서에 서명했다.'],
       ['Read the contract carefully.', '계약서를 꼼꼼히 읽어라.'],
       ['The contract lasts one year.', '그 계약은 1년간 유효하다.'],
@@ -662,7 +662,7 @@ export const M3_1 = defineLevel('m3-1', [
     ]},
   ]},
   { w: 'county', p: 'n.', s: [
-    { m: '군, 자치주', syn: ['district'], ex: [
+    { m: '군, 자치주', syn: [], ex: [
       ['The county has three towns.', '그 군에는 마을이 셋 있다.'],
       ['He lives in a small county.', '그는 작은 군에 산다.'],
       ['The county built a new library.', '그 자치주가 새 도서관을 지었다.'],
@@ -931,7 +931,7 @@ export const M3_1 = defineLevel('m3-1', [
     ]},
   ]},
   { w: 'deny', p: 'v.', s: [
-    { m: '부인하다', syn: ['reject', 'refuse to admit'], ex: [
+    { m: '부인하다', syn: [], ex: [
       ['He denied breaking the window.', '그는 창문을 깼다는 것을 부인했다.'],
       ['She denied that she was there.', '그녀는 그곳에 있었다는 것을 부인했다.'],
       ['You cannot deny the facts.', '너는 사실을 부인할 수 없다.'],

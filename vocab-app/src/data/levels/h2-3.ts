@@ -115,7 +115,7 @@ export const H2_3 = defineLevel('h2-3', [
     ]},
   ]},
   { w: 'dictate', p: 'v.', s: [
-    { m: '받아쓰게 하다, 지시하다', syn: ['command'], ex: [
+    { m: '받아쓰게 하다, 지시하다', syn: [], ex: [
       ['She dictated a letter.', '그녀는 편지를 받아쓰게 했다.'],
       ['Do not dictate my choices.', '내 선택을 좌우하려 들지 마라.'],
       ['The rule dictates what we wear.', '그 규칙이 우리 복장을 정한다.'],

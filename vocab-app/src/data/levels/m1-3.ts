@@ -820,7 +820,7 @@ export const M1_3 = defineLevel('m1-3', [
     ]},
   ]},
   { w: 'habit', p: 'n.', s: [
-    { m: '습관', syn: ['routine', 'practice'], ex: [
+    { m: '습관', syn: ['routine'], ex: [
       ['Reading is a good habit.', '독서는 좋은 습관이다.'],
       ['He has a habit of biting his nails.', '그는 손톱을 물어뜯는 습관이 있다.'],
       ['It takes time to change a habit.', '습관을 바꾸는 데는 시간이 걸린다.'],

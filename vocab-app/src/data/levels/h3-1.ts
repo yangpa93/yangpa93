@@ -531,7 +531,7 @@ export const H3_1 = defineLevel('h3-1', [
     ]},
   ]},
   { w: 'mechanism', p: 'n.', s: [
-    { m: '기제, 작동 원리', syn: ['system', 'process'], ex: [
+    { m: '기제, 작동 원리', syn: ['system'], ex: [
       ['Scientists studied the mechanism.', '과학자들이 그 작동 원리를 연구했다.'],
       ['The body has a defense mechanism.', '몸에는 방어 기제가 있다.'],
       ['We need a mechanism for feedback.', '우리는 피드백을 위한 장치가 필요하다.'],
@@ -650,7 +650,7 @@ export const H3_1 = defineLevel('h3-1', [
     ]},
   ]},
   { w: 'ministry', p: 'n.', s: [
-    { m: '정부 부처, 부', syn: ['department'], ex: [
+    { m: '정부 부처, 부', syn: [], ex: [
       ['The ministry announced a new rule.', '그 부처는 새 규정을 발표했다.'],
       ['She works at the Ministry of Education.', '그녀는 교육부에서 일한다.'],
       ['Several ministries joined the plan.', '여러 부처가 그 계획에 참여했다.'],
@@ -769,7 +769,7 @@ export const H3_1 = defineLevel('h3-1', [
     ]},
   ]},
   { w: 'murder', p: 'n.', s: [
-    { m: '살인', syn: ['killing'], ex: [
+    { m: '살인', syn: [], ex: [
       ['The novel begins with a murder.', '그 소설은 살인 사건으로 시작한다.'],
       ['Murder is a serious crime.', '살인은 중대한 범죄다.'],
       ['He was cleared of the murder.', '그는 그 살인 혐의를 벗었다.'],

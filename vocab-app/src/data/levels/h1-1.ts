@@ -34,7 +34,7 @@ export const H1_1 = defineLevel('h1-1', [
     ]},
   ]},
   { w: 'occasion', p: 'n.', s: [
-    { m: '경우, 행사', syn: ['event'], ex: [
+    { m: '경우, 행사', syn: [], ex: [
       ['We meet on special occasions.', '우리는 특별한 경우에 만난다.'],
       ['The wedding was a happy occasion.', '그 결혼식은 기쁜 행사였다.'],
       ['On one occasion, he was late.', '한번은 그가 늦었다.'],

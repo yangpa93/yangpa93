@@ -51,7 +51,7 @@ export const M1_2 = defineLevel('m1-2', [
       ['She joined a campaign to save water.', '그녀는 물 절약 캠페인에 참여했다.'],
     ]},
   ]},
-  { w: 'can', p: 'v.', s: [
+  { w: 'can', p: 'aux.', s: [
     { m: '~할 수 있다', syn: ['be able to'], ex: [
       ['I can swim very well.', '나는 수영을 아주 잘할 수 있다.'],
       ['Can you help me?', '나를 도와줄 수 있니?'],
@@ -537,7 +537,7 @@ export const M1_2 = defineLevel('m1-2', [
       ['The total cost was fifty dollars.', '총 비용은 50달러였다.'],
     ]},
   ]},
-  { w: 'could', p: 'v.', s: [
+  { w: 'could', p: 'aux.', s: [
     { m: '~할 수 있었다, ~해 주시겠어요', syn: ['was able to'], ex: [
       ['Could you open the window?', '창문을 열어 주시겠어요?'],
       ['She could swim at age five.', '그녀는 다섯 살에 수영할 수 있었다.'],

@@ -351,7 +351,7 @@ export const M3_2 = defineLevel('m3-2', [
       ['Their effort finally paid off.', '그들의 노력이 마침내 결실을 맺었다.'],
     ]},
   ]},
-  { w: 'either', p: 'adj.', s: [
+  { w: 'either', p: 'adj., adv.', s: [
     { m: '둘 중 하나의', syn: [], ex: [
       ['Take either book.', '둘 중 아무 책이나 가져가라.'],
       ['Either answer is correct.', '어느 답이든 맞다.'],
@@ -429,7 +429,7 @@ export const M3_2 = defineLevel('m3-2', [
     ]},
   ]},
   { w: 'encourage', p: 'v.', s: [
-    { m: '격려하다, 장려하다', syn: ['support'], ex: [
+    { m: '격려하다, 장려하다', syn: [], ex: [
       ['My teacher encouraged me.', '선생님이 나를 격려해 주셨다.'],
       ['The school encourages reading.', '학교는 독서를 장려한다.'],
       ['Her success encouraged others to try.', '그녀의 성공은 다른 이들이 시도하도록 북돋웠다.'],
@@ -554,7 +554,7 @@ export const M3_2 = defineLevel('m3-2', [
     ]},
   ]},
   { w: 'event', p: 'n.', s: [
-    { m: '사건, 행사', syn: ['occasion'], ex: [
+    { m: '사건, 행사', syn: [], ex: [
       ['The school event was fun.', '학교 행사는 재미있었다.'],
       ['A strange event happened.', '이상한 사건이 일어났다.'],
       ['We plan events every month.', '우리는 매달 행사를 계획한다.'],
@@ -617,7 +617,7 @@ export const M3_2 = defineLevel('m3-2', [
     ]},
   ]},
   { w: 'excuse', p: 'n.', s: [
-    { m: '변명, 이유', syn: ['reason'], ex: [
+    { m: '변명, 이유', syn: [], ex: [
       ['That is a poor excuse.', '그것은 궁색한 변명이다.'],
       ['She had a good excuse.', '그녀에게는 그럴 만한 이유가 있었다.'],
       ['Do not make an excuse.', '변명하지 마라.'],

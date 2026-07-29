@@ -24,7 +24,7 @@ export const H1_2 = defineLevel('h1-2', [
     ]},
   ]},
   { w: 'quality', p: 'n.', s: [
-    { m: '질, 품질', syn: ['standard', 'grade'], ex: [
+    { m: '질, 품질', syn: [], ex: [
       ['The quality of the paper is good.', '그 종이의 품질이 좋다.'],
       ['We care about quality, not quantity.', '우리는 양이 아니라 질을 중시한다.'],
     ]},
@@ -419,7 +419,7 @@ export const H1_2 = defineLevel('h1-2', [
     ]},
   ]},
   { w: 'research', p: 'n.', s: [
-    { m: '연구, 조사', syn: ['study'], ex: [
+    { m: '연구, 조사', syn: [], ex: [
       ['Her research took two years.', '그녀의 연구는 2년이 걸렸다.'],
       ['Research shows a clear pattern.', '연구는 분명한 양상을 보여 준다.'],
       ['He does research on birds.', '그는 새에 관해 연구한다.'],
@@ -934,7 +934,7 @@ export const H1_2 = defineLevel('h1-2', [
       ['The ground is shaking.', '땅이 흔들리고 있다.'],
     ]},
   ]},
-  { w: 'shall', p: 'v.', s: [
+  { w: 'shall', p: 'aux.', s: [
     { m: '~할 것이다, ~할까요', syn: ['will'], ex: [
       ['Shall we go now?', '지금 갈까요?'],
       ['We shall meet again.', '우리는 다시 만날 것이다.'],

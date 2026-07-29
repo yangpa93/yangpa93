@@ -788,7 +788,7 @@ export const M2_3 = defineLevel('m2-3', [
       ['He cooks for his wife.', '그는 아내를 위해 요리한다.'],
     ]},
   ]},
-  { w: 'will', p: 'v.', s: [
+  { w: 'will', p: 'aux.', s: [
     { m: '~할 것이다', syn: [], ex: [
       ['I will call you tonight.', '오늘 밤에 전화할게.'],
       ['She will come tomorrow.', '그녀는 내일 올 것이다.'],

@@ -153,7 +153,7 @@ export const H1_3 = defineLevel('h1-3', [
     ]},
   ]},
   { w: 'site', p: 'n.', s: [
-    { m: '장소, 부지', syn: ['location'], ex: [
+    { m: '장소, 부지', syn: [], ex: [
       ['They chose a site for the school.', '그들은 학교 부지를 골랐다.'],
       ['The site is near the river.', '그 부지는 강 근처에 있다.'],
       ['This web site is useful.', '이 웹사이트는 유용하다.'],
@@ -612,7 +612,7 @@ export const H1_3 = defineLevel('h1-3', [
     ]},
   ]},
   { w: 'strategy', p: 'n.', s: [
-    { m: '전략', syn: ['plan', 'approach'], ex: [
+    { m: '전략', syn: ['approach'], ex: [
       ['We need a better strategy.', '우리는 더 나은 전략이 필요하다.'],
       ['Her study strategy really works.', '그녀의 공부 전략은 정말 효과가 있다.'],
       ['The team changed its strategy at halftime.', '그 팀은 하프타임에 전략을 바꿨다.'],
@@ -706,7 +706,7 @@ export const H1_3 = defineLevel('h1-3', [
     ]},
   ]},
   { w: 'success', p: 'n.', s: [
-    { m: '성공', syn: ['achievement'], ex: [
+    { m: '성공', syn: [], ex: [
       ['Her success surprised no one.', '그녀의 성공에 놀란 사람은 없었다.'],
       ['Success takes hard work.', '성공에는 노력이 필요하다.'],
       ['The show was a big success.', '그 공연은 큰 성공이었다.'],
@@ -783,7 +783,7 @@ export const H1_3 = defineLevel('h1-3', [
     ]},
   ]},
   { w: 'support', p: 'v., n.', s: [
-    { m: '지지하다, 응원하다', syn: ['back up', 'encourage'], ex: [
+    { m: '지지하다, 응원하다', syn: ['back up'], ex: [
       ['My family supports my dream.', '가족은 내 꿈을 지지한다.'],
       ['Thank you for your support.', '응원해 주셔서 감사합니다.'],
     ]},

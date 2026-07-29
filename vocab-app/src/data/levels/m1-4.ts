@@ -55,7 +55,7 @@ export const M1_4 = defineLevel('m1-4', [
     ]},
   ]},
   { w: 'homework', p: 'n.', s: [
-    { m: '숙제', syn: ['assignment'], ex: [
+    { m: '숙제', syn: [], ex: [
       ['I finished my homework early.', '나는 숙제를 일찍 끝냈다.'],
       ['Do your homework before dinner.', '저녁 전에 숙제를 해라.'],
       ['The homework was harder than usual.', '숙제가 평소보다 어려웠다.'],
@@ -786,7 +786,7 @@ export const M1_4 = defineLevel('m1-4', [
       ['We had a maths lesson today.', '우리는 오늘 수학 수업이 있었다.'],
     ]},
   ]},
-  { w: 'may', p: 'v.', s: [
+  { w: 'may', p: 'aux.', s: [
     { m: '~해도 된다, ~일지 모른다', syn: ['might'], ex: [
       ['May I come in?', '들어가도 될까요?'],
       ['It may rain this afternoon.', '오후에 비가 올지도 모른다.'],
@@ -838,7 +838,7 @@ export const M1_4 = defineLevel('m1-4', [
       ['She goes to middle school.', '그녀는 중학교에 다닌다.'],
     ]},
   ]},
-  { w: 'might', p: 'v.', s: [
+  { w: 'might', p: 'aux.', s: [
     { m: '~일지도 모른다', syn: ['may'], ex: [
       ['She might come later.', '그녀가 나중에 올지도 모른다.'],
       ['It might snow tonight.', '오늘 밤 눈이 올지도 모른다.'],
@@ -980,7 +980,7 @@ export const M1_4 = defineLevel('m1-4', [
       ['The music was too loud.', '음악이 너무 컸다.'],
     ]},
   ]},
-  { w: 'must', p: 'v.', s: [
+  { w: 'must', p: 'aux.', s: [
     { m: '~해야 한다', syn: ['have to'], ex: [
       ['You must wear a helmet.', '너는 헬멧을 써야 한다.'],
       ['We must leave right now.', '우리는 지금 당장 떠나야 한다.'],

@@ -811,7 +811,7 @@ export const H2_4 = defineLevel('h2-4', [
     ]},
   ]},
   { w: 'incident', p: 'n.', s: [
-    { m: '사건', syn: ['event'], ex: [
+    { m: '사건', syn: [], ex: [
       ['The incident happened at noon.', '그 사건은 정오에 일어났다.'],
       ['Nobody was hurt in the incident.', '그 사건으로 다친 사람은 없었다.'],
       ['She reported the incident.', '그녀는 그 사건을 신고했다.'],
@@ -916,7 +916,7 @@ export const H2_4 = defineLevel('h2-4', [
     ]},
   ]},
   { w: 'inhibit', p: 'v.', s: [
-    { m: '억제하다, 막다', syn: ['prevent', 'hold back'], ex: [
+    { m: '억제하다, 막다', syn: ['hold back'], ex: [
       ['Fear inhibits creativity.', '두려움은 창의성을 억제한다.'],
       ['The drug inhibits the growth of bacteria.', '그 약은 세균의 증식을 억제한다.'],
       ['Shyness inhibited him from speaking.', '수줍음이 그가 말하는 것을 막았다.'],

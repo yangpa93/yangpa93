@@ -421,7 +421,7 @@ export const H3_2 = defineLevel('h3-2', [
     ]},
   ]},
   { w: 'perpetuate', p: 'v.', s: [
-    { m: '영속시키다, 지속시키다', syn: ['maintain', 'keep alive'], ex: [
+    { m: '영속시키다, 지속시키다', syn: ['keep alive'], ex: [
       ['Such images perpetuate stereotypes.', '그런 이미지는 고정 관념을 영속시킨다.'],
       ['The system perpetuates inequality.', '그 체계는 불평등을 지속시킨다.'],
       ['We should not perpetuate the myth.', '우리는 그 통념을 계속 이어 가서는 안 된다.'],
@@ -463,7 +463,7 @@ export const H3_2 = defineLevel('h3-2', [
     ]},
   ]},
   { w: 'phenomenon', p: 'n.', s: [
-    { m: '현상', syn: ['occurrence', 'event'], ex: [
+    { m: '현상', syn: ['event'], ex: [
       ['This is a common phenomenon.', '이것은 흔한 현상이다.'],
       ['Scientists cannot explain the phenomenon.', '과학자들은 그 현상을 설명하지 못한다.'],
       ['Social media is a global phenomenon.', '소셜 미디어는 세계적인 현상이다.'],
@@ -829,7 +829,7 @@ export const H3_2 = defineLevel('h3-2', [
     ]},
   ]},
   { w: 'province', p: 'n.', s: [
-    { m: '지방, 도', syn: ['region'], ex: [
+    { m: '지방, 도', syn: [], ex: [
       ['She grew up in a northern province.', '그녀는 북쪽 지방에서 자랐다.'],
       ['Each province has its own food.', '지방마다 고유한 음식이 있다.'],
       ['The province held an election.', '그 도는 선거를 치렀다.'],

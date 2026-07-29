@@ -468,7 +468,7 @@ export const H1_4 = defineLevel('h1-4', [
     ]},
   ]},
   { w: 'transfer', p: 'v.', s: [
-    { m: '옮기다, 전학하다', syn: ['move'], ex: [
+    { m: '옮기다, 전학하다', syn: [], ex: [
       ['She transferred to a new school.', '그녀는 새 학교로 전학했다.'],
       ['Transfer the money today.', '오늘 돈을 이체해라.'],
       ['He transferred the files.', '그는 파일을 옮겼다.'],
@@ -925,7 +925,7 @@ export const H1_4 = defineLevel('h1-4', [
       ['It is worth trying at least once.', '적어도 한 번은 시도해 볼 가치가 있다.'],
     ]},
   ]},
-  { w: 'would', p: 'v.', s: [
+  { w: 'would', p: 'aux.', s: [
     { m: '~할 것이다, ~하곤 했다', syn: [], ex: [
       ['Would you help me?', '나를 도와주시겠어요?'],
       ['She said she would come.', '그녀는 오겠다고 말했다.'],

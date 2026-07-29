@@ -126,7 +126,7 @@ export const H3_4 = defineLevel('h3-4', [
     ]},
   ]},
   { w: 'talent', p: 'n.', s: [
-    { m: '재능', syn: ['gift', 'ability'], ex: [
+    { m: '재능', syn: ['gift'], ex: [
       ['She has a talent for music.', '그녀는 음악에 재능이 있다.'],
       ['His talent surprised everyone.', '그의 재능은 모두를 놀라게 했다.'],
       ['Every child has a special talent.', '모든 아이는 특별한 재능이 있다.'],
@@ -411,7 +411,7 @@ export const H3_4 = defineLevel('h3-4', [
     ]},
   ]},
   { w: 'treaty', p: 'n.', s: [
-    { m: '조약, 협정', syn: ['agreement'], ex: [
+    { m: '조약, 협정', syn: [], ex: [
       ['The two countries signed a treaty.', '두 나라가 조약에 서명했다.'],
       ['The treaty ended the long war.', '그 조약이 긴 전쟁을 끝냈다.'],
       ['Treaties must be kept.', '조약은 지켜져야 한다.'],
@@ -474,7 +474,7 @@ export const H3_4 = defineLevel('h3-4', [
     ]},
   ]},
   { w: 'tunnel', p: 'n.', s: [
-    { m: '터널, 굴', syn: ['passage'], ex: [
+    { m: '터널, 굴', syn: [], ex: [
       ['The train entered a long tunnel.', '기차가 긴 터널로 들어갔다.'],
       ['Ants dig tunnels underground.', '개미는 땅속에 굴을 판다.'],
       ['The tunnel took ten years to build.', '그 터널을 짓는 데 십 년이 걸렸다.'],

@@ -12,9 +12,14 @@
  *
  * 결과물은 저장소에 넣지 않는다(라이선스는 CC BY-SA, 용량도 크다).
  * 검사할 때마다 다시 만들거나, 만들어 둔 파일 경로를 넘긴다.
+ *
+ * 거르는 조건을 손볼 때는 덤프를 한 번 받아 두고 `VOCAB_DUMP` 로 읽는다.
+ * 조건이 틀리면 3GB를 다시 받게 되는데, 실제로 한 번 그랬다.
+ *
+ *   VOCAB_DUMP=/어딘가/english.jsonl node scripts/fetch-reference.mjs ref.json
  */
 
-import { createWriteStream } from 'node:fs';
+import { createWriteStream, createReadStream, existsSync } from 'node:fs';
 import { createInterface } from 'node:readline';
 import { spawn, execFileSync } from 'node:child_process';
 import { PassThrough } from 'node:stream';
@@ -35,6 +40,19 @@ console.error(`찾을 낱말 ${WANT.size}개`);
 /** kaikki 의 유의어는 `[{word: 'firm', ...}]` 꼴이다. 낱말만 뽑는다. */
 function names(list) {
   return (list ?? []).map((x) => x?.word).filter((w) => typeof w === 'string');
+}
+
+const KEY = '"word": "';
+
+/** 줄 안에 우리가 찾는 낱말이 하나라도 보이는가. */
+function maybeWanted(line) {
+  for (let i = line.indexOf(KEY); i >= 0; i = line.indexOf(KEY, i + KEY.length)) {
+    const from = i + KEY.length;
+    const to = line.indexOf('"', from);
+    if (to < 0) break;
+    if (WANT.has(line.slice(from, to).toLowerCase())) return true;
+  }
+  return false;
 }
 
 /* ---------- 내려받기 ---------- */
@@ -82,22 +100,41 @@ function pump(range, out) {
   });
 }
 
-const total = Number(
+/**
+ * 덤프를 미리 받아 둔 파일이 있으면 그걸 읽는다.
+ *
+ *   VOCAB_DUMP=/어딘가/english.jsonl node scripts/fetch-reference.mjs ref.json
+ *
+ * 거르는 조건을 손볼 때마다 3GB를 다시 받을 수는 없다.
+ */
+const DUMP = process.env.VOCAB_DUMP;
+if (DUMP) {
+  if (!existsSync(DUMP)) {
+    console.error(`VOCAB_DUMP 파일이 없습니다: ${DUMP}`);
+    process.exit(1);
+  }
+  console.error(`받아 둔 덤프를 읽습니다: ${DUMP}`);
+}
+
+const total = DUMP ? 0 : Number(
   execFileSync('curl', ['-sSI', URL], { encoding: 'utf8' })
     .split('\n')
     .find((l) => /^content-length:/i.test(l))
     ?.split(':')[1]
     ?.trim(),
 );
-if (!Number.isFinite(total) || total <= 0) {
+if (!DUMP && (!Number.isFinite(total) || total <= 0)) {
   console.error('덤프 크기를 알 수 없습니다.');
   process.exit(1);
 }
-console.error(`덤프 ${Math.round(total / 1e6)}MB`);
+if (!DUMP) console.error(`덤프 ${Math.round(total / 1e6)}MB`);
 
 /* ---------- 흘려보내며 거르기 ---------- */
 
-const rl = createInterface({ input: ranges(total), crlfDelay: Infinity });
+const rl = createInterface({
+  input: DUMP ? createReadStream(DUMP) : ranges(total),
+  crlfDelay: Infinity,
+});
 
 /** 낱말 → 그 낱말의 품사별 항목들 */
 const found = new Map();
@@ -111,13 +148,10 @@ for await (const line of rl) {
   }
   if (!line) continue;
 
-  // JSON.parse 는 비싸다. 줄 안에 표제어가 없으면 먼저 걸러낸다.
-  const q = line.indexOf('"word":"');
-  if (q < 0) continue;
-  const end = line.indexOf('"', q + 8);
-  if (end < 0) continue;
-  const word = line.slice(q + 8, end).toLowerCase();
-  if (!WANT.has(word)) continue;
+  // JSON.parse 는 비싸다(3GB · 148만 줄). 줄 안에 우리 낱말이 하나도 없으면
+  // 먼저 걸러낸다. 표제어 말고 descendants 안에도 "word" 가 들어 있으므로
+  // 나오는 것을 다 훑어보고, 하나라도 걸리면 그때 parse 해서 확인한다.
+  if (!maybeWanted(line)) continue;
 
   let o;
   try {
@@ -126,6 +160,8 @@ for await (const line of rl) {
     continue;
   }
   if (o.lang_code !== 'en') continue;
+  const word = String(o.word ?? '').toLowerCase();
+  if (!WANT.has(word)) continue;
 
   const senses = (o.senses ?? [])
     .filter((s) => !s.tags?.includes('no-gloss'))

@@ -246,30 +246,30 @@ export default function ParentBackup() {
           있습니다. 폰을 바꾸거나 앱을 지우면 그동안의 기록이 모두 사라집니다.
           {'\n\n'}
           한 달에 한 번쯤 내보내서 카카오톡으로 자기에게 보내 두거나 드라이브에 올려 두세요.
-          파일 한 장이면 새 폰에서 그대로 되살아납니다.
+          파일 한 장이면 새 폰에서 그대로 되살아나요.
         </Body>
       </Card>
 
       <Card style={{ marginTop: spacing.md }}>
         <H3>내보내기</H3>
         <Muted style={{ marginTop: spacing.xs }}>
-          아이 {childCount}명의 학습 기록·오답·달력·요구권을 파일 한 장으로 묶습니다.
-          {'\n'}부모 PIN은 담지 않습니다. 파일이 돌아다니다 아이가 열어 볼 수 있으니까요.
+          이 폰에 있는 {childCount}명의 학습 기록·오답·달력·요구권을 파일 한 장으로 묶어요.
+          {'\n'}부모님 PIN 은 담지 않아요. 파일이 돌아다닐 수 있으니까요.
         </Muted>
-        <Button title="백업 파일 내보내기" variant="parent" onPress={exportBackup} style={{ marginTop: spacing.md }} />
+        <Button title="백업 파일 내보내기" onPress={exportBackup} style={{ marginTop: spacing.md }} />
       </Card>
 
       <Card style={{ marginTop: spacing.md }}>
         <H3>가져오기</H3>
         <Muted style={{ marginTop: spacing.xs }}>
-          백업 파일을 고르면 무엇이 들어 있는지 먼저 보여드립니다. 그걸 보고 되돌릴지
-          정하시면 됩니다.
+          백업 파일을 고르면 무엇이 들어 있는지 먼저 보여줘요. 그걸 보고 되돌릴지
+          정하면 돼요.
         </Muted>
         <Button title="백업 파일 고르기" variant="secondary" onPress={pickBackup} style={{ marginTop: spacing.md }} />
       </Card>
 
       <Muted style={{ marginTop: spacing.lg, textAlign: 'center' }}>
-        되돌린 뒤에는 부모 PIN과 부모님 폰 연결을 다시 정해 주세요.
+        되돌린 뒤에는 부모님 PIN 과 부모님 폰 연결을 다시 정해 주세요.
       </Muted>
     </Screen>
   );

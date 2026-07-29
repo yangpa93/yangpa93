@@ -688,7 +688,7 @@ app/                    화면 (expo-router 파일 기반 라우팅)
   parent-rewards.tsx    요구권 승인
   parent-settings.tsx   설정
   parent-link.tsx       부모님 폰 연결
-  parent-backup.tsx     학습 기록 백업 (내보내기·가져오기)
+  backup.tsx            학습 기록 백업 (내보내기·가져오기)
   link.tsx              연결 링크 수신
 
 src/

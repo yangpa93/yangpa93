@@ -149,6 +149,30 @@ export default function ChildSettings() {
         />
       </Card>
 
+      {/*
+        백업도 아이 설정에 둔다.
+
+        기록은 이 폰 안에만 있다. 폰을 바꾸거나 앱을 지우면 통째로 사라지는데,
+        그때 부모를 불러 PIN 을 받아야 한다면 대부분 그냥 잃어버린다.
+        아이가 둘이면 각자 자기 폰에서 자기 기록을 빼 두어야 한다.
+
+        되돌리기는 되돌릴 수 없다. 그래서 화면 안에서 **파일에 무엇이 들어
+        있는지 먼저 보여주고** 확인을 한 번 더 받는다. 그 장치는 이미 있다.
+      */}
+      <Card style={{ marginTop: spacing.md }}>
+        <H3>💾 공부 기록 지키기</H3>
+        <Muted style={{ marginTop: spacing.xs }}>
+          공부한 기록은 이 폰 안에만 있어요. 폰을 바꾸거나 앱을 지우면 사라지니,
+          가끔 파일로 빼 두면 안심이에요. 새 폰에서는 그 파일로 되돌릴 수 있어요.
+        </Muted>
+        <Button
+          title="백업 · 되돌리기"
+          variant="secondary"
+          onPress={() => router.push('/backup')}
+          style={{ marginTop: spacing.md }}
+        />
+      </Card>
+
       <Muted style={{ marginTop: spacing.lg, textAlign: 'center' }}>
         복습 개수와 학년·레벨은 부모님이 정해요.
       </Muted>

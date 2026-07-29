@@ -352,7 +352,7 @@ export default function ParentSettings() {
             <Button
               title="내보내기 · 가져오기"
               variant="parent"
-              onPress={() => router.push('/parent-backup')}
+              onPress={() => router.push('/backup')}
               style={{ marginTop: spacing.md }}
             />
           </Card>

@@ -1732,9 +1732,9 @@
 중2-1,no,adv.,"아니오, 아니",,yes,"No, I do not agree.","아니요, 저는 동의하지 않습니다."
 중2-1,no,adv.,"아니오, 아니",,yes,There is no milk left.,남은 우유가 없다.
 중2-1,no,adv.,"아니오, 아니",,yes,She said no to the offer.,그녀는 그 제안을 거절했다.
-중2-1,nope,adv.,아니 (구어),no,,"Nope, I have not seen him.","아니, 그를 못 봤어."
-중2-1,nope,adv.,아니 (구어),no,,She just answered nope.,그녀는 그냥 아니라고 답했다.
-중2-1,nope,adv.,아니 (구어),no,,"Nope, that is not mine.","아니, 그건 내 것이 아니야."
+중2-1,nope,int.,아니 (구어),no,,"Nope, I have not seen him.","아니, 그를 못 봤어."
+중2-1,nope,int.,아니 (구어),no,,She just answered nope.,그녀는 그냥 아니라고 답했다.
+중2-1,nope,int.,아니 (구어),no,,"Nope, that is not mine.","아니, 그건 내 것이 아니야."
 중2-1,north,"n., adj.",북쪽,,south,The wind is blowing from the north.,바람이 북쪽에서 불고 있다.
 중2-1,north,"n., adj.",북쪽,,south,They traveled to the north of the country.,그들은 그 나라의 북쪽으로 여행했다.
 중2-1,north,"n., adj.",북쪽,,south,My room faces north.,내 방은 북쪽을 향해 있다.
@@ -1780,9 +1780,6 @@
 중2-1,okay,adj.,괜찮은,fine,,Are you okay?,너 괜찮니?
 중2-1,okay,adj.,괜찮은,fine,,The movie was okay.,영화는 그런대로 괜찮았다.
 중2-1,okay,adj.,괜찮은,fine,,It is okay to make mistakes.,실수해도 괜찮다.
-중2-1,okey,adj.,괜찮은 (okay 의 다른 철자),okay,,Everything looks okey now.,이제 다 괜찮아 보인다.
-중2-1,okey,adj.,괜찮은 (okay 의 다른 철자),okay,,She said okey and smiled.,그녀는 괜찮다고 하며 미소 지었다.
-중2-1,okey,adj.,괜찮은 (okay 의 다른 철자),okay,,Is this seat okey?,이 자리 괜찮나요?
 중2-1,old,adj.,"늙은, 나이 많은",,"new, young, new",My grandfather is very old.,우리 할아버지는 아주 연세가 많으시다.
 중2-1,old,adj.,"늙은, 나이 많은",,"new, young, new",How old are you?,몇 살이니?
 중2-1,old,adj.,오래된,,"new, young, new",This is an old book.,이것은 오래된 책이다.
@@ -2933,21 +2930,21 @@
 중2-3,wrong,adj.,"틀린, 잘못된",incorrect,"accurate, correct, proper, right, right, accurate, correct, proper",Your answer is wrong.,네 답은 틀렸다.
 중2-3,wrong,adj.,"틀린, 잘못된",incorrect,"accurate, correct, proper, right, right, accurate, correct, proper",She took the wrong bus.,그녀는 버스를 잘못 탔다.
 중2-3,wrong,adj.,"틀린, 잘못된",incorrect,"accurate, correct, proper, right, right, accurate, correct, proper",Something is wrong with my phone.,내 휴대폰에 뭔가 문제가 있다.
-중2-3,yeah,adv.,"응, 그래 (구어)",yes,,"Yeah, I agree with you.","응, 네 말에 동의해."
-중2-3,yeah,adv.,"응, 그래 (구어)",yes,,She said yeah and smiled.,그녀는 그래 하며 미소 지었다.
-중2-3,yeah,adv.,"응, 그래 (구어)",yes,,"Yeah, that sounds good.","응, 그거 좋겠다."
+중2-3,yeah,int.,"응, 그래 (구어)",yes,,"Yeah, I agree with you.","응, 네 말에 동의해."
+중2-3,yeah,int.,"응, 그래 (구어)",yes,,She said yeah and smiled.,그녀는 그래 하며 미소 지었다.
+중2-3,yeah,int.,"응, 그래 (구어)",yes,,"Yeah, that sounds good.","응, 그거 좋겠다."
 중2-3,year,n.,"해, 년",,,We moved here last year.,우리는 작년에 여기로 이사했다.
 중2-3,year,n.,"해, 년",,,A year has twelve months.,1년은 열두 달이다.
 중2-3,year,n.,"해, 년",,,She is ten years old.,그녀는 열 살이다.
 중2-3,yellow,adj.,노란,,,The banana is yellow.,바나나는 노랗다.
 중2-3,yellow,adj.,노란,,,She wore a yellow dress.,그녀는 노란 원피스를 입었다.
 중2-3,yellow,adj.,노란,,,The leaves turned yellow.,잎이 노랗게 변했다.
-중2-3,yep,adv.,"응, 그래 (구어)",yes,,"Yep, that is right.","응, 맞아."
-중2-3,yep,adv.,"응, 그래 (구어)",yes,,He answered yep without looking.,그는 보지도 않고 응이라고 답했다.
-중2-3,yep,adv.,"응, 그래 (구어)",yes,,"Yep, I will be there.","응, 나 갈게."
-중2-3,yes,adv.,"네, 그렇다",yeah,"no, no","Yes, I understand.","네, 이해합니다."
-중2-3,yes,adv.,"네, 그렇다",yeah,"no, no",She said yes to the plan.,그녀는 그 계획에 찬성했다.
-중2-3,yes,adv.,"네, 그렇다",yeah,"no, no","Yes, that is my bag.","네, 그것이 제 가방입니다."
+중2-3,yep,int.,"응, 그래 (구어)",yes,,"Yep, that is right.","응, 맞아."
+중2-3,yep,int.,"응, 그래 (구어)",yes,,He answered yep without looking.,그는 보지도 않고 응이라고 답했다.
+중2-3,yep,int.,"응, 그래 (구어)",yes,,"Yep, I will be there.","응, 나 갈게."
+중2-3,yes,int.,"네, 그렇다",yeah,"no, no","Yes, I understand.","네, 이해합니다."
+중2-3,yes,int.,"네, 그렇다",yeah,"no, no",She said yes to the plan.,그녀는 그 계획에 찬성했다.
+중2-3,yes,int.,"네, 그렇다",yeah,"no, no","Yes, that is my bag.","네, 그것이 제 가방입니다."
 중2-3,yesterday,n.,어제,,,It rained yesterday.,어제 비가 왔다.
 중2-3,yesterday,n.,어제,,,I met her yesterday.,나는 어제 그녀를 만났다.
 중2-3,yesterday,n.,어제,,,Yesterday was very busy.,어제는 아주 바빴다.

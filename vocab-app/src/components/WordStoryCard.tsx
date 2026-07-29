@@ -140,7 +140,12 @@ export function WordStoryCard({
           </Pressable>
         </Row>
         <Row style={{ gap: spacing.sm }}>
-          <Muted>{posLabel(entry.pos)}</Muted>
+          {/*
+            품사는 칩으로 둔다. 단어 카드에서는 표제어 바로 아래라 눈이 먼저
+            닿는 자리이고, 회색 작은 글씨로 두면 뜻과 뒤섞여 읽힌다.
+            단어장·오답 노트는 한 줄에 여러 단어가 늘어서므로 칩을 쓰지 않는다.
+          */}
+          <Chip label={posLabel(entry.pos)} />
           {entry.senses.length > 1 ? (
             <Muted style={{ color: colors.accent, fontWeight: '700' }}>
               뜻이 {entry.senses.length}개예요

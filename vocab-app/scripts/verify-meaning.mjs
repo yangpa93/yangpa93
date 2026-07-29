@@ -49,7 +49,8 @@ const POS_MAP = {
   'pron.': ['pron'],
   'art.': ['article', 'det'],
   'num.': ['num'],
-  'int.': ['intj'],
+  // 위키낱말사전은 yes·nope 를 particle 로 가른다. 학교문법에서는 감탄사다.
+  'int.': ['intj', 'particle'],
   'aux.': ['verb'],
   // 숙어는 위키낱말사전이 무엇으로든 부를 수 있다. 'in front of' 는 prep,
   // 'as soon as' 는 conj 다. 숙어의 품사는 우리가 'phr.' 하나로 뭉뚱그린

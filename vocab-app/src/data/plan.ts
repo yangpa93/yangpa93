@@ -609,7 +609,6 @@ const RAW: Record<LevelId, Row[]> = {
     ["often", 1],
     ["oil", 1],
     ["okay", 1],
-    ["okey", 1],
     ["old", 1],
     ["on", 1],
     ["one", 1],

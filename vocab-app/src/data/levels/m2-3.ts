@@ -914,7 +914,7 @@ export const M2_3 = defineLevel('m2-3', [
       ['Something is wrong with my phone.', '내 휴대폰에 뭔가 문제가 있다.'],
     ]},
   ]},
-  { w: 'yeah', p: 'adv.', s: [
+  { w: 'yeah', p: 'int.', s: [
     { m: '응, 그래 (구어)', syn: ['yes'], ex: [
       ['Yeah, I agree with you.', '응, 네 말에 동의해.'],
       ['She said yeah and smiled.', '그녀는 그래 하며 미소 지었다.'],
@@ -935,14 +935,14 @@ export const M2_3 = defineLevel('m2-3', [
       ['The leaves turned yellow.', '잎이 노랗게 변했다.'],
     ]},
   ]},
-  { w: 'yep', p: 'adv.', s: [
+  { w: 'yep', p: 'int.', s: [
     { m: '응, 그래 (구어)', syn: ['yes'], ex: [
       ['Yep, that is right.', '응, 맞아.'],
       ['He answered yep without looking.', '그는 보지도 않고 응이라고 답했다.'],
       ['Yep, I will be there.', '응, 나 갈게.'],
     ]},
   ]},
-  { w: 'yes', p: 'adv.', s: [
+  { w: 'yes', p: 'int.', s: [
     { m: '네, 그렇다', syn: ['yeah'], ex: [
       ['Yes, I understand.', '네, 이해합니다.'],
       ['She said yes to the plan.', '그녀는 그 계획에 찬성했다.'],

@@ -93,7 +93,7 @@ export const M2_1 = defineLevel('m2-1', [
       ['She said no to the offer.', '그녀는 그 제안을 거절했다.'],
     ]},
   ]},
-  { w: 'nope', p: 'adv.', s: [
+  { w: 'nope', p: 'int.', s: [
     { m: '아니 (구어)', syn: ['no'], ex: [
       ['Nope, I have not seen him.', '아니, 그를 못 봤어.'],
       ['She just answered nope.', '그녀는 그냥 아니라고 답했다.'],
@@ -203,13 +203,6 @@ export const M2_1 = defineLevel('m2-1', [
       ['Are you okay?', '너 괜찮니?'],
       ['The movie was okay.', '영화는 그런대로 괜찮았다.'],
       ['It is okay to make mistakes.', '실수해도 괜찮다.'],
-    ]},
-  ]},
-  { w: 'okey', p: 'adj.', s: [
-    { m: '괜찮은 (okay 의 다른 철자)', syn: ['okay'], ex: [
-      ['Everything looks okey now.', '이제 다 괜찮아 보인다.'],
-      ['She said okey and smiled.', '그녀는 괜찮다고 하며 미소 지었다.'],
-      ['Is this seat okey?', '이 자리 괜찮나요?'],
     ]},
   ]},
   { w: 'old', p: 'adj.', s: [

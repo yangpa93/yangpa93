@@ -4,9 +4,10 @@ import { Body, Card, Chip, EmptyState, H3, Muted, ProgressBar, Row, Screen } fro
 import { useApp } from '../src/store/AppProvider';
 import { entriesOf } from '../src/data';
 import { PLAN_COUNT } from '../src/data/plan';
-import { meaningLine, posLabel, synonymSentence, videoUrl } from '../src/data/entry';
+import { meaningLine, posLabel, videoUrl } from '../src/data/entry';
 import { isMastered } from '../src/srs/scheduler';
 import { LevelPicker } from '../src/components/LevelPicker';
+import { SynonymLine } from '../src/components/SynonymLine';
 import { speak } from '../src/lib/feedback';
 import { LEVEL_SHORT, LevelId } from '../src/types';
 import { colors, font, radius, spacing } from '../src/theme';
@@ -124,11 +125,11 @@ export default function Wordbook() {
                           문구가 뜻을 직접 부르므로, 같은 줄에 두면 '단단한'이
                           한 줄에 두 번 나온다.
                         */}
-                        {sense.synonyms.length > 0 ? (
-                          <Muted style={{ marginTop: 2 }}>
-                            {synonymSentence(sense.meaning, sense.synonyms)}
-                          </Muted>
-                        ) : null}
+                        <SynonymLine
+                          meaning={sense.meaning}
+                          synonyms={sense.synonyms}
+                          ttsEnabled={profile.settings.ttsEnabled}
+                        />
                         {sense.examples.map((ex, j) => (
                           <Pressable
                             key={j}

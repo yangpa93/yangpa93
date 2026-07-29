@@ -3,7 +3,8 @@ import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Body, Card, Chip, EmptyState, H3, Muted, Row, Screen } from '../src/components/ui';
 import { useApp } from '../src/store/AppProvider';
 import { ALL_ENTRIES } from '../src/data';
-import { allSynonyms, posLabel, synonymSentence, videoUrl } from '../src/data/entry';
+import { allSynonyms, posLabel, videoUrl } from '../src/data/entry';
+import { SynonymLine } from '../src/components/SynonymLine';
 import { troubleWords } from '../src/srs/progress';
 import { speak } from '../src/lib/feedback';
 import { colors, font, radius, spacing } from '../src/theme';
@@ -69,9 +70,11 @@ export default function Mistakes() {
                       <Body style={{ fontWeight: '700' }}>
                         {i + 1}. {sense.meaning}
                       </Body>
-                      {sense.synonyms.length > 0 ? (
-                        <Muted style={{ marginTop: 2 }}>{synonymSentence(sense.meaning, sense.synonyms)}</Muted>
-                      ) : null}
+                      <SynonymLine
+                        meaning={sense.meaning}
+                        synonyms={sense.synonyms}
+                        ttsEnabled={profile.settings.ttsEnabled}
+                      />
                       {sense.examples.map((ex, j) => (
                         <Pressable
                           key={j}

@@ -26,12 +26,13 @@ import {
   View,
 } from 'react-native';
 import { VocabEntry } from '../types';
-import { Exposure, posLabel, synonymLead, synonymSentence, videoUrl } from '../data/entry';
+import { Exposure, posLabel, synonymLead, videoUrl } from '../data/entry';
 import { variantOf } from '../data/spelling';
 import { speak, stopSpeaking } from '../lib/feedback';
 import { colors, font, radius, spacing } from '../theme';
 import { Button, Chip, Muted, Row } from './ui';
 import { HighlightedSentence } from './HighlightedSentence';
+import { SynonymLine } from './SynonymLine';
 
 const TYPE_MS = 26;
 
@@ -175,11 +176,22 @@ export function WordStoryCard({
           {exp.sense.synonyms.length > 0 ? (
             <View style={{ marginTop: spacing.sm }}>
               <Muted>{synonymLead(exp.sense.meaning)}</Muted>
+              {/*
+                유의어도 눌러서 들을 수 있어야 한다. 표제어와 예문은 소리가
+                나는데 유의어만 안 나면, 아이는 firm 을 읽는 법을 모른 채
+                눈으로만 외운다. 소리로 익힌 적 없는 말은 말할 때 안 나온다.
+              */}
               <Row style={{ marginTop: spacing.xs, gap: spacing.xs, flexWrap: 'wrap' }}>
                 {exp.sense.synonyms.map((syn) => (
-                  <View key={syn} style={s.syn}>
-                    <Text style={s.synText}>{syn}</Text>
-                  </View>
+                  <Pressable
+                    key={syn}
+                    style={s.syn}
+                    onPress={() => speak(syn, ttsEnabled)}
+                    accessibilityRole="button"
+                    accessibilityLabel={`${syn} 듣기`}
+                  >
+                    <Text style={s.synText}>{syn} 🔊</Text>
+                  </Pressable>
                 ))}
               </Row>
             </View>
@@ -214,9 +226,11 @@ export function WordStoryCard({
                   {isToday ? <Chip label="오늘" tone="primary" /> : null}
                 </Row>
 
-                {sense.synonyms.length > 0 ? (
-                  <Muted style={{ marginTop: 2 }}>{synonymSentence(sense.meaning, sense.synonyms)}</Muted>
-                ) : null}
+                <SynonymLine
+                  meaning={sense.meaning}
+                  synonyms={sense.synonyms}
+                  ttsEnabled={ttsEnabled}
+                />
 
                 {sense.examples.map((ex, ei) => (
                   <Pressable

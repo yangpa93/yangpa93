@@ -216,6 +216,9 @@ function usesWord(sentence, forms) {
 
 /* ---------- 보고 ---------- */
 
+/** 화면에 다 쏟으면 읽을 수가 없다. 파일로 받을 때는 VERIFY_FULL=1. */
+const LIMIT = process.env.VERIFY_FULL ? Infinity : 60;
+
 const scope = onlyLevel ? `레벨 ${onlyLevel}` : '전체';
 console.log(`\n뜻·품사 사전 대조 — ${scope} · 표제어 ${entries.length}\n`);
 
@@ -231,8 +234,8 @@ for (const [title, list] of sections) {
   const uniq = [...new Set(list)];
   total += uniq.length;
   console.log(`${uniq.length === 0 ? '✅' : '⚠️ '} ${title}: ${uniq.length}건`);
-  for (const line of uniq.slice(0, 60)) console.log(`     ${line}`);
-  if (uniq.length > 60) console.log(`     … 그 밖에 ${uniq.length - 60}건`);
+  for (const line of uniq.slice(0, LIMIT)) console.log(`     ${line}`);
+  if (uniq.length > LIMIT) console.log(`     … 그 밖에 ${uniq.length - LIMIT}건 (VERIFY_FULL=1 로 다 봅니다)`);
   console.log('');
 }
 

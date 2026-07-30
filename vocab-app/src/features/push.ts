@@ -22,9 +22,11 @@ import {
   buildHelloBody,
   buildNudgeBody,
   buildPushBody,
+  buildSettingsBody,
   EXPO_PUSH_ENDPOINT,
   type NudgePayload,
   pushFailureReason,
+  type SettingsPayload,
   PushPayload,
 } from './pairing';
 
@@ -36,12 +38,13 @@ export {
   NUDGE_PRESETS,
   parseHello,
   parseNudge,
+  parseSettings,
   pushFailureReason,
   LINK_SCHEME,
   parseIncoming,
   toPayload,
 } from './pairing';
-export type { HelloPayload, NudgePayload, PushPayload } from './pairing';
+export type { HelloPayload, NudgePayload, PushPayload, SettingsPayload } from './pairing';
 
 /**
  * 이 기기의 Expo 푸시 토큰을 발급받는다. 부모 기기에서만 쓴다.
@@ -116,6 +119,14 @@ export async function sendNudgeToChild(
   payload: NudgePayload,
 ): Promise<SendResult> {
   return sendPush(buildNudgeBody(childToken, payload));
+}
+
+/** 부모가 아이 기기의 공부할 과목을 바꾼다. */
+export async function sendSettingsToChild(
+  childToken: string,
+  payload: SettingsPayload,
+): Promise<SendResult> {
+  return sendPush(buildSettingsBody(childToken, payload));
 }
 
 /** 실제 전송. 보내는 내용만 다르고 오류를 읽는 방법은 같다. */

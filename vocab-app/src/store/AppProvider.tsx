@@ -207,6 +207,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           newPerDay: DEFAULT_NEW_PER_DAY,
           reviewPerDay: DEFAULT_REVIEW_PER_DAY,
           rounds: 3,
+          // 처음 만들 때는 영어만. 국어를 하려면 부모님이 켜 준다.
+          subjects: ['en'],
           showTranslation: true,
           ttsEnabled: true,
           hapticsEnabled: true,

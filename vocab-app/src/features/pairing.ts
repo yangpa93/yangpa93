@@ -7,6 +7,7 @@
  */
 
 import { DailyReport, reportHeadline, reportText, WeeklySummary } from './report';
+import { Subject, SUBJECT_LABEL } from '../types';
 import appJson from '../../app.json';
 
 /**
@@ -165,6 +166,50 @@ export function parseHello(data: unknown): HelloPayload | null {
   if (typeof d.childName !== 'string' || typeof d.childToken !== 'string') return null;
   if (d.childName.length === 0 || d.childToken.length === 0) return null;
   return { childName: d.childName, childToken: d.childToken };
+}
+
+/**
+ * 부모가 아이 기기의 설정을 바꾼다.
+ *
+ * 아이 폰을 손에 들지 않고도 과목을 정할 수 있어야 한다. 아이가 둘이고
+ * 폰이 각자에게 있으면, 바꿀 때마다 폰을 걷어 오는 것은 현실적이지 않다.
+ *
+ * 지금은 과목만 보낸다. 하루 분량 같은 것도 같은 통로로 보낼 수 있지만,
+ * 아이가 스스로 정하게 둔 값이라 부모가 덮어쓰지 않는다.
+ */
+export interface SettingsPayload {
+  from: string;
+  subjects: Subject[];
+}
+
+export function buildSettingsBody(token: string, payload: SettingsPayload) {
+  const names = payload.subjects.map((s) => SUBJECT_LABEL[s]).join(' · ');
+  return {
+    to: token,
+    title: '⚙️ 공부할 과목이 바뀌었어요',
+    body: `${payload.from}이(가) ${names}(으)로 정했어요.`,
+    sound: 'default' as const,
+    priority: 'high' as const,
+    channelId: 'child-nudge',
+    data: { kind: 'settings', from: payload.from, subjects: payload.subjects },
+  };
+}
+
+/**
+ * 받은 푸시에서 설정을 꺼낸다.
+ *
+ * 과목이 하나도 없거나 모르는 값만 오면 **받아들이지 않는다.** 빈 과목으로
+ * 덮어쓰면 아이 화면에 낼 문제가 없어져 앱이 고장 난 것처럼 보인다.
+ */
+export function parseSettings(data: unknown): SettingsPayload | null {
+  if (!data || typeof data !== 'object') return null;
+  const d = data as Record<string, unknown>;
+  if (d.kind !== 'settings') return null;
+  if (!Array.isArray(d.subjects)) return null;
+  const all: Subject[] = ['en', 'ko'];
+  const subjects = all.filter((x) => (d.subjects as unknown[]).includes(x));
+  if (subjects.length === 0) return null;
+  return { from: typeof d.from === 'string' ? d.from : '부모님', subjects };
 }
 
 /** 부모가 고를 수 있는 문구. 직접 쓰는 것보다 누르기 쉽다. */

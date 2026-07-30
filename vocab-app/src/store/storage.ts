@@ -6,7 +6,7 @@
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AppState, LevelId, ProfileData, RewardRequest } from '../types';
+import { AppState, LevelId, ProfileData, RewardRequest, Subject } from '../types';
 import { awardRates, DEFAULT_AWARD_RATES, levelUpAmount, MIDDLE_LEVEL_AWARD } from '../features/awards';
 import { LEGACY_ID_WORD } from './legacy-ids';
 
@@ -52,6 +52,19 @@ export function emptyState(): AppState {
     receivedReports: [],
     knownChildren: [],
   };
+}
+
+/**
+ * 과목 목록을 온전하게 만든다.
+ *
+ * 저장된 값이 깨졌거나 비었으면 영어로 되돌린다. 하나도 안 고른 상태로
+ * 두면 낼 문제가 없어 학습 화면이 빈 채로 뜬다.
+ */
+export function normalizeSubjects(v: unknown): Subject[] {
+  const all: Subject[] = ['en', 'ko'];
+  if (!Array.isArray(v)) return ['en'];
+  const picked = all.filter((s) => v.includes(s));
+  return picked.length > 0 ? picked : ['en'];
 }
 
 export function emptyProfileData(): ProfileData {
@@ -237,6 +250,8 @@ function migrate(state: AppState): AppState {
         newPerDay: p.settings?.newPerDay ?? DEFAULT_NEW_PER_DAY,
         reviewPerDay: p.settings?.reviewPerDay ?? DEFAULT_REVIEW_PER_DAY,
         rounds: p.settings?.rounds ?? 3,
+        // 예전 판에는 없던 값이다. 그때는 영어뿐이었으므로 영어로 채운다.
+        subjects: normalizeSubjects(p.settings?.subjects),
         showTranslation: p.settings?.showTranslation ?? true,
       },
     })),

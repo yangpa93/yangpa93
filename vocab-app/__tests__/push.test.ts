@@ -3,12 +3,14 @@ import {
   buildLinkUrl,
   buildNudgeBody,
   buildPushBody,
+  buildSettingsBody,
   isValidPushToken,
   LINK_SCHEME,
   NUDGE_PRESETS,
   parseHello,
   parseIncoming,
   parseNudge,
+  parseSettings,
   pushFailureReason,
   toPayload,
 } from '../src/features/pairing';
@@ -16,6 +18,7 @@ import { buildDailyReport } from '../src/features/report';
 import { ALL_ENTRIES, entriesOf } from '../src/data';
 import { Profile, ProfileData } from '../src/types';
 import appJson from '../app.json';
+import { normalizeSubjects } from '../src/store/storage';
 
 const TODAY = '2026-07-27';
 const TOKEN = 'ExponentPushToken[abcd1234EFGH5678ijkl]';
@@ -30,6 +33,7 @@ function makeProfile(over: Partial<Profile> = {}): Profile {
       newPerDay: 10,
       reviewPerDay: 10,
       rounds: 3,
+      subjects: ['en'],
       showTranslation: true,
       ttsEnabled: true,
       hapticsEnabled: true,
@@ -270,5 +274,58 @@ describe('딥링크 스킴', () => {
 
   it('링크가 그 스킴으로 시작한다', () => {
     expect(buildLinkUrl(TOKEN, '엄마 폰').startsWith(`${LINK_SCHEME}://`)).toBe(true);
+  });
+});
+
+describe('부모 → 아이 과목 설정', () => {
+  it('고른 과목이 그대로 건너간다', () => {
+    const body = buildSettingsBody(TOKEN, { from: '엄마 폰', subjects: ['en', 'ko'] });
+    expect(body.to).toBe(TOKEN);
+    expect(parseSettings(body.data)).toEqual({ from: '엄마 폰', subjects: ['en', 'ko'] });
+  });
+
+  it('빈 과목은 받아들이지 않는다', () => {
+    // 빈 과목으로 덮어쓰면 아이 화면에 낼 문제가 없어져 고장으로 보인다.
+    expect(parseSettings({ kind: 'settings', from: '엄마', subjects: [] })).toBeNull();
+    expect(parseSettings({ kind: 'settings', from: '엄마' })).toBeNull();
+  });
+
+  it('모르는 과목은 걸러 내고, 남는 게 없으면 받아들이지 않는다', () => {
+    expect(parseSettings({ kind: 'settings', subjects: ['en', '수학'] })?.subjects).toEqual(['en']);
+    expect(parseSettings({ kind: 'settings', subjects: ['수학'] })).toBeNull();
+  });
+
+  it('순서가 뒤집혀 와도 정해진 차례로 돌려준다', () => {
+    expect(parseSettings({ kind: 'settings', subjects: ['ko', 'en'] })?.subjects).toEqual([
+      'en',
+      'ko',
+    ]);
+  });
+
+  it('네 가지가 서로를 넘보지 않는다', () => {
+    // 리포트·연결 인사·부르기·설정이 같은 통로로 오간다. kind 로 갈라야 한다.
+    const settings = buildSettingsBody(TOKEN, { from: '엄마', subjects: ['ko'] }).data;
+    expect(parseSettings(settings)).not.toBeNull();
+    expect(parseNudge(settings)).toBeNull();
+    expect(parseHello(settings)).toBeNull();
+    expect(parseIncoming(settings)).toBeNull();
+
+    const nudge = buildNudgeBody(TOKEN, { from: '엄마', message: '하자' }).data;
+    expect(parseSettings(nudge)).toBeNull();
+  });
+});
+
+describe('과목 설정 다듬기', () => {
+  it('비었거나 깨진 값은 영어로 되돌린다', () => {
+    // 하나도 안 고른 상태로 두면 낼 문제가 없어 학습 화면이 빈 채로 뜬다.
+    expect(normalizeSubjects(undefined)).toEqual(['en']);
+    expect(normalizeSubjects([])).toEqual(['en']);
+    expect(normalizeSubjects('영어')).toEqual(['en']);
+    expect(normalizeSubjects(['수학'])).toEqual(['en']);
+  });
+
+  it('제대로 된 값은 그대로 둔다', () => {
+    expect(normalizeSubjects(['ko'])).toEqual(['ko']);
+    expect(normalizeSubjects(['en', 'ko'])).toEqual(['en', 'ko']);
   });
 });

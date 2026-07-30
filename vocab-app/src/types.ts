@@ -284,7 +284,22 @@ export interface RewardRequest {
 /* 프로필                                                              */
 /* ------------------------------------------------------------------ */
 
+/** 무엇을 공부하는가. */
+export type Subject = 'en' | 'ko';
+
+export const SUBJECT_LABEL: Record<Subject, string> = {
+  en: '영어',
+  ko: '국어',
+};
+
 export interface ProfileSettings {
+  /**
+   * 공부할 과목. 빈 배열이 되지 않게 지킨다 — 하나도 안 고르면 낼 문제가 없다.
+   *
+   * 부모님 폰에서 정하면 아이 폰으로 자동으로 넘어간다. 아이마다 다르게
+   * 둘 수 있다 — 큰딸은 영어만, 작은딸은 둘 다 같은 식으로.
+   */
+  subjects: Subject[];
   /**
    * 하루에 새로 만날 단어 수 (5~20).
    *
@@ -429,6 +444,8 @@ export interface ReceivedReport {
  * 생기지 않는다 — 돈 대신 다른 약속으로 대신하고 싶을 때 쓴다.
  */
 export interface AwardRates {
+  /** 국어 레벨 하나를 끝냈을 때 */
+  koreanLevel: number;
   /** 중학교 레벨 하나를 끝냈을 때 */
   middleLevel: number;
   /** 고등학교 레벨 하나를 끝냈을 때 */

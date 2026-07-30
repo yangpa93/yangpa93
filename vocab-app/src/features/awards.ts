@@ -39,6 +39,14 @@ import { diffDays, toKey, todayKey } from '../lib/date';
 export const MIDDLE_LEVEL_AWARD = 20_000;
 /** 고등학교 레벨 하나를 끝냈을 때 (기본값) */
 export const HIGH_LEVEL_AWARD = 30_000;
+/**
+ * 국어 레벨 하나를 끝냈을 때 (기본값).
+ *
+ * 영어와 따로 센다. 국어는 한 레벨이 60개(영어는 137개)라 분량이 절반이 안
+ * 되고, 같은 금액을 주면 영어 쪽이 손해로 느껴진다.
+ */
+export const KOREAN_LEVEL_AWARD = 10_000;
+
 /** 한 달을 하루도 빠짐없이 학습했을 때 (기본값) */
 export const PERFECT_MONTH_AWARD = 20_000;
 /** 아이가 "정말 잘했어요"라며 더 요구할 수 있는 금액 (기본값) */
@@ -48,6 +56,7 @@ export const BONUS_AWARD = 10_000;
 export const DEFAULT_AWARD_RATES: AwardRates = {
   middleLevel: MIDDLE_LEVEL_AWARD,
   highLevel: HIGH_LEVEL_AWARD,
+  koreanLevel: KOREAN_LEVEL_AWARD,
   perfectMonth: PERFECT_MONTH_AWARD,
   bonus: BONUS_AWARD,
 };
@@ -60,6 +69,7 @@ export function awardRates(rates?: Partial<AwardRates> | null): AwardRates {
   return {
     middleLevel: clean(r.middleLevel, MIDDLE_LEVEL_AWARD),
     highLevel: clean(r.highLevel, HIGH_LEVEL_AWARD),
+    koreanLevel: clean(r.koreanLevel, KOREAN_LEVEL_AWARD),
     perfectMonth: clean(r.perfectMonth, PERFECT_MONTH_AWARD),
     bonus: clean(r.bonus, BONUS_AWARD),
   };

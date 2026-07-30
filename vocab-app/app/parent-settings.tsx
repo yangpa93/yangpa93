@@ -10,6 +10,7 @@ import { FeedbackCard } from '../src/components/FeedbackCard';
 import { LevelPicker } from '../src/components/LevelPicker';
 import { colors, font, radius, spacing } from '../src/theme';
 import { InviteChildCard } from '../src/components/InviteChildCard';
+import { SubjectPicker } from '../src/components/SubjectPicker';
 
 const NEW_PER_DAY = [5, 8, 10, 15, 20];
 const REVIEW_PER_DAY = [5, 10, 15, 20, 30];
@@ -37,6 +38,12 @@ const AWARD_FIELDS: {
     label: '고등학교 레벨 하나를 끝냈을 때',
     hint: '고1-1부터 고3-4까지 12개 레벨. 단어가 어려워 보통 더 높게 둡니다.',
     options: [0, 10_000, 20_000, 30_000, 50_000, 100_000],
+  },
+  {
+    key: 'koreanLevel',
+    label: '국어 레벨 하나를 끝냈을 때',
+    hint: '국어도 24개 레벨. 한 레벨이 60개로 영어(137개)의 절반이 안 돼서 보통 더 낮게 둡니다.',
+    options: [0, 5_000, 10_000, 20_000, 30_000],
   },
   {
     key: 'perfectMonth',
@@ -155,9 +162,9 @@ export default function ParentSettings() {
 
         <View style={s.awardSummary}>
           <Muted>
-            24개 레벨을 다 끝내면 레벨업 보상만 합계{' '}
+            영어 24개 · 국어 24개 레벨을 다 끝내면 레벨업 보상만 합계{' '}
             <Text style={{ fontWeight: '800', color: colors.text }}>
-              {formatWon(rates.middleLevel * 12 + rates.highLevel * 12)}
+              {formatWon(rates.middleLevel * 12 + rates.highLevel * 12 + rates.koreanLevel * 24)}
             </Text>
             입니다. 여기에 개근 보상이 달마다 최대 {formatWon(rates.perfectMonth)} 더해집니다.
           </Muted>
@@ -212,6 +219,9 @@ export default function ParentSettings() {
           <InviteChildCard />
         </>
       )}
+
+      {/* 무엇을 공부할지 — 이 폰의 아이도, 다른 폰의 아이도 */}
+      <SubjectPicker />
 
       {/* 아이 선택 */}
       {state.profiles.length > 1 ? (

@@ -9,6 +9,7 @@ import {
   claimAward,
   formatWon,
   HIGH_LEVEL_AWARD,
+  KOREAN_LEVEL_AWARD,
   isPerfectMonth,
   levelUpAmount,
   MIDDLE_LEVEL_AWARD,
@@ -28,6 +29,7 @@ function makeProfile(over: Partial<Profile> = {}): Profile {
       newPerDay: 10,
       reviewPerDay: 10,
       rounds: 3,
+      subjects: ['en'],
       showTranslation: true,
       ttsEnabled: true,
       hapticsEnabled: true,
@@ -227,6 +229,7 @@ describe('부모님이 정하는 금액표', () => {
     expect(awardRates(null)).toEqual({
       middleLevel: MIDDLE_LEVEL_AWARD,
       highLevel: HIGH_LEVEL_AWARD,
+      koreanLevel: KOREAN_LEVEL_AWARD,
       perfectMonth: PERFECT_MONTH_AWARD,
       bonus: BONUS_AWARD,
     });

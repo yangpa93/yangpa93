@@ -13,11 +13,17 @@ import { useEffect } from 'react';
 import * as Notifications from 'expo-notifications';
 import { router } from 'expo-router';
 import { useApp } from '../store/AppProvider';
-import { parseHello, parseIncoming, parseNudge, scheduleMissingReportAlert } from './push';
+import {
+  parseHello,
+  parseIncoming,
+  parseNudge,
+  parseSettings,
+  scheduleMissingReportAlert,
+} from './push';
 import { todayKey } from '../lib/date';
 
 export function PushBridge() {
-  const { ready, state, addReceivedReport, rememberChild } = useApp();
+  const { ready, state, addReceivedReport, rememberChild, updateSettings } = useApp();
 
   /**
    * 리포트를 받는 기기인가.
@@ -74,6 +80,37 @@ export function PushBridge() {
       responded.remove();
     };
   }, [isParentDevice, addReceivedReport, rememberChild]);
+
+  /**
+   * 아이 쪽 — 부모가 보낸 설정을 받아 적용한다.
+   *
+   * 알림을 **누르지 않아도** 적용해야 한다. 부모가 과목을 바꿨는데 아이가
+   * 알림을 지나쳐 버리면 그대로 옛 설정으로 공부하게 된다.
+   *
+   * 리포트를 받는 기기인지와 무관하게 건다. 이건 아이 쪽 통로다.
+   */
+  useEffect(() => {
+    if (!ready) return;
+
+    const apply = (data: unknown) => {
+      const s = parseSettings(data);
+      if (!s) return;
+      const active = state.activeProfileId;
+      if (!active) return;
+      updateSettings(active, { subjects: s.subjects });
+    };
+
+    const received = Notifications.addNotificationReceivedListener((n) =>
+      apply(n.request.content.data),
+    );
+    const responded = Notifications.addNotificationResponseReceivedListener((r) =>
+      apply(r.notification.request.content.data),
+    );
+    return () => {
+      received.remove();
+      responded.remove();
+    };
+  }, [ready, state.activeProfileId, updateSettings]);
 
   /**
    * 아이 쪽 — 부모가 보낸 "공부하자" 알림을 눌렀을 때.

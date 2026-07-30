@@ -29,6 +29,7 @@ function makeProfile(over: Partial<Profile> = {}): Profile {
       newPerDay: 10,
       reviewPerDay: 10,
       rounds: 3,
+      subjects: ['en'],
       showTranslation: true,
       ttsEnabled: true,
       hapticsEnabled: true,
@@ -159,10 +160,11 @@ describe('buildBackup', () => {
 
   it('보상 금액 설정은 담는다', () => {
     const state = makeState({
-      parent: { ...emptyState().parent, awards: { middleLevel: 5_000, highLevel: 7_000, perfectMonth: 0, bonus: 3_000 } },
+      parent: { ...emptyState().parent, awards: { middleLevel: 5_000, highLevel: 7_000, koreanLevel: 4_000, perfectMonth: 0, bonus: 3_000 } },
     });
     const b = buildBackup(state, { p1: makeData() }, '1.0.0', NOW);
     expect(b.state.parent.awards.middleLevel).toBe(5_000);
+    expect(b.state.parent.awards.koreanLevel).toBe(4_000);
     expect(b.state.parent.awards.perfectMonth).toBe(0);
   });
 });

@@ -213,6 +213,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           rounds: 3,
           // 처음 만들 때는 영어만. 국어를 하려면 부모님이 켜 준다.
           subjects: ['en'],
+          firstSubject: 'en',
           showTranslation: true,
           ttsEnabled: true,
           hapticsEnabled: true,

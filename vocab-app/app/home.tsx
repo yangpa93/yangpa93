@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback } from 'react';
 import { Body, Button, Card, Chip, H1, H2, H3, Muted, ProgressBar, Row, Screen } from '../src/components/ui';
+import { WelcomeHome } from '../src/components/WelcomeHome';
 import { useApp } from '../src/store/AppProvider';
 import { ALL_ENTRIES, entriesOf } from '../src/data';
 import { KO_ENTRIES } from '../src/data/korean/levels';
@@ -112,7 +113,9 @@ export default function Home() {
   // 레벨 시험 자격이 생기면 알려 준다. 시험은 아이가 눌러서 시작한다.
   // 자동으로 끌고 들어가면 준비 안 된 채로 보게 된다.
 
-  if (!profile || !progress) return null;
+  // 아이가 아직 없으면 시작 화면을 띄운다. 부모님 설정은 거기서도 들어간다.
+  if (!profile) return <WelcomeHome />;
+  if (!progress) return null;
 
   const myRewards = state.rewards.filter((r) => r.profileId === profile.id);
   const rates = awardRates(state.parent.awards);

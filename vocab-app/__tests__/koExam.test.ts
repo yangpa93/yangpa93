@@ -35,6 +35,7 @@ function profile(over: Partial<Profile> = {}): Profile {
     koLevel: 'm1-2',
     settings: {
       subjects: ['en', 'ko'],
+      firstSubject: 'en',
       newPerDay: 10,
       reviewPerDay: 10,
       rounds: 3,

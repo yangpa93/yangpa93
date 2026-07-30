@@ -35,6 +35,7 @@ function makeProfile(over: Partial<Profile> = {}): Profile {
       reviewPerDay: 10,
       rounds: 3,
       subjects: ['en'],
+      firstSubject: 'en',
       showTranslation: true,
       ttsEnabled: true,
       hapticsEnabled: true,

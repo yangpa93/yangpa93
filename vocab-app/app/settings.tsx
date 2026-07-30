@@ -2,6 +2,7 @@ import { Pressable, Switch, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { Button, Card, H3, Muted, Row, Screen } from '../src/components/ui';
 import { useApp } from '../src/store/AppProvider';
+import { SUBJECT_LABEL } from '../src/types';
 import { AvatarPicker, labelOf } from '../src/components/AvatarPicker';
 import { FeedbackCard } from '../src/components/FeedbackCard';
 import { APP_NAME, buildInfo, buildLabel } from '../src/features/build-info';
@@ -24,7 +25,10 @@ export default function ChildSettings() {
 
   if (!profile) return null;
 
-  const { ttsEnabled, hapticsEnabled, newPerDay, reviewPerDay, rounds } = profile.settings;
+  const { ttsEnabled, hapticsEnabled, newPerDay, reviewPerDay, rounds, subjects, firstSubject } =
+    profile.settings;
+  // 두 과목을 다 켠 아이에게만 순서를 묻는다. 하나뿐이면 고를 것이 없다.
+  const bothSubjects = subjects.includes('en') && subjects.includes('ko');
   const linkedParent = state.parentLink;
   const build = buildInfo();
 
@@ -39,6 +43,37 @@ export default function ChildSettings() {
         스스로 정한 속도라야 "계획보다 빨리 끝냈다"는 말이 자기 말이 된다.
         부모가 정해 준 숫자를 앞당긴 것과는 기분이 다르다.
       */}
+      {/*
+        무엇을 먼저 풀지 아이가 고른다.
+
+        머리가 맑을 때 어려운 쪽을 먼저 하고 싶은 아이가 있고, 쉬운 쪽으로
+        몸을 풀고 싶은 아이가 있다. 어느 쪽이 어려운지는 아이마다 달라서
+        어른이 정해 줄 일이 아니다.
+      */}
+      {bothSubjects ? (
+        <Card style={{ marginTop: spacing.md }}>
+          <H3>무엇부터 풀까요</H3>
+          <Muted style={{ marginTop: spacing.xs }}>
+            고른 쪽을 먼저 다 풀고 나머지로 넘어가요.
+          </Muted>
+          <Row style={{ gap: spacing.sm, marginTop: spacing.md }}>
+            {(['en', 'ko'] as const).map((sub) => (
+              <Pressable
+                key={sub}
+                onPress={() => updateSettings(profile.id, { firstSubject: sub })}
+                style={[s.chip, firstSubject === sub && s.chipOn]}
+                accessibilityRole="radio"
+                accessibilityState={{ selected: firstSubject === sub }}
+              >
+                <Text style={[s.chipText, firstSubject === sub && s.chipTextOn]}>
+                  {SUBJECT_LABEL[sub]} 먼저
+                </Text>
+              </Pressable>
+            ))}
+          </Row>
+        </Card>
+      ) : null}
+
       <Card style={{ marginTop: spacing.md }}>
         <H3>하루에 새로 배울 단어</H3>
         <Muted style={{ marginTop: spacing.xs }}>

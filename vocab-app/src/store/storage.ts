@@ -257,6 +257,8 @@ function migrate(state: AppState): AppState {
         rounds: p.settings?.rounds ?? 3,
         // 예전 판에는 없던 값이다. 그때는 영어뿐이었으므로 영어로 채운다.
         subjects: normalizeSubjects(p.settings?.subjects),
+        // 순서를 고를 수 있게 된 것은 나중이다. 예전 저장본은 영어부터.
+        firstSubject: p.settings?.firstSubject === 'ko' ? 'ko' : 'en',
         showTranslation: p.settings?.showTranslation ?? true,
       },
     })),

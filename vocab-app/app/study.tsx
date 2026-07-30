@@ -60,9 +60,9 @@ export default function Study() {
   // 바뀌는데 그때마다 다시 뽑으면 문제가 뒤섞인다.
   const [queue, setQueue] = useState<QueueItem[]>(() => {
     if (!profile) return [];
-    const { subjects, newPerDay, reviewPerDay, rounds } = profile.settings;
-    const out: QueueItem[] = [];
+    const { subjects, firstSubject, newPerDay, reviewPerDay, rounds } = profile.settings;
 
+    const en: QueueItem[] = [];
     if (subjects.includes('en')) {
       const words = buildSession({
         entries: entriesOf(profile.level),
@@ -71,23 +71,26 @@ export default function Study() {
         newPerDay,
         reviewPerDay,
       });
-      for (const i of buildRounds(words, rounds)) out.push({ subject: 'en', ...i });
+      for (const i of buildRounds(words, rounds)) en.push({ subject: 'en', ...i });
     }
 
+    const ko: QueueItem[] = [];
     if (subjects.includes('ko')) {
       const words = buildKoSession({
         entries: KO_ENTRIES,
         cards: data.cards,
         level: profile.koLevel,
         // 국어는 하루 6개로 정해 두었다. 영어 개수와 따로 간다 —
-        // 어휘가 1,244개뿐이라 영어와 같은 속도로 내면 금세 동난다.
+        // 어휘가 1,286개뿐이라 영어와 같은 속도로 내면 금세 동난다.
         newPerDay: KO_NEW_PER_DAY,
         reviewPerDay: KO_REVIEW_PER_DAY,
       });
-      for (const i of buildKoRounds(words, rounds, KO_ENTRIES)) out.push({ subject: 'ko', ...i });
+      for (const i of buildKoRounds(words, rounds, KO_ENTRIES)) ko.push({ subject: 'ko', ...i });
     }
 
-    return out;
+    // 아이가 고른 순서대로. 머리가 맑을 때 어려운 쪽을 먼저 하고 싶은
+    // 아이가 있고, 쉬운 쪽으로 몸을 풀고 싶은 아이가 있다.
+    return firstSubject === 'ko' ? [...ko, ...en] : [...en, ...ko];
   });
 
   const [index, setIndex] = useState(0);

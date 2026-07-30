@@ -17,6 +17,7 @@ import { candidates } from '../../korean/csat-candidates.mjs';
 
 const CACHE = 'korean/stdict.json';
 const EXAMPLES = 'korean/stdict-examples.json';
+const OPENDICT = 'korean/opendict-examples.json';
 const OUT = 'korean/csat-extra.json';
 
 /**
@@ -62,6 +63,17 @@ function main() {
     console.log(`  (${EXAMPLES} 없음 — 예문 없이 만듭니다)\n`);
   }
 
+  /*
+   * 표준국어대사전에 용례가 없는 어휘는 우리말샘에서 받아 둔 것을 쓴다.
+   * 둘 다 국립국어원 자료라 출처를 밝히는 자리만 다르다.
+   */
+  let opendict = {};
+  try {
+    opendict = JSON.parse(readFileSync(OPENDICT, 'utf8'));
+  } catch {
+    // 없으면 그냥 넘어간다.
+  }
+
   const out = [];
   const dropped = [];
   let noExample = 0;
@@ -81,7 +93,14 @@ function main() {
     // 문장을 먼저 쓰고, 모자라면 '원인 규명.' 같은 짧은 구로 채운다.
     // 구도 빈칸을 뚫을 수는 있어서 아주 못 쓸 것은 아니다.
     const ex = examples[cand.word] ?? { sentences: [], phrases: [] };
-    const picked = [...ex.sentences, ...ex.phrases].slice(0, MAX_EXAMPLES);
+    const fromStd = [...ex.sentences, ...ex.phrases];
+    const fromOpen = opendict[cand.word] ?? [];
+
+    // 표준국어대사전을 먼저 쓴다. 감수를 거친 자료라 우리말샘보다 앞선다.
+    const picked = [
+      ...fromStd.map((t) => ({ t, s: '표준국어대사전' })),
+      ...fromOpen.map((t) => ({ t, s: '우리말샘' })),
+    ].slice(0, MAX_EXAMPLES);
     if (picked.length === 0) noExample++;
 
     out.push({
@@ -94,7 +113,7 @@ function main() {
       field: sense.field || cand.domain,
       meaning: sense.meaning,
       // 국립국어원 용례를 그대로 쓴다. 지어낸 문장이 아니다.
-      examples: picked.map((t) => ({ t, s: '표준국어대사전' })),
+      examples: picked,
     });
   }
 

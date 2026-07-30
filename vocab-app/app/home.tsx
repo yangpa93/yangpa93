@@ -5,6 +5,8 @@ import { useCallback } from 'react';
 import { Body, Button, Card, Chip, H1, H2, H3, Muted, ProgressBar, Row, Screen } from '../src/components/ui';
 import { useApp } from '../src/store/AppProvider';
 import { ALL_ENTRIES, entriesOf } from '../src/data';
+import { KO_ENTRIES } from '../src/data/korean/levels';
+import { canTakeKoExam } from '../src/srs/koExam';
 import { buildSession } from '../src/srs/session';
 import { levelProgress } from '../src/srs/progress';
 import { buildDailyReport } from '../src/features/report';
@@ -33,6 +35,16 @@ export default function Home() {
     () => (profile ? levelProgress(ALL_ENTRIES, data.cards, profile.level) : null),
     [profile, data.cards],
   );
+
+  /**
+   * 국어 진도. 국어를 켠 아이에게만 보여준다.
+   *
+   * 영어와 따로 센다 — 레벨도 따로 올라가고 시험도 따로 본다.
+   */
+  const koProgress = useMemo(() => {
+    if (!profile || !profile.settings.subjects.includes('ko')) return null;
+    return canTakeKoExam(KO_ENTRIES, data.cards, profile.koLevel);
+  }, [profile, data.cards]);
 
   const session = useMemo(() => {
     if (!profile) return [];
@@ -229,6 +241,43 @@ export default function Home() {
           </>
         ) : null}
       </Card>
+
+      {/* 국어 진도. 국어를 켠 아이에게만 보인다. */}
+      {koProgress ? (
+        <Card style={{ marginTop: spacing.md }}>
+          <Row style={{ justifyContent: 'space-between' }}>
+            <H3>국어 {LEVEL_SHORT[profile.koLevel]} 진도</H3>
+            <Muted>
+              {koProgress.mastered} / {koProgress.total}개 완전 암기
+            </Muted>
+          </Row>
+          <View style={{ marginTop: spacing.md }}>
+            <ProgressBar
+              value={koProgress.total === 0 ? 0 : koProgress.mastered / koProgress.total}
+              color={colors.accent}
+            />
+          </View>
+          <Muted style={{ marginTop: spacing.sm }}>
+            {koProgress.allowed
+              ? '국어 레벨 시험을 볼 수 있어요!'
+              : `${Math.max(0, koProgress.need - koProgress.mastered)}개 더 외우면 국어 레벨 시험을 볼 수 있어요.`}
+          </Muted>
+
+          {koProgress.allowed ? (
+            <>
+              <Button
+                title={`🏆 국어 ${LEVEL_SHORT[profile.koLevel]} 시험 보기`}
+                variant="secondary"
+                onPress={() => router.push('/ko-exam')}
+                style={{ marginTop: spacing.lg }}
+              />
+              <Muted style={{ marginTop: spacing.sm, textAlign: 'center' }}>
+                {koProgress.total}개 낱말을 모두 맞혀야 다음 국어 레벨로 올라가요.
+              </Muted>
+            </>
+          ) : null}
+        </Card>
+      ) : null}
 
       {/* 바로가기 */}
       <Row style={{ marginTop: spacing.md, gap: spacing.md }}>

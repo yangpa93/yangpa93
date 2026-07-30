@@ -70,8 +70,10 @@ interface Ctx {
   /** 세션이 끝났을 때 하루 기록을 갱신한다. */
   finishSession(args: { studied: number; seconds: number }): void;
 
-  /** 레벨업 확정. 다음 학년으로 올리고 보상 요청 자격을 준다. */
+  /** 영어 레벨업 확정. 다음 학년으로 올리고 보상 요청 자격을 준다. */
   levelUp(): void;
+  /** 국어 레벨업 확정. 영어와 따로 올라간다. */
+  koLevelUp(): void;
   /** 레벨 시험 결과를 남긴다. */
   recordExam(result: ExamResult): void;
 
@@ -443,6 +445,35 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     [persistData],
   );
 
+  /**
+   * 국어 레벨을 올린다.
+   *
+   * 영어와 완전히 따로 간다. 국어 어휘가 1,244개라 영어(3,285개)보다 빨리
+   * 끝나므로, 한쪽이 다른 쪽을 기다리게 하면 진도가 막힌다.
+   */
+  const koLevelUp = useCallback(() => {
+    const { state } = ref.current;
+    const active = state.profiles.find((p) => p.id === state.activeProfileId);
+    if (!active) return;
+    const next = nextLevel(active.koLevel);
+    if (!next) return;
+
+    persistState({
+      ...state,
+      profiles: state.profiles.map((p) =>
+        p.id === active.id
+          ? {
+              ...p,
+              koLevel: next,
+              koClearedLevels: [...(p.koClearedLevels ?? []), active.koLevel],
+              // 끝낸 레벨마다 요구권이 하나 생긴다. 국어는 1만원.
+              koPendingLevelUps: [...(p.koPendingLevelUps ?? []), active.koLevel],
+            }
+          : p,
+      ),
+    });
+  }, [persistState]);
+
   const levelUp = useCallback(() => {
     const { state } = ref.current;
     const active = state.profiles.find((p) => p.id === state.activeProfileId);
@@ -675,6 +706,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     recordAnswer,
     finishSession,
     levelUp,
+    koLevelUp,
     recordExam,
     requestReward,
     grantReward,

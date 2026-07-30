@@ -75,10 +75,18 @@ export function awardRates(rates?: Partial<AwardRates> | null): AwardRates {
   };
 }
 
-export type AwardKind = 'levelup' | 'perfectMonth';
+/**
+ * 요구권의 종류.
+ *
+ * 영어 레벨업과 국어 레벨업을 따로 둔다. 금액이 다르고(영어 중학교 2만·
+ * 고등학교 3만 / 국어 1만), 아이가 목록에서 무엇으로 받는 것인지 알아야
+ * 하기 때문이다.
+ */
+export type AwardKind = 'levelup' | 'koLevelup' | 'perfectMonth';
 
 export const AWARD_LABEL: Record<AwardKind, string> = {
-  levelup: '레벨업',
+  levelup: '영어 레벨업',
+  koLevelup: '국어 레벨업',
   perfectMonth: '한 달 개근',
 };
 
@@ -168,7 +176,19 @@ export function availableAwards(
       amount,
       earnedFrom: level,
       month: null,
-      reason: `${gradeOf(level).startsWith('m') ? '중학교' : '고등학교'} 레벨 하나를 끝냈어요`,
+      reason: `영어 ${gradeOf(level).startsWith('m') ? '중학교' : '고등학교'} 레벨 하나를 끝냈어요`,
+    });
+  }
+
+  // 국어는 학년에 따라 금액이 갈리지 않는다. 24레벨 모두 같은 금액이다.
+  for (const level of profile.koPendingLevelUps ?? []) {
+    if (r.koreanLevel <= 0) continue;
+    out.push({
+      kind: 'koLevelup',
+      amount: r.koreanLevel,
+      earnedFrom: level,
+      month: null,
+      reason: '국어 레벨 하나를 끝냈어요',
     });
   }
 
@@ -353,6 +373,12 @@ export function claimAward(profile: Profile, award: Award): Profile {
     return {
       ...profile,
       pendingLevelUps: profile.pendingLevelUps.filter((l) => l !== award.earnedFrom),
+    };
+  }
+  if (award.kind === 'koLevelup') {
+    return {
+      ...profile,
+      koPendingLevelUps: (profile.koPendingLevelUps ?? []).filter((l) => l !== award.earnedFrom),
     };
   }
   if (award.month && !profile.claimedMonths.includes(award.month)) {

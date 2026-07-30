@@ -5,19 +5,48 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChoiceGame, ChoiceGameId } from '../src/games/ChoiceGame';
 import { ClozeGame } from '../src/games/ClozeGame';
 import { ScrambleGame } from '../src/games/ScrambleGame';
+import { KoGame } from '../src/games/KoGame';
 import { WordStoryCard } from '../src/components/WordStoryCard';
+import { KoWordCard } from '../src/components/KoWordCard';
 import { CONTENT_MAX_WIDTH, ProgressBar, Row } from '../src/components/ui';
 import { useApp } from '../src/store/AppProvider';
 import { ALL_ENTRIES, entriesOf } from '../src/data';
 import { senseExposure } from '../src/data/entry';
+import { KO_ENTRIES } from '../src/data/korean/levels';
 import { buildRounds, buildSession, SessionItem } from '../src/srs/session';
+import { buildKoRounds, buildKoSession, KoSessionItem } from '../src/srs/koSession';
 import { soundCorrect, soundWrong, tapCorrect, tapWrong, stopSpeaking } from '../src/lib/feedback';
 import { GAME_LABEL, STAGE_LABEL } from '../src/types';
 import { colors, font, radius, spacing } from '../src/theme';
 
+/**
+ * 큐에 들어가는 문항. 영어와 국어를 한 줄에 섞어 두었다.
+ *
+ * 화면을 둘로 나누지 않은 이유: 아이 입장에서 '오늘 공부'는 하나다. 영어를
+ * 끝내고 다시 국어 버튼을 눌러야 하면 두 번째는 잘 안 누른다. 진도 막대도
+ * 두 번 0부터 차오르면 끝이 안 보인다.
+ *
+ * 영어 문항이 앞, 국어 문항이 뒤에 온다. 섞지 않는다 — 머리를 영어와 국어
+ * 사이에서 오가게 하면 둘 다 힘들다.
+ */
+type QueueItem =
+  | ({ subject: 'en' } & SessionItem)
+  | ({ subject: 'ko' } & KoSessionItem);
+
+const isKo = (item: QueueItem): item is { subject: 'ko' } & KoSessionItem => item.subject === 'ko';
+
+/**
+ * 국어 하루치. 영어의 newPerDay 와 따로 둔다.
+ *
+ * 국어 어휘는 1,244개뿐이라 영어(3,285개)와 같은 속도로 내면 절반 시점에
+ * 동난다. 하루 6개면 24레벨을 도는 데 약 7개월이다.
+ */
+const KO_NEW_PER_DAY = 6;
+const KO_REVIEW_PER_DAY = 6;
+
 /** 한 문제를 푼 뒤 보여줄 상태 */
 interface Feedback {
-  item: SessionItem;
+  item: QueueItem;
   correct: boolean;
 }
 
@@ -29,16 +58,36 @@ export default function Study() {
 
   // 세션은 화면에 들어온 순간 한 번만 만든다. 답을 맞힐 때마다 카드가
   // 바뀌는데 그때마다 다시 뽑으면 문제가 뒤섞인다.
-  const [queue, setQueue] = useState<SessionItem[]>(() => {
+  const [queue, setQueue] = useState<QueueItem[]>(() => {
     if (!profile) return [];
-    const words = buildSession({
-      entries: entriesOf(profile.level),
-      cards: data.cards,
-      level: profile.level,
-      newPerDay: profile.settings.newPerDay,
-      reviewPerDay: profile.settings.reviewPerDay,
-    });
-    return buildRounds(words, profile.settings.rounds);
+    const { subjects, newPerDay, reviewPerDay, rounds } = profile.settings;
+    const out: QueueItem[] = [];
+
+    if (subjects.includes('en')) {
+      const words = buildSession({
+        entries: entriesOf(profile.level),
+        cards: data.cards,
+        level: profile.level,
+        newPerDay,
+        reviewPerDay,
+      });
+      for (const i of buildRounds(words, rounds)) out.push({ subject: 'en', ...i });
+    }
+
+    if (subjects.includes('ko')) {
+      const words = buildKoSession({
+        entries: KO_ENTRIES,
+        cards: data.cards,
+        level: profile.koLevel,
+        // 국어는 하루 6개로 정해 두었다. 영어 개수와 따로 간다 —
+        // 어휘가 1,244개뿐이라 영어와 같은 속도로 내면 금세 동난다.
+        newPerDay: KO_NEW_PER_DAY,
+        reviewPerDay: KO_REVIEW_PER_DAY,
+      });
+      for (const i of buildKoRounds(words, rounds, KO_ENTRIES)) out.push({ subject: 'ko', ...i });
+    }
+
+    return out;
   });
 
   const [index, setIndex] = useState(0);
@@ -50,6 +99,10 @@ export default function Study() {
   const requeued = useRef(new Set<string>());
 
   const pool = useMemo(() => (profile ? entriesOf(profile.level) : []), [profile]);
+  const koPool = useMemo(
+    () => (profile ? KO_ENTRIES.filter((e) => e.level === profile.koLevel) : []),
+    [profile],
+  );
 
   /**
    * 이미 배운 단어들. 유의어·반대말 문제의 오답 보기를 여기서 먼저 뽑는다.
@@ -101,7 +154,7 @@ export default function Study() {
               stage: 'learn',
               game: 'cloze',
               firstMeeting: false,
-            },
+            } as QueueItem,
           ]);
         }
       }
@@ -168,21 +221,8 @@ export default function Study() {
   // 예문 인덱스는 세션을 만들 때 문항에 못박아 두었다. 화면에서 다시
   // 계산하면 카드가 갱신될 때마다 값이 튀어서, 라운드가 올라가도 같은
   // 문장이 나오는 일이 생긴다.
-  const shown = feedback ? feedback.item : current;
-  const shownExposure = senseExposure(shown.entry, shown.senseIndex, shown.exposureIndex);
-
   const isLast = index + 1 >= queue.length;
-  const questionKey = `${index}-${current.entry.id}-${current.senseIndex}-${current.round}`;
-
-  const gameProps = {
-    entry: current.entry,
-    exp: shownExposure,
-    pool,
-    learned,
-    ttsEnabled: profile.settings.ttsEnabled,
-    showTranslation: profile.settings.showTranslation,
-    onAnswer,
-  };
+  const questionKey = `${index}-${current.entry.id}-${current.round}`;
 
   return (
     <SafeAreaView style={s.screen} edges={['top', 'left', 'right']}>
@@ -212,33 +252,90 @@ export default function Study() {
 
         <View style={{ flex: 1, marginTop: spacing.lg }}>
           {feedback ? (
-            // 2단계 중 두 번째 — 풀어 본 다음에 단어를 펼쳐 보여준다.
-            <WordStoryCard
-              entry={feedback.item.entry}
-              exp={shownExposure}
-              correct={feedback.correct}
-              firstTime={feedback.item.firstMeeting}
+            // 2단계 중 두 번째 — 풀어 본 다음에 낱말을 펼쳐 보여준다.
+            isKo(feedback.item) ? (
+              <KoWordCard
+                entry={feedback.item.entry}
+                exposureIndex={feedback.item.exposureIndex}
+                correct={feedback.correct}
+                firstTime={feedback.item.firstMeeting}
+                ttsEnabled={profile.settings.ttsEnabled}
+                onNext={next}
+                nextLabel={isLast ? '결과 보기' : '다음 문제'}
+              />
+            ) : (
+              <WordStoryCard
+                entry={feedback.item.entry}
+                exp={senseExposure(feedback.item.entry, feedback.item.senseIndex, feedback.item.exposureIndex)}
+                correct={feedback.correct}
+                firstTime={feedback.item.firstMeeting}
+                ttsEnabled={profile.settings.ttsEnabled}
+                onNext={next}
+                nextLabel={isLast ? '결과 보기' : '다음 문제'}
+              />
+            )
+          ) : isKo(current) ? (
+            <KoGame
+              key={questionKey}
+              game={current.game}
+              entry={current.entry}
+              pool={koPool}
+              exposureIndex={current.exposureIndex}
               ttsEnabled={profile.settings.ttsEnabled}
-              onNext={next}
-              nextLabel={isLast ? '결과 보기' : '다음 문제'}
+              onAnswer={onAnswer}
             />
-          ) : current.game === 'cloze' || current.game === 'listening' ? (
-            // key 로 문항마다 새로 만든다. 게임 컴포넌트는 "무엇을 눌렀는지"를
-            // 자기 안에 들고 있어서, 같은 자리에 같은 컴포넌트가 남으면 그
-            // 상태가 다음 문제로 딸려 온다. 지금은 문제 사이에 단어 카드가
-            // 끼어 있어 저절로 새로 만들어지지만, 그 화면에 기대지 않는다.
-            <ClozeGame key={questionKey} {...gameProps} listen={current.game === 'listening'} />
-          ) : current.game === 'clozeType' ? (
-            <ClozeGame key={questionKey} {...gameProps} mode="type" />
-          ) : current.game === 'scramble' ? (
-            <ScrambleGame key={questionKey} {...gameProps} />
           ) : (
-            <ChoiceGame key={questionKey} {...gameProps} game={current.game as ChoiceGameId} />
+            <EnGame
+              // key 로 문항마다 새로 만든다. 게임 컴포넌트는 "무엇을 눌렀는지"를
+              // 자기 안에 들고 있어서, 같은 자리에 같은 컴포넌트가 남으면 그
+              // 상태가 다음 문제로 딸려 온다.
+              key={questionKey}
+              item={current}
+              pool={pool}
+              learned={learned}
+              ttsEnabled={profile.settings.ttsEnabled}
+              showTranslation={profile.settings.showTranslation}
+              onAnswer={onAnswer}
+            />
           )}
         </View>
       </View>
     </SafeAreaView>
   );
+}
+
+/** 영어 문항의 유형별 갈래. study 본문이 길어져 따로 뺐다. */
+function EnGame({
+  item,
+  pool,
+  learned,
+  ttsEnabled,
+  showTranslation,
+  onAnswer,
+}: {
+  item: SessionItem;
+  pool: SessionItem['entry'][];
+  learned: SessionItem['entry'][];
+  ttsEnabled: boolean;
+  showTranslation: boolean;
+  onAnswer: (correct: boolean) => void;
+}) {
+  const props = {
+    entry: item.entry,
+    exp: senseExposure(item.entry, item.senseIndex, item.exposureIndex),
+    pool,
+    learned,
+    ttsEnabled,
+    showTranslation,
+    onAnswer,
+  };
+
+  if (item.game === 'cloze' || item.game === 'listening') {
+    return <ClozeGame {...props} listen={item.game === 'listening'} />;
+  }
+  if (item.game === 'clozeType') return <ClozeGame {...props} mode="type" />;
+  if (item.game === 'scramble') return <ScrambleGame {...props} />;
+  return <ChoiceGame {...props} game={item.game as ChoiceGameId} />;
 }
 
 const s = StyleSheet.create({

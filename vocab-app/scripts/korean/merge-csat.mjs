@@ -16,7 +16,16 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { candidates } from '../../korean/csat-candidates.mjs';
 
 const CACHE = 'korean/stdict.json';
+const EXAMPLES = 'korean/stdict-examples.json';
 const OUT = 'korean/csat-extra.json';
+
+/**
+ * 한 어휘에 붙일 예문 수의 상한.
+ *
+ * 사자성어는 10개, 나머지는 4개로 정했다. 수능 어휘는 뜻이 하나로
+ * 고정돼 있어 4개면 쓰임을 익히는 데 충분하다.
+ */
+const MAX_EXAMPLES = 4;
 
 /** 한자는 变体를 슬래시로 묶어 준다(蔓延/蔓衍). 낱낱으로 펼쳐 비교한다. */
 const variants = (h) =>
@@ -44,8 +53,18 @@ function main() {
   const cache = JSON.parse(readFileSync(CACHE, 'utf8'));
   const order = candidates();
 
+  // 용례는 따로 받아 둔다. 없으면 예문 없이 나가고, build-levels 가
+  // 예문 없는 어휘를 레벨에서 붙잡아 둔다.
+  let examples = {};
+  try {
+    examples = JSON.parse(readFileSync(EXAMPLES, 'utf8'));
+  } catch {
+    console.log(`  (${EXAMPLES} 없음 — 예문 없이 만듭니다)\n`);
+  }
+
   const out = [];
   const dropped = [];
+  let noExample = 0;
 
   for (const [i, cand] of order.entries()) {
     const entry = cache[cand.word];
@@ -59,6 +78,12 @@ function main() {
       continue;
     }
 
+    // 문장을 먼저 쓰고, 모자라면 '원인 규명.' 같은 짧은 구로 채운다.
+    // 구도 빈칸을 뚫을 수는 있어서 아주 못 쓸 것은 아니다.
+    const ex = examples[cand.word] ?? { sentences: [], phrases: [] };
+    const picked = [...ex.sentences, ...ex.phrases].slice(0, MAX_EXAMPLES);
+    if (picked.length === 0) noExample++;
+
     out.push({
       // 원본 엑셀의 순번(1~800) 뒤에 이어 붙는다. 후보 목록의 순서가
       // 곧 영역별 순서이므로 그대로 난이도 순으로 쓸 수 있다.
@@ -68,15 +93,17 @@ function main() {
       // 사전이 전문 분야를 달아 줬으면 그것을 쓰고, 없으면 우리가 나눈 영역.
       field: sense.field || cand.domain,
       meaning: sense.meaning,
-      // 예문은 아직 없다. 표준국어대사전 목록 화면은 용례를 주지 않는다.
-      example: '',
-      source: '표준국어대사전',
+      // 국립국어원 용례를 그대로 쓴다. 지어낸 문장이 아니다.
+      examples: picked.map((t) => ({ t, s: '표준국어대사전' })),
     });
   }
 
   writeFileSync(OUT, JSON.stringify(out, null, 1) + '\n', 'utf8');
 
   console.log(`  후보 ${order.length}개 → 확정 ${out.length}개  →  ${OUT}`);
+  console.log(
+    `  예문 있는 어휘 ${out.length - noExample}개 (예문 ${out.reduce((a, r) => a + r.examples.length, 0)}개) · 없는 어휘 ${noExample}개`,
+  );
   if (dropped.length) {
     console.log(`\n  버린 것 ${dropped.length}개`);
     for (const d of dropped) console.log(`    · ${d}`);

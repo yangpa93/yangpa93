@@ -87,14 +87,20 @@ function dedupe(src) {
         continue;
       }
 
+      // 원본 엑셀은 예문을 문자열 하나(`example`)로, 사전에서 받아 온 것은
+      // 출처가 붙은 목록(`examples`)으로 준다. 안에서는 한 가지로 다룬다.
+      const incoming = r.examples ?? (r.example ? [{ t: r.example }] : []);
+
       const held = owner.get(r.word);
       if (held === category) {
         // 같은 갈래 안에서 또 나왔다 — 예문만 가져다 붙인다.
         // 고전의 가람·갓·고니·미쁘다·벼리가 여기에 해당한다. 옛말은
         // 쓰인 자리를 여럿 봐야 익으므로 문장을 버리지 않는다.
         const prev = byWord.get(r.word);
-        if (r.example && !prev.examples.includes(r.example)) {
-          prev.examples.push(r.example);
+        const seen = new Set(prev.examples.map((e) => e.t));
+        const fresh = incoming.filter((e) => !seen.has(e.t));
+        if (fresh.length) {
+          prev.examples.push(...fresh);
           notes.push(`${LABEL[category]} '${r.word}' 합침 (예문 ${prev.examples.length}개)`);
         } else {
           notes.push(`${LABEL[category]} '${r.word}' 중복 제거`);
@@ -106,7 +112,7 @@ function dedupe(src) {
         continue;
       }
 
-      const rec = { ...r, examples: r.example ? [r.example] : [] };
+      const rec = { ...r, examples: incoming };
       owner.set(r.word, category);
       byWord.set(r.word, rec);
       out[category].push(rec);
@@ -177,8 +183,15 @@ function renderRow(r, category) {
   parts.push(`m: ${q(r.meaning)}`);
 
   const ex = r.examples
-    .filter(Boolean)
-    .map((t) => `      { t: ${q(t)} },`)
+    .filter((e) => e && e.t)
+    .map((e) => {
+      const fields = [`t: ${q(e.t)}`];
+      if (e.g) fields.push(`g: ${q(e.g)}`);
+      // 출처가 있으면 원전에서 가져온 문장이라는 뜻이다. 화면에서 지어낸
+      // 예문과 구별해 보여주려고 남긴다.
+      if (e.s) fields.push(`s: ${q(e.s)}`);
+      return `      { ${fields.join(', ')} },`;
+    })
     .join('\n');
 
   return `  { ${parts.join(', ')}, e: [\n${ex}\n  ]},`;

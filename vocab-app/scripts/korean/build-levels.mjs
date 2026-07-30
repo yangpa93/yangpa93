@@ -32,6 +32,7 @@ import { mkdirSync, readFileSync, writeFileSync, readdirSync, rmSync } from 'nod
 import { LEVEL_ORDER } from './level-order.mjs';
 
 const SRC = 'korean/source.json';
+const EXTRA = 'korean/csat-extra.json';
 const DIFF = 'korean/difficulty.json';
 const OUT_DIR = 'src/data/korean/levels';
 
@@ -229,6 +230,17 @@ export const KO_${constName(level)} = [...${names}];
 
 function main() {
   const src = JSON.parse(readFileSync(SRC, 'utf8'));
+
+  // 표준국어대사전에서 보충한 수능 어휘를 엑셀 뒤에 이어 붙인다.
+  // 원본 엑셀의 껍데기 491행을 메우려고 따로 받아 온 것이다.
+  try {
+    const extra = JSON.parse(readFileSync(EXTRA, 'utf8'));
+    src.csat = [...src.csat, ...extra];
+    console.log(`  ${EXTRA} 에서 ${extra.length}개 보충\n`);
+  } catch {
+    console.log(`  (${EXTRA} 없음 — 엑셀에 있는 수능 어휘만 씁니다)\n`);
+  }
+
   // 난이도 순위는 아직 없을 수 있다. 없으면 엑셀 순번대로 간다.
   let difficulty = { idiom: [] };
   try {
@@ -238,6 +250,21 @@ function main() {
   }
 
   const data = dedupe(src);
+
+  /*
+   * 예문이 하나도 없는 어휘는 레벨에 넣지 않는다.
+   *
+   * 이 앱의 문제는 전부 문장으로 나온다. 예문이 없으면 빈칸을 뚫을 자리가
+   * 없어 문항 자체가 만들어지지 않고, 학습 화면이 빈 채로 뜬다. 사전에서
+   * 갓 받아 온 어휘가 여기 걸린다 — 뜻과 한자는 있지만 예문이 아직 없다.
+   * 조용히 빼면 왜 안 나오는지 알 수 없으므로 개수를 찍어 둔다.
+   */
+  const held = {};
+  for (const c of ['idiom', 'concept', 'classic', 'csat']) {
+    const before = data[c].length;
+    data[c] = data[c].filter((r) => r.examples.length > 0);
+    if (before !== data[c].length) held[c] = before - data[c].length;
+  }
   const missing = sortByDifficulty(data, difficulty);
 
   const categories = ['idiom', 'concept', 'classic', 'csat'];
@@ -305,6 +332,14 @@ ${LEVEL_ORDER.map((l) => `  ...KO_${constName(l)},`).join('\n')}
     console.log();
     console.log(`  ⚠ 난이도 순위에 없는 사자성어 ${missing.length}개 — 뒤쪽 레벨로 밀림`);
     console.log(`    ${missing.slice(0, 12).join(', ')}${missing.length > 12 ? ' …' : ''}`);
+  }
+  const heldTotal = Object.values(held).reduce((a, b) => a + b, 0);
+  if (heldTotal) {
+    console.log();
+    console.log(`  ⚠ 예문이 없어 아직 넣지 않은 어휘 ${heldTotal}개`);
+    for (const [c, n] of Object.entries(held)) {
+      console.log(`    ${CATEGORY_COMMENT[c]} ${n}개`);
+    }
   }
 }
 

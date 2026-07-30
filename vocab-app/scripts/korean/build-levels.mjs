@@ -70,6 +70,9 @@ function applyCorrections(src, corrections, notes) {
   const c = corrections?.idiom;
   if (!c) return src;
 
+  // 사전에 표제어가 없어 한자를 확인하지 못한 성어들
+  const unverified = new Set(c.unverified?.['목록'] ?? []);
+
   const kept = [];
   for (const r of src.idiom) {
     if (c.drop?.[r.word]) {
@@ -90,6 +93,8 @@ function applyCorrections(src, corrections, notes) {
       notes.push(`사자성어 '${row.word}' 한자 ${row.hanja} → ${fixed} (표준국어대사전)`);
       row.hanja = fixed;
     }
+
+    if (unverified.has(row.word)) row.hanjaVerified = false;
 
     kept.push(row);
   }
@@ -221,6 +226,8 @@ const q = (s) => `'${String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`;
 function renderRow(r, category) {
   const parts = [`w: ${q(r.word)}`];
   if (r.hanja) parts.push(`h: ${q(r.hanja)}`);
+  // 사전에서 확인 못 한 한자는 표시해 둔다. 한자 고르기 문제에서 뺀다.
+  if (r.hanja && r.hanjaVerified === false) parts.push('v: false');
   if (r.field) parts.push(`f: ${q(r.field)}`);
   parts.push(`m: ${q(r.meaning)}`);
 

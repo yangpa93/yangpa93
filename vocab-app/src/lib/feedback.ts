@@ -72,11 +72,17 @@ export function soundWrong(enabled: boolean): void {
   play('wrong', enabled);
 }
 
-export function speak(text: string, enabled: boolean, rate = 0.9): void {
+/**
+ * 읽어 준다.
+ *
+ * `lang` 은 국어 어휘 때문에 있다. 한국어 문장을 en-US 로 읽히면 글자를
+ * 하나씩 영어 발음으로 더듬어 알아들을 수 없는 소리가 난다.
+ */
+export function speak(text: string, enabled: boolean, lang = 'en-US', rate = 0.9): void {
   if (!enabled || !text) return;
   try {
     Speech.stop();
-    Speech.speak(text, { language: 'en-US', rate });
+    Speech.speak(text, { language: lang, rate });
   } catch {
     // 기기에 TTS 엔진이 없을 수 있다. 조용히 넘어간다.
   }

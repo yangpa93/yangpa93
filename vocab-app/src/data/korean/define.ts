@@ -26,6 +26,11 @@ export interface KoRow {
   w: string;
   /** 한자 또는 외래어 원어 */
   h?: string;
+  /**
+   * 한자를 사전에서 확인하지 못했으면 false 를 적는다. 안 적으면 확인된
+   * 것으로 본다 — 대부분은 확인됐고, 예외만 표시하는 편이 눈에 띈다.
+   */
+  v?: boolean;
   /** 영역·분류 */
   f?: string;
   /** 뜻풀이 */
@@ -56,6 +61,7 @@ export function defineKoLevel(
     category,
     word: row.w,
     hanja: row.h ?? '',
+    hanjaVerified: row.h ? (row.v ?? true) : false,
     field: row.f ?? '',
     meaning: row.m,
     examples: row.e.map(

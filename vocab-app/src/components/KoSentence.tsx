@@ -19,19 +19,40 @@ export function KoSentence({
   style,
 }: {
   text: string;
-  /** 칠할 낱말. 비어 있으면 그냥 문장만 보여준다. */
+  /** 칠할 낱말. 비어 있으면 빈칸만 칠한다. */
   word?: string;
   style?: TextStyle;
 }) {
   const hit = word ? findWord(text, word) : null;
 
-  if (!hit) return <Text style={[s.text, style]}>{text}</Text>;
+  if (hit) {
+    return (
+      <Text style={[s.text, style]}>
+        {text.slice(0, hit.at)}
+        <Text style={s.mark}>{hit.text}</Text>
+        {text.slice(hit.at + hit.text.length)}
+      </Text>
+    );
+  }
 
+  /*
+   * 배우는 낱말이 없으면 빈칸 문제다. 이번에는 **빈칸**을 칠한다.
+   *
+   * 빈칸이 본문과 같은 검은 ○ 이면 어디를 묻는지 한눈에 안 들어온다.
+   * 문제의 핵심이 그 자리인데 가장 안 보인다.
+   */
+  const parts = text.split(/(○+|_{2,})/);
   return (
     <Text style={[s.text, style]}>
-      {text.slice(0, hit.at)}
-      <Text style={s.mark}>{hit.text}</Text>
-      {text.slice(hit.at + hit.text.length)}
+      {parts.map((part, i) =>
+        /^(○+|_{2,})$/.test(part) ? (
+          <Text key={i} style={s.blank}>
+            {part}
+          </Text>
+        ) : (
+          part
+        ),
+      )}
     </Text>
   );
 }
@@ -44,4 +65,6 @@ const s = StyleSheet.create({
    * 색만으로 구별하면 색을 잘 못 보는 아이가 놓친다. 굵기도 같이 준다.
    */
   mark: { color: colors.wrong, fontWeight: '800' },
+  /* 물어보는 자리. 색과 굵기를 함께 줘 색을 잘 못 보는 아이도 찾게 한다. */
+  blank: { color: colors.primary, fontWeight: '800', backgroundColor: colors.primarySoft },
 });

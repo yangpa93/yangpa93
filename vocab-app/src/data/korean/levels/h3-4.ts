@@ -76,6 +76,7 @@ const CONCEPT = defineKoLevel('h3-4', 'concept', [
 const CLASSIC = defineKoLevel('h3-4', 'classic', [
   { w: '설다', f: '감정/상태', m: '서럽다 / 익지 않다', e: [
       { t: '설은 눈물을 훔치며' },
+      { t: '竹林(죽림) 푸른 고ᄃᆡ 새 소리 더욱 설다', s: '허난설헌, 규원가' },
   ]},
   { w: '성산(星山)', f: '지명', m: '가사 성산별곡의 배경 (담양)', e: [
       { t: '성산에 새로 올라' },

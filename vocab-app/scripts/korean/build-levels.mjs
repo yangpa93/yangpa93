@@ -35,6 +35,7 @@ const SRC = 'korean/source.json';
 const EXTRA = 'korean/csat-extra.json';
 const DIFF = 'korean/difficulty.json';
 const CORR = 'korean/corrections.json';
+const CLASSIC_EX = 'korean/classic-examples.json';
 const OUT_DIR = 'src/data/korean/levels';
 
 /** 갈래별 상수 이름 앞머리. m1-1 → M1_1 */
@@ -320,6 +321,28 @@ function main() {
 
   const fixNotes = [];
   const corrected = applyCorrections(src, corrections, fixNotes);
+
+  /*
+   * 고전 어휘에 원문 인용을 얹는다.
+   *
+   * 엑셀 예문('나를 괴시던 님')은 짧은 토막이라 어디서 온 말인지 알 수 없다.
+   * 위키문헌에서 받은 원문에서 그 낱말이 실제로 쓰인 행을 찾아 뒤에 붙이고
+   * 출처를 단다. 찾은 것만 붙인다 — 어느 작품에 나온다고 어림잡아 적으면
+   * 그것이 곧 지어낸 출처다.
+   */
+  try {
+    const quotes = JSON.parse(readFileSync(CLASSIC_EX, 'utf8'));
+    let n = 0;
+    for (const r of corrected.classic) {
+      const found = quotes[r.word];
+      if (!found?.length) continue;
+      r.examples = [{ t: r.example }, ...found];
+      n += found.length;
+    }
+    if (n) console.log(`  고전 원문 인용 ${n}개를 ${Object.keys(quotes).length}개 어휘에 붙였습니다\n`);
+  } catch {
+    // 없으면 엑셀 예문만 쓴다.
+  }
 
   const data = dedupe(corrected);
   data.notes = [...fixNotes, ...data.notes];

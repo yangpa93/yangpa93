@@ -34,6 +34,7 @@ import { LEVEL_ORDER } from './level-order.mjs';
 const SRC = 'korean/source.json';
 const EXTRA = 'korean/csat-extra.json';
 const DIFF = 'korean/difficulty.json';
+const CORR = 'korean/corrections.json';
 const OUT_DIR = 'src/data/korean/levels';
 
 /** 갈래별 상수 이름 앞머리. m1-1 → M1_1 */
@@ -53,6 +54,47 @@ const constName = (level) => level.toUpperCase().replace('-', '_');
  */
 function isPlaceholder(r) {
   return /_\d+$/.test(r.word) || /\(\d+번\)$|\(\d+번째\)$/.test(r.meaning);
+}
+
+/**
+ * korean/corrections.json 을 적용한다.
+ *
+ * 엑셀은 원본 그대로 두고 교정은 따로 적어 둔다. 그래야 무엇이 원본이고
+ * 무엇이 우리가 고친 것인지 diff 로 보인다. 근거는 전부 표준국어대사전이다.
+ *
+ * 사자성어 300개를 오픈 API 로 조회해 대조한 결과 한자가 20개 어긋났고
+ * 표제어가 4개 깨져 있었다. 한자 고르기 문제를 낼 것이므로 한 글자만
+ * 달라도 아이에게 틀린 답을 가르치게 된다.
+ */
+function applyCorrections(src, corrections, notes) {
+  const c = corrections?.idiom;
+  if (!c) return src;
+
+  const kept = [];
+  for (const r of src.idiom) {
+    if (c.drop?.[r.word]) {
+      notes.push(`사자성어 '${r.word}' 뺌 — ${c.drop[r.word]}`);
+      continue;
+    }
+
+    const row = { ...r };
+    const ren = c.rename?.[r.word];
+    if (ren && ren.word) {
+      notes.push(`사자성어 '${r.word}' → '${ren.word}' — ${ren.why}`);
+      row.word = ren.word;
+      if (ren.hanja) row.hanja = ren.hanja;
+    }
+
+    const fixed = c.hanja?.[row.word];
+    if (fixed && fixed !== row.hanja) {
+      notes.push(`사자성어 '${row.word}' 한자 ${row.hanja} → ${fixed} (표준국어대사전)`);
+      row.hanja = fixed;
+    }
+
+    kept.push(row);
+  }
+
+  return { ...src, idiom: kept };
 }
 
 /**
@@ -262,7 +304,18 @@ function main() {
     console.log(`  (${DIFF} 없음 — 사자성어를 엑셀 순번대로 둡니다)\n`);
   }
 
-  const data = dedupe(src);
+  let corrections = null;
+  try {
+    corrections = JSON.parse(readFileSync(CORR, 'utf8'));
+  } catch {
+    console.log(`  (${CORR} 없음 — 엑셀을 그대로 씁니다)\n`);
+  }
+
+  const fixNotes = [];
+  const corrected = applyCorrections(src, corrections, fixNotes);
+
+  const data = dedupe(corrected);
+  data.notes = [...fixNotes, ...data.notes];
 
   /*
    * 예문이 하나도 없는 어휘는 레벨에 넣지 않는다.

@@ -13,11 +13,12 @@
  * 다음에도 같은 자리에서 틀린다.
  */
 
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useMemo, useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 import { KoEntry } from '../types';
 import { buildHanjaChoices, chars } from './hanja';
-import { speak } from '../lib/feedback';
+import { ChoiceButton, Choices, DontKnow, QuestionBox } from './ko-ui';
+import { KoSentence } from '../components/KoSentence';
 import { colors, font, radius, spacing } from '../theme';
 import { Muted } from '../components/ui';
 
@@ -27,13 +28,12 @@ export interface HanjaGameProps {
   pool: KoEntry[];
   /** 몇 번째 예문을 지문으로 쓸지 */
   exampleIndex: number;
-  ttsEnabled: boolean;
   onAnswer: (correct: boolean) => void;
 }
 
 const DONT_KNOW = '__dontknow__';
 
-export function HanjaGame({ entry, pool, exampleIndex, ttsEnabled, onAnswer }: HanjaGameProps) {
+export function HanjaGame({ entry, pool, exampleIndex, onAnswer }: HanjaGameProps) {
   const [picked, setPicked] = useState<string | null>(null);
 
   const choices = useMemo(
@@ -60,38 +60,34 @@ export function HanjaGame({ entry, pool, exampleIndex, ttsEnabled, onAnswer }: H
     <View style={{ flex: 1 }}>
       <Muted>뜻에 맞는 한자를 고르세요</Muted>
 
-      <Pressable
-        style={s.stem}
-        onPress={() => speak(entry.word, ttsEnabled, 'ko-KR')}
-        accessibilityRole="button"
-        accessibilityLabel="사자성어 듣기"
-      >
+      {/* 표제어·뜻·예문을 한 상자에 담는다. 예문이 밖에 있으면 보기처럼 보인다. */}
+      <QuestionBox>
         <Text style={s.word}>{entry.word}</Text>
         <Text style={s.meaning}>{entry.meaning}</Text>
-        {example ? <Text style={s.example}>{example.text}</Text> : null}
-      </Pressable>
+        {example ? (
+          <View style={s.exampleBox}>
+            <Text style={s.exampleTag}>이렇게 써요</Text>
+            <KoSentence text={example.text} word={entry.word} style={s.exampleText} />
+            {example.source ? <Text style={s.source}>— {example.source}</Text> : null}
+          </View>
+        ) : null}
+      </QuestionBox>
 
-      <View style={{ gap: spacing.sm }}>
-        {choices.map((c) => (
-          <HanjaButton
+      <Choices>
+        {choices.map((c, i) => (
+          <ChoiceButton
             key={c.id}
-            hanja={c.hanja}
+            index={i}
+            label={c.hanja}
             correct={c.id === entry.id}
             picked={picked}
             self={c.id}
             onPress={() => choose(c.id)}
+            big
           />
         ))}
-
-        <Pressable
-          onPress={() => choose(DONT_KNOW)}
-          disabled={picked !== null}
-          accessibilityRole="button"
-          style={[s.dontKnow, picked !== null && { opacity: 0.6 }]}
-        >
-          <Text style={s.dontKnowText}>모르겠어요</Text>
-        </Pressable>
-      </View>
+        <DontKnow picked={picked} onPress={() => choose(DONT_KNOW)} />
+      </Choices>
 
       {picked !== null ? <Breakdown entry={entry} /> : null}
     </View>
@@ -120,111 +116,25 @@ function Breakdown({ entry }: { entry: KoEntry }) {
   );
 }
 
-function HanjaButton({
-  hanja,
-  correct,
-  picked,
-  self,
-  onPress,
-}: {
-  hanja: string;
-  correct: boolean;
-  picked: string | null;
-  self: string;
-  onPress: () => void;
-}) {
-  const answered = picked !== null;
-  const isPicked = picked === self;
-
-  const shake = useRef(new Animated.Value(0)).current;
-  useEffect(() => {
-    if (isPicked && !correct) {
-      Animated.sequence([
-        Animated.timing(shake, { toValue: 1, duration: 50, useNativeDriver: true }),
-        Animated.timing(shake, { toValue: -1, duration: 50, useNativeDriver: true }),
-        Animated.timing(shake, { toValue: 0, duration: 50, useNativeDriver: true }),
-      ]).start();
-    }
-  }, [isPicked, correct, shake]);
-
-  return (
-    <Animated.View
-      style={{
-        transform: [{ translateX: shake.interpolate({ inputRange: [-1, 1], outputRange: [-8, 8] }) }],
-      }}
-    >
-      <Pressable
-        onPress={onPress}
-        disabled={answered}
-        accessibilityRole="button"
-        style={({ pressed }) => [
-          s.choice,
-          pressed && !answered && { opacity: 0.7 },
-          // 틀렸을 때도 정답을 같이 밝혀 준다. 뭐가 맞는지 모르고 넘어가면
-          // 학습이 안 된다.
-          answered && correct && s.choiceCorrect,
-          answered && isPicked && !correct && s.choiceWrong,
-        ]}
-      >
-        <Text style={s.choiceText}>{hanja}</Text>
-      </Pressable>
-    </Animated.View>
-  );
-}
-
 const s = StyleSheet.create({
-  stem: {
-    minHeight: 120,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginVertical: spacing.md,
-    padding: spacing.lg,
-    backgroundColor: colors.card,
-    borderRadius: radius.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  word: { fontSize: font.h2, fontWeight: '800', color: colors.text, textAlign: 'center' },
+  word: { fontSize: font.h1, fontWeight: '800', color: colors.text, textAlign: 'center' },
   meaning: {
     fontSize: font.h3,
     color: colors.text,
     textAlign: 'center',
     marginTop: spacing.sm,
+    lineHeight: 30,
   },
-  example: {
-    fontSize: font.small,
-    color: colors.subtext,
-    textAlign: 'center',
-    marginTop: spacing.md,
-  },
-  choice: {
-    minHeight: 64,
+  /* 예문은 상자 안에서도 한 칸 더 들여 문제와 구별되게 한다. */
+  exampleBox: {
+    marginTop: spacing.lg,
+    padding: spacing.md,
+    backgroundColor: colors.bg,
     borderRadius: radius.md,
-    backgroundColor: colors.card,
-    borderWidth: 2,
-    borderColor: colors.border,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: spacing.lg,
   },
-  choiceCorrect: { borderColor: colors.correct, backgroundColor: colors.correctSoft },
-  choiceWrong: { borderColor: colors.wrong, backgroundColor: colors.wrongSoft },
-  // 한자는 획이 많아 작으면 안 보인다. 글자 사이도 벌려 낱자로 읽히게 한다.
-  choiceText: {
-    fontSize: 32,
-    fontWeight: '600',
-    color: colors.text,
-    textAlign: 'center',
-    letterSpacing: 4,
-  },
-  dontKnow: {
-    minHeight: 44,
-    borderRadius: radius.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: spacing.xs,
-  },
-  dontKnowText: { fontSize: font.small, fontWeight: '600', color: colors.muted },
+  exampleTag: { fontSize: font.tiny, fontWeight: '700', color: colors.muted, marginBottom: spacing.xs },
+  exampleText: { fontSize: font.body, lineHeight: 26 },
+  source: { fontSize: font.tiny, color: colors.muted, marginTop: spacing.xs, textAlign: 'right' },
   breakdown: {
     marginTop: spacing.lg,
     padding: spacing.md,

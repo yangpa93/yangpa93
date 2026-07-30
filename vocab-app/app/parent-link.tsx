@@ -1,9 +1,9 @@
 import { useCallback, useState } from 'react';
-import {Alert, Share, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, Platform, Share, StyleSheet, Text, TextInput, View } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 import { Body, Button, Card, Chip, H1, H3, Muted, Row, Screen } from '../src/components/ui';
 import { useApp } from '../src/store/AppProvider';
-import { buildLinkUrl, fetchPushToken, isValidPushToken } from '../src/features/push';
+import { buildLinkUrl, fetchPushToken, fromShortCode, shortCodeError } from '../src/features/push';
 import { formatKo } from '../src/lib/date';
 import { colors, radius, spacing } from '../src/theme';
 import { APP_NAME } from '../src/features/build-info';
@@ -130,10 +130,17 @@ export default function ParentLinkScreen() {
   }
 
   function linkByPaste() {
-    const token = pasted.trim();
     setError('');
-    if (!isValidPushToken(token)) {
-      setError('주소 형식이 올바르지 않습니다. 부모님 폰에서 보낸 주소를 그대로 붙여넣어 주세요.');
+    /*
+     * 연결 코드와 주소를 모두 받는다.
+     *
+     * 카톡으로 링크를 받은 아이는 주소를 통째로 붙여넣고, 아무것도 안 깔린
+     * 태블릿을 쓰는 아이는 부모 폰 화면의 코드를 보고 옮겨 적는다. 어느
+     * 쪽으로 왔는지 아이가 구별할 이유가 없으므로 한 칸에서 둘 다 받는다.
+     */
+    const token = fromShortCode(pasted);
+    if (!token) {
+      setError(shortCodeError(pasted) || '코드를 다시 확인해 주세요.');
       return;
     }
     // 자기 주소를 붙여넣으면 자기에게 보내게 된다. 이 폰이 리포트를 받기도
@@ -309,18 +316,21 @@ export default function ParentLinkScreen() {
             <H3>부모님이 보낸 요청 승인하기</H3>
             <Muted style={{ marginTop: spacing.sm }}>
               부모님이 보내 주신 링크를 누르면 바로 연결돼요.{'\n'}
-              링크가 안 열리면, 함께 온 주소를 복사해 아래에 붙여넣으세요.
+              링크가 없으면, 부모님 폰 화면에 뜬 <Text style={{ fontWeight: '700' }}>연결 코드</Text>를
+              아래에 그대로 적으세요. 대문자와 소문자를 구별해야 해요.
             </Muted>
 
             <TextInput
               value={pasted}
               onChangeText={setPasted}
-              placeholder="부모님이 보낸 주소 붙여넣기"
+              placeholder="연결 코드 또는 주소"
               placeholderTextColor={colors.muted}
-              style={[s.input, { height: 84, textAlignVertical: 'top' }]}
+              style={[s.input, s.codeInput]}
               multiline
               autoCapitalize="none"
               autoCorrect={false}
+              autoComplete="off"
+              spellCheck={false}
             />
             <TextInput
               value={label}
@@ -355,6 +365,17 @@ export default function ParentLinkScreen() {
 }
 
 const s = StyleSheet.create({
+  /*
+   * 코드 칸은 고정폭에 글자를 키운다. 아이가 부모 폰 화면을 보고 옮겨
+   * 적는데, 글자 폭이 들쭉날쭉하면 어디까지 쳤는지 자꾸 놓친다.
+   */
+  codeInput: {
+    height: 84,
+    textAlignVertical: 'top',
+    fontFamily: Platform.select({ ios: 'Menlo', android: 'monospace', default: 'monospace' }),
+    fontSize: 18,
+    letterSpacing: 1,
+  },
   input: {
     marginTop: spacing.md,
     borderWidth: 1,

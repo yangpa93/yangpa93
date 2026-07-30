@@ -13,7 +13,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { KoEntry, KO_CATEGORY_LABEL } from '../types';
 import { koExample } from '../data/korean/entry';
 import { chars } from '../games/hanja';
-import { speak } from '../lib/feedback';
+import { KoSentence } from './KoSentence';
 import { colors, font, radius, spacing } from '../theme';
 
 export function KoWordCard({
@@ -21,7 +21,6 @@ export function KoWordCard({
   exposureIndex,
   correct,
   firstTime,
-  ttsEnabled,
   onNext,
   nextLabel,
 }: {
@@ -29,7 +28,6 @@ export function KoWordCard({
   exposureIndex: number;
   correct: boolean;
   firstTime: boolean;
-  ttsEnabled: boolean;
   onNext: () => void;
   nextLabel: string;
 }) {
@@ -44,48 +42,49 @@ export function KoWordCard({
 
         {firstTime ? <Text style={s.firstTime}>처음 만나는 말이에요</Text> : null}
 
-        <Pressable
-          style={s.card}
-          onPress={() => speak(entry.word, ttsEnabled, 'ko-KR')}
-          accessibilityRole="button"
-          accessibilityLabel="낱말 듣기"
-        >
+        {/*
+          낱말·뜻·예문을 한 상자에 담는다.
+
+          예전에는 셋이 따로 떨어져 있고 예문만 작은 회색 글씨였다. 정작
+          그 말을 어떻게 쓰는지 보여주는 것이 예문인데 가장 안 읽히는
+          자리에 있었다. 한 상자에 넣고 예문도 본문 크기로 키운다.
+        */}
+        <View style={s.card}>
           <Text style={s.tag}>{KO_CATEGORY_LABEL[entry.category]}</Text>
           <Text style={s.word}>{entry.word}</Text>
           {entry.hanja ? <Text style={s.hanja}>{entry.hanja}</Text> : null}
           <Text style={s.meaning}>{entry.meaning}</Text>
           {entry.field ? <Text style={s.field}>{entry.field}</Text> : null}
-        </Pressable>
 
-        {/* 사자성어 낱자 풀이 — 확인된 한자에만 붙인다. */}
-        {entry.category === 'idiom' && entry.hanjaVerified && entry.hanja ? (
-          <View style={s.charRow}>
-            {chars(entry.hanja).map((c, i) => (
-              <View key={`${c}-${i}`} style={s.charBox}>
-                <Text style={s.char}>{c}</Text>
-                <Text style={s.charSound}>{[...entry.word][i] ?? ''}</Text>
-              </View>
-            ))}
-          </View>
-        ) : null}
+          {/* 사자성어 낱자 풀이 — 확인된 한자에만 붙인다. */}
+          {entry.category === 'idiom' && entry.hanjaVerified && entry.hanja ? (
+            <View style={s.charRow}>
+              {chars(entry.hanja).map((c, i) => (
+                <View key={`${c}-${i}`} style={s.charBox}>
+                  <Text style={s.char}>{c}</Text>
+                  <Text style={s.charSound}>{[...entry.word][i] ?? ''}</Text>
+                </View>
+              ))}
+            </View>
+          ) : null}
 
-        {entry.examples.length > 0 ? (
-          <View style={s.examples}>
-            {entry.examples.map((ex, i) => (
-              <Pressable
-                key={`${ex.text}-${i}`}
-                onPress={() => speak(ex.text, ttsEnabled, 'ko-KR')}
-                style={[s.example, shown?.text === ex.text && s.exampleShown]}
-                accessibilityRole="button"
-              >
-                <Text style={s.exampleText}>{ex.text}</Text>
-                {ex.gloss ? <Text style={s.exampleGloss}>{ex.gloss}</Text> : null}
-                {/* 출처가 있으면 원전에서 가져온 문장이다. */}
-                {ex.source ? <Text style={s.exampleSource}>— {ex.source}</Text> : null}
-              </Pressable>
-            ))}
-          </View>
-        ) : null}
+          {entry.examples.length > 0 ? (
+            <View style={s.examples}>
+              <Text style={s.examplesTag}>이렇게 써요</Text>
+              {entry.examples.map((ex, i) => (
+                <View
+                  key={`${ex.text}-${i}`}
+                  style={[s.example, shown?.text === ex.text && s.exampleShown]}
+                >
+                  {/* 배우는 낱말을 굵고 빨갛게. 어느 말을 익히는 중인지 보이게 한다. */}
+                  <KoSentence text={ex.text} word={entry.word} style={s.exampleText} />
+                  {ex.gloss ? <Text style={s.exampleGloss}>{ex.gloss}</Text> : null}
+                  {ex.source ? <Text style={s.exampleSource}>— {ex.source}</Text> : null}
+                </View>
+              ))}
+            </View>
+          ) : null}
+        </View>
       </ScrollView>
 
       <Pressable onPress={onNext} style={s.next} accessibilityRole="button">
@@ -108,15 +107,20 @@ const s = StyleSheet.create({
     padding: spacing.lg,
     backgroundColor: colors.card,
     borderRadius: radius.lg,
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: colors.border,
-    alignItems: 'center',
   },
-  tag: { fontSize: font.tiny, fontWeight: '800', color: colors.muted, marginBottom: spacing.xs },
+  tag: { fontSize: font.tiny, fontWeight: '800', color: colors.muted, marginBottom: spacing.xs, textAlign: 'center' },
   word: { fontSize: font.h1, fontWeight: '800', color: colors.text, textAlign: 'center' },
-  hanja: { fontSize: font.h3, color: colors.subtext, letterSpacing: 4, marginTop: 2 },
-  meaning: { fontSize: font.h3, color: colors.text, textAlign: 'center', marginTop: spacing.md },
-  field: { fontSize: font.tiny, color: colors.muted, marginTop: spacing.sm },
+  hanja: { fontSize: font.h3, color: colors.subtext, letterSpacing: 4, marginTop: 2, textAlign: 'center' },
+  meaning: {
+    fontSize: font.h2,
+    color: colors.text,
+    textAlign: 'center',
+    marginTop: spacing.md,
+    lineHeight: 34,
+  },
+  field: { fontSize: font.tiny, color: colors.muted, marginTop: spacing.sm, textAlign: 'center' },
   charRow: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -133,6 +137,7 @@ const s = StyleSheet.create({
   char: { fontSize: 28, color: colors.text },
   charSound: { fontSize: font.tiny, color: colors.subtext, marginTop: 2 },
   examples: { marginTop: spacing.lg, gap: spacing.sm },
+  examplesTag: { fontSize: font.tiny, fontWeight: '700', color: colors.muted },
   example: {
     padding: spacing.md,
     backgroundColor: colors.bg,
@@ -141,7 +146,8 @@ const s = StyleSheet.create({
     borderLeftColor: colors.border,
   },
   exampleShown: { borderLeftColor: colors.primary },
-  exampleText: { fontSize: font.body, color: colors.text, lineHeight: 24 },
+  /* 예문이 이 카드의 알맹이다. 작은 회색 글씨로 두면 아무도 안 읽는다. */
+  exampleText: { fontSize: font.h3, color: colors.text, lineHeight: 30 },
   exampleGloss: { fontSize: font.small, color: colors.subtext, marginTop: spacing.xs },
   exampleSource: { fontSize: font.tiny, color: colors.muted, marginTop: spacing.xs, textAlign: 'right' },
   next: {

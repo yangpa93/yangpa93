@@ -262,7 +262,6 @@ export default function KoExam() {
             entry={current.entry}
             pool={pool}
             exposureIndex={current.exposureIndex}
-            ttsEnabled={profile.settings.ttsEnabled}
             onAnswer={onAnswer}
           />
         </View>

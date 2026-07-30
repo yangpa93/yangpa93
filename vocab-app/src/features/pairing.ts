@@ -60,6 +60,101 @@ export function buildLinkUrl(token: string, label: string): string {
   return `${LINK_SCHEME}://link?token=${encodeURIComponent(token)}&label=${encodeURIComponent(label)}`;
 }
 
+/* ------------------------------------------------------------------ */
+/* 연결 코드 — 아무것도 안 깔린 기기를 위한 길                            */
+/* ------------------------------------------------------------------ */
+
+/**
+ * 부모 폰 화면에 띄우는 짧은 코드.
+ *
+ * **왜 필요한가.** 지금까지는 부모가 링크를 만들어 카카오톡으로 보내야
+ * 했다. 그런데 아이에게 새 태블릿을 사 주고 이 앱만 깔았다면 그 기기에는
+ * 카톡도 메일도 없다. 링크를 보낼 곳이 없어 연결 자체가 막힌다.
+ *
+ * 그래서 부모 폰 화면에 코드를 띄우고 아이가 보고 입력하게 한다. 인터넷도
+ * 다른 앱도 필요 없고, 두 기기가 나란히 있기만 하면 된다.
+ *
+ * 푸시 토큰은 `ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]` 형태다. 껍데기는
+ * 늘 같으니 안쪽만 보여 주고, 넉 자씩 끊어 눈이 자리를 잃지 않게 한다.
+ * 끝에 검사 문자 하나를 붙여, 한 글자만 잘못 쳐도 그 자리에서 알려 준다.
+ * 안 그러면 '보내기'를 눌러 실패할 때까지 무엇이 틀렸는지 알 수 없다.
+ *
+ * **끊는 자리는 공백으로 표시한다.** 처음에는 하이픈을 썼는데, 푸시 토큰은
+ * base64url 이라 `-` 와 `_` 를 글자로 쓴다. 하이픈으로 끊으면 토큰이 원래
+ * 갖고 있던 하이픈과 구별되지 않아, 되돌릴 때 그 글자까지 지워 버린다.
+ */
+export function toShortCode(token: string): string {
+  const inner = innerOf(token);
+  if (!inner) return '';
+  const body = inner + checksumChar(inner);
+  return (body.match(/.{1,4}/g) ?? []).join(' ');
+}
+
+/**
+ * 아이가 입력한 코드를 다시 토큰으로 되돌린다.
+ *
+ * 코드가 아니라 토큰을 통째로 붙여넣었으면 그대로 쓴다 — 카톡으로 받은
+ * 아이는 그 길을 그대로 쓰면 되고, 어느 쪽으로 왔는지 아이가 구별할 이유가
+ * 없다.
+ *
+ * 되돌리지 못하면 null 이다. 무엇이 잘못됐는지는 `shortCodeError` 가 말해 준다.
+ */
+export function fromShortCode(code: string): string | null {
+  const raw = code.trim();
+  if (raw === '') return null;
+
+  // 토큰을 통째로 넣은 경우
+  if (/^Expo(nent)?PushToken\[[^\]]+\]$/.test(raw)) return raw;
+
+  // 사람이 읽기 좋으라고 넣은 공백만 걷어낸다. 하이픈은 토큰의 글자다.
+  const body = raw.replace(/\s/g, '');
+  if (body.length < 2) return null;
+
+  const inner = body.slice(0, -1);
+  const check = body.slice(-1);
+  if (checksumChar(inner) !== check) return null;
+
+  return `ExponentPushToken[${inner}]`;
+}
+
+/** 코드가 왜 안 되는지 한 줄로. 화면에 그대로 쓴다. */
+export function shortCodeError(code: string): string {
+  const raw = code.trim();
+  if (raw === '') return '';
+  if (fromShortCode(raw)) return '';
+
+  const body = raw.replace(/\s/g, '');
+  if (!/^[A-Za-z0-9_\-[\]]+$/.test(body)) {
+    return '코드에 없는 글자가 있어요. 숫자와 영문자만 들어갑니다.';
+  }
+  if (body.length < 10) return '코드가 짧아요. 끝까지 다 입력했는지 확인해 주세요.';
+  // 길이는 맞는데 검사 문자가 안 맞으면 어딘가 한 글자를 잘못 쳤다는 뜻이다.
+  return '코드가 맞지 않아요. 대문자와 소문자를 구별해서 다시 확인해 주세요.';
+}
+
+/** `ExponentPushToken[...]` 의 안쪽. 껍데기가 없으면 통째로 본다. */
+function innerOf(token: string): string {
+  const m = token.trim().match(/^Expo(?:nent)?PushToken\[([^\]]+)\]$/);
+  if (m) return m[1];
+  return /^[A-Za-z0-9_-]{20,}$/.test(token.trim()) ? token.trim() : '';
+}
+
+/**
+ * 검사 문자 하나.
+ *
+ * 오타를 잡으려는 것이지 위조를 막으려는 것이 아니다. 글자 값을 자리마다
+ * 다른 무게로 더해, 한 글자가 바뀌거나 두 글자가 자리를 바꿔도 값이 달라지게
+ * 한다. 단순히 더하기만 하면 자리를 바꾼 오타를 못 잡는다.
+ */
+function checksumChar(inner: string): string {
+  const ALPHABET = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  let sum = 0;
+  for (let i = 0; i < inner.length; i++) {
+    sum = (sum + inner.charCodeAt(i) * (i + 1)) % ALPHABET.length;
+  }
+  return ALPHABET[sum];
+}
+
 /**
  * 붙여넣은 값이 푸시 토큰처럼 생겼는지 본다.
  *

@@ -249,6 +249,17 @@ export function pickKoGame(
   const candidates: GameId[] = [];
 
   if (stage === 'learn') {
+    /*
+     * 사자성어는 첫 만남부터 한자를 묻는다.
+     *
+     * 예전에는 '활용하기' 단계부터 냈다. 그런데 새 어휘는 연속 정답이 0이라
+     * 늘 '익히기'에 머물고, 그래서 처음 며칠 동안 한자 문제가 한 번도 안
+     * 나왔다. 사자성어를 배우는데 한자를 안 보는 셈이었다.
+     *
+     * 어렵지도 않다 — 뜻을 보고 넷 중에서 고르는 것이라 빈칸 채우기와
+     * 난이도가 비슷하다. 오히려 이것이 사자성어의 핵심이다.
+     */
+    if (canPickHanja) candidates.push('hanja', 'hanja');
     if (canCloze) candidates.push('cloze', 'cloze');
     candidates.push('context');
   } else if (stage === 'apply') {

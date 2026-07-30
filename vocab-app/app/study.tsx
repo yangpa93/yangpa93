@@ -262,7 +262,6 @@ export default function Study() {
                 exposureIndex={feedback.item.exposureIndex}
                 correct={feedback.correct}
                 firstTime={feedback.item.firstMeeting}
-                ttsEnabled={profile.settings.ttsEnabled}
                 onNext={next}
                 nextLabel={isLast ? '결과 보기' : '다음 문제'}
               />
@@ -284,7 +283,6 @@ export default function Study() {
               entry={current.entry}
               pool={koPool}
               exposureIndex={current.exposureIndex}
-              ttsEnabled={profile.settings.ttsEnabled}
               onAnswer={onAnswer}
             />
           ) : (

@@ -21,7 +21,8 @@ import { koCloze, koExample } from '../data/korean/entry';
 import { buildChoices } from '../srs/session';
 import { tokenize } from './scramble';
 import { HanjaGame } from './HanjaGame';
-import { speak } from '../lib/feedback';
+import { ChoiceButton, Choices, DontKnow, QuestionBox } from './ko-ui';
+import { KoSentence } from '../components/KoSentence';
 import { colors, font, radius, spacing } from '../theme';
 import { Muted } from '../components/ui';
 
@@ -31,14 +32,13 @@ export interface KoGameProps {
   /** 오답 보기를 뽑아 올 어휘들. 같은 레벨이면 된다. */
   pool: KoEntry[];
   exposureIndex: number;
-  ttsEnabled: boolean;
   onAnswer: (correct: boolean) => void;
 }
 
 const DONT_KNOW = '__dontknow__';
 
 export function KoGame(props: KoGameProps) {
-  const { game, entry, pool, exposureIndex, ttsEnabled, onAnswer } = props;
+  const { game, entry, pool, exposureIndex, onAnswer } = props;
 
   if (game === 'hanja') {
     return (
@@ -46,7 +46,6 @@ export function KoGame(props: KoGameProps) {
         entry={entry}
         pool={pool}
         exampleIndex={exposureIndex}
-        ttsEnabled={ttsEnabled}
         onAnswer={onAnswer}
       />
     );
@@ -63,29 +62,25 @@ export function KoGame(props: KoGameProps) {
 
 function Sentence({
   text,
+  word,
   source,
   gloss,
   showGloss,
-  ttsEnabled,
 }: {
   text: string;
+  /** 칠할 낱말. 빈칸 문제에는 넘기지 않는다 — 칠할 자리가 곧 답이다. */
+  word?: string;
   source?: string;
   gloss?: string;
   showGloss?: boolean;
-  ttsEnabled: boolean;
 }) {
   return (
-    <Pressable
-      style={s.sentenceBox}
-      onPress={() => speak(text, ttsEnabled, 'ko-KR')}
-      accessibilityRole="button"
-      accessibilityLabel="문장 듣기"
-    >
-      <Text style={s.sentence}>{text}</Text>
+    <View>
+      <KoSentence text={text} word={word} />
       {showGloss && gloss ? <Text style={s.gloss}>{gloss}</Text> : null}
       {/* 사전 용례인지 우리가 만든 문장인지 밝힌다. */}
       {source ? <Text style={s.source}>— {source}</Text> : null}
-    </Pressable>
+    </View>
   );
 }
 
@@ -93,7 +88,7 @@ function Sentence({
 /* 빈칸 채우기 (고르기)                                                  */
 /* ------------------------------------------------------------------ */
 
-function KoChoiceCloze({ entry, pool, exposureIndex, ttsEnabled, onAnswer }: KoGameProps) {
+function KoChoiceCloze({ entry, pool, exposureIndex, onAnswer }: KoGameProps) {
   const [picked, setPicked] = useState<string | null>(null);
   const ex = koExample(entry, exposureIndex);
   const blanked = ex ? koCloze(ex.text, entry.word) : null;
@@ -125,14 +120,16 @@ function KoChoiceCloze({ entry, pool, exposureIndex, ttsEnabled, onAnswer }: KoG
     <View style={{ flex: 1 }}>
       <Muted>빈칸에 알맞은 말을 고르세요</Muted>
 
-      <View style={s.stem}>
-        <Sentence text={blanked.text} source={ex.source} ttsEnabled={ttsEnabled} />
-      </View>
+      <QuestionBox>
+        {/* 빈칸 문제에는 낱말을 칠하지 않는다 — 칠할 자리가 곧 답이다. */}
+        <Sentence text={blanked.text} source={ex.source} />
+      </QuestionBox>
 
-      <View style={{ gap: spacing.sm }}>
-        {choices.map((c) => (
-          <Option
+      <Choices>
+        {choices.map((c, i) => (
+          <ChoiceButton
             key={c.id}
+            index={i}
             label={c.word}
             correct={c.id === entry.id}
             picked={picked}
@@ -141,7 +138,7 @@ function KoChoiceCloze({ entry, pool, exposureIndex, ttsEnabled, onAnswer }: KoG
           />
         ))}
         <DontKnow picked={picked} onPress={() => choose(DONT_KNOW)} />
-      </View>
+      </Choices>
     </View>
   );
 }
@@ -150,7 +147,7 @@ function KoChoiceCloze({ entry, pool, exposureIndex, ttsEnabled, onAnswer }: KoG
 /* 뜻 고르기                                                            */
 /* ------------------------------------------------------------------ */
 
-function KoContext({ entry, pool, exposureIndex, ttsEnabled, onAnswer }: KoGameProps) {
+function KoContext({ entry, pool, exposureIndex, onAnswer }: KoGameProps) {
   const [picked, setPicked] = useState<string | null>(null);
   const ex = koExample(entry, exposureIndex);
 
@@ -179,36 +176,31 @@ function KoContext({ entry, pool, exposureIndex, ttsEnabled, onAnswer }: KoGameP
         {entry.category === 'classic' ? '이 옛말은 요즘 말로 무슨 뜻일까요' : '이 말은 무슨 뜻일까요'}
       </Muted>
 
-      <View style={s.stem}>
-        <Pressable
-          onPress={() => speak(entry.word, ttsEnabled, 'ko-KR')}
-          accessibilityRole="button"
-          accessibilityLabel="낱말 듣기"
-        >
-          <Text style={s.word}>{entry.word}</Text>
-          {entry.hanja ? <Text style={s.hanja}>{entry.hanja}</Text> : null}
-        </Pressable>
+      <QuestionBox>
+        <Text style={s.word}>{entry.word}</Text>
+        {entry.hanja ? <Text style={s.hanja}>{entry.hanja}</Text> : null}
         {ex ? (
-          <View style={{ marginTop: spacing.md, width: '100%' }}>
-            <Sentence text={ex.text} source={ex.source} ttsEnabled={ttsEnabled} />
+          <View style={s.exampleBox}>
+            <Text style={s.exampleTag}>이렇게 써요</Text>
+            <Sentence text={ex.text} word={entry.word} source={ex.source} />
           </View>
         ) : null}
-      </View>
+      </QuestionBox>
 
-      <View style={{ gap: spacing.sm }}>
-        {choices.map((c) => (
-          <Option
+      <Choices>
+        {choices.map((c, i) => (
+          <ChoiceButton
             key={c.id}
+            index={i}
             label={c.meaning}
             correct={c.id === entry.id}
             picked={picked}
             self={c.id}
             onPress={() => choose(c.id)}
-            small
           />
         ))}
         <DontKnow picked={picked} onPress={() => choose(DONT_KNOW)} />
-      </View>
+      </Choices>
     </View>
   );
 }
@@ -217,7 +209,7 @@ function KoContext({ entry, pool, exposureIndex, ttsEnabled, onAnswer }: KoGameP
 /* 빈칸에 직접 쓰기                                                      */
 /* ------------------------------------------------------------------ */
 
-function KoType({ entry, exposureIndex, ttsEnabled, onAnswer }: KoGameProps) {
+function KoType({ entry, exposureIndex, onAnswer }: KoGameProps) {
   const [text, setText] = useState('');
   const [done, setDone] = useState<boolean | null>(null);
 
@@ -238,9 +230,9 @@ function KoType({ entry, exposureIndex, ttsEnabled, onAnswer }: KoGameProps) {
     <View style={{ flex: 1 }}>
       <Muted>빈칸에 알맞은 말을 쓰세요</Muted>
 
-      <View style={s.stem}>
-        <Sentence text={blanked.text} source={ex.source} ttsEnabled={ttsEnabled} />
-      </View>
+      <QuestionBox>
+        <Sentence text={blanked.text} source={ex.source} />
+      </QuestionBox>
 
       <TextInput
         value={text}
@@ -273,7 +265,7 @@ function KoType({ entry, exposureIndex, ttsEnabled, onAnswer }: KoGameProps) {
 /* 어순 배열                                                            */
 /* ------------------------------------------------------------------ */
 
-function KoScramble({ entry, exposureIndex, ttsEnabled, onAnswer }: KoGameProps) {
+function KoScramble({ entry, exposureIndex, onAnswer }: KoGameProps) {
   const ex = koExample(entry, exposureIndex);
   const answer = useMemo(() => (ex ? tokenize(ex.text) : []), [ex?.text]);
   // 섞은 조각. 한 번 정해지면 다시 섞지 않는다.
@@ -298,7 +290,7 @@ function KoScramble({ entry, exposureIndex, ttsEnabled, onAnswer }: KoGameProps)
     <View style={{ flex: 1 }}>
       <Muted>말을 순서대로 놓아 문장을 만드세요</Muted>
 
-      <View style={s.stem}>
+      <View style={{ marginTop: spacing.md }}>
         <View style={s.answerBox}>
           <Text style={s.sentence}>
             {placed.map((k) => tiles[k]).join(' ') || ' '}
@@ -329,7 +321,6 @@ function KoScramble({ entry, exposureIndex, ttsEnabled, onAnswer }: KoGameProps)
 
       {done === false ? (
         <Pressable
-          onPress={() => speak(ex.text, ttsEnabled, 'ko-KR')}
           style={s.answerLine}
           accessibilityRole="button"
         >
@@ -354,67 +345,19 @@ function shuffleWords(words: string[]): string[] {
 /* 같이 쓰는 조각                                                        */
 /* ------------------------------------------------------------------ */
 
-function Option({
-  label,
-  correct,
-  picked,
-  self,
-  onPress,
-  small,
-}: {
-  label: string;
-  correct: boolean;
-  picked: string | null;
-  self: string;
-  onPress: () => void;
-  small?: boolean;
-}) {
-  const answered = picked !== null;
-  const isPicked = picked === self;
-  return (
-    <Pressable
-      onPress={onPress}
-      disabled={answered}
-      accessibilityRole="button"
-      style={({ pressed }) => [
-        s.choice,
-        pressed && !answered && { opacity: 0.7 },
-        answered && correct && s.choiceCorrect,
-        answered && isPicked && !correct && s.choiceWrong,
-      ]}
-    >
-      <Text style={[s.choiceText, small && { fontSize: font.body }]}>{label}</Text>
-    </Pressable>
-  );
-}
-
-function DontKnow({ picked, onPress }: { picked: string | null; onPress: () => void }) {
-  return (
-    <Pressable
-      onPress={onPress}
-      disabled={picked !== null}
-      accessibilityRole="button"
-      style={[s.dontKnow, picked !== null && { opacity: 0.6 }]}
-    >
-      <Text style={s.dontKnowText}>모르겠어요</Text>
-    </Pressable>
-  );
-}
-
 const s = StyleSheet.create({
-  stem: {
-    minHeight: 120,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginVertical: spacing.md,
+  /* 예문은 상자 안에서도 한 칸 더 들여 문제와 구별되게 한다. */
+  exampleBox: {
+    marginTop: spacing.lg,
+    padding: spacing.md,
+    backgroundColor: colors.bg,
+    borderRadius: radius.md,
   },
-  sentenceBox: {
-    width: '100%',
-    padding: spacing.lg,
-    backgroundColor: colors.card,
-    borderRadius: radius.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
+  exampleTag: {
+    fontSize: font.tiny,
+    fontWeight: '700',
+    color: colors.muted,
+    marginBottom: spacing.xs,
   },
   answerBox: {
     width: '100%',

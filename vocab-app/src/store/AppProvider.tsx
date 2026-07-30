@@ -203,6 +203,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         name,
         avatar,
         level,
+        // 국어는 늘 처음부터. 영어 레벨을 중2로 잡아도 국어는 별개다.
+        koLevel: 'm1-1',
         settings: {
           newPerDay: DEFAULT_NEW_PER_DAY,
           reviewPerDay: DEFAULT_REVIEW_PER_DAY,
@@ -218,7 +220,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         bestStreak: 0,
         lastCompletedDate: null,
         pendingLevelUps: [],
+        koPendingLevelUps: [],
         clearedLevels: [],
+        koClearedLevels: [],
         claimedMonths: [],
       };
       const state: AppState = {

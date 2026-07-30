@@ -244,6 +244,11 @@ function migrate(state: AppState): AppState {
       level: upgradeLevel(p.level),
       pendingLevelUps: (p.pendingLevelUps ?? []).map(upgradeLevel),
       clearedLevels: (p.clearedLevels ?? []).map(upgradeLevel),
+      // 국어는 나중에 생겼다. 예전 저장본은 국어를 한 적이 없으므로
+      // 맨 처음 레벨에서 시작한다.
+      koLevel: upgradeLevel(p.koLevel ?? 'm1-1'),
+      koPendingLevelUps: (p.koPendingLevelUps ?? []).map(upgradeLevel),
+      koClearedLevels: (p.koClearedLevels ?? []).map(upgradeLevel),
       claimedMonths: p.claimedMonths ?? [],
       settings: {
         ...p.settings,

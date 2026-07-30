@@ -118,6 +118,77 @@ export interface VocabEntry {
 }
 
 /* ------------------------------------------------------------------ */
+/* 국어 어휘                                                            */
+/* ------------------------------------------------------------------ */
+
+/**
+ * 국어 어휘의 갈래.
+ *
+ * 갈래마다 성격이 달라서 문제 유형도 달라진다. 사자성어는 한자를 묻고,
+ * 고전은 현대어 풀이를 묻는다. 개념어·수능 어휘는 문장 속 쓰임을 묻는다.
+ */
+export type KoCategory =
+  | 'idiom' // 사자성어
+  | 'concept' // 개념어 (문학·비문학)
+  | 'classic' // 고전 문학 어휘
+  | 'csat'; // 수능 필수 어휘
+
+export const KO_CATEGORY_LABEL: Record<KoCategory, string> = {
+  idiom: '사자성어',
+  concept: '개념어',
+  classic: '고전',
+  csat: '수능 어휘',
+};
+
+/** 갈래 순서. 하루치를 뽑을 때와 화면에 늘어놓을 때 이 순서를 쓴다. */
+export const KO_CATEGORY_ORDER: KoCategory[] = ['idiom', 'concept', 'classic', 'csat'];
+
+export interface KoExample {
+  /** 예문 한 줄, 또는 고전이면 원문 단락 */
+  text: string;
+  /**
+   * 현대어 풀이. 고전 어휘에만 있다.
+   *
+   * 원문만 보여주면 아이가 읽지 못한다. 그렇다고 풀이를 늘 붙여 두면
+   * 원문을 읽으려 하지 않으므로, 영어 예문의 해석과 똑같이 처음에는
+   * 숨겨 두고 '풀이 보기'를 눌러야 나온다.
+   */
+  gloss?: string;
+  /**
+   * 어디서 가져온 문장인지. 예: '정철, 관동별곡'
+   *
+   * **비어 있으면 원전에서 가져온 문장이 아니라는 뜻이다.** 지어낸 예문과
+   * 원문 인용을 화면에서 구별해 보여주려고 둔다. 고전 어휘는 반드시
+   * 채운다 — 출처 없는 옛말 문장은 아이에게 가르칠 수 없다.
+   */
+  source?: string;
+}
+
+/**
+ * 국어 어휘 하나.
+ *
+ * 영어의 `VocabEntry`와 따로 두는 이유: 국어는 다의어를 뜻마다 나누지 않고
+ * (엑셀 원본이 뜻 하나로 정리돼 있다), 대신 한자·갈래·출처가 필요하다.
+ * 한 타입에 다 밀어 넣으면 어느 쪽에도 안 맞는 빈 칸이 잔뜩 생긴다.
+ */
+export interface KoEntry {
+  /** `ko-0001` 형태. 레벨이 바뀌어도 id는 바꾸지 않는다. */
+  id: string;
+  level: LevelId;
+  category: KoCategory;
+  /** 표제어. 사자성어는 음(한글)을 쓴다. */
+  word: string;
+  /** 한자 또는 외래어 원어. 없으면 빈 문자열. */
+  hanja: string;
+  /** 영역·분류. 예: '인문', '문학', '감정/태도' */
+  field: string;
+  /** 뜻풀이 */
+  meaning: string;
+  /** 예문. 최소 1개. */
+  examples: KoExample[];
+}
+
+/* ------------------------------------------------------------------ */
 /* 학습 기록                                                            */
 /* ------------------------------------------------------------------ */
 
@@ -171,7 +242,8 @@ export type GameId =
   | 'polysemy' // 다의어: 여러 뜻 중 이 문장에서 쓰인 뜻
   | 'synonym' // 문맥에 맞게 바꿔 쓸 수 있는 표현
   | 'antonym' // 문장 속 그 단어와 뜻이 반대인 표현
-  | 'scramble'; // 뒤섞인 낱말을 순서대로 놓아 문장 만들기
+  | 'scramble' // 뒤섞인 낱말을 순서대로 놓아 문장 만들기
+  | 'hanja'; // 사자성어: 뜻을 보고 알맞은 한자 고르기 (국어 전용)
 
 export const GAME_LABEL: Record<GameId, string> = {
   cloze: '빈칸 채우기',
@@ -182,6 +254,7 @@ export const GAME_LABEL: Record<GameId, string> = {
   synonym: '바꿔 쓰기',
   antonym: '반대말 찾기',
   scramble: '문장 배열',
+  hanja: '한자 고르기',
 };
 
 /** 한 세션에서 단어를 만나는 단계. 라운드가 올라갈수록 어려워진다. */
@@ -343,7 +416,16 @@ export interface Profile {
   name: string;
   /** 이모지 아바타 */
   avatar: string;
+  /** 영어 레벨 */
   level: LevelId;
+  /**
+   * 국어 레벨. 영어와 따로 올라간다.
+   *
+   * 레벨 이름(m1-1 … h3-4)은 영어와 같은 24개를 쓰지만 진도는 별개다.
+   * 국어는 1,406단어를 하루 6개씩 약 8개월, 영어는 3,285단어를 하루
+   * 10개씩 약 11개월이라 국어가 먼저 끝난다. 보상도 따로 받는다.
+   */
+  koLevel: LevelId;
   settings: ProfileSettings;
   createdAt: number;
   /** 현재 연속 학습 일수 */
@@ -352,10 +434,14 @@ export interface Profile {
   bestStreak: number;
   /** 마지막으로 목표를 채운 날 (yyyy-mm-dd) */
   lastCompletedDate: string | null;
-  /** 레벨업으로 아직 요구권을 신청하지 않은 레벨들 */
+  /** 레벨업으로 아직 요구권을 신청하지 않은 레벨들 (영어) */
   pendingLevelUps: LevelId[];
-  /** 이미 마스터한 레벨 */
+  /** 레벨업으로 아직 요구권을 신청하지 않은 레벨들 (국어) */
+  koPendingLevelUps: LevelId[];
+  /** 이미 마스터한 레벨 (영어) */
   clearedLevels: LevelId[];
+  /** 이미 마스터한 레벨 (국어) */
+  koClearedLevels: LevelId[];
   /** 개근 요구권을 이미 신청한 달들 (yyyy-mm) */
   claimedMonths: string[];
 }

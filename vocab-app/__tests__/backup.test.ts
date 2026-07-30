@@ -25,6 +25,7 @@ function makeProfile(over: Partial<Profile> = {}): Profile {
     name: '서준',
     avatar: '🦊',
     level: 'm1-1',
+    koLevel: 'm1-1',
     settings: {
       newPerDay: 10,
       reviewPerDay: 10,
@@ -39,7 +40,9 @@ function makeProfile(over: Partial<Profile> = {}): Profile {
     bestStreak: 5,
     lastCompletedDate: '2026-07-27',
     pendingLevelUps: [],
+    koPendingLevelUps: [],
     clearedLevels: [],
+    koClearedLevels: [],
     claimedMonths: [],
     ...over,
   };

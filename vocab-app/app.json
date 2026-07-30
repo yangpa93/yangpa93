@@ -46,6 +46,12 @@
           "icon": "./assets/android-icon-monochrome.png",
           "color": "#4F46E5"
         }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "부모님 폰의 QR 코드를 찍어 연결하는 데에만 씁니다. 사진을 찍거나 저장하지 않아요."
+        }
       ]
     ],
     "extra": {

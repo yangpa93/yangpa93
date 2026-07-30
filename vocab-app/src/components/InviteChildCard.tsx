@@ -17,6 +17,7 @@ import { Body, Button, Card, H3, Muted } from './ui';
 import { useApp } from '../store/AppProvider';
 import { APP_NAME } from '../features/app-name';
 import { buildLinkUrl, fetchPushToken, toShortCode } from '../features/push';
+import { QrCode } from './QrCode';
 import { colors, font, radius, spacing } from '../theme';
 
 export function InviteChildCard() {
@@ -84,9 +85,9 @@ export function InviteChildCard() {
       </Muted>
 
       <View style={s.steps}>
-        <Text style={s.step}>· 아이 기기에 카톡·메일이 있으면 — 링크를 보내면 한 번 눌러 끝납니다</Text>
-        <Text style={s.step}>· 아무것도 안 깔린 태블릿이면 — 연결 코드를 띄워 보고 옮겨 적습니다</Text>
-        <Text style={s.step}>· 아이가 여럿이면 기기마다 한 번씩. 같은 링크·코드를 그대로 쓰면 됩니다</Text>
+        <Text style={s.step}>1. 아래 버튼을 누르면 QR 코드가 뜹니다</Text>
+        <Text style={s.step}>2. 아이 기기에서 ⚙️ 설정 → 부모님 폰 연결하기 → QR 찍기</Text>
+        <Text style={s.step}>3. 아이가 여럿이면 기기마다 한 번씩. 같은 QR 을 그대로 쓰면 됩니다</Text>
       </View>
 
       <TextInput
@@ -99,18 +100,18 @@ export function InviteChildCard() {
       />
 
       <Button
-        title="아이에게 연결 요청 보내기"
+        title={showingCode ? 'QR 코드 숨기기' : '아이 곰탱이보카와 연결하기'}
         variant="parent"
         loading={busy}
-        onPress={invite}
+        onPress={() => (showingCode ? setShowingCode(false) : void showCode())}
         style={{ marginTop: spacing.md }}
       />
 
       <Button
-        title="연결 코드 보기 (카톡 없이)"
+        title="카톡·메일로 링크 보내기"
         variant="ghost"
         loading={busy}
-        onPress={showCode}
+        onPress={invite}
         style={{ marginTop: spacing.sm }}
       />
 
@@ -122,14 +123,16 @@ export function InviteChildCard() {
       */}
       {showingCode && state.myPushToken ? (
         <View style={s.codeBox}>
-          <Muted style={{ fontSize: 11 }}>연결 코드</Muted>
-          <Text style={s.code} selectable>
-            {toShortCode(state.myPushToken)}
-          </Text>
-          <Muted style={{ fontSize: 11, marginTop: spacing.sm, lineHeight: 18 }}>
-            아이 기기 → ⚙️ 설정 → 부모님 폰에 알려주기 → 이 코드를 그대로 입력{'\n'}
-            대문자와 소문자를 구별해서 적어야 합니다. 띄어쓰기는 없어도 됩니다.
-          </Muted>
+          <QrCode value={buildLinkUrl(state.myPushToken, label.trim() || '부모님 폰')} size={230} />
+          <Text style={s.qrHint}>아이 기기로 이 QR 을 찍어 주세요</Text>
+
+          {/* 카메라가 없는 기기를 위해 코드도 같이 둔다. */}
+          <View style={s.codeFallback}>
+            <Muted style={{ fontSize: 11 }}>카메라가 없으면 이 코드를 그대로 입력</Muted>
+            <Text style={s.code} selectable>
+              {toShortCode(state.myPushToken)}
+            </Text>
+          </View>
         </View>
       ) : null}
 
@@ -149,11 +152,27 @@ const s = StyleSheet.create({
   steps: { marginTop: spacing.md, gap: spacing.xs },
   codeBox: {
     marginTop: spacing.md,
-    padding: spacing.md,
-    borderRadius: radius.md,
+    padding: spacing.lg,
+    borderRadius: radius.lg,
     borderWidth: 2,
     borderColor: colors.parent,
     backgroundColor: colors.bg,
+    alignItems: 'center',
+  },
+  qrHint: {
+    marginTop: spacing.md,
+    fontSize: font.body,
+    fontWeight: '700',
+    color: colors.parent,
+    textAlign: 'center',
+  },
+  codeFallback: {
+    marginTop: spacing.lg,
+    paddingTop: spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+    width: '100%',
+    alignItems: 'center',
   },
   /*
    * 코드는 크고 고정폭이라야 한다. 아이가 화면을 보고 옮겨 적는데,

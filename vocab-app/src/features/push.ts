@@ -35,6 +35,7 @@ export {
   buildLinkUrl,
   buildNudgeBody,
   isValidPushToken,
+  parseLinkUrl,
   toShortCode,
   fromShortCode,
   shortCodeError,

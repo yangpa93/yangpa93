@@ -60,6 +60,42 @@ export function buildLinkUrl(token: string, label: string): string {
   return `${LINK_SCHEME}://link?token=${encodeURIComponent(token)}&label=${encodeURIComponent(label)}`;
 }
 
+/**
+ * 딥링크에서 토큰과 이름을 꺼낸다.
+ *
+ * 링크를 눌러 들어올 때는 expo-router 가 값을 갈라서 넘겨 주지만, **QR 을
+ * 찍었을 때는 문자열 하나가 통째로 들어온다.** 카메라가 읽어 온 그 문자열을
+ * 여기서 읽는다.
+ *
+ * 우리 링크가 아니면 null 이다. 아이가 아무 QR 이나 찍어 볼 수 있으므로
+ * (과자 봉지, 버스 정류장) 우리 것인지 먼저 가린다.
+ */
+export function parseLinkUrl(url: string): { token: string; label: string } | null {
+  const raw = url.trim();
+  if (!raw.startsWith(`${LINK_SCHEME}://`)) return null;
+
+  // URL 클래스는 낯선 스킴의 검색 문자열을 기기마다 다르게 다룬다.
+  // 물음표 뒤를 직접 읽는 편이 어디서나 똑같이 동작한다.
+  const q = raw.slice(raw.indexOf('?') + 1);
+  if (!raw.includes('?')) return null;
+
+  const params = new Map<string, string>();
+  for (const pair of q.split('&')) {
+    const eq = pair.indexOf('=');
+    if (eq < 0) continue;
+    try {
+      params.set(decodeURIComponent(pair.slice(0, eq)), decodeURIComponent(pair.slice(eq + 1)));
+    } catch {
+      // 망가진 링크. 그 값만 건너뛴다.
+    }
+  }
+
+  const token = (params.get('token') ?? '').trim();
+  if (!isValidPushToken(token)) return null;
+
+  return { token, label: (params.get('label') ?? '').trim() || '부모님 폰' };
+}
+
 /* ------------------------------------------------------------------ */
 /* 연결 코드 — 아무것도 안 깔린 기기를 위한 길                            */
 /* ------------------------------------------------------------------ */

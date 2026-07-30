@@ -47,6 +47,7 @@ export default function RootLayout() {
             <Stack.Screen name="parent-rewards" options={{ title: '보상 요청' }} />
             <Stack.Screen name="parent-settings" options={{ title: '설정' }} />
             <Stack.Screen name="parent-link" options={{ title: '부모님 폰 연결' }} />
+            <Stack.Screen name="scan" options={{ headerShown: false }} />
             <Stack.Screen name="backup" options={{ title: '기록 백업' }} />
             <Stack.Screen name="link" options={{ title: '연결하기' }} />
           </Stack>

@@ -179,12 +179,30 @@ export default function ChildSettings() {
             링크를 여기서 붙여넣으면 돼요.
           </Muted>
         )}
-        <Button
-          title={linkedParent ? '연결 상태 보기' : '부모님 폰 연결하기'}
-          variant="secondary"
-          onPress={() => router.push('/parent-link')}
-          style={{ marginTop: spacing.md }}
-        />
+        {linkedParent ? (
+          <Button
+            title="연결 상태 보기"
+            variant="secondary"
+            onPress={() => router.push('/parent-link')}
+            style={{ marginTop: spacing.md }}
+          />
+        ) : (
+          <>
+            {/* QR 을 앞에 둔다. 카톡이 없어도 되고 옮겨 적을 것도 없다. */}
+            <Button
+              title="📷 부모님 폰 QR 찍기"
+              variant="secondary"
+              onPress={() => router.push('/scan')}
+              style={{ marginTop: spacing.md }}
+            />
+            <Button
+              title="QR 말고 코드로 연결하기"
+              variant="ghost"
+              onPress={() => router.push('/parent-link')}
+              style={{ marginTop: spacing.sm }}
+            />
+          </>
+        )}
       </Card>
 
       {/*

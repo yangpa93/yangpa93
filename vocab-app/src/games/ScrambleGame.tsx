@@ -17,6 +17,7 @@ import { shuffle } from '../srs/session';
 import { speak } from '../lib/feedback';
 import { colors, font, radius, spacing } from '../theme';
 import { Muted } from '../components/ui';
+import { Ask } from './quiz-ui';
 import { tokenize } from './scramble';
 
 export function ScrambleGame({ entry, exp, ttsEnabled, onAnswer }: GameProps) {
@@ -63,7 +64,7 @@ export function ScrambleGame({ entry, exp, ttsEnabled, onAnswer }: GameProps) {
 
   return (
     <View style={{ flex: 1 }}>
-      <Muted>낱말을 눌러 문장을 만들어 보세요</Muted>
+      <Ask>낱말을 눌러 문장을 만들어 보세요</Ask>
 
       {/* 무슨 뜻의 문장을 만들지 알려 준다. 이건 답이 아니라 문제다. */}
       <View style={s.koBox}>

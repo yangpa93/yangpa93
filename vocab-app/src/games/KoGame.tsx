@@ -21,7 +21,7 @@ import { koCloze, koExample } from '../data/korean/entry';
 import { buildChoices } from '../srs/session';
 import { tokenize } from './scramble';
 import { HanjaGame } from './HanjaGame';
-import { ChoiceButton, Choices, DontKnow, QuestionBox } from './ko-ui';
+import { Ask, ExampleInBox, ChoiceButton, Choices, DontKnow, QuestionBox } from './quiz-ui';
 import { KoSentence } from '../components/KoSentence';
 import { colors, font, radius, spacing } from '../theme';
 import { Muted } from '../components/ui';
@@ -118,7 +118,7 @@ function KoChoiceCloze({ entry, pool, exposureIndex, onAnswer }: KoGameProps) {
 
   return (
     <View style={{ flex: 1 }}>
-      <Muted>빈칸에 알맞은 말을 고르세요</Muted>
+      <Ask>빈칸에 알맞은 말을 고르세요</Ask>
 
       <QuestionBox>
         {/* 빈칸 문제에는 낱말을 칠하지 않는다 — 칠할 자리가 곧 답이다. */}
@@ -172,18 +172,17 @@ function KoContext({ entry, pool, exposureIndex, onAnswer }: KoGameProps) {
 
   return (
     <View style={{ flex: 1 }}>
-      <Muted>
+      <Ask>
         {entry.category === 'classic' ? '이 옛말은 요즘 말로 무슨 뜻일까요' : '이 말은 무슨 뜻일까요'}
-      </Muted>
+      </Ask>
 
       <QuestionBox>
         <Text style={s.word}>{entry.word}</Text>
         {entry.hanja ? <Text style={s.hanja}>{entry.hanja}</Text> : null}
         {ex ? (
-          <View style={s.exampleBox}>
-            <Text style={s.exampleTag}>이렇게 써요</Text>
+          <ExampleInBox>
             <Sentence text={ex.text} word={entry.word} source={ex.source} />
-          </View>
+          </ExampleInBox>
         ) : null}
       </QuestionBox>
 
@@ -228,7 +227,7 @@ function KoType({ entry, exposureIndex, onAnswer }: KoGameProps) {
 
   return (
     <View style={{ flex: 1 }}>
-      <Muted>빈칸에 알맞은 말을 쓰세요</Muted>
+      <Ask>빈칸에 알맞은 말을 쓰세요</Ask>
 
       <QuestionBox>
         <Sentence text={blanked.text} source={ex.source} />
@@ -288,7 +287,7 @@ function KoScramble({ entry, exposureIndex, onAnswer }: KoGameProps) {
 
   return (
     <View style={{ flex: 1 }}>
-      <Muted>말을 순서대로 놓아 문장을 만드세요</Muted>
+      <Ask>말을 순서대로 놓아 문장을 만드세요</Ask>
 
       <View style={{ marginTop: spacing.md }}>
         <View style={s.answerBox}>

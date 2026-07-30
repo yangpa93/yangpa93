@@ -1,5 +1,5 @@
 /**
- * 국어 문제 화면의 뼈대. 문제와 보기를 눈으로 갈라 놓는다.
+ * 문제 화면의 뼈대. 문제와 보기를 눈으로 갈라 놓는다. 영어·국어가 같이 쓴다.
  *
  * **왜 만들었나.** 사자성어 문제에서 '고진감래 / 고생 끝에 즐거움이 찾아옴 /
  * 오랜 고진감래 끝에…' 세 줄이 나란히 뜨고 그 아래에 보기 넷이 이어졌다.
@@ -12,14 +12,65 @@
  */
 
 import { ReactNode, useEffect, useRef } from 'react';
-import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Animated, Pressable, StyleSheet, Text, TextStyle, View } from 'react-native';
 import { colors, font, radius, spacing } from '../theme';
+
+/**
+ * 빈칸이 든 문장. **빈칸을 눈에 띄게 칠한다.**
+ *
+ * 예전에는 빈칸이 본문과 똑같은 회색 밑줄이라 어디가 빈칸인지 한눈에 안
+ * 들어왔다. 문제의 핵심이 그 자리인데 가장 안 보였다. 빈칸만 색을 주고
+ * 바탕을 깔아, 문장을 훑기만 해도 물어보는 자리가 먼저 보이게 한다.
+ *
+ * 영어는 `_____`, 국어는 `○○○○` 로 뚫는다. 둘 다 잡는다.
+ */
+export function StemText({ text, style }: { text: string; style?: TextStyle }) {
+  const parts = text.split(/(_{2,}|○+)/);
+  return (
+    <Text style={[s.stem, style]}>
+      {parts.map((part, i) =>
+        /^(_{2,}|○+)$/.test(part) ? (
+          <Text key={i} style={s.blank}>
+            {part}
+          </Text>
+        ) : (
+          part
+        ),
+      )}
+    </Text>
+  );
+}
+
+/**
+ * 무엇을 하라는 말. 화면 맨 위에 둔다.
+ *
+ * 예전에는 흐린 회색 작은 글씨였다. 정작 아이가 제일 먼저 읽어야 하는
+ * 한 줄인데 가장 안 보였다.
+ */
+export function Ask({ children }: { children: ReactNode }) {
+  return <Text style={s.ask}>{children}</Text>;
+}
 
 /** 문제 상자. 안에 든 것은 전부 '읽을 것'이다. */
 export function QuestionBox({ children }: { children: ReactNode }) {
   return (
     <View style={s.box}>
       <Text style={s.boxTag}>문제</Text>
+      {children}
+    </View>
+  );
+}
+
+/**
+ * 문제 상자 안의 예문.
+ *
+ * 상자 안에서 한 칸 더 들여 '이렇게 써요'를 붙인다. 이걸 안 하면 예문이
+ * 보기 중 하나처럼 보인다 — 실제로 그렇게 보인다는 말을 들었다.
+ */
+export function ExampleInBox({ children }: { children: ReactNode }) {
+  return (
+    <View style={s.exampleBox}>
+      <Text style={s.exampleTag}>이렇게 써요</Text>
       {children}
     </View>
   );
@@ -111,6 +162,33 @@ export function DontKnow({ picked, onPress }: { picked: string | null; onPress: 
 const NUMS = ['①', '②', '③', '④', '⑤'];
 
 const s = StyleSheet.create({
+  ask: {
+    fontSize: font.h3,
+    fontWeight: '800',
+    color: colors.text,
+    marginTop: spacing.sm,
+    lineHeight: 26,
+  },
+  stem: { fontSize: font.h2, color: colors.text, lineHeight: 36 },
+  exampleBox: {
+    marginTop: spacing.lg,
+    padding: spacing.md,
+    backgroundColor: colors.bg,
+    borderRadius: radius.md,
+  },
+  exampleTag: {
+    fontSize: font.tiny,
+    fontWeight: '800',
+    color: colors.muted,
+    marginBottom: spacing.xs,
+    letterSpacing: 1,
+  },
+  /* 물어보는 자리. 색과 바탕을 함께 줘 색을 잘 못 보는 아이도 찾게 한다. */
+  blank: {
+    color: colors.primary,
+    fontWeight: '800',
+    backgroundColor: colors.primarySoft,
+  },
   box: {
     marginTop: spacing.md,
     padding: spacing.lg,
@@ -121,18 +199,24 @@ const s = StyleSheet.create({
     borderColor: colors.primary,
     backgroundColor: colors.card,
   },
+  /* 상자 왼쪽 위에 걸치는 '문제' 딱지. 바탕을 깔아 테두리 위로 올라앉는다. */
   boxTag: {
     position: 'absolute',
-    top: spacing.sm,
+    top: -9,
     left: spacing.lg,
+    paddingHorizontal: spacing.sm,
     fontSize: font.tiny,
     fontWeight: '800',
-    color: colors.primary,
+    color: '#fff',
+    backgroundColor: colors.primary,
+    borderRadius: radius.pill,
+    overflow: 'hidden',
     letterSpacing: 2,
+    lineHeight: 18,
   },
   choicesTag: {
     fontSize: font.small,
-    fontWeight: '700',
+    fontWeight: '800',
     color: colors.subtext,
     textAlign: 'center',
   },

@@ -17,7 +17,7 @@ import { useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { KoEntry } from '../types';
 import { buildHanjaChoices, chars } from './hanja';
-import { ChoiceButton, Choices, DontKnow, QuestionBox } from './ko-ui';
+import { Ask, ExampleInBox, ChoiceButton, Choices, DontKnow, QuestionBox } from './quiz-ui';
 import { KoSentence } from '../components/KoSentence';
 import { colors, font, radius, spacing } from '../theme';
 import { Muted } from '../components/ui';
@@ -58,18 +58,17 @@ export function HanjaGame({ entry, pool, exampleIndex, onAnswer }: HanjaGameProp
 
   return (
     <View style={{ flex: 1 }}>
-      <Muted>뜻에 맞는 한자를 고르세요</Muted>
+      <Ask>뜻에 맞는 한자를 고르세요</Ask>
 
       {/* 표제어·뜻·예문을 한 상자에 담는다. 예문이 밖에 있으면 보기처럼 보인다. */}
       <QuestionBox>
         <Text style={s.word}>{entry.word}</Text>
         <Text style={s.meaning}>{entry.meaning}</Text>
         {example ? (
-          <View style={s.exampleBox}>
-            <Text style={s.exampleTag}>이렇게 써요</Text>
+          <ExampleInBox>
             <KoSentence text={example.text} word={entry.word} style={s.exampleText} />
             {example.source ? <Text style={s.source}>— {example.source}</Text> : null}
-          </View>
+          </ExampleInBox>
         ) : null}
       </QuestionBox>
 

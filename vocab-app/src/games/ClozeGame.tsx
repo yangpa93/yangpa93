@@ -16,6 +16,7 @@ import { VocabEntry } from '../types';
 import { clozeSentence, Exposure, primaryMeaning } from '../data/entry';
 import { buildChoices, meaningKeys } from '../srs/session';
 import { speak } from '../lib/feedback';
+import { Ask, ChoiceButton, Choices, DontKnow, QuestionBox, StemText } from './quiz-ui';
 import { colors, font, radius, spacing } from '../theme';
 import { Muted } from '../components/ui';
 import { RevealKo } from './RevealKo';
@@ -154,70 +155,45 @@ function ChoiceCloze({
 
   return (
     <View style={{ flex: 1 }}>
-      <Muted>{listen ? '잘 듣고 빈칸에 알맞은 말을 고르세요' : '빈칸에 알맞은 말을 고르세요'}</Muted>
+      <Ask>{listen ? '잘 듣고 빈칸에 알맞은 말을 고르세요' : '빈칸에 알맞은 말을 고르세요'}</Ask>
 
-      <Pressable
-        style={s.sentenceBox}
-        onPress={() => speak(exp.example.en, ttsEnabled)}
-        accessibilityRole="button"
-        accessibilityLabel="문장 듣기"
-      >
-        {listen && !picked ? (
-          <View style={{ alignItems: 'center' }}>
-            <Text style={{ fontSize: 40 }}>🔊</Text>
-            <Muted style={{ marginTop: spacing.sm }}>다시 듣기</Muted>
-          </View>
-        ) : (
-          <Text style={s.sentence}>{cloze.text}</Text>
-        )}
-        {/* 해석은 먼저 스스로 읽어 보게 하고, 눌렀을 때만 보여준다.
-            정답은 영어 단어라서 해석을 봐도 답이 그대로 노출되지는 않는다.
-            답을 고른 뒤에는 맞든 틀리든 항상 보여준다. */}
-        {revealed || picked ? <Text style={s.sentenceKo}>{exp.example.ko}</Text> : null}
-      </Pressable>
+      <QuestionBox>
+        <Pressable
+          onPress={() => speak(exp.example.en, ttsEnabled)}
+          accessibilityRole="button"
+          accessibilityLabel="문장 듣기"
+        >
+          {listen && !picked ? (
+            <View style={{ alignItems: 'center' }}>
+              <Text style={{ fontSize: 40 }}>🔊</Text>
+              <Muted style={{ marginTop: spacing.sm }}>다시 듣기</Muted>
+            </View>
+          ) : (
+            <StemText text={cloze.text} />
+          )}
+          {/* 해석은 먼저 스스로 읽어 보게 하고, 눌렀을 때만 보여준다.
+              정답은 영어 단어라서 해석을 봐도 답이 그대로 노출되지는 않는다.
+              답을 고른 뒤에는 맞든 틀리든 항상 보여준다. */}
+          {revealed || picked ? <Text style={s.sentenceKo}>{exp.example.ko}</Text> : null}
+        </Pressable>
+      </QuestionBox>
 
       {showTranslation && !revealed && !picked ? <RevealKo onPress={() => setRevealed(true)} /> : null}
 
-      <View style={{ gap: spacing.sm }}>
-        {choices.map((c) => {
-          const answered = picked !== null;
-          const isPicked = picked === c.key;
-          return (
-            <Pressable
-              key={c.key}
-              onPress={() => choose(c.key, c.correct)}
-              disabled={answered}
-              accessibilityRole="button"
-              style={({ pressed }) => [
-                s.choice,
-                pressed && !answered && { opacity: 0.85 },
-                answered && c.correct && s.correct,
-                isPicked && !c.correct && s.wrong,
-                answered && !isPicked && !c.correct && { opacity: 0.45 },
-              ]}
-            >
-              <Text
-                style={[
-                  s.choiceText,
-                  answered && c.correct && { color: colors.correct },
-                  isPicked && !c.correct && { color: colors.wrong },
-                ]}
-              >
-                {c.label}
-              </Text>
-            </Pressable>
-          );
-        })}
-
-        <Pressable
-          onPress={() => choose('__dontknow__', false)}
-          disabled={picked !== null}
-          accessibilityRole="button"
-          style={[s.dontKnow, picked !== null && { opacity: 0.6 }]}
-        >
-          <Text style={s.dontKnowText}>모르겠어요</Text>
-        </Pressable>
-      </View>
+      <Choices>
+        {choices.map((c, i) => (
+          <ChoiceButton
+            key={c.key}
+            index={i}
+            label={c.label}
+            correct={c.correct}
+            picked={picked}
+            self={c.key}
+            onPress={() => choose(c.key, c.correct)}
+          />
+        ))}
+        <DontKnow picked={picked} onPress={() => choose('__dontknow__', false)} />
+      </Choices>
     </View>
   );
 }
@@ -254,8 +230,8 @@ function TypeCloze({
     <View style={{ flex: 1 }}>
       <Muted>빈칸에 알맞은 말을 직접 써 보세요</Muted>
 
-      <View style={s.sentenceBox}>
-        <Text style={s.sentence}>{cloze.text}</Text>
+      <QuestionBox>
+        <StemText text={cloze.text} />
         {revealed || result !== null ? <Text style={s.hintKo}>{exp.example.ko}</Text> : null}
         {hint > 0 ? (
           <Text style={s.hint}>
@@ -264,7 +240,7 @@ function TypeCloze({
               : `${cloze.answer[0]}${'_'.repeat(Math.max(0, cloze.answer.length - 1))}`}
           </Text>
         ) : null}
-      </View>
+      </QuestionBox>
 
       <TextInput
         value={value}

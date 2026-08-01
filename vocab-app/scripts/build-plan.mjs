@@ -3,37 +3,50 @@
  * 어휘 배치표 생성기.
  *
  *   node scripts/build-plan.mjs > src/data/plan.ts
+ *   (보통은 `npm run data:update` 가 알아서 부른다)
  *
- * data/official-basic-vocabulary.txt (교육부 기본 어휘 목록) 와
- * data/extra-vocabulary.txt (교과서 빈출 파생어·구동사) 를 읽어
- * **어떤 단어가 어느 레벨에 들어가는지**를 정한다.
+ * data/ 아래의 낱말 목록을 읽어 **어떤 단어가 어느 레벨에 들어가는지**를 정한다.
  *
- * 배치 규칙
- *  1. 난이도 층으로 먼저 나눈다.  초등 권장(*) → 중학 권장(**) → 고등(무표시)
- *  2. 같은 층 안에서는 알파벳 순. 같은 층의 단어끼리는 난이도 차가 크지 않으므로
- *     순서를 임의로 흔들기보다 원본 문서 순서를 그대로 따르는 편이 검증하기 쉽다.
- *  3. 전체를 레벨 24개(학년 6 × 단계 4)로 고르게 자른다.
+ *   official-basic-vocabulary.txt   교육부 「기본 어휘 목록」
+ *   extra-vocabulary.txt            교과서 빈출 파생어·구동사
+ *   idiom-vocabulary.txt            중·고 필수 숙어
  *
- * 레벨당 약 137개가 되고, 하루 새 단어 10개면 한 레벨에 2주 남짓,
- * 24레벨을 다 돌면 대략 1년이 된다.
+ * ── 한 번 정한 자리는 다시 안 바꾼다 ─────────────────────────
  *
- * ── 숙어는 따로 잘라 덧붙인다 ─────────────────────────────────
+ * **이게 이 파일에서 가장 중요한 규칙이다.**
  *
- * data/idiom-vocabulary.txt 는 위 두 파일과 **합치지 않고** 따로 24등분해
- * 레벨마다 뒤에 붙인다. 한 통에 부어 다시 자르면 이미 자리를 잡은 3,285개가
- * 레벨 사이를 옮겨 다닌다. 아이가 끝낸 레벨의 단어가 다음 레벨로 밀려나면
- * 진도가 뒤로 가고, levels/*.ts 파일 사이로 표제어를 물리적으로 옮겨야 한다.
- * 따로 자르면 기존 배치가 한 칸도 움직이지 않는다.
+ * 예전에는 목록 전체를 그때그때 24등분했다. 그래서 단어를 하나만 더 넣어도
+ * 경계가 밀려 수십 개가 다른 레벨로 옮겨 갔다. 그러면
+ *
+ *   · 아이가 이미 끝낸 레벨에 새 단어가 생기고,
+ *   · 아직 안 배운 단어가 지나간 레벨로 밀려 영영 안 나오고,
+ *   · levels/*.ts 파일 사이로 표제어를 손으로 옮겨야 하고,
+ *   · 레벨 시험 문항 수가 통째로 달라진다.
+ *
+ * 그래서 자리를 **data/placement.json 에 못박아** 둔다. 거기 적힌 단어는
+ * 무슨 일이 있어도 그 레벨에 남는다. 새로 들어온 단어만 자리를 찾는다.
+ *
+ * 새 단어는 난이도 층이 맡은 레벨 구간 안에서, **그 구간에서 가장 홀쭉한
+ * 레벨**로 간다. 레벨끼리 크기가 벌어지지 않게 하려는 것이다.
+ *
+ *   기초(초등 권장)   중1-1 … 중2-4
+ *   중급(중학 권장)   중3-1 … 고1-4
+ *   고급(고등)        고2-1 … 고3-4
+ *
+ * 배치표를 새로 만들면 placement.json 도 같이 갱신된다. 두 파일 모두
+ * 저장소에 올린다 — 자리가 언제 어떻게 정해졌는지가 이력에 남아야 한다.
  *
  * 이 파일이 정하는 것은 '어떤 단어를 언제 배우는가'뿐이다.
  * 뜻과 예문은 src/data/levels/*.ts 에 따로 적는다.
  */
 
-import { readFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 
 const GRADES = ['m1', 'm2', 'm3', 'h1', 'h2', 'h3'];
 const STEPS = [1, 2, 3, 4];
 const LEVELS = GRADES.flatMap((g) => STEPS.map((s) => `${g}-${s}`));
+
+const PLACEMENT = 'data/placement.json';
 
 /** 파일 한 장을 읽어 `{ word, tier }` 목록으로. tier: 1 기초 · 2 중급 · 0 고급 */
 function readList(path) {
@@ -53,91 +66,95 @@ function readList(path) {
  *
  * `okey` 는 바로 윗줄 `okay` 를 옮겨 적다 난 오타다. 원본 파일은 교육부 별표를
  * 그대로 옮긴 것이라 손대지 않고, 배치할 때만 뺀다.
- *
- * **자르고 난 뒤에 뺀다.** 자르기 전에 빼면 24등분 경계가 한 칸씩 밀려
- * 단어 17개가 다른 레벨로 옮겨 간다. 그 단어들의 뜻과 예문은 이미
- * levels/*.ts 의 제자리에 적혀 있고, 아이 진도도 그 배치를 기준으로 세어
- * 두었다. 오타 하나 때문에 그걸 다 흔들 이유가 없다.
  */
 const DROP = new Set(['okey']);
 
+/** 난이도 층이 맡는 레벨 구간. [시작, 끝) — LEVELS 의 자리 번호다. */
+const TIER_RANGE = {
+  1: [0, 8], //  기초 → 중1-1 … 중2-4
+  2: [8, 16], // 중급 → 중3-1 … 고1-4
+  0: [16, 24], // 고급 → 고2-1 … 고3-4
+};
+
+/* ---------- 낱말 모으기 ---------- */
+
 const official = readList('data/official-basic-vocabulary.txt');
 const extra = readList('data/extra-vocabulary.txt');
+const idioms = existsSync('data/idiom-vocabulary.txt')
+  ? readList('data/idiom-vocabulary.txt')
+  : [];
 
-// 같은 단어가 두 파일에 있으면 교육부 목록 쪽을 남긴다.
-const seen = new Set(official.map((x) => x.word));
-const all = [...official];
-for (const x of extra) {
-  if (seen.has(x.word)) continue;
-  seen.add(x.word);
-  all.push({ ...x, extra: true });
+// 같은 단어가 여러 파일에 있으면 교육부 목록 쪽을 남긴다.
+const seen = new Set();
+const all = [];
+for (const [list, isExtra] of [
+  [official, false],
+  [extra, true],
+  [idioms, true],
+]) {
+  for (const x of list) {
+    if (seen.has(x.word) || DROP.has(x.word)) continue;
+    seen.add(x.word);
+    all.push({ ...x, ...(isExtra ? { extra: true } : {}) });
+  }
 }
 
-// 층 순서: 기초(1) → 중급(2) → 고급(0)
-const TIER_ORDER = { 1: 0, 2: 1, 0: 2 };
-all.sort((a, b) => {
-  const t = TIER_ORDER[a.tier] - TIER_ORDER[b.tier];
-  return t !== 0 ? t : a.word.localeCompare(b.word);
-});
+/* ---------- 이미 정해진 자리 ---------- */
 
-// 24레벨로 고르게 자른다. 나머지는 앞 레벨부터 하나씩 더 가져간다.
-const base = Math.floor(all.length / LEVELS.length);
-const extraCount = all.length % LEVELS.length;
-
-const rows = [];
-let at = 0;
-LEVELS.forEach((level, i) => {
-  const size = base + (i < extraCount ? 1 : 0);
-  for (const item of all.slice(at, at + size)) rows.push({ ...item, level });
-  at += size;
-});
-
-/* ---------- 숙어를 레벨마다 덧붙인다 ---------- */
-
-/**
- * 숙어는 위 목록과 따로 자른다.
- *
- * 층 순서와 자르는 규칙은 같다 — 기초 숙어가 앞 레벨, 수능 숙어가 뒤 레벨로
- * 간다. 다만 자르는 대상이 숙어뿐이라, 단어가 몇 개 늘거나 줄어도 숙어
- * 배치가 흔들리지 않고 그 반대도 마찬가지다.
- *
- * 같은 표제어가 위 목록에도 있으면 여기서 뺀다. 두 레벨에 같은 단어가
- * 들어가면 add-entries 가 어느 쪽에 넣을지 알 수 없다.
- */
-const idioms = readList('data/idiom-vocabulary.txt').filter((x) => !seen.has(x.word));
-idioms.sort((a, b) => {
-  const t = TIER_ORDER[a.tier] - TIER_ORDER[b.tier];
-  return t !== 0 ? t : a.word.localeCompare(b.word);
-});
-
-const idiomBase = Math.floor(idioms.length / LEVELS.length);
-const idiomExtra = idioms.length % LEVELS.length;
-
-let idiomAt = 0;
-LEVELS.forEach((level, i) => {
-  const size = idiomBase + (i < idiomExtra ? 1 : 0);
-  for (const item of idioms.slice(idiomAt, idiomAt + size)) {
-    rows.push({ ...item, level, extra: true });
+const locked = new Map(); // word → level
+if (existsSync(PLACEMENT)) {
+  const saved = JSON.parse(readFileSync(PLACEMENT, 'utf8'));
+  for (const [level, words] of Object.entries(saved)) {
+    for (const w of words) locked.set(w, level);
   }
-  idiomAt += size;
+}
+
+/** 레벨별 배치 결과. 못박힌 순서를 그대로 지킨다. */
+const byLevel = new Map(LEVELS.map((l) => [l, []]));
+const wordTier = new Map(all.map((x) => [x.word, x]));
+
+// ① 못박힌 것부터, 저장된 순서대로.
+if (existsSync(PLACEMENT)) {
+  const saved = JSON.parse(readFileSync(PLACEMENT, 'utf8'));
+  for (const level of LEVELS) {
+    for (const w of saved[level] ?? []) {
+      // 목록에서 빠진 낱말은 못박힌 자리도 놓아준다. 목록이 곧 무엇을
+      // 가르치는지이므로, 거기서 지웠으면 배치표에서도 사라져야 한다.
+      if (!wordTier.has(w)) continue;
+      byLevel.get(level).push(wordTier.get(w));
+    }
+  }
+}
+
+// ② 새로 들어온 것. 층이 맡은 구간에서 가장 홀쭉한 레벨로 보낸다.
+const fresh = all.filter((x) => !locked.has(x.word));
+fresh.sort((a, b) => {
+  const t = a.tier === b.tier ? 0 : TIER_RANGE[a.tier][0] - TIER_RANGE[b.tier][0];
+  return t !== 0 ? t : a.word.localeCompare(b.word);
 });
 
-// 가르치지 않는 표제어를 뺀다. 자리를 다 잡은 뒤라야 경계가 안 밀린다.
-const kept = rows.filter((r) => !DROP.has(r.word));
+for (const item of fresh) {
+  const [from, to] = TIER_RANGE[item.tier];
+  let best = LEVELS[from];
+  for (let i = from; i < to; i++) {
+    if (byLevel.get(LEVELS[i]).length < byLevel.get(best).length) best = LEVELS[i];
+  }
+  byLevel.get(best).push(item);
+}
 
-const byLevel = new Map();
-for (const r of kept) byLevel.set(r.level, (byLevel.get(r.level) ?? 0) + 1);
+/* ---------- 내보내기 ---------- */
+
+const total = LEVELS.reduce((n, l) => n + byLevel.get(l).length, 0);
 
 const out = [];
 out.push('/**');
 out.push(' * 어휘 배치표 — 어떤 단어를 어느 레벨에서 배우는지.');
 out.push(' *');
 out.push(' * scripts/build-plan.mjs 가 data/*.txt 에서 생성한다. 직접 고치지 말 것.');
-out.push(' * 뜻과 예문은 levels/ 아래에 따로 적는다. 여기는 "무엇을 언제"만 정한다.');
+out.push(' * 자리는 data/placement.json 에 못박혀 있어서, 단어를 더 넣어도');
+out.push(' * 이미 배운 단어가 다른 레벨로 옮겨 가지 않는다.');
 out.push(' *');
-out.push(
-  ` * 총 ${kept.length}개 (단어 ${all.length - DROP.size} + 숙어 ${idioms.length}) · 레벨 ${LEVELS.length}개`,
-);
+out.push(` * 총 ${total}개 · 레벨 ${LEVELS.length}개`);
 out.push(' */');
 out.push('');
 out.push("import { LevelId } from '../types';");
@@ -159,9 +176,9 @@ out.push('/** [표제어, 난이도 층, 교육부 목록 밖이면 1] */');
 out.push('type Row = [string, Tier] | [string, Tier, 1];');
 out.push('');
 out.push('const RAW: Record<LevelId, Row[]> = {');
-for (const [level] of byLevel) {
+for (const level of LEVELS) {
   out.push(`  '${level}': [`);
-  for (const r of kept.filter((x) => x.level === level)) {
+  for (const r of byLevel.get(level)) {
     out.push(`    [${JSON.stringify(r.word)}, ${r.tier}${r.extra ? ', 1' : ''}],`);
   }
   out.push('  ],');
@@ -184,9 +201,25 @@ out.push('}');
 out.push('');
 
 process.stdout.write(out.join('\n'));
+
+// 정한 자리를 못박아 둔다. 다음 번에 이 파일이 기준이 된다.
+writeFileSync(
+  PLACEMENT,
+  JSON.stringify(
+    Object.fromEntries(LEVELS.map((l) => [l, byLevel.get(l).map((r) => r.word)])),
+    null,
+    1,
+  ) + '\n',
+  'utf8',
+);
+
+const dropped = [...locked.keys()].filter((w) => !wordTier.has(w));
 process.stderr.write(
-  `총 ${kept.length}개를 ${LEVELS.length}레벨에 배치했습니다.\n` +
-    `  단어 ${all.length} (기초 ${all.filter((x) => x.tier === 1).length} · 중급 ${all.filter((x) => x.tier === 2).length} · 고급 ${all.filter((x) => x.tier === 0).length})\n` +
-    `  숙어 ${idioms.length} (기초 ${idioms.filter((x) => x.tier === 1).length} · 중급 ${idioms.filter((x) => x.tier === 2).length} · 고급 ${idioms.filter((x) => x.tier === 0).length})` +
-    ` · 레벨당 ${idiomBase}~${idiomBase + (idiomExtra ? 1 : 0)}개씩 덧붙임\n`,
+  `총 ${total}개 · 레벨당 ${Math.min(...LEVELS.map((l) => byLevel.get(l).length))}~` +
+    `${Math.max(...LEVELS.map((l) => byLevel.get(l).length))}개\n` +
+    `  자리가 이미 정해져 있던 것 ${total - fresh.length}\n` +
+    `  이번에 새로 자리를 잡은 것 ${fresh.length}` +
+    (fresh.length > 0 ? `: ${fresh.slice(0, 12).map((x) => x.word).join(', ')}${fresh.length > 12 ? ' …' : ''}` : '') +
+    '\n' +
+    (dropped.length > 0 ? `  목록에서 빠져 배치표에서도 지운 것 ${dropped.length}: ${dropped.join(', ')}\n` : ''),
 );

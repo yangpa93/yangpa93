@@ -10,6 +10,7 @@ function makeProfile(over: Partial<Profile> = {}): Profile {
   return {
     id: 'p1',
     name: '서준',
+    kind: 'child',
     avatar: '🦊',
     level: 'm1-1',
     koLevel: 'm1-1',
@@ -32,6 +33,9 @@ function makeProfile(over: Partial<Profile> = {}): Profile {
     clearedLevels: [],
     koClearedLevels: [],
     claimedMonths: [],
+    awards: null,
+    linkWaived: false,
+    parentStudy: { tracks: ['daily'], dailyTheme: 'w', newPerDay: 5 },
     ...over,
   };
 }

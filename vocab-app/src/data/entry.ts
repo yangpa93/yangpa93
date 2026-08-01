@@ -29,6 +29,9 @@ const POS_NAMES: Record<string, string> = {
   'int.': '감탄사',
   'aux.': '조동사',
   'phr.': '숙어',
+  // 부모님용 일상 문장의 표현들. 'on the same page' 는 명사도 동사도 아니라
+  // 품사로 가를 수 없어서 한 갈래로 묶었다.
+  'expr.': '표현',
 };
 
 /**

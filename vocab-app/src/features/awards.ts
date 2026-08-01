@@ -76,6 +76,20 @@ export function awardRates(rates?: Partial<AwardRates> | null): AwardRates {
 }
 
 /**
+ * 이 아이에게 적용할 금액표.
+ *
+ * 아이가 자기 금액표를 갖고 있으면 그것을, 없으면 기기 기본값을 쓴다.
+ * 아이마다 다르게 두고 싶은 집(중학생과 고등학생을 같은 금액으로 두면
+ * 한쪽은 늘 손해로 느낀다)과, 하나로 충분한 집을 둘 다 받으려는 것이다.
+ */
+export function ratesOf(
+  profile: { awards?: AwardRates | null } | null | undefined,
+  deviceRates?: Partial<AwardRates> | null,
+): AwardRates {
+  return awardRates(profile?.awards ?? deviceRates);
+}
+
+/**
  * 요구권의 종류.
  *
  * 영어 레벨업과 국어 레벨업을 따로 둔다. 금액이 다르고(영어 중학교 2만·

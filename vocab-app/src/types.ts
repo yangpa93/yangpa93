@@ -79,7 +79,8 @@ export type EntryKind = 'word' | 'idiom';
 export type EntrySource =
   | 'curriculum' // 교육부 기본 어휘 목록
   | 'textbook' // 중·고 검정 교과서 공통 출현
-  | 'csat'; // 수능·모평 기출 빈출
+  | 'csat' // 수능·모평 기출 빈출
+  | 'daily'; // 부모님용 일상·업무 문장 (korean/english_365_dataset.json)
 
 export interface Example {
   /** 영어 예문 */
@@ -430,9 +431,63 @@ export interface ProfileSettings {
   hapticsEnabled: boolean;
 }
 
+/**
+ * 프로필의 갈래. 이 앱을 쓰는 사람이 아이인지 부모인지.
+ *
+ * `DeviceRole` 과 다르다. 역할은 **기기** 하나에 하나뿐이고 학습 화면을
+ * 감출지를 정했다. 그런데 한 기기에 부모와 아이가 함께 있을 수 있고
+ * (집에 태블릿 하나), 부모도 자기 공부를 한다. 그래서 사람 단위로 나눈다.
+ *
+ * 화면이 통째로 갈린다 — 아이는 오늘의 학습·요구권·달력을, 부모는 자기 공부와
+ * 아이들 보고서를 본다.
+ */
+export type ProfileKind = 'child' | 'parent';
+
+/** 부모가 고를 수 있는 학습 갈래. 여러 개를 함께 켤 수 있다. */
+export type ParentTrack =
+  | 'daily' // 일상·업무 영어 문장 (주제를 고른다)
+  | 'enWord' // 아이들과 똑같은 영어 단어 (레벨을 고른다)
+  | 'ko'; // 아이들과 똑같은 국어 어휘 (레벨을 고른다)
+
+export const PARENT_TRACK_LABEL: Record<ParentTrack, string> = {
+  daily: '일상 생활 문장 학습하기',
+  enWord: '아이들과 같은 영어 단어 학습하기',
+  ko: '국어 어휘 학습하기',
+};
+
+/**
+ * 부모가 무엇을 어떻게 공부할지.
+ *
+ * 아이 설정(`ProfileSettings`)과 따로 두는 이유: 아이는 학년이 정해져 있어
+ * 레벨 하나만 있으면 되지만, 부모는 세 갈래를 골라 켜고 각각 어디를 볼지
+ * 따로 정한다. 한 벌에 밀어 넣으면 아이 화면에도 쓰지 않는 칸이 잔뜩 생긴다.
+ *
+ * 영어 레벨과 국어 레벨은 `Profile.level` · `Profile.koLevel` 을 그대로 쓴다.
+ * 아이와 같은 자료를 같은 방식으로 도는 것이라 따로 둘 이유가 없다.
+ */
+export interface ParentStudy {
+  /** 켜 둔 갈래. 비면 공부할 것이 없다. */
+  tracks: ParentTrack[];
+  /** 일상 문장의 주제 id. src/data/daily 의 주제 중 하나. */
+  dailyTheme: string;
+  /**
+   * 하루에 새로 만날 개수. 5 또는 10.
+   *
+   * 아이는 5~20 중에서 고르지만 부모는 둘 중 하나다. 어른의 하루에서
+   * 어휘 공부에 낼 수 있는 시간이 그 언저리이고, 고를 것이 많으면
+   * 고르다가 안 하게 된다.
+   */
+  newPerDay: number;
+}
+
+/** 부모가 고를 수 있는 하루 분량. */
+export const PARENT_NEW_PER_DAY = [5, 10] as const;
+
 export interface Profile {
   id: string;
   name: string;
+  /** 아이인지 부모인지 */
+  kind: ProfileKind;
   /** 이모지 아바타 */
   avatar: string;
   /** 영어 레벨 */
@@ -463,6 +518,25 @@ export interface Profile {
   koClearedLevels: LevelId[];
   /** 개근 요구권을 이미 신청한 달들 (yyyy-mm) */
   claimedMonths: string[];
+  /**
+   * 이 아이만의 요구권 금액표. null 이면 기기 기본값(ParentSettings.awards).
+   *
+   * 예전에는 금액이 기기에 하나뿐이었다. 그런데 중학생과 고등학생을 같은
+   * 금액으로 두면 한쪽은 늘 손해라고 느낀다. 아이마다 사정이 달라서
+   * 아이별 보고서 화면에서 따로 정할 수 있게 했다. 안 정했으면 기기 기본값을
+   * 그대로 쓴다 — 아이가 하나뿐인 집에서 같은 값을 두 번 정하게 하지 않는다.
+   */
+  awards: AwardRates | null;
+  /**
+   * 부모님 폰과 연결하지 않기로 정했는지 (아이 프로필).
+   *
+   * 부모님이 이 앱을 안 쓰는 집도 있다. 그런 아이에게 '부모와 연결하기'를
+   * 계속 띄우면 못 한 일이 남아 있는 것처럼 보인다. 다만 아이가 스스로 끄면
+   * 감시를 피하는 길이 되므로, **부모가 PIN 을 눌러 승인**해야 꺼진다.
+   */
+  linkWaived: boolean;
+  /** 부모 프로필의 학습 설정. 아이 프로필에서는 쓰지 않는다. */
+  parentStudy: ParentStudy;
 }
 
 /**

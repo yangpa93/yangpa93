@@ -69,18 +69,116 @@ export function buildLinkUrl(token: string, label: string): string {
  *
  * 우리 링크가 아니면 null 이다. 아이가 아무 QR 이나 찍어 볼 수 있으므로
  * (과자 봉지, 버스 정류장) 우리 것인지 먼저 가린다.
+ *
+ * **길(`://link`)까지 본다.** 아이가 띄우는 QR 은 `://child` 인데 거기에도
+ * `token` 이 실려 있어서, 스킴만 보면 아이 QR 을 부모 QR 로 읽어 버린다.
+ * 그러면 아이가 다른 아이의 QR 을 찍었을 때 그 아이를 부모로 등록한다.
  */
 export function parseLinkUrl(url: string): { token: string; label: string } | null {
-  const raw = url.trim();
-  if (!raw.startsWith(`${LINK_SCHEME}://`)) return null;
+  const params = queryOf(url, 'link');
+  if (!params) return null;
 
-  // URL 클래스는 낯선 스킴의 검색 문자열을 기기마다 다르게 다룬다.
-  // 물음표 뒤를 직접 읽는 편이 어디서나 똑같이 동작한다.
-  const q = raw.slice(raw.indexOf('?') + 1);
-  if (!raw.includes('?')) return null;
+  const token = (params.get('token') ?? '').trim();
+  if (!isValidPushToken(token)) return null;
+
+  return { token, label: (params.get('label') ?? '').trim() || '부모님 폰' };
+}
+
+/* ------------------------------------------------------------------ */
+/* 아이가 QR 을 만들고 부모가 찍는 길                                     */
+/* ------------------------------------------------------------------ */
+
+/**
+ * **왜 방향을 뒤집었는가.**
+ *
+ * 지금까지는 부모가 QR 을 띄우고 아이가 찍었다. 그런데 부모님 모드에 들어가
+ * 보면 "이 기기에 등록된 아이가 없습니다"만 뜨고, 아이를 등록하려면 QR 이
+ * 있어야 하는데 그 QR 을 만들 자리가 없었다. 부모 폰에서 시작하는 길이
+ * 스스로 막혀 있었던 것이다.
+ *
+ * 이제는 **아이가 자기 QR 을 만들고 부모가 찍는다.** 순서가 자연스럽다 —
+ * 아이는 자기 이름과 주소를 이미 갖고 있고, 부모는 아이 폰을 들여다보며
+ * 찍기만 하면 된다. 부모 폰에는 그 순간 아이가 등록된다.
+ *
+ * 부모 폰의 주소는 찍은 뒤에 부모가 아이에게 되보낸다(`link-back`).
+ * 아이 주소를 방금 알았으니 보낼 수 있고, 아이는 아무것도 더 하지 않아도
+ * 연결이 마무리된다.
+ */
+export interface ChildLink {
+  token: string;
+  name: string;
+}
+
+/** 아이 기기가 띄우는 QR. 부모 기기가 찍는다. */
+export function buildChildLinkUrl(token: string, name: string): string {
+  return `${LINK_SCHEME}://child?token=${encodeURIComponent(token)}&name=${encodeURIComponent(name)}`;
+}
+
+/**
+ * 아이 QR 을 읽는다. 우리 것이 아니면 null.
+ *
+ * 부모가 아무 QR 이나 찍어 볼 수 있으므로(과자 봉지, 명함) 우리 것인지
+ * 먼저 가린다. 부모 QR(`://link`)과도 구별해야 한다 — 부모 폰에서 부모 QR 을
+ * 찍으면 자기 자신을 아이로 등록하게 된다.
+ */
+export function parseChildLinkUrl(url: string): ChildLink | null {
+  const params = queryOf(url, 'child');
+  if (!params) return null;
+
+  const token = (params.get('token') ?? '').trim();
+  if (!isValidPushToken(token)) return null;
+
+  return { token, name: (params.get('name') ?? '').trim() || '아이' };
+}
+
+/**
+ * 부모가 아이에게 자기 주소를 되보내는 인사.
+ *
+ * 아이 화면에서는 아무 일도 시키지 않는다. 알림을 누르지 않아도 적용된다 —
+ * 아이가 알림을 지나쳐 버리면 연결이 반만 된 채로 남고, 그러면 리포트가
+ * 영영 안 간다.
+ */
+export interface LinkBackPayload {
+  parentToken: string;
+  parentLabel: string;
+}
+
+export function buildLinkBackBody(childToken: string, payload: LinkBackPayload) {
+  return {
+    to: childToken,
+    title: '🔗 부모님 폰과 연결됐어요',
+    body: `${payload.parentLabel}에 오늘 기록이 갑니다.`,
+    sound: 'default' as const,
+    priority: 'high' as const,
+    channelId: 'child-nudge',
+    data: { kind: 'link-back', ...payload },
+  };
+}
+
+export function parseLinkBack(data: unknown): LinkBackPayload | null {
+  if (!data || typeof data !== 'object') return null;
+  const d = data as Record<string, unknown>;
+  if (d.kind !== 'link-back') return null;
+  if (typeof d.parentToken !== 'string' || !isValidPushToken(d.parentToken)) return null;
+  return {
+    parentToken: d.parentToken,
+    parentLabel:
+      typeof d.parentLabel === 'string' && d.parentLabel.trim() ? d.parentLabel.trim() : '부모님 폰',
+  };
+}
+
+/**
+ * 우리 딥링크에서 물음표 뒤를 읽는다.
+ *
+ * URL 클래스는 낯선 스킴의 검색 문자열을 기기마다 다르게 다룬다. 직접 읽는
+ * 편이 어디서나 똑같이 동작한다. 길(`link` / `child`)이 다르면 null 이다.
+ */
+function queryOf(url: string, path: string): Map<string, string> | null {
+  const raw = url.trim();
+  if (!raw.startsWith(`${LINK_SCHEME}://${path}?`)) return null;
 
   const params = new Map<string, string>();
-  for (const pair of q.split('&')) {
+  for (const pair of raw.slice(raw.indexOf('?') + 1).split('&')) {
     const eq = pair.indexOf('=');
     if (eq < 0) continue;
     try {
@@ -89,11 +187,7 @@ export function parseLinkUrl(url: string): { token: string; label: string } | nu
       // 망가진 링크. 그 값만 건너뛴다.
     }
   }
-
-  const token = (params.get('token') ?? '').trim();
-  if (!isValidPushToken(token)) return null;
-
-  return { token, label: (params.get('label') ?? '').trim() || '부모님 폰' };
+  return params;
 }
 
 /* ------------------------------------------------------------------ */

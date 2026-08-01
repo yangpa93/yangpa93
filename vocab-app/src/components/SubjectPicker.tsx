@@ -1,14 +1,16 @@
 /**
- * 무엇을 공부할지 고른다. 부모님 화면에만 둔다.
+ * 다른 폰에 있는 아이의 공부할 과목을 정한다.
  *
- * 아이마다 다르게 둘 수 있다 — 큰딸은 영어만, 작은딸은 둘 다 같은 식으로.
+ * 이 폰에 프로필이 있는 아이는 그 아이의 보고서 화면에서 정한다 — 리포트를
+ * 보고 나서 바로 고칠 수 있어야 하기 때문이다. 여기 남은 것은 **프로필이
+ * 여기 없는 아이**뿐이다. 그 아이의 기록은 그 폰 안에 있어서 이쪽에서
+ * 고칠 것이 과목밖에 없다.
  *
- * **이 폰에 있는 아이**는 바로 바뀐다. **다른 폰에 있는 아이**는 알림으로
- * 보낸다. 아이 폰을 손에 들지 않고도 정할 수 있어야 한다 — 아이가 둘이고
- * 폰이 각자에게 있으면, 바꿀 때마다 폰을 걷어 오는 것은 현실적이지 않다.
+ * 아이 폰을 손에 들지 않고도 정할 수 있어야 한다 — 아이가 둘이고 폰이
+ * 각자에게 있으면, 바꿀 때마다 폰을 걷어 오는 것은 현실적이지 않다.
  *
- * 하나도 안 고른 상태는 만들 수 없다. 낼 문제가 없어져 학습 화면이 빈 채로
- * 뜬다. 마지막 하나를 끄려 하면 그냥 무시한다.
+ * 하나도 안 고른 상태는 보내지 않는다. 낼 문제가 없어져 아이 학습 화면이
+ * 빈 채로 뜬다.
  */
 
 import { useState } from 'react';
@@ -16,29 +18,33 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Body, Card, H3, Muted, Row } from './ui';
 import { useApp } from '../store/AppProvider';
 import { sendSettingsToChild } from '../features/push';
-import { Subject, SUBJECT_LABEL } from '../types';
+import { Subject } from '../types';
 import { colors, font, radius, spacing } from '../theme';
 
-const ALL: Subject[] = ['en', 'ko'];
+/** 보낼 수 있는 조합. 낱개로 켜고 끄면 '둘 다 끔'을 만들 수 있다. */
+const PRESETS: { label: string; subjects: Subject[] }[] = [
+  { label: '영어만', subjects: ['en'] },
+  { label: '국어만', subjects: ['ko'] },
+  { label: '영어 · 국어', subjects: ['en', 'ko'] },
+];
 
 export function SubjectPicker() {
-  const { state, updateSettings } = useApp();
+  const { state } = useApp();
   const [busy, setBusy] = useState<string | null>(null);
   const [result, setResult] = useState('');
 
-  /** 이 폰에 있는 아이는 바로 바꾼다. */
-  function toggleLocal(profileId: string, current: Subject[], s: Subject) {
-    const next = current.includes(s) ? current.filter((x) => x !== s) : [...current, s];
-    if (next.length === 0) return; // 마지막 하나는 못 끈다
-    updateSettings(profileId, { subjects: next });
-  }
+  const localNames = new Set(state.profiles.map((p) => p.name));
+  const remote = (state.knownChildren ?? []).filter((c) => !localNames.has(c.name));
 
-  /** 다른 폰에 있는 아이는 알림으로 보낸다. */
-  async function sendRemote(name: string, token: string, subjects: Subject[]) {
+  if (remote.length === 0) return null;
+
+  async function send(name: string, token: string, subjects: Subject[]) {
     setBusy(name);
     setResult('');
-    const from = '부모님';
-    const res = await sendSettingsToChild(token, { from, subjects });
+    const res = await sendSettingsToChild(token, {
+      from: state.parentLink?.label ?? '부모님',
+      subjects,
+    });
     setBusy(null);
     setResult(
       res.ok
@@ -47,80 +53,31 @@ export function SubjectPicker() {
     );
   }
 
-  // 이 폰에 없고 연결만 돼 있는 아이들
-  const localNames = new Set(state.profiles.map((p) => p.name));
-  const remote = (state.knownChildren ?? []).filter((c) => !localNames.has(c.name));
-
   return (
     <Card style={{ marginTop: spacing.md, borderColor: colors.parent }}>
-      <H3>📚 무엇을 공부할까요</H3>
+      <H3>📚 다른 폰의 아이가 공부할 과목</H3>
       <Muted style={{ marginTop: spacing.xs }}>
-        아이마다 따로 정할 수 있어요. 다른 폰에 있는 아이는 알림으로 보내면
-        그 폰에 바로 반영됩니다.
+        고르면 그 폰으로 알림이 갑니다. 아이가 알림을 누르지 않아도 적용돼요.
       </Muted>
-
-      {state.profiles.map((p) => (
-        <View key={p.id} style={s.row}>
-          <Body style={{ fontWeight: '800' }}>
-            {p.avatar} {p.name}
-          </Body>
-          <Row style={{ marginTop: spacing.sm, gap: spacing.sm }}>
-            {ALL.map((sub) => {
-              const on = p.settings.subjects.includes(sub);
-              return (
-                <Pressable
-                  key={sub}
-                  onPress={() => toggleLocal(p.id, p.settings.subjects, sub)}
-                  style={[s.chip, on && s.chipOn]}
-                  accessibilityRole="checkbox"
-                  accessibilityState={{ checked: on }}
-                >
-                  <Text style={[s.chipText, on && s.chipTextOn]}>
-                    {on ? '✓ ' : ''}
-                    {SUBJECT_LABEL[sub]}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </Row>
-        </View>
-      ))}
 
       {remote.map((c) => (
         <View key={c.token} style={s.row}>
-          <Body style={{ fontWeight: '800' }}>{c.name} (다른 폰)</Body>
+          <Body style={{ fontWeight: '800' }}>{c.name}</Body>
           <Row style={{ marginTop: spacing.sm, gap: spacing.sm, flexWrap: 'wrap' }}>
-            <Pressable
-              onPress={() => sendRemote(c.name, c.token, ['en'])}
-              style={s.chip}
-              disabled={busy === c.name}
-              accessibilityRole="button"
-            >
-              <Text style={s.chipText}>영어만</Text>
-            </Pressable>
-            <Pressable
-              onPress={() => sendRemote(c.name, c.token, ['ko'])}
-              style={s.chip}
-              disabled={busy === c.name}
-              accessibilityRole="button"
-            >
-              <Text style={s.chipText}>국어만</Text>
-            </Pressable>
-            <Pressable
-              onPress={() => sendRemote(c.name, c.token, ['en', 'ko'])}
-              style={s.chip}
-              disabled={busy === c.name}
-              accessibilityRole="button"
-            >
-              <Text style={s.chipText}>영어 · 국어</Text>
-            </Pressable>
+            {PRESETS.map((p) => (
+              <Pressable
+                key={p.label}
+                onPress={() => send(c.name, c.token, p.subjects)}
+                style={s.chip}
+                disabled={busy === c.name}
+                accessibilityRole="button"
+              >
+                <Text style={s.chipText}>{p.label}</Text>
+              </Pressable>
+            ))}
           </Row>
         </View>
       ))}
-
-      {state.profiles.length === 0 && remote.length === 0 ? (
-        <Muted style={{ marginTop: spacing.md }}>아직 아이가 없어요.</Muted>
-      ) : null}
 
       {result ? (
         <Body
@@ -146,7 +103,5 @@ const s = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
   },
-  chipOn: { backgroundColor: colors.parent, borderColor: colors.parent },
   chipText: { fontSize: font.small, fontWeight: '700', color: colors.subtext },
-  chipTextOn: { color: '#fff' },
 });

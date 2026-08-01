@@ -15,6 +15,8 @@ import { senseExposure } from '../src/data/entry';
 import { KO_ENTRIES } from '../src/data/korean/levels';
 import { buildRounds, buildSession, SessionItem } from '../src/srs/session';
 import { buildKoRounds, buildKoSession, KoSessionItem } from '../src/srs/koSession';
+import { buildParentQueue } from '../src/srs/parentSession';
+import { DAILY_ENTRIES, dailyTheme } from '../src/data/daily';
 import { soundCorrect, soundWrong, tapCorrect, tapWrong, stopSpeaking } from '../src/lib/feedback';
 import { GAME_LABEL, STAGE_LABEL } from '../src/types';
 import { colors, font, radius, spacing } from '../src/theme';
@@ -62,6 +64,20 @@ export default function Study() {
     if (!profile) return [];
     const { subjects, firstSubject, newPerDay, reviewPerDay, rounds } = profile.settings;
 
+    /*
+     * 부모는 무엇을 공부할지 스스로 골라 둔다. 문제 유형·라운드·복습 간격은
+     * 아이와 똑같으므로 화면은 그대로 쓰고, 큐를 만드는 곳만 갈라진다.
+     * `track` 을 `subject` 로 옮겨 담는다 — 화면은 '영어 문항이냐 국어
+     * 문항이냐'만 알면 되고, 일상 문장도 영어 문항이다.
+     */
+    if (profile.kind === 'parent') {
+      return buildParentQueue({ profile, cards: data.cards, rounds }).map((i) =>
+        i.track === 'ko'
+          ? ({ subject: 'ko', ...i } as QueueItem)
+          : ({ subject: 'en', ...i } as QueueItem),
+      );
+    }
+
     const en: QueueItem[] = [];
     if (subjects.includes('en')) {
       const words = buildSession({
@@ -101,7 +117,22 @@ export default function Study() {
   /** 틀려서 뒤에 다시 넣은 단어. 무한 반복을 막으려고 한 번만 재출제한다. */
   const requeued = useRef(new Set<string>());
 
-  const pool = useMemo(() => (profile ? entriesOf(profile.level) : []), [profile]);
+  /**
+   * 오답 보기를 뽑을 후보.
+   *
+   * 부모가 일상 문장을 켜 두었으면 그 문장들도 후보에 넣는다. 빈칸에 넣을
+   * 보기를 아이들 단어에서만 뽑으면 'on the same page' 자리에 'delicious'
+   * 같은 것이 서고, 문장을 읽지 않아도 답이 보인다.
+   */
+  const pool = useMemo(() => {
+    if (!profile) return [];
+    if (profile.kind !== 'parent') return entriesOf(profile.level);
+    const study = profile.parentStudy;
+    return [
+      ...(study.tracks.includes('daily') ? dailyTheme(study.dailyTheme).entries : []),
+      ...(study.tracks.includes('enWord') ? entriesOf(profile.level) : []),
+    ];
+  }, [profile]);
   const koPool = useMemo(
     () => (profile ? KO_ENTRIES.filter((e) => e.level === profile.koLevel) : []),
     [profile],
@@ -113,7 +144,12 @@ export default function Study() {
    * 세션을 시작한 순간으로 굳힌다. 카드는 문제를 풀 때마다 갱신되는데,
    * 그때마다 다시 계산하면 보기 후보가 문항 중간에 바뀐다.
    */
-  const [learned] = useState(() => ALL_ENTRIES.filter((e) => data.cards[e.id] != null));
+  const [learned] = useState(() =>
+    [...ALL_ENTRIES, ...DAILY_ENTRIES].filter((e) => data.cards[e.id] != null),
+  );
+
+  /** 공부를 그만두거나 마쳤을 때 돌아갈 곳. 사람마다 홈이 다르다. */
+  const homePath = profile?.kind === 'parent' ? '/parent-home' : '/home';
 
   const current = queue[index];
 
@@ -202,7 +238,7 @@ export default function Study() {
             studied: studiedIds.current.size,
             seconds: Math.round((Date.now() - startedAt.current) / 1000),
           });
-          router.replace('/home');
+          router.replace(homePath);
         },
       },
     ]);
@@ -213,7 +249,7 @@ export default function Study() {
       <SafeAreaView style={s.screen}>
         <View style={s.center}>
           <Text style={s.emptyText}>오늘 공부할 단어가 없어요.</Text>
-          <Pressable onPress={() => router.replace('/home')} style={s.backBtn} accessibilityRole="button">
+          <Pressable onPress={() => router.replace(homePath)} style={s.backBtn} accessibilityRole="button">
             <Text style={s.backText}>홈으로</Text>
           </Pressable>
         </View>

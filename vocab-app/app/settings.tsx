@@ -5,6 +5,7 @@ import { useApp } from '../src/store/AppProvider';
 import { SUBJECT_LABEL } from '../src/types';
 import { AvatarPicker, labelOf } from '../src/components/AvatarPicker';
 import { FeedbackCard } from '../src/components/FeedbackCard';
+import { ConnectParentCard } from '../src/components/ConnectParentCard';
 import { APP_NAME, buildInfo, buildLabel } from '../src/features/build-info';
 import { speak, tapCorrect } from '../src/lib/feedback';
 import { colors, font, radius, spacing } from '../src/theme';
@@ -154,56 +155,22 @@ export default function ChildSettings() {
         부모 폰 연결을 아이 설정에 둔다.
 
         지금까지는 부모님 PIN 뒤에만 있어서, 아이 폰에서 연결하려면 부모를
-        불러 PIN 을 받아야 했다. 정작 링크를 붙여넣는 쪽은 아이 폰이다.
+        불러 PIN 을 받아야 했다. 정작 QR 을 띄우는 쪽은 아이 폰이다.
 
         무엇이 나가는지 아이에게 그대로 적어 둔다. 자기 기록이 어디로 가는지
         모르는 채 켜지는 것은, 상대가 부모라도 옳지 않다.
       */}
-      <Card style={{ marginTop: spacing.md }}>
-        <H3>👨‍👩‍👧 부모님 폰에 알려주기</H3>
-        {linkedParent ? (
-          <>
-            <Muted style={{ marginTop: spacing.xs }}>
-              지금 <Text style={{ fontWeight: '700' }}>{linkedParent.label}</Text>에 연결돼 있어요.
-              공부를 마치면 오늘 기록이 자동으로 갑니다.
-            </Muted>
-            <Muted style={{ marginTop: spacing.sm }}>
-              가는 것 — {profile.name} · 날짜 · 오늘 푼 개수 · 정답률 · 오늘 틀린 단어 ·
-              지금 레벨 진도. 그 밖에는 아무것도 보내지 않아요.
-            </Muted>
-          </>
-        ) : (
-          <Muted style={{ marginTop: spacing.xs }}>
-            연결하면 공부를 마칠 때마다 {profile.name}의 오늘 기록(푼 개수 · 정답률 ·
-            틀린 단어 · 레벨 진도)이 부모님 폰으로 갑니다. 부모님 폰에서 받은 연결
-            링크를 여기서 붙여넣으면 돼요.
-          </Muted>
-        )}
-        {linkedParent ? (
-          <Button
-            title="연결 상태 보기"
-            variant="secondary"
-            onPress={() => router.push('/parent-link')}
-            style={{ marginTop: spacing.md }}
-          />
-        ) : (
-          <>
-            {/* QR 을 앞에 둔다. 카톡이 없어도 되고 옮겨 적을 것도 없다. */}
-            <Button
-              title="📷 부모님 폰 QR 찍기"
-              variant="secondary"
-              onPress={() => router.push('/scan')}
-              style={{ marginTop: spacing.md }}
-            />
-            <Button
-              title="QR 말고 코드로 연결하기"
-              variant="ghost"
-              onPress={() => router.push('/parent-link')}
-              style={{ marginTop: spacing.sm }}
-            />
-          </>
-        )}
-      </Card>
+      <ConnectParentCard />
+
+      {/* QR 이 안 될 때를 위한 예전 길. 눈에 덜 띄는 자리에 둔다. */}
+      {linkedParent || profile.linkWaived ? null : (
+        <Button
+          title="QR 말고 코드로 연결하기"
+          variant="ghost"
+          onPress={() => router.push('/parent-link')}
+          style={{ marginTop: spacing.sm }}
+        />
+      )}
 
       {/*
         백업도 아이 설정에 둔다.

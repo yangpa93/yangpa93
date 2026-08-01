@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Body, Button, Card, Chip, CONTENT_MAX_WIDTH, H1, H3, Muted, ProgressBar, Row } from '../src/components/ui';
 import { useApp } from '../src/store/AppProvider';
 import { ALL_ENTRIES } from '../src/data';
+import { DAILY_ENTRIES } from '../src/data/daily';
 import { meaningLine } from '../src/data/entry';
 import { levelProgress } from '../src/srs/progress';
 import { todayKey } from '../src/lib/date';
@@ -32,18 +33,28 @@ export default function Result() {
   }, [scale]);
 
   const day = data.days[todayKey()];
+  /**
+   * 레벨 진도는 아이에게만 뜻이 있다.
+   *
+   * 부모는 학년을 올라가는 것이 아니라 고른 갈래를 도는 것이라, 아이들
+   * 어휘 3,285개에 대고 재면 늘 0에 가깝게 나와 아무 말도 안 해 준다.
+   */
   const progress = useMemo(
-    () => (profile ? levelProgress(ALL_ENTRIES, data.cards, profile.level) : null),
+    () =>
+      profile && profile.kind === 'child'
+        ? levelProgress(ALL_ENTRIES, data.cards, profile.level)
+        : null,
     [profile, data.cards],
   );
 
-  // 방금 세션에서 틀린 단어를 보여준다.
+  // 방금 세션에서 틀린 것을 보여준다. 부모가 푼 일상 문장도 여기 섞인다.
   const missed = useMemo(() => {
     const ids = new Set(day?.wrongEntryIds ?? []);
-    return ALL_ENTRIES.filter((e) => ids.has(e.id)).slice(0, 6);
+    return [...ALL_ENTRIES, ...DAILY_ENTRIES].filter((e) => ids.has(e.id)).slice(0, 6);
   }, [day?.wrongEntryIds]);
 
-  if (!profile || !progress) return null;
+  if (!profile) return null;
+  const homePath = profile.kind === 'parent' ? '/parent-home' : '/home';
 
   const goalMet = day?.completed ?? false;
 
@@ -73,17 +84,19 @@ export default function Result() {
           </Muted>
         </Card>
 
-        <Card style={{ marginTop: spacing.md }}>
-          <Row style={{ justifyContent: 'space-between' }}>
-            <H3>레벨 진도</H3>
-            <Muted>
-              {progress.mastered} / {progress.total}
-            </Muted>
-          </Row>
-          <View style={{ marginTop: spacing.md }}>
-            <ProgressBar value={progress.ratio} color={colors.accent} />
-          </View>
-        </Card>
+        {progress ? (
+          <Card style={{ marginTop: spacing.md }}>
+            <Row style={{ justifyContent: 'space-between' }}>
+              <H3>레벨 진도</H3>
+              <Muted>
+                {progress.mastered} / {progress.total}
+              </Muted>
+            </Row>
+            <View style={{ marginTop: spacing.md }}>
+              <ProgressBar value={progress.ratio} color={colors.accent} />
+            </View>
+          </Card>
+        ) : null}
 
         {missed.length > 0 ? (
           <Card style={{ marginTop: spacing.md }}>
@@ -102,8 +115,8 @@ export default function Result() {
 
         <View style={{ flex: 1 }} />
 
-        <Button title="홈으로" onPress={() => router.replace('/home')} style={{ marginTop: spacing.lg }} />
-        {progress.canTakeExam ? (
+        <Button title="홈으로" onPress={() => router.replace(homePath)} style={{ marginTop: spacing.lg }} />
+        {progress?.canTakeExam ? (
           <Button
             title="🏆 레벨 시험 보기"
             variant="secondary"

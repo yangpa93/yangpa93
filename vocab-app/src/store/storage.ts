@@ -6,8 +6,19 @@
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AppState, LevelId, ProfileData, RewardRequest, Subject } from '../types';
+import {
+  AppState,
+  AwardRates,
+  LevelId,
+  ParentStudy,
+  ParentTrack,
+  ProfileData,
+  ProfileKind,
+  RewardRequest,
+  Subject,
+} from '../types';
 import { awardRates, DEFAULT_AWARD_RATES, levelUpAmount, MIDDLE_LEVEL_AWARD } from '../features/awards';
+import { DAILY_THEME_LIST, DEFAULT_DAILY_THEME } from '../data/daily';
 import { LEGACY_ID_WORD } from './legacy-ids';
 
 const ROOT_KEY = 'urivocab:root:v1';
@@ -21,8 +32,10 @@ const DATA_KEY = (profileId: string) => `urivocab:data:v1:${profileId}`;
  *  3 → 4  보상을 '갖고 싶은 것 적어 보내기'에서 '정해진 금액 요구권'으로
  *  4 → 5  요구권 금액을 부모님이 정할 수 있게(ParentSettings.awards),
  *         아이가 1만원 더 요구할 수 있게(RewardRequest.bonus)
+ *  5 → 6  프로필에 아이/부모 갈래를 두고(Profile.kind) 부모도 공부하게,
+ *         요구권 금액을 아이마다 따로 둘 수 있게(Profile.awards)
  */
-export const STATE_VERSION = 5;
+export const STATE_VERSION = 6;
 
 /** 하루에 새로 만날 단어 수 기본값. 10개면 3,286개를 약 1년에 돈다. */
 export const DEFAULT_NEW_PER_DAY = 10;
@@ -60,6 +73,46 @@ export function emptyState(): AppState {
  * 저장된 값이 깨졌거나 비었으면 영어로 되돌린다. 하나도 안 고른 상태로
  * 두면 낼 문제가 없어 학습 화면이 빈 채로 뜬다.
  */
+/** 부모가 아무것도 안 고른 상태. 학습 정하기 화면에서 채운다. */
+export function emptyParentStudy(): ParentStudy {
+  return { tracks: ['daily'], dailyTheme: DEFAULT_DAILY_THEME, newPerDay: 5 };
+}
+
+/**
+ * 저장된 부모 학습 설정을 온전하게 만든다.
+ *
+ * 주제 id 는 자료 파일이 바뀌면 사라질 수 있다. 없는 주제를 그대로 두면
+ * 공부할 문장이 하나도 없는데 화면에는 '일상 문장'이라고 적혀 있게 된다.
+ */
+export function normalizeParentStudy(v: unknown): ParentStudy {
+  const base = emptyParentStudy();
+  if (!v || typeof v !== 'object') return base;
+  const raw = v as Partial<ParentStudy>;
+
+  const all: ParentTrack[] = ['daily', 'enWord', 'ko'];
+  const tracks = Array.isArray(raw.tracks) ? all.filter((t) => raw.tracks!.includes(t)) : [];
+
+  const known = DAILY_THEME_LIST.some((t) => t.id === raw.dailyTheme);
+
+  return {
+    // 하나도 안 켜져 있으면 그대로 둔다. '공부할 것을 고르세요'가 맞는 화면이고,
+    // 임의로 켜 주면 부모가 고르지 않은 것을 공부하게 된다.
+    tracks,
+    dailyTheme: known ? raw.dailyTheme! : base.dailyTheme,
+    newPerDay: raw.newPerDay === 10 ? 10 : 5,
+  };
+}
+
+/** 저장된 갈래가 깨졌으면 아이로 본다. 예전 저장본에는 아이밖에 없었다. */
+export function normalizeKind(v: unknown): ProfileKind {
+  return v === 'parent' ? 'parent' : 'child';
+}
+
+/** 아이별 금액표. 안 정했으면 null 이고 기기 기본값을 쓴다. */
+function normalizeProfileAwards(v: unknown): AwardRates | null {
+  return v == null || typeof v !== 'object' ? null : awardRates(v as Partial<AwardRates>);
+}
+
 export function normalizeSubjects(v: unknown): Subject[] {
   const all: Subject[] = ['en', 'ko'];
   if (!Array.isArray(v)) return ['en'];
@@ -241,6 +294,11 @@ function migrate(state: AppState): AppState {
     // rounds는 나중에 추가된 설정이라 예전에 저장된 프로필에는 없다.
     profiles: (state.profiles ?? []).map((p) => ({
       ...p,
+      // 갈래는 나중에 생겼다. 그전에 만든 프로필은 전부 아이다.
+      kind: normalizeKind(p.kind),
+      awards: normalizeProfileAwards(p.awards),
+      linkWaived: p.linkWaived === true,
+      parentStudy: normalizeParentStudy(p.parentStudy),
       level: upgradeLevel(p.level),
       pendingLevelUps: (p.pendingLevelUps ?? []).map(upgradeLevel),
       clearedLevels: (p.clearedLevels ?? []).map(upgradeLevel),

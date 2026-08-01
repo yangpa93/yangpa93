@@ -1,26 +1,21 @@
-import { useState } from 'react';
-import { Alert, Pressable, Share, StyleSheet, Switch, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Switch, Text, View } from 'react-native';
 import { router } from 'expo-router';
-import { Button, Card, Chip, H3, Muted, Row, Screen } from '../src/components/ui';
+import { Button, Card, H3, Muted, Row, Screen } from '../src/components/ui';
 import { useApp } from '../src/store/AppProvider';
-import { AwardRates, LEVEL_SHORT, LevelId } from '../src/types';
+import { AwardRates } from '../src/types';
 import { awardRates, formatWon } from '../src/features/awards';
 import { buildInfo, buildLabel } from '../src/features/build-info';
 import { FeedbackCard } from '../src/components/FeedbackCard';
-import { LevelPicker } from '../src/components/LevelPicker';
 import { colors, font, radius, spacing } from '../src/theme';
 import { InviteChildCard } from '../src/components/InviteChildCard';
-import { SubjectPicker } from '../src/components/SubjectPicker';
 
-const NEW_PER_DAY = [5, 8, 10, 15, 20];
-const REVIEW_PER_DAY = [5, 10, 15, 20, 30];
-const ROUNDS = [
-  { value: 2, label: '2회 (가볍게)' },
-  { value: 3, label: '3회 (표준)' },
-  { value: 4, label: '4회 (집중)' },
-];
-
-/** 요구권 금액 항목. 값은 원 단위. */
+/**
+ * 기기 기본 요구권 금액.
+ *
+ * 아이마다 다르게 두는 것은 그 아이의 보고서 화면(child-report)에서 한다.
+ * 여기 있는 값은 **아무것도 정하지 않은 아이에게 적용되는 기본값**이다.
+ * 아이가 하나뿐인 집에서 같은 값을 두 번 정하게 하지 않으려고 남겨 두었다.
+ */
 const AWARD_FIELDS: {
   key: keyof AwardRates;
   label: string;
@@ -29,62 +24,51 @@ const AWARD_FIELDS: {
 }[] = [
   {
     key: 'middleLevel',
-    label: '중학교 레벨 하나를 끝냈을 때',
+    label: '중학교 영어 레벨 하나',
     hint: '중1-1부터 중3-4까지 12개 레벨',
     options: [0, 5_000, 10_000, 20_000, 30_000, 50_000],
   },
   {
     key: 'highLevel',
-    label: '고등학교 레벨 하나를 끝냈을 때',
+    label: '고등학교 영어 레벨 하나',
     hint: '고1-1부터 고3-4까지 12개 레벨. 단어가 어려워 보통 더 높게 둡니다.',
     options: [0, 10_000, 20_000, 30_000, 50_000, 100_000],
   },
   {
     key: 'koreanLevel',
-    label: '국어 레벨 하나를 끝냈을 때',
-    hint: '국어도 24개 레벨. 한 레벨이 60개로 영어(137개)의 절반이 안 돼서 보통 더 낮게 둡니다.',
+    label: '국어 레벨 하나',
+    hint: '한 레벨이 60개로 영어(137개)의 절반이 안 됩니다.',
     options: [0, 5_000, 10_000, 20_000, 30_000],
   },
   {
     key: 'perfectMonth',
     label: '한 달 개근',
-    hint: '그달을 하루도 빠짐없이 학습했을 때. 목표를 채웠는지가 아니라 그날 했는지로 봅니다.',
+    hint: '목표를 채웠는지가 아니라 그날 했는지로 봅니다.',
     options: [0, 5_000, 10_000, 20_000, 30_000, 50_000],
   },
   {
     key: 'bonus',
     label: '아이가 더 요구할 수 있는 금액',
-    hint: '“이번엔 정말 잘했어요”라며 한 칸 올려 요구할 수 있습니다. 승인할 때 기본 금액만 주는 것도 됩니다.',
+    hint: '“이번엔 정말 잘했어요”라며 한 칸 올려 요구할 수 있습니다.',
     options: [0, 5_000, 10_000, 20_000],
   },
 ];
 
+/**
+ * 부모 설정.
+ *
+ * **아이별 설정은 여기 없다.** 하루 분량 · 과목 · 레벨 · 요구권 금액은 그 아이의
+ * 보고서 화면으로 옮겼다. 리포트를 보고 나서 바로 고칠 수 있어야 하는 것들이고,
+ * 아이마다 다를 수 있는데 여기 두면 기기에 하나뿐인 값처럼 보인다.
+ *
+ * 여기 남은 것은 **기기 전체에 하나뿐인 것들**이다 — 알림 시각, 아이 기기 연결,
+ * PIN, 백업.
+ */
 export default function ParentSettings() {
-  const { state, updateParent, updateSettings, updateProfile, deleteProfile } = useApp();
-  const [selectedId, setSelectedId] = useState(state.activeProfileId ?? state.profiles[0]?.id ?? null);
-
-  const profile = state.profiles.find((p) => p.id === selectedId) ?? null;
+  const { state, updateParent } = useApp();
   const rates = awardRates(state.parent.awards);
   const build = buildInfo();
-
-  function confirmDelete() {
-    if (!profile) return;
-    Alert.alert(
-      `${profile.name} 프로필을 지울까요?`,
-      '학습 기록과 오답 노트가 모두 사라지고 되돌릴 수 없어요.',
-      [
-        { text: '취소', style: 'cancel' },
-        {
-          text: '삭제',
-          style: 'destructive',
-          onPress: async () => {
-            await deleteProfile(profile.id);
-            router.replace('/');
-          },
-        },
-      ],
-    );
-  }
+  const childCount = state.profiles.filter((p) => p.kind === 'child').length;
 
   return (
     <Screen>
@@ -130,12 +114,44 @@ export default function ParentSettings() {
         </Row>
       </Card>
 
-      {/* 요구권 금액 — 기기 전체에 하나. 아이별로 다르게 두지 않는다. */}
+      {/* 아이 기기 연결 — 이제 아이가 QR 을 띄우고 부모가 찍는다 */}
+      <Card style={{ marginTop: spacing.md, borderColor: colors.parent }}>
+        <H3>🔗 아이 기기와 연결하기</H3>
+        <Muted style={{ marginTop: spacing.xs }}>
+          아이 폰에서 ⚙️ 설정 → 부모님과 연결하기 → 내 QR 띄우기 를 누르게 하고,
+          이 폰으로 그 QR 을 찍으세요. 찍는 순간 아이가 등록되고, 이 폰 주소가
+          아이에게 되돌아갑니다. 아이는 더 누를 것이 없어요.
+        </Muted>
+        <Button
+          title="📷 아이 QR 찍기"
+          variant="parent"
+          onPress={() => router.push('/scan')}
+          style={{ marginTop: spacing.md }}
+        />
+        {childCount > 0 ? (
+          <Button
+            title="아이별 설정 보기"
+            variant="secondary"
+            onPress={() => router.push('/parent-children')}
+            style={{ marginTop: spacing.sm }}
+          />
+        ) : null}
+      </Card>
+
+      {/*
+        예전 길. 부모가 QR 을 띄우고 아이가 찍는다.
+        아이 폰 카메라가 안 되는 경우가 있어 남겨 둔다.
+      */}
+      <InviteChildCard />
+
+      {/* 기본 요구권 금액 */}
       <Card style={{ marginTop: spacing.md }}>
-        <H3>요구권 금액</H3>
+        <H3>기본 요구권 금액</H3>
         <Muted style={{ marginTop: spacing.xs }}>
           아이가 레벨 시험에 통과하거나 한 달을 개근하면 금액이 정해진 요구권이
           생깁니다. 매번 흥정하지 않도록 조건별 금액을 미리 정해 두는 것입니다.
+          {'\n'}여기 값은 아이별로 따로 정하지 않은 아이에게 적용됩니다.
+          아이마다 다르게 두려면 그 아이의 보고서 화면에서 정하세요.
           {'\n'}0원으로 두면 그 요구권은 아예 생기지 않습니다.
         </Muted>
 
@@ -171,22 +187,8 @@ export default function ParentSettings() {
         </View>
       </Card>
 
-      {/*
-        연결 카드는 **한 번에 하나만** 보인다.
-
-        예전에는 '부모님 폰 연결하기'(이 폰의 기록을 남에게 보낸다)와
-        '아이 기기와 연결하기'(남의 기록을 이 폰이 받는다)가 나란히 있었다.
-        방향이 정반대인 두 가지가 같은 화면에 있으니, 부모님 폰에서 자기
-        폰을 또 연결하라는 말처럼 읽혔다.
-
-        이 폰이 무엇인지 이미 정해졌으면 그쪽만 보여준다.
-         · 아이들 리포트를 받고 있다  → 부모님 폰이다
-         · 부모님 폰에 연결돼 있다    → 아이 폰이다
-        아직 아무것도 아니면 무엇을 고를지 묻는다.
-      */}
-      {state.receivesReports ? (
-        <InviteChildCard />
-      ) : state.parentLink ? (
+      {/* 아이 폰일 때만 뜻이 있는 스위치 */}
+      {state.parentLink ? (
         <Card style={{ marginTop: spacing.md }}>
           <H3>부모님 폰으로 알림 받기</H3>
           <Muted style={{ marginTop: spacing.xs }}>
@@ -207,213 +209,38 @@ export default function ParentSettings() {
             style={{ marginTop: spacing.md }}
           />
         </Card>
-      ) : (
-        <>
-          <Card style={{ marginTop: spacing.md, backgroundColor: colors.bg }}>
-            <H3>이 폰은 어느 쪽인가요?</H3>
-            <Muted style={{ marginTop: spacing.xs }}>
-              부모님 폰이면 아래에서 아이에게 연결 요청을 보내세요.{'\n'}
-              아이 폰이면 부모님이 보낸 링크를 누르면 됩니다.
-            </Muted>
-          </Card>
-          <InviteChildCard />
-        </>
-      )}
-
-      {/* 무엇을 공부할지 — 이 폰의 아이도, 다른 폰의 아이도 */}
-      <SubjectPicker />
-
-      {/* 아이 선택 */}
-      {state.profiles.length > 1 ? (
-        <Row style={{ gap: spacing.sm, marginTop: spacing.lg, flexWrap: 'wrap' }}>
-          {state.profiles.map((p) => (
-            <Pressable
-              key={p.id}
-              onPress={() => setSelectedId(p.id)}
-              style={[s.chip, selectedId === p.id && s.chipOn]}
-              accessibilityRole="button"
-            >
-              <Text style={[s.chipText, selectedId === p.id && s.chipTextOn]}>
-                {p.avatar} {p.name}
-              </Text>
-            </Pressable>
-          ))}
-        </Row>
       ) : null}
 
-      {profile ? (
-        <>
-          <Card style={{ marginTop: spacing.md }}>
-            <H3>{profile.name} 학습 설정</H3>
+      <Card style={{ marginTop: spacing.md }}>
+        <H3>학습 기록 백업</H3>
+        <Muted style={{ marginTop: spacing.xs }}>
+          기록은 이 기기 안에만 있습니다. 폰을 바꾸거나 앱을 지우면 사라지니
+          한 달에 한 번쯤 파일로 빼 두세요. 새 폰에서 그대로 되살릴 수 있습니다.
+        </Muted>
+        <Button
+          title="내보내기 · 가져오기"
+          variant="parent"
+          onPress={() => router.push('/backup')}
+          style={{ marginTop: spacing.md }}
+        />
+      </Card>
 
-            <Text style={[s.label, { marginTop: spacing.lg }]}>하루 새 단어 수</Text>
-            <Muted style={{ marginTop: spacing.xs }}>
-              진도를 정하는 값입니다. 하루 {profile.settings.newPerDay}개면 전체 3,286개를
-              도는 데 약 {Math.round(3286 / profile.settings.newPerDay / 30)}개월 걸립니다.
-              {'\n'}이 값은 아이도 ⚙️ 설정에서 바꿉니다. 스스로 정한 속도라야 앞당겼을 때
-              그것이 자기 성과가 되기 때문입니다. 무리한 값을 골랐을 때만 여기서
-              되돌려 주세요.
-            </Muted>
-            <Row style={{ gap: spacing.sm, marginTop: spacing.sm, flexWrap: 'wrap' }}>
-              {NEW_PER_DAY.map((g) => (
-                <Pressable
-                  key={g}
-                  onPress={() => updateSettings(profile.id, { newPerDay: g })}
-                  style={[s.chip, profile.settings.newPerDay === g && s.chipOn]}
-                  accessibilityRole="button"
-                >
-                  <Text style={[s.chipText, profile.settings.newPerDay === g && s.chipTextOn]}>
-                    {g}개
-                  </Text>
-                </Pressable>
-              ))}
-            </Row>
+      <Card style={{ marginTop: spacing.md }}>
+        <H3>PIN</H3>
+        <Button
+          title="PIN 다시 설정하기"
+          variant="secondary"
+          onPress={() => {
+            updateParent({ pin: null });
+            router.replace('/parent');
+          }}
+          style={{ marginTop: spacing.md }}
+        />
+      </Card>
 
-            <Text style={[s.label, { marginTop: spacing.lg }]}>학습 강도</Text>
-            <Muted style={{ marginTop: spacing.xs }}>
-              한 단어를 한 번에 몇 번 만날지 정합니다. 3회면 문장 속에서 알아보기 →
-              뜻 구별하기 → 직접 쓰기를 모두 거칩니다. 하루{' '}
-              {profile.settings.newPerDay + profile.settings.reviewPerDay}단어 ×{' '}
-              {profile.settings.rounds}회 ={' '}
-              {(profile.settings.newPerDay + profile.settings.reviewPerDay) * profile.settings.rounds}문제,
-              약{' '}
-              {Math.round(
-                ((profile.settings.newPerDay + profile.settings.reviewPerDay) *
-                  profile.settings.rounds *
-                  10) /
-                  60,
-              )}
-              분 걸립니다.
-            </Muted>
-            <Row style={{ gap: spacing.sm, marginTop: spacing.sm, flexWrap: 'wrap' }}>
-              {ROUNDS.map((r) => (
-                <Pressable
-                  key={r.value}
-                  onPress={() => updateSettings(profile.id, { rounds: r.value })}
-                  style={[s.chip, profile.settings.rounds === r.value && s.chipOn]}
-                  accessibilityRole="button"
-                >
-                  <Text style={[s.chipText, profile.settings.rounds === r.value && s.chipTextOn]}>
-                    {r.label}
-                  </Text>
-                </Pressable>
-              ))}
-            </Row>
+      <FeedbackCard />
 
-            <Text style={[s.label, { marginTop: spacing.lg }]}>하루 복습 단어 수</Text>
-            <Muted style={{ marginTop: spacing.xs }}>
-              새 단어 위에 얹히는 복습의 상한입니다. 복습이 밀리면 오래 밀린 것과
-              많이 틀린 것부터 채웁니다. 늘리면 덜 잊지만 하루가 길어집니다.
-            </Muted>
-            <Row style={{ gap: spacing.sm, marginTop: spacing.sm, flexWrap: 'wrap' }}>
-              {REVIEW_PER_DAY.map((r) => (
-                <Pressable
-                  key={r}
-                  onPress={() => updateSettings(profile.id, { reviewPerDay: r })}
-                  style={[s.chip, profile.settings.reviewPerDay === r && s.chipOn]}
-                  accessibilityRole="button"
-                >
-                  <Text style={[s.chipText, profile.settings.reviewPerDay === r && s.chipTextOn]}>
-                    {r}개
-                  </Text>
-                </Pressable>
-              ))}
-            </Row>
-
-            <Row style={{ justifyContent: 'space-between', marginTop: spacing.lg }}>
-              <View style={{ flex: 1, paddingRight: spacing.md }}>
-                <Text style={s.label}>‘해석 보기’ 버튼</Text>
-                <Muted style={{ marginTop: 2 }}>
-                  빈칸 문제에서 아이가 막힐 때 눌러서 한국어 해석을 볼 수 있게 합니다.
-                  처음부터 보여주지는 않습니다 — 해석이 먼저 보이면 영어 문장을 읽지
-                  않고 답을 고르기 때문입니다. 끄면 문제를 푼 뒤에만 해석이 나옵니다.
-                </Muted>
-              </View>
-              <Switch
-                value={profile.settings.showTranslation}
-                onValueChange={(v) => updateSettings(profile.id, { showTranslation: v })}
-                trackColor={{ true: colors.parent }}
-              />
-            </Row>
-
-            {/*
-              소리·진동·캐릭터는 아이 홈 화면(⚙️ 설정)으로 옮겼다.
-              아이 취향이고 잘못 눌러도 학습에 영향이 없는데 PIN 뒤에 두면
-              소리를 끄고 싶을 때마다 부모를 불러야 해서 그냥 참고 쓴다.
-              여기 남은 것은 진도와 돈이 걸린 설정들이다.
-            */}
-            <View style={s.movedNote}>
-              <Muted>
-                소리로 읽어주기 · 진동 피드백 · 캐릭터는 아이 홈 화면의 ⚙️ 설정에서
-                아이가 직접 바꿉니다.
-              </Muted>
-            </View>
-          </Card>
-
-          <Card style={{ marginTop: spacing.md }}>
-            <H3>학년·레벨 조정</H3>
-            <Muted style={{ marginTop: spacing.xs }}>
-              보통은 레벨 시험에 통과하면 자동으로 올라갑니다. 수동으로 바꾸면 그 레벨 단어부터 다시 시작해요.
-            </Muted>
-            <View style={{ marginTop: spacing.md }}>
-              <LevelPicker
-                value={profile.level}
-                onChange={(l: LevelId) => updateProfile(profile.id, { level: l })}
-                tone="parent"
-              />
-            </View>
-            {profile.clearedLevels.length > 0 ? (
-              <Row style={{ gap: spacing.sm, marginTop: spacing.md, flexWrap: 'wrap' }}>
-                <Muted>완료: </Muted>
-                {profile.clearedLevels.map((l) => (
-                  <Chip key={l} label={LEVEL_SHORT[l]} tone="correct" />
-                ))}
-              </Row>
-            ) : null}
-          </Card>
-
-
-          <Card style={{ marginTop: spacing.md }}>
-            <H3>학습 기록 백업</H3>
-            <Muted style={{ marginTop: spacing.xs }}>
-              기록은 이 기기 안에만 있습니다. 폰을 바꾸거나 앱을 지우면 사라지니
-              한 달에 한 번쯤 파일로 빼 두세요. 새 폰에서 그대로 되살릴 수 있습니다.
-            </Muted>
-            <Button
-              title="내보내기 · 가져오기"
-              variant="parent"
-              onPress={() => router.push('/backup')}
-              style={{ marginTop: spacing.md }}
-            />
-          </Card>
-
-          <Card style={{ marginTop: spacing.md }}>
-            <H3>PIN</H3>
-            <Button
-              title="PIN 다시 설정하기"
-              variant="secondary"
-              onPress={() => {
-                updateParent({ pin: null });
-                router.replace('/parent');
-              }}
-              style={{ marginTop: spacing.md }}
-            />
-          </Card>
-
-          <FeedbackCard />
-
-          <Button
-            title={`${profile.name} 프로필 삭제`}
-            variant="danger"
-            onPress={confirmDelete}
-            style={{ marginTop: spacing.lg }}
-          />
-
-          <Muted style={{ marginTop: spacing.xl, textAlign: 'center' }}>
-            {buildLabel(build)}
-          </Muted>
-        </>
-      ) : null}
+      <Muted style={{ marginTop: spacing.xl, textAlign: 'center' }}>{buildLabel(build)}</Muted>
     </Screen>
   );
 }
@@ -427,12 +254,6 @@ const s = StyleSheet.create({
     backgroundColor: colors.bg,
     borderWidth: 1,
     borderColor: colors.border,
-  },
-  movedNote: {
-    marginTop: spacing.lg,
-    padding: spacing.md,
-    borderRadius: radius.md,
-    backgroundColor: colors.bg,
   },
   awardSummary: {
     marginTop: spacing.lg,

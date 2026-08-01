@@ -16,6 +16,7 @@ import { useApp } from '../store/AppProvider';
 import {
   parseHello,
   parseIncoming,
+  parseLinkBack,
   parseNudge,
   parseSettings,
   scheduleMissingReportAlert,
@@ -23,7 +24,7 @@ import {
 import { todayKey } from '../lib/date';
 
 export function PushBridge() {
-  const { ready, state, addReceivedReport, rememberChild, updateSettings } = useApp();
+  const { ready, state, addReceivedReport, rememberChild, updateSettings, linkParent } = useApp();
 
   /**
    * 리포트를 받는 기기인가.
@@ -93,6 +94,25 @@ export function PushBridge() {
     if (!ready) return;
 
     const apply = (data: unknown) => {
+      /*
+       * 부모가 아이 QR 을 찍고 자기 주소를 되보낸 것.
+       *
+       * 알림을 **누르지 않아도** 받아 둔다. 아이가 알림을 지나쳐 버리면
+       * 연결이 반만 된 채로 남고, 그러면 리포트가 영영 안 간다.
+       * 이미 다른 폰에 연결돼 있으면 나중 것으로 덮는다 — 방금 찍은 쪽이
+       * 지금 부모가 쓰는 폰이다.
+       */
+      const back = parseLinkBack(data);
+      if (back) {
+        linkParent({
+          token: back.parentToken,
+          label: back.parentLabel,
+          linkedAt: Date.now(),
+          lastSentDate: null,
+        });
+        return;
+      }
+
       const s = parseSettings(data);
       if (!s) return;
       const active = state.activeProfileId;
@@ -110,7 +130,7 @@ export function PushBridge() {
       received.remove();
       responded.remove();
     };
-  }, [ready, state.activeProfileId, updateSettings]);
+  }, [ready, state.activeProfileId, updateSettings, linkParent]);
 
   /**
    * 아이 쪽 — 부모가 보낸 "공부하자" 알림을 눌렀을 때.

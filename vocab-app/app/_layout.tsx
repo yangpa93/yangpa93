@@ -43,6 +43,11 @@ export default function RootLayout() {
             <Stack.Screen name="levelup" options={{ headerShown: false }} />
             <Stack.Screen name="exam" options={{ headerShown: false, gestureEnabled: false }} />
             <Stack.Screen name="parent" options={{ title: '부모님 모드' }} />
+            <Stack.Screen name="parent-home" options={{ headerShown: false }} />
+            <Stack.Screen name="parent-plan" options={{ title: '무엇을 공부할까요' }} />
+            <Stack.Screen name="parent-record" options={{ title: '내 학습 기록' }} />
+            <Stack.Screen name="parent-children" options={{ title: '아이들 학습 보고서' }} />
+            <Stack.Screen name="child-report" options={{ title: '아이 보고서와 설정' }} />
             <Stack.Screen name="parent-dashboard" options={{ title: '학습 리포트' }} />
             <Stack.Screen name="parent-rewards" options={{ title: '보상 요청' }} />
             <Stack.Screen name="parent-settings" options={{ title: '설정' }} />

@@ -30,6 +30,7 @@ function profile(over: Partial<Profile> = {}): Profile {
   return {
     id: 'p1',
     name: '아이',
+    kind: 'child',
     avatar: '🐻',
     level: 'm1-1',
     koLevel: 'm1-2',
@@ -52,6 +53,9 @@ function profile(over: Partial<Profile> = {}): Profile {
     clearedLevels: [],
     koClearedLevels: [],
     claimedMonths: [],
+    awards: null,
+    linkWaived: false,
+    parentStudy: { tracks: ['daily'], dailyTheme: 'w', newPerDay: 5 },
     ...over,
   };
 }

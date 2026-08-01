@@ -20,6 +20,7 @@ import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 import {
   buildHelloBody,
+  buildLinkBackBody,
   buildNudgeBody,
   buildPushBody,
   buildSettingsBody,
@@ -33,9 +34,12 @@ import {
 // 순수 로직은 pairing.ts에 있다. 호출부가 한 곳만 보면 되도록 다시 내보낸다.
 export {
   buildLinkUrl,
+  buildChildLinkUrl,
   buildNudgeBody,
   isValidPushToken,
   parseLinkUrl,
+  parseChildLinkUrl,
+  parseLinkBack,
   toShortCode,
   fromShortCode,
   shortCodeError,
@@ -48,7 +52,14 @@ export {
   parseIncoming,
   toPayload,
 } from './pairing';
-export type { HelloPayload, NudgePayload, PushPayload, SettingsPayload } from './pairing';
+export type {
+  ChildLink,
+  HelloPayload,
+  LinkBackPayload,
+  NudgePayload,
+  PushPayload,
+  SettingsPayload,
+} from './pairing';
 
 /**
  * 이 기기의 Expo 푸시 토큰을 발급받는다. 부모 기기에서만 쓴다.
@@ -113,6 +124,21 @@ export async function sendHelloToParent(
   childToken: string,
 ): Promise<SendResult> {
   return sendPush(buildHelloBody(parentToken, { childName, childToken }));
+}
+
+/**
+ * 부모가 아이 QR 을 찍은 직후, 자기 주소를 아이에게 되보낸다.
+ *
+ * 이게 없으면 연결이 반만 된다 — 부모는 아이를 알지만 아이는 리포트를
+ * 어디로 보낼지 모른다. 아이 쪽에서 아무것도 누르지 않아도 되도록,
+ * 아이 앱은 알림을 누르지 않아도 이 값을 받아 적용한다.
+ */
+export async function sendLinkBackToChild(
+  childToken: string,
+  parentToken: string,
+  parentLabel: string,
+): Promise<SendResult> {
+  return sendPush(buildLinkBackBody(childToken, { parentToken, parentLabel }));
 }
 
 /**

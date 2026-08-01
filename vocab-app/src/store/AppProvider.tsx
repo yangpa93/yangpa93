@@ -23,8 +23,10 @@ import {
   ExamResult,
   LevelId,
   ParentLink,
+  ParentStudy,
   Profile,
   ProfileData,
+  ProfileKind,
   ProfileSettings,
   ParentSettings,
   ReceivedReport,
@@ -32,13 +34,15 @@ import {
   RewardStatus,
 } from '../types';
 import { ALL_ENTRIES, entriesOf } from '../data';
-import { Award, awardRates, buildRewardRequest, claimAward } from '../features/awards';
+import { Award, buildRewardRequest, claimAward, ratesOf } from '../features/awards';
 import { plannedWordCount } from '../srs/session';
+import { parentPlannedCount } from '../srs/parentSession';
 import { buildDailyReport, buildWeeklySummary } from '../features/report';
 import { SendResult, sendReportToParent, toPayload } from '../features/push';
 import {
   DEFAULT_NEW_PER_DAY,
   DEFAULT_REVIEW_PER_DAY,
+  emptyParentStudy,
   emptyProfileData,
   emptyState,
   loadProfileData,
@@ -59,7 +63,16 @@ interface Ctx {
   /** 현재 프로필의 학습 데이터 */
   data: ProfileData;
 
-  addProfile(name: string, avatar: string, level: LevelId): Promise<Profile>;
+  /**
+   * 프로필 하나를 만든다.
+   *
+   * `kind` 로 아이와 부모가 갈린다. 부모 프로필은 학년이 뜻이 없지만
+   * 레벨 칸은 그대로 둔다 — 부모가 '아이들과 같은 단어'를 고르면 그때
+   * 이 값을 쓴다.
+   */
+  addProfile(name: string, avatar: string, level: LevelId, kind?: ProfileKind): Promise<Profile>;
+  /** 부모 프로필의 학습 설정을 바꾼다. */
+  updateParentStudy(id: string, patch: Partial<ParentStudy>): void;
   selectProfile(id: string): Promise<void>;
   updateProfile(id: string, patch: Partial<Profile>): void;
   updateSettings(id: string, patch: Partial<ProfileSettings>): void;
@@ -199,10 +212,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   /* ---------------------------------------------------------------- */
 
   const addProfile = useCallback(
-    async (name: string, avatar: string, level: LevelId) => {
+    async (name: string, avatar: string, level: LevelId, kind: ProfileKind = 'child') => {
       const p: Profile = {
         id: `p_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`,
         name,
+        kind,
         avatar,
         level,
         // 국어는 늘 처음부터. 영어 레벨을 중2로 잡아도 국어는 별개다.
@@ -227,6 +241,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         clearedLevels: [],
         koClearedLevels: [],
         claimedMonths: [],
+        // 금액표는 기기 기본값을 그대로 쓴다. 아이별로 다르게 두고 싶을 때만
+        // 아이별 보고서 화면에서 채운다.
+        awards: null,
+        linkWaived: false,
+        parentStudy: emptyParentStudy(),
       };
       const state: AppState = {
         ...ref.current.state,
@@ -267,6 +286,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         ...ref.current.state,
         profiles: ref.current.state.profiles.map((p) =>
           p.id === id ? { ...p, settings: { ...p.settings, ...patch } } : p,
+        ),
+      });
+    },
+    [persistState],
+  );
+
+  const updateParentStudy = useCallback(
+    (id: string, patch: Partial<ParentStudy>) => {
+      persistState({
+        ...ref.current.state,
+        profiles: ref.current.state.profiles.map((p) =>
+          p.id === id ? { ...p, parentStudy: { ...p.parentStudy, ...patch } } : p,
         ),
       });
     },
@@ -416,8 +447,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       // 부모님 폰이 연결돼 있으면 방금 끝낸 결과를 바로 쏜다.
       // 실패해도 아이 화면을 막지 않는다 — 조용히 넘어가고
       // 부모 모드의 '마지막 전송' 표시로만 드러난다.
+      // 부모 자신의 공부는 보내지 않는다. 리포트는 "아이가 오늘 했는가"를
+      // 알리는 것인데, 부모가 자기 폰으로 자기 기록을 받아 봐야 소용이 없다.
       const link = ref.current.state.parentLink;
-      if (link && state.parent.pushToParent) {
+      if (link && state.parent.pushToParent && active.kind === 'child') {
         const report = buildDailyReport(updated, nextData, ALL_ENTRIES, today);
         // 아이 기기 주소를 같이 싣는다. 부모가 "공부하자"고 되보내려면 필요하다.
         void sendReportToParent(
@@ -551,7 +584,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       profileId: target.id,
       award,
       now: Date.now(),
-      bonusCap: awardRates(state.parent.awards).bonus,
+      // 얹을 수 있는 한 칸도 아이마다 다를 수 있다.
+      bonusCap: ratesOf(target, state.parent.awards).bonus,
       ...opts,
     });
 
@@ -703,6 +737,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     selectProfile,
     updateProfile,
     updateSettings,
+    updateParentStudy,
     deleteProfile,
     recordAnswer,
     finishSession,
@@ -737,6 +772,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 function profileGoal(state: AppState, data: ProfileData): number {
   const p = state.profiles.find((x) => x.id === state.activeProfileId);
   if (!p) return DEFAULT_NEW_PER_DAY + DEFAULT_REVIEW_PER_DAY;
+  // 부모는 갈래를 골라 공부하므로 세는 법이 다르다.
+  if (p.kind === 'parent') return parentPlannedCount({ profile: p, cards: data.cards });
   return plannedWordCount({
     entries: entriesOf(p.level),
     cards: data.cards,

@@ -19,6 +19,9 @@ export default function Profiles() {
     (async () => {
       const out: Record<string, number> = {};
       for (const p of state.profiles) {
+        // 부모는 학년 진도라는 것이 없다. 무엇을 공부할지 스스로 골라
+        // 도는 것이라 막대를 그리지 않는다.
+        if (p.kind === 'parent') continue;
         const d = p.id === state.activeProfileId ? data : await loadProfileData(p.id);
         out[p.id] = levelProgress(ALL_ENTRIES, d.cards, p.level).ratio;
       }
@@ -31,7 +34,10 @@ export default function Profiles() {
 
   async function pick(id: string) {
     await selectProfile(id);
-    router.replace('/home');
+    // 사람마다 화면이 다르다. 부모를 아이 홈으로 보내면 자기 것이 아닌
+    // 오늘의 학습과 요구권이 뜬다.
+    const picked = state.profiles.find((p) => p.id === id);
+    router.replace(picked?.kind === 'parent' ? '/parent-home' : '/home');
   }
 
   return (
@@ -50,11 +56,13 @@ export default function Profiles() {
                       {active ? <Text style={s.badge}>학습 중</Text> : null}
                     </Row>
                     <Muted>
-                      {LEVEL_SHORT[p.level]} · 🔥 {p.streak}일 연속
+                      {p.kind === 'parent' ? '부모님' : LEVEL_SHORT[p.level]} · 🔥 {p.streak}일 연속
                     </Muted>
-                    <View style={{ marginTop: spacing.sm }}>
-                      <ProgressBar value={ratios[p.id] ?? 0} height={6} color={colors.accent} />
-                    </View>
+                    {p.kind === 'parent' ? null : (
+                      <View style={{ marginTop: spacing.sm }}>
+                        <ProgressBar value={ratios[p.id] ?? 0} height={6} color={colors.accent} />
+                      </View>
+                    )}
                   </View>
                 </Row>
               </Card>
@@ -64,7 +72,7 @@ export default function Profiles() {
       </View>
 
       <Button
-        title="+ 아이 추가하기"
+        title="+ 프로필 추가하기"
         variant="secondary"
         onPress={() => router.push('/onboarding')}
         style={{ marginTop: spacing.lg }}

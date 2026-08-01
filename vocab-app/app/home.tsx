@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { router, useFocusEffect } from 'expo-router';
+import { Redirect, router, useFocusEffect } from 'expo-router';
 import { useCallback } from 'react';
 import { Body, Button, Card, Chip, H1, H2, H3, Muted, ProgressBar, Row, Screen } from '../src/components/ui';
 import { WelcomeHome } from '../src/components/WelcomeHome';
@@ -14,10 +14,10 @@ import { buildDailyReport } from '../src/features/report';
 import { buildMonth, monthOf } from '../src/features/calendar';
 import {
   availableAwards,
-  awardRates,
   formatWon,
   levelUpAmount,
   perfectMonthProgress,
+  ratesOf,
 } from '../src/features/awards';
 import { buildInfo, buildLabel } from '../src/features/build-info';
 import { scheduleDailyReport } from '../src/features/notifications';
@@ -115,10 +115,13 @@ export default function Home() {
 
   // 아이가 아직 없으면 시작 화면을 띄운다. 부모님 설정은 거기서도 들어간다.
   if (!profile) return <WelcomeHome />;
+  // 부모 프로필로 여기 들어오면(뒤로 가기 등) 자기 것이 아닌 화면을 보게 된다.
+  if (profile.kind === 'parent') return <Redirect href="/parent-home" />;
   if (!progress) return null;
 
   const myRewards = state.rewards.filter((r) => r.profileId === profile.id);
-  const rates = awardRates(state.parent.awards);
+  // 금액표는 아이마다 다를 수 있다. 안 정한 아이는 기기 기본값을 쓴다.
+  const rates = ratesOf(profile, state.parent.awards);
   const build = buildInfo();
   const awards = availableAwards(profile, data, today, rates);
   const perfect = perfectMonthProgress(data.days, today);
@@ -280,6 +283,28 @@ export default function Home() {
             </>
           ) : null}
         </Card>
+      ) : null}
+
+      {/*
+        아직 부모님과 안 이어졌으면 홈에서 한 번 짚어 준다.
+
+        설정 안에만 두었더니 아이가 그 화면까지 들어가지 않아 연결이 미뤄졌다.
+        부모님이 안 쓰기로 한 집에서는(linkWaived) 뜨지 않는다 — 못 한 일이
+        남아 있는 것처럼 보이면 안 된다.
+      */}
+      {!state.parentLink && !profile.linkWaived ? (
+        <Pressable onPress={() => router.push('/settings')} accessibilityRole="button">
+          <Card style={{ marginTop: spacing.md, borderColor: colors.parent }}>
+            <Row style={{ justifyContent: 'space-between' }}>
+              <H3>👨‍👩‍👧 부모님과 연결하기</H3>
+              <Text style={s.more}>보기 →</Text>
+            </Row>
+            <Muted style={{ marginTop: spacing.sm }}>
+              내 QR 을 띄우고 부모님이 찍으면 끝이에요. 공부를 마칠 때마다 오늘 기록이
+              부모님 폰으로 갑니다.
+            </Muted>
+          </Card>
+        </Pressable>
       ) : null}
 
       {/* 바로가기 */}

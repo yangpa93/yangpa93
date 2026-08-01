@@ -1,5 +1,5 @@
 /**
- * 중학교 1학년 레벨 4 — 수록 137 / 계획 137개.
+ * 중학교 1학년 레벨 4 — 수록 154 / 계획 137개.
  *
  * 난이도 층: 기초(초등 권장)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -9,6 +9,125 @@
 import { defineLevel } from '../define';
 
 export const M1_4 = defineLevel('m1-4', [
+  { w: 'cheer up', p: 'phr.', s: [
+    { m: '기운을 내다, 격려하다', syn: [], ex: [
+      ['Cheer up, tomorrow is another day.', '기운 내, 내일이 있잖아.'],
+      ['Her letter cheered me up.', '그녀의 편지가 나를 기운 나게 했다.'],
+      ['We tried to cheer up the losing team.', '우리는 지고 있는 팀을 격려하려 했다.'],
+    ]},
+  ]},
+  { w: 'clean up', p: 'phr.', s: [
+    { m: '깨끗이 치우다', syn: [], ex: [
+      ['Please clean up your room.', '방을 좀 치워라.'],
+      ['They cleaned up after the party.', '그들은 파티가 끝난 뒤 치웠다.'],
+      ['Volunteers cleaned up the beach.', '자원봉사자들이 해변을 치웠다.'],
+    ]},
+  ]},
+  { w: 'come back', p: 'phr.', s: [
+    { m: '돌아오다', syn: ['return'], ex: [
+      ['He came back late at night.', '그는 밤늦게 돌아왔다.'],
+      ['Please come back soon.', '곧 돌아와 주세요.'],
+      ['The birds come back every spring.', '그 새들은 봄마다 돌아온다.'],
+    ]},
+  ]},
+  { w: 'come in', p: 'phr.', s: [
+    { m: '들어오다', syn: ['enter'], ex: [
+      ['Please come in and sit down.', '들어와서 앉으세요.'],
+      ['A cold wind came in through the window.', '찬 바람이 창문으로 들어왔다.'],
+      ['She knocked and came in.', '그녀는 노크하고 들어왔다.'],
+    ]},
+  ]},
+  { w: 'come out', p: 'phr.', s: [
+    { m: '나오다; (책·영화가) 나오다', syn: ['appear'], ex: [
+      ['The sun came out after the rain.', '비가 그친 뒤 해가 나왔다.'],
+      ['His new book comes out next month.', '그의 새 책이 다음 달에 나온다.'],
+      ['She came out of the room quietly.', '그녀는 조용히 방에서 나왔다.'],
+    ]},
+  ]},
+  { w: 'come over', p: 'phr.', s: [
+    { m: '(집에) 들르다, 건너오다', syn: [], ex: [
+      ['Come over for dinner tonight.', '오늘 저녁 식사하러 들러.'],
+      ['He came over to say hello.', '그는 인사하러 건너왔다.'],
+      ['Can I come over after school?', '방과 후에 놀러 가도 될까?'],
+    ]},
+  ]},
+  { w: 'come true', p: 'phr.', s: [
+    { m: '실현되다, 이루어지다', syn: [], ex: [
+      ['Her dream finally came true.', '그녀의 꿈이 마침내 이루어졌다.'],
+      ['I hope your wish comes true.', '네 소원이 이루어지길 바라.'],
+      ['The prediction came true.', '그 예측은 사실이 되었다.'],
+    ]},
+  ]},
+  { w: 'count on', p: 'phr.', s: [
+    { m: '~을 믿다, 의지하다', syn: ['rely on', 'depend on'], ex: [
+      ['You can count on me.', '너는 나를 믿어도 된다.'],
+      ['We are counting on your help.', '우리는 네 도움을 기대하고 있다.'],
+      ['She counts on her friends when things are hard.', '그녀는 힘들 때 친구들에게 의지한다.'],
+    ]},
+  ]},
+  { w: 'cut down', p: 'phr.', s: [
+    { m: '베어 넘어뜨리다; 줄이다', syn: ['reduce'], ex: [
+      ['They cut down the old tree.', '그들은 오래된 나무를 베어 냈다.'],
+      ['He is trying to cut down on sugar.', '그는 설탕을 줄이려 하고 있다.'],
+      ['We must cut down our spending.', '우리는 지출을 줄여야 한다.'],
+    ]},
+  ]},
+  { w: 'die of', p: 'phr.', s: [
+    { m: '~으로 죽다', syn: [], ex: [
+      ['Many people died of hunger.', '많은 사람이 굶어 죽었다.'],
+      ['His grandfather died of old age.', '그의 할아버지는 노환으로 돌아가셨다.'],
+      ['The plant died of thirst.', '그 식물은 물이 없어 말라 죽었다.'],
+    ]},
+  ]},
+  { w: 'each other', p: 'phr.', s: [
+    { m: '서로', syn: ['one another'], ex: [
+      ['They helped each other.', '그들은 서로 도왔다.'],
+      ['We looked at each other and laughed.', '우리는 서로 쳐다보며 웃었다.'],
+      ['The two sisters write to each other often.', '두 자매는 자주 서로에게 편지를 쓴다.'],
+    ]},
+  ]},
+  { w: 'eat out', p: 'phr.', s: [
+    { m: '외식하다', syn: [], ex: [
+      ['We eat out on Fridays.', '우리는 금요일에 외식한다.'],
+      ['They decided to eat out tonight.', '그들은 오늘 밤 외식하기로 했다.'],
+      ['Eating out every day is expensive.', '매일 외식하는 것은 비싸다.'],
+    ]},
+  ]},
+  { w: 'fall asleep', p: 'phr.', s: [
+    { m: '잠들다', syn: [], ex: [
+      ['He fell asleep during the movie.', '그는 영화를 보다 잠들었다.'],
+      ['The baby fell asleep in the car.', '아기가 차 안에서 잠들었다.'],
+      ['She fell asleep with the light on.', '그녀는 불을 켠 채 잠들었다.'],
+    ]},
+  ]},
+  { w: 'fall down', p: 'phr.', s: [
+    { m: '넘어지다, 무너지다', syn: [], ex: [
+      ['The boy fell down and cried.', '그 아이는 넘어져서 울었다.'],
+      ['The old wall fell down last night.', '그 낡은 벽이 어젯밤에 무너졌다.'],
+      ['She fell down on the icy road.', '그녀는 얼어붙은 길에서 넘어졌다.'],
+    ]},
+  ]},
+  { w: 'fill in', p: 'phr.', s: [
+    { m: '(빈칸을) 채워 넣다', syn: [], ex: [
+      ['Fill in your name and address.', '이름과 주소를 적어 넣으세요.'],
+      ['She filled in the missing words.', '그녀는 빠진 낱말을 채워 넣었다.'],
+      ['Please fill in this form first.', '먼저 이 양식을 작성해 주세요.'],
+    ]},
+  ]},
+  { w: 'fill out', p: 'phr.', s: [
+    { m: '(서식을) 작성하다', syn: [], ex: [
+      ['Fill out the application carefully.', '신청서를 꼼꼼히 작성하세요.'],
+      ['He filled out the form in ten minutes.', '그는 10분 만에 양식을 작성했다.'],
+      ['You must fill out both pages.', '두 쪽 모두 작성해야 합니다.'],
+    ]},
+  ]},
+  { w: 'focus on', p: 'phr.', s: [
+    { m: '~에 집중하다, 초점을 맞추다', syn: ['concentrate on'], ex: [
+      ['Focus on one thing at a time.', '한 번에 한 가지에 집중해라.'],
+      ['The report focuses on climate change.', '그 보고서는 기후 변화에 초점을 맞춘다.'],
+      ['She focused on her studies this year.', '그녀는 올해 공부에 집중했다.'],
+    ]},
+  ]},
   { w: 'history', p: 'n.', s: [
     { m: '역사', syn: [], ex: [
       ['We study Korean history at school.', '우리는 학교에서 한국 역사를 배운다.'],

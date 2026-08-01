@@ -1,0 +1,440 @@
+# 중·고등학교 필수 숙어 목록
+#
+# 표시:  * 중학 기초  |  ** 중학 심화·고1  |  표시 없음 고등·수능
+#
+# ── 이 목록의 성격 ─────────────────────────────────────────────
+# 교육부 「기본 어휘 목록」은 낱개 단어만 싣는다. 숙어는 그 문서에 없다.
+# 그래서 이 목록은 **편집 판단**이다 — 중·고 검정 교과서와 수능·모평 지문에
+# 되풀이해 나오는 구동사·전치사구·관용표현을 추린 것이고, 교육부 문서에
+# 실려 있다는 뜻이 아니다. 그 점을 분명히 해 두려고 파일을 따로 두었다.
+#
+# **뜻은 지어내지 않는다.** 여기 실린 표제어는 영어 위키낱말사전과 대조해
+# 뜻을 확인한 것만 src/data/levels/*.ts 에 들어간다. 사전에 표제어가 없거나
+# 뜻이 어긋나면 그 항목은 비워 두고, 데이터에 넣지 않는다.
+#
+# data/extra-vocabulary.txt 에 이미 있는 숙어 71개는 여기 다시 적지 않는다.
+# scripts/build-plan.mjs 가 두 파일을 합칠 때 겹치면 앞의 것을 남긴다.
+#
+# ── 왜 따로 배치하는가 ─────────────────────────────────────────
+# build-plan.mjs 는 단어 목록 전체를 24등분한다. 여기에 숙어를 그냥 합치면
+# 이미 자리를 잡은 3,285개가 레벨 사이를 옮겨 다닌다. 아이가 끝낸 레벨의
+# 단어가 다음 레벨로 밀려나면 진도가 뒤로 간다. 그래서 숙어는 **기존 배치를
+# 건드리지 않고 레벨마다 덧붙인다.**
+
+# ── 중학 기초 ─────────────────────────────────────────────────
+# 교과서 1~2학년에 바로 나오는 것들. 뜻이 낱말 그대로 읽히지 않아
+# ('look after' 는 '뒤를 보다'가 아니다) 통째로 익혀야 한다.
+
+a couple of*
+a kind of*
+a number of*
+a pair of*
+a piece of*
+after all*
+agree with*
+all day long*
+all kinds of*
+all over the world*
+all the time*
+apologize to*
+arrive at*
+ask for*
+at first*
+at home*
+at last*
+at least*
+at night*
+at once*
+at the same time*
+be about to*
+be angry with*
+be busy with*
+be covered with*
+be different from*
+be famous for*
+be filled with*
+be good for*
+be kind to*
+be late for*
+be made of*
+be proud of*
+be ready for*
+be similar to*
+be sure of*
+be surprised at*
+be tired of*
+be worried about*
+believe in*
+belong to*
+both A and B*
+bring up*
+by accident*
+by chance*
+by mistake*
+by oneself*
+by the way*
+call back*
+care about*
+catch a cold*
+cheer up*
+clean up*
+come back*
+come in*
+come out*
+come over*
+come true*
+count on*
+cut down*
+die of*
+each other*
+eat out*
+fall asleep*
+fall down*
+fill in*
+fill out*
+focus on*
+for a long time*
+for a while*
+for free*
+for the first time*
+from now on*
+from time to time*
+get in*
+get married*
+get off*
+get on*
+get out of*
+get over*
+get to*
+get together*
+give back*
+go ahead*
+go away*
+go back*
+go down*
+go out*
+go straight*
+go up*
+had better*
+hand in*
+hang out*
+hang up*
+hear from*
+help oneself*
+hold on*
+hurry up*
+in a hurry*
+in fact*
+in the end*
+in the future*
+in the past*
+in time*
+in trouble*
+keep a diary*
+keep in touch*
+keep on*
+laugh at*
+leave for*
+listen to*
+look around*
+look at*
+look forward to*
+look into*
+look like*
+look out*
+look up*
+make a decision*
+make a mistake*
+make a noise*
+make a plan*
+make an effort*
+make money*
+make sure*
+make up*
+more than*
+no longer*
+not at all*
+of course*
+on foot*
+on one's own*
+on sale*
+on the phone*
+on the way*
+on time*
+one of*
+over there*
+pay attention to*
+pick up*
+plenty of*
+prepare for*
+put away*
+put down*
+put out*
+put together*
+put up*
+right away*
+right now*
+run into*
+run out of*
+search for*
+set up*
+show up*
+sign up*
+sit down*
+slow down*
+some of*
+stand up*
+stay up*
+stop by*
+such as*
+take a break*
+take a look*
+take a picture*
+take a rest*
+take a shower*
+take a trip*
+take away*
+take back*
+take out*
+talk about*
+talk to*
+thank for*
+think about*
+throw away*
+try on*
+turn around*
+turn down*
+turn into*
+turn up*
+warm up*
+work on*
+write down*
+
+# ── 중학 심화 · 고1 ────────────────────────────────────────────
+# 뜻을 낱말에서 짐작하기 어려워지는 구간. 시험 지문에 자주 나온다.
+
+add up to**
+appeal to**
+apply for**
+apply to**
+approve of**
+be aware of**
+be capable of**
+be composed of**
+be concerned about**
+be devoted to**
+be engaged in**
+be equal to**
+be familiar with**
+be fond of**
+be involved in**
+be known as**
+be known for**
+be opposed to**
+be responsible for**
+be satisfied with**
+be supposed to**
+be used to**
+benefit from**
+break down**
+break into**
+break out**
+break up**
+bring back**
+build up**
+burst into**
+call for**
+call off**
+call on**
+care for**
+carry on**
+catch up with**
+come across**
+come down with**
+compare to**
+compare with**
+complain about**
+concentrate on**
+contribute to**
+cope with**
+correspond to**
+derive from**
+devote to**
+differ from**
+do without**
+dress up**
+drop by**
+drop out**
+end up**
+engage in**
+escape from**
+figure out**
+fill up**
+find fault with**
+get around**
+get away**
+get by**
+get rid of**
+get through**
+give in**
+give off**
+give out**
+go after**
+go along with**
+go over**
+go through**
+hand out**
+hand over**
+head for**
+hold back**
+insist on**
+interfere with**
+keep from**
+keep track of**
+keep up with**
+let down**
+live on**
+long for**
+look down on**
+look over**
+look through**
+look up to**
+major in**
+make out**
+make sense**
+make the most of**
+object to**
+participate in**
+pass away**
+pass by**
+pass on**
+pay back**
+pay off**
+pick out**
+point out**
+put forward**
+put up with**
+refer to**
+reflect on**
+regard as**
+remind of**
+result from**
+run over**
+see off**
+send for**
+set aside**
+set off**
+set out**
+settle down**
+sort out**
+specialize in**
+stand by**
+stand for**
+stand out**
+stick to**
+succeed in**
+suffer from**
+take advantage of**
+take after**
+take charge of**
+take down**
+take in**
+take on**
+take over**
+take pride in**
+take turns**
+tell apart**
+think over**
+throw up**
+try out**
+turn in**
+turn out**
+turn over**
+turn to**
+use up**
+wear out**
+wipe out**
+work out**
+
+# ── 고등 · 수능 ────────────────────────────────────────────────
+# 수능·모평 지문에 되풀이해 나오는 격식 있는 표현들.
+
+abide by
+adhere to
+at odds with
+at the mercy of
+be bound to
+be conducive to
+be indifferent to
+be inclined to
+be prone to
+be reluctant to
+be subject to
+be susceptible to
+bear in mind
+by all means
+by no means
+come to terms with
+cut back on
+do away with
+draw on
+fall behind
+fall short of
+give way to
+in a sense
+in advance
+in charge of
+in comparison with
+in contrast to
+in exchange for
+in favor of
+in general
+in line with
+in need of
+in other words
+in place of
+in proportion to
+in public
+in pursuit of
+in response to
+in return for
+in short
+in the course of
+in the face of
+in the wake of
+in view of
+keep abreast of
+lay off
+live up to
+look back on
+make allowances for
+make do with
+on account of
+on behalf of
+on purpose
+on the brink of
+on the grounds that
+on the other hand
+on the verge of
+out of the question
+owing to
+pave the way for
+persist in
+prior to
+put an end to
+refrain from
+resort to
+rule out
+run counter to
+see to
+set forth
+shed light on
+stand to reason
+subscribe to
+substitute for
+take a toll on
+take for granted
+take issue with
+talk into
+to the point
+with respect to

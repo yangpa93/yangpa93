@@ -1,5 +1,5 @@
 /**
- * 고등학교 1학년 레벨 4 — 수록 137 / 계획 137개.
+ * 고등학교 1학년 레벨 4 — 수록 154 / 계획 137개.
  *
  * 난이도 층: 중급(중학 권장), 고급(고등)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -143,6 +143,125 @@ export const H1_4 = defineLevel('h1-4', [
       ['We need accurate data.', '우리는 정확한 자료가 필요하다.'],
       ['His description was surprisingly accurate.', '그의 묘사는 놀라울 만큼 정확했다.'],
       ['The clock is not accurate.', '그 시계는 정확하지 않다.'],
+    ]},
+  ]},
+  { w: 'hand over', p: 'phr.', s: [
+    { m: '넘겨주다, 인계하다', syn: [], ex: [
+      ['He handed over the keys.', '그는 열쇠를 넘겨주었다.'],
+      ['She handed over her duties to him.', '그녀는 자기 업무를 그에게 인계했다.'],
+      ['The thief handed over the bag.', '도둑은 가방을 넘겨주었다.'],
+    ]},
+  ]},
+  { w: 'head for', p: 'phr.', s: [
+    { m: '~로 향하다', syn: [], ex: [
+      ['They headed for the beach.', '그들은 해변으로 향했다.'],
+      ['The ship headed for the harbor.', '배는 항구로 향했다.'],
+      ['We headed for home at sunset.', '우리는 해 질 녘에 집으로 향했다.'],
+    ]},
+  ]},
+  { w: 'hold back', p: 'phr.', s: [
+    { m: '참다, 억누르다; 막다', syn: [], ex: [
+      ['She could not hold back her tears.', '그녀는 눈물을 참을 수 없었다.'],
+      ['He held back the angry crowd.', '그는 성난 군중을 막았다.'],
+      ['Do not hold back your opinion.', '의견을 숨기지 마라.'],
+    ]},
+  ]},
+  { w: 'insist on', p: 'phr.', s: [
+    { m: '~을 고집하다, 주장하다', syn: [], ex: [
+      ['He insisted on paying the bill.', '그는 계산을 하겠다고 고집했다.'],
+      ['She insisted on her innocence.', '그녀는 자신의 결백을 주장했다.'],
+      ['They insisted on seeing the manager.', '그들은 매니저를 만나겠다고 우겼다.'],
+    ]},
+  ]},
+  { w: 'interfere with', p: 'phr.', s: [
+    { m: '~을 방해하다', syn: [], ex: [
+      ['Noise interferes with my sleep.', '소음이 내 잠을 방해한다.'],
+      ['Do not interfere with their work.', '그들의 일을 방해하지 마라.'],
+      ['The weather interfered with the plan.', '날씨가 계획을 방해했다.'],
+    ]},
+  ]},
+  { w: 'keep from', p: 'phr.', s: [
+    { m: '~하지 못하게 하다, 참다', syn: [], ex: [
+      ['She could not keep from laughing.', '그녀는 웃음을 참을 수 없었다.'],
+      ['Keep the children from the fire.', '아이들이 불에 가까이 가지 못하게 해라.'],
+      ['He kept the news from his parents.', '그는 부모님께 그 소식을 숨겼다.'],
+    ]},
+  ]},
+  { w: 'keep track of', p: 'phr.', s: [
+    { m: '~을 계속 파악하다', syn: [], ex: [
+      ['She keeps track of her spending.', '그녀는 지출을 계속 파악한다.'],
+      ['It is hard to keep track of time.', '시간을 계속 파악하기가 어렵다.'],
+      ['He keeps track of every book he reads.', '그는 읽은 책을 모두 기록해 둔다.'],
+    ]},
+  ]},
+  { w: 'keep up with', p: 'phr.', s: [
+    { m: '~에 뒤지지 않고 따라가다', syn: [], ex: [
+      ['He runs fast, I cannot keep up with him.', '그는 빨라서 나는 그를 따라갈 수 없다.'],
+      ['She keeps up with the news.', '그녀는 뉴스를 계속 챙겨 본다.'],
+      ['It is hard to keep up with the class.', '수업을 따라가기가 어렵다.'],
+    ]},
+  ]},
+  { w: 'let down', p: 'phr.', s: [
+    { m: '실망시키다', syn: ['disappoint'], ex: [
+      ['Do not let your parents down.', '부모님을 실망시키지 마라.'],
+      ['Do not let down the people who trust you.', '너를 믿는 사람들을 실망시키지 마라.'],
+      ['She never lets her friends down.', '그녀는 친구들을 실망시키는 법이 없다.'],
+    ]},
+  ]},
+  { w: 'live on', p: 'phr.', s: [
+    { m: '~을 먹고 살다, ~로 생활하다', syn: [], ex: [
+      ['They live on rice and beans.', '그들은 쌀과 콩을 먹고 산다.'],
+      ['She lives on a small pension.', '그녀는 적은 연금으로 산다.'],
+      ['Pandas live on bamboo.', '판다는 대나무를 먹고 산다.'],
+    ]},
+  ]},
+  { w: 'long for', p: 'phr.', s: [
+    { m: '간절히 바라다', syn: ['yearn for'], ex: [
+      ['He longs for the summer holidays.', '그는 여름 방학을 간절히 기다린다.'],
+      ['She longed for a quiet life.', '그녀는 조용한 삶을 갈망했다.'],
+      ['They long for peace.', '그들은 평화를 간절히 바란다.'],
+    ]},
+  ]},
+  { w: 'look down on', p: 'phr.', s: [
+    { m: '얕보다, 무시하다', syn: [], ex: [
+      ['Do not look down on others.', '남을 얕보지 마라.'],
+      ['He looked down on people without money.', '그는 돈 없는 사람들을 무시했다.'],
+      ['She never looks down on anyone.', '그녀는 누구도 얕보지 않는다.'],
+    ]},
+  ]},
+  { w: 'look over', p: 'phr.', s: [
+    { m: '훑어보다, 검토하다', syn: [], ex: [
+      ['Please look over this report.', '이 보고서를 검토해 주세요.'],
+      ['He looked over the contract quickly.', '그는 계약서를 재빨리 훑어보았다.'],
+      ['She looked over my shoulder.', '그녀는 내 어깨너머로 보았다.'],
+    ]},
+  ]},
+  { w: 'look through', p: 'phr.', s: [
+    { m: '훑어보다; 꿰뚫어 보다', syn: [], ex: [
+      ['She looked through the magazine.', '그녀는 잡지를 훑어보았다.'],
+      ['He looked through the old letters.', '그는 옛 편지들을 훑어보았다.'],
+      ['I looked through the window.', '나는 창문을 통해 보았다.'],
+    ]},
+  ]},
+  { w: 'look up to', p: 'phr.', s: [
+    { m: '존경하다, 우러러보다', syn: ['respect'], ex: [
+      ['Students look up to their teacher.', '학생들은 선생님을 존경한다.'],
+      ['He looks up to his older sister.', '그는 누나를 우러러본다.'],
+      ['Everyone looks up to her honesty.', '모두가 그녀의 정직함을 존경한다.'],
+    ]},
+  ]},
+  { w: 'major in', p: 'phr.', s: [
+    { m: '~을 전공하다', syn: [], ex: [
+      ['She majors in history.', '그녀는 역사를 전공한다.'],
+      ['He wants to major in physics.', '그는 물리학을 전공하고 싶어 한다.'],
+      ['What did you major in?', '너는 무엇을 전공했니?'],
+    ]},
+  ]},
+  { w: 'make out', p: 'phr.', s: [
+    { m: '알아보다, 이해하다', syn: [], ex: [
+      ['I could not make out his writing.', '나는 그의 글씨를 알아볼 수 없었다.'],
+      ['She made out a figure in the fog.', '그녀는 안개 속에서 형체를 알아보았다.'],
+      ['Can you make out what he is saying?', '그가 무슨 말을 하는지 알아듣겠니?'],
     ]},
   ]},
   { w: 'term', p: 'n.', s: [

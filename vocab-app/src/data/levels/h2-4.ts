@@ -1,5 +1,5 @@
 /**
- * 고등학교 2학년 레벨 4 — 수록 137 / 계획 137개.
+ * 고등학교 2학년 레벨 4 — 수록 154 / 계획 137개.
  *
  * 난이도 층: 고급(고등)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -9,6 +9,104 @@
 import { defineLevel } from '../define';
 
 export const H2_4 = defineLevel('h2-4', [
+  { w: 'abide by', p: 'phr.', s: [
+    { m: '(규칙을) 지키다, 따르다', syn: ['obey', 'comply with'], ex: [
+      ['You must abide by the rules.', '너는 규칙을 지켜야 한다.'],
+      ['They agreed to abide by the decision.', '그들은 그 결정을 따르기로 했다.'],
+      ['Every citizen must abide by the law.', '모든 시민은 법을 지켜야 한다.'],
+    ]},
+  ]},
+  { w: 'adhere to', p: 'phr.', s: [
+    { m: '고수하다, 지키다', syn: ['stick to'], ex: [
+      ['We adhere to strict safety standards.', '우리는 엄격한 안전 기준을 지킨다.'],
+      ['She adhered to her principles.', '그녀는 자기 원칙을 고수했다.'],
+      ['The company adheres to its policy.', '그 회사는 자사 방침을 고수한다.'],
+    ]},
+  ]},
+  { w: 'at odds with', p: 'phr.', s: [
+    { m: '~와 어긋나는, 다투는', syn: [], ex: [
+      ['His story is at odds with the facts.', '그의 이야기는 사실과 어긋난다.'],
+      ['She was at odds with her colleagues.', '그녀는 동료들과 사이가 좋지 않았다.'],
+      ['The two reports are at odds with each other.', '그 두 보고서는 서로 어긋난다.'],
+    ]},
+  ]},
+  { w: 'at the mercy of', p: 'phr.', s: [
+    { m: '~에 좌우되는, ~의 손에 달린', syn: [], ex: [
+      ['Sailors are at the mercy of the weather.', '뱃사람은 날씨에 좌우된다.'],
+      ['The village was at the mercy of the flood.', '그 마을은 홍수에 속수무책이었다.'],
+      ['We are at the mercy of the market.', '우리는 시장에 휘둘린다.'],
+    ]},
+  ]},
+  { w: 'be bound to', p: 'phr.', s: [
+    { m: '반드시 ~하게 되어 있다', syn: [], ex: [
+      ['He is bound to find out.', '그는 반드시 알게 될 것이다.'],
+      ['Prices are bound to rise.', '물가는 반드시 오르게 되어 있다.'],
+      ['She is bound to succeed.', '그녀는 틀림없이 성공할 것이다.'],
+    ]},
+  ]},
+  { w: 'be conducive to', p: 'phr.', s: [
+    { m: '~에 도움이 되다', syn: [], ex: [
+      ['Quiet is conducive to study.', '조용함은 공부에 도움이 된다.'],
+      ['Exercise is conducive to good sleep.', '운동은 숙면에 도움이 된다.'],
+      ['The climate is conducive to farming.', '그 기후는 농사에 알맞다.'],
+    ]},
+  ]},
+  { w: 'be inclined to', p: 'phr.', s: [
+    { m: '~하는 경향이 있다, ~하고 싶어지다', syn: [], ex: [
+      ['I am inclined to agree with you.', '나는 네 말에 동의하는 쪽이다.'],
+      ['She is inclined to worry too much.', '그녀는 지나치게 걱정하는 경향이 있다.'],
+      ['He is inclined to accept the offer.', '그는 그 제안을 받아들이려는 편이다.'],
+    ]},
+  ]},
+  { w: 'be indifferent to', p: 'phr.', s: [
+    { m: '~에 무관심하다', syn: [], ex: [
+      ['He is indifferent to fashion.', '그는 유행에 무관심하다.'],
+      ['She was indifferent to their praise.', '그녀는 그들의 칭찬에 무심했다.'],
+      ['Voters are indifferent to the issue.', '유권자들은 그 문제에 무관심하다.'],
+    ]},
+  ]},
+  { w: 'be prone to', p: 'phr.', s: [
+    { m: '~하기 쉽다, ~에 걸리기 쉽다', syn: [], ex: [
+      ['This area is prone to flooding.', '이 지역은 홍수가 나기 쉽다.'],
+      ['He is prone to catching colds.', '그는 감기에 잘 걸린다.'],
+      ['Old machines are prone to error.', '낡은 기계는 오류가 나기 쉽다.'],
+    ]},
+  ]},
+  { w: 'be reluctant to', p: 'phr.', s: [
+    { m: '~하기를 꺼리다', syn: [], ex: [
+      ['She was reluctant to leave.', '그녀는 떠나기를 꺼렸다.'],
+      ['He is reluctant to ask for help.', '그는 도움을 청하기를 꺼린다.'],
+      ['They were reluctant to change.', '그들은 변화를 꺼렸다.'],
+    ]},
+  ]},
+  { w: 'be subject to', p: 'phr.', s: [
+    { m: '~의 영향을 받다, ~하기 쉽다', syn: [], ex: [
+      ['Prices are subject to change.', '가격은 변동될 수 있습니다.'],
+      ['The plan is subject to approval.', '그 계획은 승인을 받아야 한다.'],
+      ['This road is subject to flooding.', '이 도로는 물에 잠기기 쉽다.'],
+    ]},
+  ]},
+  { w: 'be susceptible to', p: 'phr.', s: [
+    { m: '~에 취약하다, 걸리기 쉽다', syn: [], ex: [
+      ['Young children are susceptible to infection.', '어린아이는 감염에 취약하다.'],
+      ['The crop is susceptible to frost.', '그 작물은 서리에 약하다.'],
+      ['He is susceptible to flattery.', '그는 아첨에 잘 넘어간다.'],
+    ]},
+  ]},
+  { w: 'bear in mind', p: 'phr.', s: [
+    { m: '명심하다, 유념하다', syn: [], ex: [
+      ['Bear in mind that the shop closes early.', '가게가 일찍 닫는다는 것을 명심해라.'],
+      ['She bore in mind his warning.', '그녀는 그의 경고를 유념했다.'],
+      ['Bear in mind the cost before buying.', '사기 전에 비용을 염두에 두어라.'],
+    ]},
+  ]},
+  { w: 'by all means', p: 'phr.', s: [
+    { m: '물론이지요, 꼭', syn: [], ex: [
+      ['By all means, take a seat.', '물론이지요, 앉으세요.'],
+      ['By all means, call me if you need help.', '필요하면 꼭 전화하세요.'],
+      ['We must finish it by all means.', '우리는 어떻게 해서든 그것을 끝내야 한다.'],
+    ]},
+  ]},
   { w: 'flaw', p: 'n.', s: [
     { m: '결함, 흠', syn: ['defect'], ex: [
       ['The plan has one flaw.', '그 계획에는 결함이 하나 있다.'],
@@ -969,6 +1067,27 @@ export const H2_4 = defineLevel('h2-4', [
       ['She inquired about the job.', '그녀는 그 일자리에 대해 문의했다.'],
       ['He inquired after my family.', '그는 우리 가족 안부를 물었다.'],
       ['Please inquire at the office.', '사무실에 문의해 주세요.'],
+    ]},
+  ]},
+  { w: 'wear out', p: 'phr.', s: [
+    { m: '닳아 해지다; 지치게 하다', syn: [], ex: [
+      ['His shoes wore out quickly.', '그의 신발은 금세 해졌다.'],
+      ['The long walk wore her out.', '긴 산책이 그녀를 지치게 했다.'],
+      ['These tires will wear out soon.', '이 타이어는 곧 닳을 것이다.'],
+    ]},
+  ]},
+  { w: 'wipe out', p: 'phr.', s: [
+    { m: '완전히 없애다, 전멸시키다', syn: [], ex: [
+      ['The storm wiped out the village.', '폭풍이 그 마을을 쓸어 버렸다.'],
+      ['Disease wiped out many animals.', '질병이 많은 동물을 전멸시켰다.'],
+      ['One mistake wiped out all his profit.', '한 번의 실수가 그의 이익을 다 날렸다.'],
+    ]},
+  ]},
+  { w: 'work out', p: 'phr.', s: [
+    { m: '운동하다; 잘 풀리다; 계산해 내다', syn: [], ex: [
+      ['She works out at the gym daily.', '그녀는 매일 체육관에서 운동한다.'],
+      ['Everything worked out in the end.', '결국 모든 것이 잘 풀렸다.'],
+      ['He worked out the answer on paper.', '그는 종이에 답을 계산해 냈다.'],
     ]},
   ]},
 ], 'csat');

@@ -1,5 +1,5 @@
 /**
- * 고등학교 2학년 레벨 3 — 수록 137 / 계획 137개.
+ * 고등학교 2학년 레벨 3 — 수록 154 / 계획 137개.
  *
  * 난이도 층: 고급(고등)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -975,6 +975,125 @@ export const H2_3 = defineLevel('h2-3', [
       ['The flavour of this tea is strong.', '이 차의 풍미는 강하다.'],
       ['She added flavour with herbs.', '그녀는 허브로 풍미를 더했다.'],
       ['Each flavour is different.', '각 맛이 다르다.'],
+    ]},
+  ]},
+  { w: 'take after', p: 'phr.', s: [
+    { m: '~을 닮다', syn: ['resemble'], ex: [
+      ['She takes after her father.', '그녀는 아버지를 닮았다.'],
+      ['He takes after his grandmother in looks.', '그는 외모가 할머니를 닮았다.'],
+      ['The twins take after each other.', '쌍둥이는 서로 닮았다.'],
+    ]},
+  ]},
+  { w: 'take charge of', p: 'phr.', s: [
+    { m: '~을 맡다, 책임지다', syn: [], ex: [
+      ['She took charge of the project.', '그녀는 그 사업을 맡았다.'],
+      ['He took charge of the class.', '그는 그 학급을 맡았다.'],
+      ['Someone must take charge of the money.', '누군가 그 돈을 책임져야 한다.'],
+    ]},
+  ]},
+  { w: 'take down', p: 'phr.', s: [
+    { m: '내리다; 받아 적다', syn: [], ex: [
+      ['They took down the old sign.', '그들은 낡은 간판을 내렸다.'],
+      ['She took down his phone number.', '그녀는 그의 전화번호를 받아 적었다.'],
+      ['He took down the tent in the rain.', '그는 빗속에서 텐트를 걷었다.'],
+    ]},
+  ]},
+  { w: 'take in', p: 'phr.', s: [
+    { m: '받아들이다; 이해하다', syn: [], ex: [
+      ['The country took in many refugees.', '그 나라는 많은 난민을 받아들였다.'],
+      ['It was too much to take in at once.', '한꺼번에 이해하기에는 너무 많았다.'],
+      ['She took in the whole scene.', '그녀는 그 광경 전체를 눈에 담았다.'],
+    ]},
+  ]},
+  { w: 'take on', p: 'phr.', s: [
+    { m: '(일을) 떠맡다; (성질을) 띠다', syn: [], ex: [
+      ['He took on too much work.', '그는 너무 많은 일을 떠맡았다.'],
+      ['The sky took on a purple color.', '하늘이 보랏빛을 띠었다.'],
+      ['She took on the role of leader.', '그녀는 지도자 역할을 맡았다.'],
+    ]},
+  ]},
+  { w: 'take over', p: 'phr.', s: [
+    { m: '인계받다, 넘겨받다', syn: [], ex: [
+      ['She took over the business from her father.', '그녀는 아버지에게서 사업을 물려받았다.'],
+      ['A new manager took over last month.', '지난달에 새 관리자가 인계받았다.'],
+      ['He took over the driving.', '그가 운전을 넘겨받았다.'],
+    ]},
+  ]},
+  { w: 'take pride in', p: 'phr.', s: [
+    { m: '~을 자랑스러워하다', syn: [], ex: [
+      ['They take pride in their work.', '그들은 자기 일을 자랑스러워한다.'],
+      ['She takes pride in her garden.', '그녀는 자기 정원을 자랑스러워한다.'],
+      ['He takes pride in being honest.', '그는 정직한 것을 자랑스러워한다.'],
+    ]},
+  ]},
+  { w: 'take turns', p: 'phr.', s: [
+    { m: '번갈아 하다', syn: [], ex: [
+      ['We take turns washing the dishes.', '우리는 번갈아 설거지를 한다.'],
+      ['They took turns driving.', '그들은 번갈아 운전했다.'],
+      ['The children took turns on the swing.', '아이들은 번갈아 그네를 탔다.'],
+    ]},
+  ]},
+  { w: 'tell apart', p: 'phr.', s: [
+    { m: '구별하다', syn: [], ex: [
+      ['I cannot tell the twins apart.', '나는 그 쌍둥이를 구별하지 못한다.'],
+      ['It is not easy to tell apart the two versions.', '그 두 판을 구별하기는 쉽지 않다.'],
+      ['It is hard to tell them apart.', '그것들을 구별하기가 어렵다.'],
+    ]},
+  ]},
+  { w: 'think over', p: 'phr.', s: [
+    { m: '곰곰이 생각하다, 재고하다', syn: [], ex: [
+      ['Think over my offer.', '내 제안을 곰곰이 생각해 봐.'],
+      ['She thought over the question all night.', '그녀는 밤새 그 질문을 생각했다.'],
+      ['He wants to think it over first.', '그는 먼저 그것을 생각해 보고 싶어 한다.'],
+    ]},
+  ]},
+  { w: 'throw up', p: 'phr.', s: [
+    { m: '토하다', syn: [], ex: [
+      ['He threw up after the ride.', '그는 놀이 기구를 탄 뒤 토했다.'],
+      ['She felt like she would throw up.', '그녀는 토할 것 같았다.'],
+      ['The child threw up in the car.', '그 아이는 차 안에서 토했다.'],
+    ]},
+  ]},
+  { w: 'try out', p: 'phr.', s: [
+    { m: '시험 삼아 해 보다', syn: [], ex: [
+      ['Let\'s try out the new game.', '새 게임을 한번 해 보자.'],
+      ['She tried out three recipes.', '그녀는 조리법 세 가지를 시험해 보았다.'],
+      ['He tried out for the team.', '그는 그 팀에 입단 시험을 봤다.'],
+    ]},
+  ]},
+  { w: 'turn in', p: 'phr.', s: [
+    { m: '제출하다', syn: ['hand in'], ex: [
+      ['Turn in your papers now.', '지금 답안을 제출하세요.'],
+      ['She turned in her report late.', '그녀는 보고서를 늦게 제출했다.'],
+      ['He turned in the lost wallet.', '그는 주운 지갑을 신고했다.'],
+    ]},
+  ]},
+  { w: 'turn out', p: 'phr.', s: [
+    { m: '~로 판명되다; 나타나다', syn: [], ex: [
+      ['It turned out to be a mistake.', '그것은 실수로 판명되었다.'],
+      ['The party turned out well.', '파티는 잘 되었다.'],
+      ['Many people turned out for the event.', '많은 사람이 그 행사에 나왔다.'],
+    ]},
+  ]},
+  { w: 'turn over', p: 'phr.', s: [
+    { m: '뒤집다; 넘기다', syn: [], ex: [
+      ['Turn over the paper and start.', '종이를 뒤집고 시작하세요.'],
+      ['She turned over in her sleep.', '그녀는 자면서 몸을 뒤척였다.'],
+      ['He turned over the keys to the new owner.', '그는 새 주인에게 열쇠를 넘겼다.'],
+    ]},
+  ]},
+  { w: 'turn to', p: 'phr.', s: [
+    { m: '~에 의지하다, ~로 향하다', syn: [], ex: [
+      ['She turned to her sister for advice.', '그녀는 조언을 구하러 언니에게 갔다.'],
+      ['He turned to the next page.', '그는 다음 쪽으로 넘겼다.'],
+      ['They turned to the police for help.', '그들은 도움을 구하러 경찰에 갔다.'],
+    ]},
+  ]},
+  { w: 'use up', p: 'phr.', s: [
+    { m: '다 써 버리다', syn: [], ex: [
+      ['We used up all the paper.', '우리는 종이를 다 써 버렸다.'],
+      ['She used up her savings.', '그녀는 저축을 다 써 버렸다.'],
+      ['The printer used up the ink.', '프린터가 잉크를 다 썼다.'],
     ]},
   ]},
 ], 'csat');

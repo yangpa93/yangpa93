@@ -1,5 +1,5 @@
 /**
- * 중학교 2학년 레벨 4 — 수록 137 / 계획 137개.
+ * 중학교 2학년 레벨 4 — 수록 154 / 계획 137개.
  *
  * 난이도 층: 중급(중학 권장)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -993,6 +993,125 @@ export const M2_4 = defineLevel('m2-4', [
       ['The body is made of cells.', '몸은 세포로 이루어져 있다.'],
       ['A cell divides into two.', '세포는 둘로 나뉜다.'],
       ['The prisoner sat in a small cell.', '죄수가 작은 방에 앉아 있었다.'],
+    ]},
+  ]},
+  { w: 'make a mistake', p: 'phr.', s: [
+    { m: '실수하다', syn: [], ex: [
+      ['Everyone makes a mistake sometimes.', '누구나 가끔 실수를 한다.'],
+      ['I made a mistake on the test.', '나는 시험에서 실수를 했다.'],
+      ['She admitted she had made a mistake.', '그녀는 실수했다고 인정했다.'],
+    ]},
+  ]},
+  { w: 'make a noise', p: 'phr.', s: [
+    { m: '소리를 내다, 떠들다', syn: [], ex: [
+      ['Please do not make a noise in the library.', '도서관에서 떠들지 마세요.'],
+      ['The old door makes a noise.', '그 낡은 문은 소리가 난다.'],
+      ['The children made a noise all afternoon.', '아이들은 오후 내내 떠들었다.'],
+    ]},
+  ]},
+  { w: 'make a plan', p: 'phr.', s: [
+    { m: '계획을 세우다', syn: [], ex: [
+      ['Let\'s make a plan for the weekend.', '주말 계획을 세우자.'],
+      ['They made a plan to save money.', '그들은 돈을 모을 계획을 세웠다.'],
+      ['She made a plan and followed it.', '그녀는 계획을 세우고 그대로 실천했다.'],
+    ]},
+  ]},
+  { w: 'make an effort', p: 'phr.', s: [
+    { m: '노력하다', syn: [], ex: [
+      ['He made an effort to be polite.', '그는 예의를 갖추려 노력했다.'],
+      ['Make an effort and you will improve.', '노력하면 나아질 것이다.'],
+      ['She made every effort to help.', '그녀는 도우려고 온갖 노력을 했다.'],
+    ]},
+  ]},
+  { w: 'make money', p: 'phr.', s: [
+    { m: '돈을 벌다', syn: [], ex: [
+      ['He makes money by selling bread.', '그는 빵을 팔아 돈을 번다.'],
+      ['The shop does not make money yet.', '그 가게는 아직 돈을 못 번다.'],
+      ['She wants to make money for college.', '그녀는 대학 갈 돈을 벌고 싶어 한다.'],
+    ]},
+  ]},
+  { w: 'make sure', p: 'phr.', s: [
+    { m: '반드시 ~하다, 확인하다', syn: ['ensure'], ex: [
+      ['Make sure the door is locked.', '문이 잠겼는지 확인해라.'],
+      ['Make sure you bring your ticket.', '표를 꼭 가져오세요.'],
+      ['She made sure everyone was safe.', '그녀는 모두가 안전한지 확인했다.'],
+    ]},
+  ]},
+  { w: 'make up', p: 'phr.', s: [
+    { m: '지어내다; 화해하다; 구성하다', syn: [], ex: [
+      ['He made up a story about a dragon.', '그는 용 이야기를 지어냈다.'],
+      ['They quarreled but made up soon.', '그들은 다투었지만 곧 화해했다.'],
+      ['Water makes up most of our body.', '물이 우리 몸의 대부분을 이룬다.'],
+    ]},
+  ]},
+  { w: 'more than', p: 'phr.', s: [
+    { m: '~보다 많은, ~ 이상', syn: [], ex: [
+      ['More than fifty people came.', '쉰 명 넘게 왔다.'],
+      ['It costs more than I expected.', '그것은 내가 예상한 것보다 비싸다.'],
+      ['She is more than a friend to me.', '그녀는 나에게 친구 이상이다.'],
+    ]},
+  ]},
+  { w: 'no longer', p: 'phr.', s: [
+    { m: '더 이상 ~ 아닌', syn: [], ex: [
+      ['He no longer lives here.', '그는 더 이상 여기 살지 않는다.'],
+      ['The shop is no longer open.', '그 가게는 더 이상 열지 않는다.'],
+      ['She no longer believes him.', '그녀는 더 이상 그를 믿지 않는다.'],
+    ]},
+  ]},
+  { w: 'not at all', p: 'phr.', s: [
+    { m: '전혀 ~ 아니다; 천만에요', syn: [], ex: [
+      ['I was not at all surprised.', '나는 전혀 놀라지 않았다.'],
+      ['He is not at all like his brother.', '그는 형과 전혀 닮지 않았다.'],
+      ['Thank you. Not at all.', '고맙습니다. 천만에요.'],
+    ]},
+  ]},
+  { w: 'of course', p: 'phr.', s: [
+    { m: '물론, 당연히', syn: ['certainly', 'naturally'], ex: [
+      ['Of course you can come with us.', '물론 너도 우리와 같이 가도 돼.'],
+      ['Of course she was right.', '당연히 그녀가 옳았다.'],
+      ['Will you help me? Of course.', '도와줄래? 물론이지.'],
+    ]},
+  ]},
+  { w: 'on foot', p: 'phr.', s: [
+    { m: '걸어서, 도보로', syn: [], ex: [
+      ['We went to school on foot.', '우리는 걸어서 학교에 갔다.'],
+      ['The village can only be reached on foot.', '그 마을은 걸어서만 갈 수 있다.'],
+      ['He travels on foot whenever he can.', '그는 가능하면 걸어서 다닌다.'],
+    ]},
+  ]},
+  { w: 'on one\'s own', p: 'phr.', s: [
+    { m: '혼자 힘으로, 혼자서', syn: ['by oneself', 'alone'], ex: [
+      ['She solved the puzzle on her own.', '그녀는 혼자 힘으로 그 퍼즐을 풀었다.'],
+      ['He lives on his own now.', '그는 이제 혼자 산다.'],
+      ['The children cooked on their own.', '아이들은 자기들끼리 요리했다.'],
+    ]},
+  ]},
+  { w: 'on sale', p: 'phr.', s: [
+    { m: '할인 중인; 판매 중인', syn: [], ex: [
+      ['These shoes are on sale this week.', '이 신발은 이번 주에 할인 중이다.'],
+      ['The tickets go on sale tomorrow.', '표는 내일부터 판매된다.'],
+      ['I bought this coat on sale.', '나는 이 외투를 할인할 때 샀다.'],
+    ]},
+  ]},
+  { w: 'on the phone', p: 'phr.', s: [
+    { m: '통화 중인', syn: [], ex: [
+      ['She is on the phone right now.', '그녀는 지금 통화 중이다.'],
+      ['He spent an hour on the phone.', '그는 한 시간 동안 통화했다.'],
+      ['They talked on the phone every night.', '그들은 매일 밤 통화했다.'],
+    ]},
+  ]},
+  { w: 'on the way', p: 'phr.', s: [
+    { m: '가는 길에, 도중에', syn: [], ex: [
+      ['I will buy milk on the way home.', '집에 가는 길에 우유를 살게.'],
+      ['We stopped for lunch on the way.', '우리는 가는 길에 점심을 먹으려고 멈췄다.'],
+      ['He met her on the way to school.', '그는 학교 가는 길에 그녀를 만났다.'],
+    ]},
+  ]},
+  { w: 'on time', p: 'phr.', s: [
+    { m: '정시에, 시간을 지켜', syn: [], ex: [
+      ['The train arrived on time.', '기차는 정시에 도착했다.'],
+      ['Please be on time tomorrow.', '내일은 시간을 지켜 주세요.'],
+      ['She always hands in her work on time.', '그녀는 언제나 제때 과제를 낸다.'],
     ]},
   ]},
 ], 'curriculum');

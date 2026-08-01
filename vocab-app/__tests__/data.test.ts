@@ -140,9 +140,16 @@ describe('배치표(plan.ts)', () => {
   });
 
   it('레벨당 계획 단어 수가 시험을 볼 수 있는 범위다', () => {
-    // 계획대로 다 채웠을 때 시험이 길어지지 않아야 한다.
+    /*
+     * 계획대로 다 채웠을 때 시험이 길어지지 않아야 한다.
+     *
+     * 상한을 150에서 160으로 올렸다. 숙어 405개를 24레벨에 나눠 얹으면서
+     * 레벨당 137개가 154개가 됐기 때문이다. 시험 문항 수(다의어는 뜻마다
+     * 한 문항)로는 155~172개라, 원래 잡아 둔 '160문항 안팎 · 30분' 선을
+     * 크게 벗어나지 않는다. 여기서 더 늘리려면 레벨을 쪼개야 한다.
+     */
     for (const level of LEVEL_ORDER) {
-      expect({ level, ok: PLAN_COUNT[level] > 0 && PLAN_COUNT[level] <= 150 }).toEqual({
+      expect({ level, ok: PLAN_COUNT[level] > 0 && PLAN_COUNT[level] <= 160 }).toEqual({
         level,
         ok: true,
       });

@@ -1,5 +1,5 @@
 /**
- * 고등학교 3학년 레벨 3 — 수록 136 / 계획 136개.
+ * 고등학교 3학년 레벨 3 — 수록 152 / 계획 136개.
  *
  * 난이도 층: 고급(고등)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -9,6 +9,118 @@
 import { defineLevel } from '../define';
 
 export const H3_3 = defineLevel('h3-3', [
+  { w: 'look back on', p: 'phr.', s: [
+    { m: '되돌아보다', syn: [], ex: [
+      ['She looks back on those days fondly.', '그녀는 그 시절을 정겹게 되돌아본다.'],
+      ['He looked back on his career.', '그는 자기 경력을 되돌아보았다.'],
+      ['We look back on the trip with joy.', '우리는 그 여행을 기쁘게 되돌아본다.'],
+    ]},
+  ]},
+  { w: 'make allowances for', p: 'phr.', s: [
+    { m: '~을 감안하다, 참작하다', syn: [], ex: [
+      ['Make allowances for his age.', '그의 나이를 감안해라.'],
+      ['She made allowances for the delay.', '그녀는 지연을 참작했다.'],
+      ['We must make allowances for beginners.', '우리는 초보자를 감안해야 한다.'],
+    ]},
+  ]},
+  { w: 'make do with', p: 'phr.', s: [
+    { m: '~로 아쉬운 대로 때우다', syn: [], ex: [
+      ['We had to make do with cold water.', '우리는 찬물로 아쉬운 대로 때워야 했다.'],
+      ['She made do with what she had.', '그녀는 가진 것으로 그럭저럭 해냈다.'],
+      ['They made do with one room.', '그들은 방 하나로 그럭저럭 지냈다.'],
+    ]},
+  ]},
+  { w: 'on account of', p: 'phr.', s: [
+    { m: '~ 때문에', syn: ['because of'], ex: [
+      ['The game was canceled on account of rain.', '비 때문에 경기가 취소되었다.'],
+      ['He was absent on account of illness.', '그는 병 때문에 결석했다.'],
+      ['Roads closed on account of snow.', '눈 때문에 도로가 폐쇄되었다.'],
+    ]},
+  ]},
+  { w: 'on behalf of', p: 'phr.', s: [
+    { m: '~을 대신하여, 대표하여', syn: [], ex: [
+      ['She spoke on behalf of the class.', '그녀가 학급을 대표해 말했다.'],
+      ['He accepted the prize on behalf of his team.', '그는 팀을 대신해 상을 받았다.'],
+      ['On behalf of everyone, thank you.', '모두를 대신해 감사드립니다.'],
+    ]},
+  ]},
+  { w: 'on purpose', p: 'phr.', s: [
+    { m: '일부러, 고의로', syn: ['intentionally'], ex: [
+      ['He broke it on purpose.', '그는 일부러 그것을 깨뜨렸다.'],
+      ['She did not do it on purpose.', '그녀는 일부러 그런 것이 아니다.'],
+      ['They left the door open on purpose.', '그들은 일부러 문을 열어 두었다.'],
+    ]},
+  ]},
+  { w: 'on the brink of', p: 'phr.', s: [
+    { m: '~의 직전에', syn: [], ex: [
+      ['The company was on the brink of failure.', '그 회사는 파산 직전이었다.'],
+      ['She was on the brink of tears.', '그녀는 울음을 터뜨리기 직전이었다.'],
+      ['They stood on the brink of victory.', '그들은 승리 직전에 서 있었다.'],
+    ]},
+  ]},
+  { w: 'on the grounds that', p: 'phr.', s: [
+    { m: '~라는 이유로', syn: [], ex: [
+      ['He refused on the grounds that it was unfair.', '그는 부당하다는 이유로 거절했다.'],
+      ['She left on the grounds that she was ill.', '그녀는 아프다는 이유로 떠났다.'],
+      ['They objected on the grounds that it cost too much.', '그들은 비용이 너무 든다는 이유로 반대했다.'],
+    ]},
+  ]},
+  { w: 'on the other hand', p: 'phr.', s: [
+    { m: '반면에, 다른 한편으로', syn: [], ex: [
+      ['It is cheap; on the other hand, it is small.', '그것은 싸다, 반면에 작다.'],
+      ['He is strict; on the other hand, he is fair.', '그는 엄격하다, 다른 한편으로 공정하다.'],
+      ['On the other hand, the plan may work.', '반면에 그 계획이 통할 수도 있다.'],
+    ]},
+  ]},
+  { w: 'on the verge of', p: 'phr.', s: [
+    { m: '막 ~하려는 참인', syn: [], ex: [
+      ['She was on the verge of giving up.', '그녀는 막 포기하려던 참이었다.'],
+      ['The species is on the verge of extinction.', '그 종은 멸종 직전이다.'],
+      ['He was on the verge of laughing.', '그는 막 웃음이 터지려던 참이었다.'],
+    ]},
+  ]},
+  { w: 'out of the question', p: 'phr.', s: [
+    { m: '불가능한, 논의할 가치도 없는', syn: [], ex: [
+      ['Going out tonight is out of the question.', '오늘 밤 외출은 불가능하다.'],
+      ['Another delay is out of the question.', '또 미루는 것은 있을 수 없다.'],
+      ['For him, quitting was out of the question.', '그에게 그만두는 것은 있을 수 없는 일이었다.'],
+    ]},
+  ]},
+  { w: 'owing to', p: 'phr.', s: [
+    { m: '~ 때문에', syn: ['because of', 'due to'], ex: [
+      ['Owing to the storm, school was closed.', '폭풍 때문에 학교가 문을 닫았다.'],
+      ['Owing to her help, we finished early.', '그녀의 도움 덕분에 우리는 일찍 끝냈다.'],
+      ['The delay was owing to heavy traffic.', '그 지연은 심한 교통 체증 때문이었다.'],
+    ]},
+  ]},
+  { w: 'pave the way for', p: 'phr.', s: [
+    { m: '~의 길을 열다, 발판을 마련하다', syn: [], ex: [
+      ['Her research paved the way for a cure.', '그녀의 연구는 치료법의 길을 열었다.'],
+      ['The talks paved the way for peace.', '그 회담은 평화의 발판을 마련했다.'],
+      ['This law paves the way for change.', '이 법은 변화의 길을 연다.'],
+    ]},
+  ]},
+  { w: 'persist in', p: 'phr.', s: [
+    { m: '~을 고집하다, 끈질기게 계속하다', syn: [], ex: [
+      ['He persisted in asking questions.', '그는 끈질기게 질문을 계속했다.'],
+      ['She persisted in her belief.', '그녀는 자기 믿음을 고집했다.'],
+      ['They persisted in the search for days.', '그들은 며칠 동안 끈질기게 수색했다.'],
+    ]},
+  ]},
+  { w: 'prior to', p: 'phr.', s: [
+    { m: '~ 이전에', syn: ['before'], ex: [
+      ['Prior to the meeting, read the report.', '회의 전에 보고서를 읽으세요.'],
+      ['She lived abroad prior to 2010.', '그녀는 2010년 이전에 외국에 살았다.'],
+      ['Prior to the storm, the sky was clear.', '폭풍이 오기 전에는 하늘이 맑았다.'],
+    ]},
+  ]},
+  { w: 'put an end to', p: 'phr.', s: [
+    { m: '~을 끝내다, 종식시키다', syn: [], ex: [
+      ['The treaty put an end to the war.', '그 조약이 전쟁을 끝냈다.'],
+      ['She put an end to the argument.', '그녀가 그 논쟁을 끝냈다.'],
+      ['New rules put an end to the practice.', '새 규칙이 그 관행을 끝냈다.'],
+    ]},
+  ]},
   { w: 'regulate', p: 'v.', s: [
     { m: '규제하다, 조절하다', syn: ['control'], ex: [
       ['Laws regulate factory smoke.', '법이 공장 매연을 규제한다.'],

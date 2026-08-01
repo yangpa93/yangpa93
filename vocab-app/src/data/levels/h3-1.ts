@@ -1,5 +1,5 @@
 /**
- * 고등학교 3학년 레벨 1 — 수록 137 / 계획 137개.
+ * 고등학교 3학년 레벨 1 — 수록 154 / 계획 137개.
  *
  * 난이도 층: 고급(고등)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -9,6 +9,125 @@
 import { defineLevel } from '../define';
 
 export const H3_1 = defineLevel('h3-1', [
+  { w: 'by no means', p: 'phr.', s: [
+    { m: '결코 ~이 아니다', syn: [], ex: [
+      ['It is by no means certain.', '그것은 결코 확실하지 않다.'],
+      ['She is by no means a beginner.', '그녀는 결코 초보자가 아니다.'],
+      ['The task was by no means easy.', '그 일은 결코 쉽지 않았다.'],
+    ]},
+  ]},
+  { w: 'come to terms with', p: 'phr.', s: [
+    { m: '(어려움을) 받아들이다, 감수하다', syn: [], ex: [
+      ['He came to terms with his loss.', '그는 자기 상실을 받아들였다.'],
+      ['She came to terms with the change.', '그녀는 그 변화를 받아들였다.'],
+      ['It took years to come to terms with it.', '그것을 받아들이는 데 여러 해가 걸렸다.'],
+    ]},
+  ]},
+  { w: 'cut back on', p: 'phr.', s: [
+    { m: '~을 줄이다', syn: ['reduce'], ex: [
+      ['We must cut back on spending.', '우리는 지출을 줄여야 한다.'],
+      ['He cut back on coffee.', '그는 커피를 줄였다.'],
+      ['The company cut back on staff.', '그 회사는 인원을 줄였다.'],
+    ]},
+  ]},
+  { w: 'do away with', p: 'phr.', s: [
+    { m: '없애다, 폐지하다', syn: ['abolish'], ex: [
+      ['They did away with the old rule.', '그들은 그 낡은 규칙을 폐지했다.'],
+      ['The school did away with uniforms.', '그 학교는 교복을 없앴다.'],
+      ['We should do away with this practice.', '우리는 이 관행을 없애야 한다.'],
+    ]},
+  ]},
+  { w: 'draw on', p: 'phr.', s: [
+    { m: '(경험·자원을) 활용하다', syn: [], ex: [
+      ['She drew on her long experience.', '그녀는 오랜 경험을 활용했다.'],
+      ['He drew on savings to pay the bill.', '그는 저축을 헐어 값을 치렀다.'],
+      ['The writer drew on old letters.', '그 작가는 옛 편지들을 활용했다.'],
+    ]},
+  ]},
+  { w: 'fall behind', p: 'phr.', s: [
+    { m: '뒤처지다', syn: [], ex: [
+      ['He fell behind in his studies.', '그는 공부에서 뒤처졌다.'],
+      ['She fell behind the other runners.', '그녀는 다른 주자들보다 뒤처졌다.'],
+      ['The project fell behind schedule.', '그 사업은 일정보다 뒤처졌다.'],
+    ]},
+  ]},
+  { w: 'fall short of', p: 'phr.', s: [
+    { m: '~에 못 미치다', syn: [], ex: [
+      ['Sales fell short of our target.', '매출이 목표에 못 미쳤다.'],
+      ['The result fell short of expectations.', '결과는 기대에 못 미쳤다.'],
+      ['His answer fell short of the truth.', '그의 답은 진실에 못 미쳤다.'],
+    ]},
+  ]},
+  { w: 'give way to', p: 'phr.', s: [
+    { m: '~에 자리를 내주다, 굴복하다', syn: [], ex: [
+      ['Winter gave way to spring.', '겨울이 봄에 자리를 내주었다.'],
+      ['She gave way to tears.', '그녀는 눈물에 무너졌다.'],
+      ['The old bridge gave way to a new one.', '낡은 다리는 새 다리로 바뀌었다.'],
+    ]},
+  ]},
+  { w: 'in a sense', p: 'phr.', s: [
+    { m: '어떤 면에서는', syn: [], ex: [
+      ['In a sense, he was right.', '어떤 면에서는 그가 옳았다.'],
+      ['In a sense we are all learners.', '어떤 면에서 우리는 모두 배우는 사람이다.'],
+      ['This is, in a sense, a new beginning.', '이것은 어떤 면에서 새로운 시작이다.'],
+    ]},
+  ]},
+  { w: 'in advance', p: 'phr.', s: [
+    { m: '미리, 사전에', syn: ['beforehand'], ex: [
+      ['Please book the room in advance.', '방을 미리 예약해 주세요.'],
+      ['She paid in advance.', '그녀는 미리 값을 치렀다.'],
+      ['Let me know in advance if you cannot come.', '못 오시면 미리 알려 주세요.'],
+    ]},
+  ]},
+  { w: 'in charge of', p: 'phr.', s: [
+    { m: '~을 맡고 있는, 담당하는', syn: [], ex: [
+      ['She is in charge of the kitchen.', '그녀가 주방을 맡고 있다.'],
+      ['Who is in charge of this class?', '이 학급은 누가 담당하나요?'],
+      ['He was in charge of the whole event.', '그가 행사 전체를 맡았다.'],
+    ]},
+  ]},
+  { w: 'in comparison with', p: 'phr.', s: [
+    { m: '~와 비교하면', syn: [], ex: [
+      ['In comparison with last year, it is warm.', '작년과 비교하면 따뜻하다.'],
+      ['Our costs are low in comparison with theirs.', '우리 비용은 그들 것에 비해 낮다.'],
+      ['In comparison with the city, it is quiet.', '도시와 비교하면 조용하다.'],
+    ]},
+  ]},
+  { w: 'in contrast to', p: 'phr.', s: [
+    { m: '~와 대조적으로', syn: [], ex: [
+      ['In contrast to her sister, she is quiet.', '언니와 대조적으로 그녀는 조용하다.'],
+      ['In contrast to last week, today is cold.', '지난주와 대조적으로 오늘은 춥다.'],
+      ['His answer was short, in contrast to hers.', '그의 답은 그녀의 것과 달리 짧았다.'],
+    ]},
+  ]},
+  { w: 'in exchange for', p: 'phr.', s: [
+    { m: '~ 대신에, ~의 대가로', syn: [], ex: [
+      ['He gave up his seat in exchange for a smile.', '그는 미소 하나를 받고 자리를 내주었다.'],
+      ['She worked in exchange for a room.', '그녀는 방을 얻는 대가로 일했다.'],
+      ['They offered help in exchange for food.', '그들은 음식을 받는 대가로 도움을 주었다.'],
+    ]},
+  ]},
+  { w: 'in favor of', p: 'phr.', s: [
+    { m: '~에 찬성하여, ~을 택하여', syn: [], ex: [
+      ['Most members were in favor of the plan.', '대부분의 회원이 그 계획에 찬성했다.'],
+      ['She spoke in favor of the change.', '그녀는 그 변화에 찬성하는 발언을 했다.'],
+      ['He gave up meat in favor of vegetables.', '그는 고기 대신 채소를 택했다.'],
+    ]},
+  ]},
+  { w: 'in general', p: 'phr.', s: [
+    { m: '일반적으로, 대체로', syn: ['generally'], ex: [
+      ['In general, children learn fast.', '일반적으로 아이들은 빨리 배운다.'],
+      ['In general the weather here is mild.', '대체로 이곳 날씨는 온화하다.'],
+      ['People in general prefer simple things.', '사람들은 대체로 단순한 것을 좋아한다.'],
+    ]},
+  ]},
+  { w: 'in line with', p: 'phr.', s: [
+    { m: '~에 부합하여, ~에 맞추어', syn: [], ex: [
+      ['The result is in line with our forecast.', '그 결과는 우리 예측에 부합한다.'],
+      ['Prices rose in line with inflation.', '물가는 물가 상승률에 맞추어 올랐다.'],
+      ['His view is in line with mine.', '그의 견해는 내 것과 일치한다.'],
+    ]},
+  ]},
   { w: 'insect', p: 'n.', s: [
     { m: '곤충', syn: ['bug'], ex: [
       ['An insect landed on my arm.', '곤충 한 마리가 내 팔에 앉았다.'],

@@ -1,5 +1,5 @@
 /**
- * 중학교 3학년 레벨 4 — 수록 137 / 계획 137개.
+ * 중학교 3학년 레벨 4 — 수록 154 / 계획 137개.
  *
  * 난이도 층: 중급(중학 권장)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -9,6 +9,125 @@
 import { defineLevel } from '../define';
 
 export const M3_4 = defineLevel('m3-4', [
+  { w: 'apply to', p: 'phr.', s: [
+    { m: '~에 적용되다', syn: [], ex: [
+      ['This rule applies to everyone.', '이 규칙은 모두에게 적용된다.'],
+      ['The discount applies to students only.', '그 할인은 학생에게만 적용된다.'],
+      ['Does this law apply to us?', '이 법이 우리에게도 적용되나요?'],
+    ]},
+  ]},
+  { w: 'approve of', p: 'phr.', s: [
+    { m: '~을 찬성하다, 좋게 여기다', syn: [], ex: [
+      ['Her parents approve of the marriage.', '그녀의 부모는 그 결혼을 찬성한다.'],
+      ['He does not approve of smoking.', '그는 흡연을 좋게 여기지 않는다.'],
+      ['The teacher approved of our plan.', '선생님은 우리 계획을 찬성하셨다.'],
+    ]},
+  ]},
+  { w: 'be aware of', p: 'phr.', s: [
+    { m: '~을 알고 있다, 인식하다', syn: ['be conscious of'], ex: [
+      ['Are you aware of the danger?', '너는 그 위험을 알고 있니?'],
+      ['She was aware of his feelings.', '그녀는 그의 감정을 알고 있었다.'],
+      ['Few people are aware of this rule.', '이 규칙을 아는 사람은 거의 없다.'],
+    ]},
+  ]},
+  { w: 'be capable of', p: 'phr.', s: [
+    { m: '~할 능력이 있다', syn: ['be able to'], ex: [
+      ['She is capable of solving it alone.', '그녀는 혼자 그것을 풀 능력이 있다.'],
+      ['The machine is capable of great speed.', '그 기계는 대단한 속도를 낼 수 있다.'],
+      ['He is capable of much more.', '그는 훨씬 더 잘할 수 있다.'],
+    ]},
+  ]},
+  { w: 'be composed of', p: 'phr.', s: [
+    { m: '~로 구성되다', syn: ['consist of'], ex: [
+      ['Water is composed of hydrogen and oxygen.', '물은 수소와 산소로 구성된다.'],
+      ['The team is composed of five players.', '그 팀은 다섯 명으로 구성된다.'],
+      ['The book is composed of ten chapters.', '그 책은 열 개의 장으로 구성된다.'],
+    ]},
+  ]},
+  { w: 'be concerned about', p: 'phr.', s: [
+    { m: '~을 걱정하다', syn: ['be worried about'], ex: [
+      ['Parents are concerned about safety.', '부모들은 안전을 걱정한다.'],
+      ['She is concerned about her grades.', '그녀는 자기 성적을 걱정한다.'],
+      ['We are concerned about the delay.', '우리는 지연을 걱정하고 있다.'],
+    ]},
+  ]},
+  { w: 'be devoted to', p: 'phr.', s: [
+    { m: '~에 헌신하다, 전념하다', syn: [], ex: [
+      ['She is devoted to her students.', '그녀는 학생들에게 헌신한다.'],
+      ['He was devoted to his research.', '그는 연구에 전념했다.'],
+      ['The book is devoted to one topic.', '그 책은 한 가지 주제에 할애되어 있다.'],
+    ]},
+  ]},
+  { w: 'be engaged in', p: 'phr.', s: [
+    { m: '~에 종사하다, 관여하다', syn: [], ex: [
+      ['They are engaged in farming.', '그들은 농사에 종사한다.'],
+      ['He was engaged in a long debate.', '그는 긴 토론에 참여하고 있었다.'],
+      ['The company is engaged in research.', '그 회사는 연구에 종사한다.'],
+    ]},
+  ]},
+  { w: 'be equal to', p: 'phr.', s: [
+    { m: '~와 같다; ~을 감당할 만하다', syn: [], ex: [
+      ['One kilometer is equal to a thousand meters.', '1킬로미터는 1000미터와 같다.'],
+      ['She is equal to the task.', '그녀는 그 일을 감당할 만하다.'],
+      ['Their scores were equal to ours.', '그들의 점수는 우리와 같았다.'],
+    ]},
+  ]},
+  { w: 'be familiar with', p: 'phr.', s: [
+    { m: '~에 익숙하다, 잘 알다', syn: [], ex: [
+      ['I am familiar with this software.', '나는 이 소프트웨어에 익숙하다.'],
+      ['She is familiar with the neighborhood.', '그녀는 그 동네를 잘 안다.'],
+      ['He was not familiar with the rules.', '그는 그 규칙을 잘 몰랐다.'],
+    ]},
+  ]},
+  { w: 'be fond of', p: 'phr.', s: [
+    { m: '~을 좋아하다', syn: ['like'], ex: [
+      ['She is fond of classical music.', '그녀는 고전 음악을 좋아한다.'],
+      ['He is fond of his little sister.', '그는 여동생을 아낀다.'],
+      ['They are fond of walking at night.', '그들은 밤에 걷는 것을 좋아한다.'],
+    ]},
+  ]},
+  { w: 'be involved in', p: 'phr.', s: [
+    { m: '~에 관련되다, 참여하다', syn: [], ex: [
+      ['He was involved in the accident.', '그는 그 사고에 연루되었다.'],
+      ['She is involved in several clubs.', '그녀는 여러 동아리에 참여한다.'],
+      ['Many people were involved in the project.', '많은 사람이 그 사업에 참여했다.'],
+    ]},
+  ]},
+  { w: 'be known as', p: 'phr.', s: [
+    { m: '~로 알려져 있다', syn: [], ex: [
+      ['He is known as a great teacher.', '그는 훌륭한 교사로 알려져 있다.'],
+      ['The city is known as the green city.', '그 도시는 녹색 도시로 알려져 있다.'],
+      ['She is known as a fair judge.', '그녀는 공정한 심판으로 알려져 있다.'],
+    ]},
+  ]},
+  { w: 'be known for', p: 'phr.', s: [
+    { m: '~로 유명하다', syn: ['be famous for'], ex: [
+      ['The region is known for its wine.', '그 지역은 포도주로 유명하다.'],
+      ['He is known for his honesty.', '그는 정직함으로 유명하다.'],
+      ['Japan is known for its trains.', '일본은 기차로 유명하다.'],
+    ]},
+  ]},
+  { w: 'be opposed to', p: 'phr.', s: [
+    { m: '~에 반대하다', syn: [], ex: [
+      ['Many citizens are opposed to the plan.', '많은 시민이 그 계획에 반대한다.'],
+      ['She is opposed to any change.', '그녀는 어떤 변화에도 반대한다.'],
+      ['They were opposed to the new law.', '그들은 새 법에 반대했다.'],
+    ]},
+  ]},
+  { w: 'be responsible for', p: 'phr.', s: [
+    { m: '~에 책임이 있다', syn: [], ex: [
+      ['He is responsible for the mistake.', '그 실수는 그에게 책임이 있다.'],
+      ['She is responsible for the whole team.', '그녀는 팀 전체를 책임진다.'],
+      ['Who is responsible for this decision?', '이 결정은 누구 책임인가요?'],
+    ]},
+  ]},
+  { w: 'be satisfied with', p: 'phr.', s: [
+    { m: '~에 만족하다', syn: [], ex: [
+      ['We are satisfied with the result.', '우리는 그 결과에 만족한다.'],
+      ['She was not satisfied with her score.', '그녀는 자기 점수에 만족하지 못했다.'],
+      ['He seems satisfied with the answer.', '그는 그 답에 만족한 듯하다.'],
+    ]},
+  ]},
   { w: 'joke', p: 'n., v.', s: [
     { m: '농담, 농담하다', syn: [], ex: [
       ['He told a funny joke.', '그는 재미있는 농담을 했다.'],

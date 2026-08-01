@@ -1,5 +1,5 @@
 /**
- * 중학교 1학년 레벨 3 — 수록 137 / 계획 137개.
+ * 중학교 1학년 레벨 3 — 수록 154 / 계획 137개.
  *
  * 난이도 층: 기초(초등 권장)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -9,6 +9,125 @@
 import { defineLevel } from '../define';
 
 export const M1_3 = defineLevel('m1-3', [
+  { w: 'be similar to', p: 'phr.', s: [
+    { m: '~와 비슷하다', syn: [], ex: [
+      ['Her voice is similar to her mother\'s.', '그녀의 목소리는 어머니의 것과 비슷하다.'],
+      ['This problem is similar to the last one.', '이 문제는 지난번 것과 비슷하다.'],
+      ['The two languages are similar to each other.', '그 두 언어는 서로 비슷하다.'],
+    ]},
+  ]},
+  { w: 'be sure of', p: 'phr.', s: [
+    { m: '~을 확신하다', syn: ['be certain of'], ex: [
+      ['I am sure of his honesty.', '나는 그의 정직함을 확신한다.'],
+      ['She was sure of the answer.', '그녀는 답을 확신했다.'],
+      ['No one was sure of the date.', '아무도 날짜를 확신하지 못했다.'],
+    ]},
+  ]},
+  { w: 'be surprised at', p: 'phr.', s: [
+    { m: '~에 놀라다', syn: [], ex: [
+      ['We were surprised at the news.', '우리는 그 소식에 놀랐다.'],
+      ['He was surprised at how fast she ran.', '그는 그녀가 얼마나 빨리 달리는지에 놀랐다.'],
+      ['They were surprised at the result.', '그들은 그 결과에 놀랐다.'],
+    ]},
+  ]},
+  { w: 'be tired of', p: 'phr.', s: [
+    { m: '~에 싫증나다, 지겹다', syn: ['be sick of'], ex: [
+      ['I am tired of the same food every day.', '나는 매일 같은 음식에 싫증이 났다.'],
+      ['She was tired of waiting.', '그녀는 기다리는 데 지쳤다.'],
+      ['He is tired of hearing that excuse.', '그는 그 핑계를 듣는 것이 지겹다.'],
+    ]},
+  ]},
+  { w: 'be worried about', p: 'phr.', s: [
+    { m: '~에 대해 걱정하다', syn: ['worry about'], ex: [
+      ['She is worried about the exam.', '그녀는 시험을 걱정하고 있다.'],
+      ['We were worried about you.', '우리는 너를 걱정했다.'],
+      ['He is worried about his health.', '그는 자기 건강을 걱정한다.'],
+    ]},
+  ]},
+  { w: 'believe in', p: 'phr.', s: [
+    { m: '~의 존재를 믿다, ~을 신뢰하다', syn: [], ex: [
+      ['Do you believe in ghosts?', '너는 유령의 존재를 믿니?'],
+      ['She believes in hard work.', '그녀는 노력의 가치를 믿는다.'],
+      ['We believe in you.', '우리는 너를 믿는다.'],
+    ]},
+  ]},
+  { w: 'belong to', p: 'phr.', s: [
+    { m: '~의 것이다, ~에 속하다', syn: [], ex: [
+      ['This umbrella belongs to me.', '이 우산은 내 것이다.'],
+      ['He belongs to the tennis club.', '그는 테니스 동아리에 속해 있다.'],
+      ['These books belong to the library.', '이 책들은 도서관 것이다.'],
+    ]},
+  ]},
+  { w: 'both A and B', p: 'phr.', s: [
+    { m: 'A와 B 둘 다', syn: [], ex: [
+      ['Both my father and my mother work.', '아버지와 어머니 두 분 다 일하신다.'],
+      ['She speaks both Korean and English.', '그녀는 한국어와 영어를 둘 다 한다.'],
+      ['Both the food and the service were good.', '음식과 서비스 둘 다 좋았다.'],
+    ]},
+  ]},
+  { w: 'bring up', p: 'phr.', s: [
+    { m: '(아이를) 기르다; (화제를) 꺼내다', syn: ['raise'], ex: [
+      ['Her grandparents brought her up.', '조부모가 그녀를 길렀다.'],
+      ['He brought up the subject at dinner.', '그는 저녁 식사 때 그 이야기를 꺼냈다.'],
+      ['They brought up three children alone.', '그들은 아이 셋을 혼자 길렀다.'],
+    ]},
+  ]},
+  { w: 'by accident', p: 'phr.', s: [
+    { m: '우연히, 실수로', syn: ['by chance', 'accidentally'], ex: [
+      ['I found the letter by accident.', '나는 우연히 그 편지를 발견했다.'],
+      ['He broke the window by accident.', '그는 실수로 창문을 깼다.'],
+      ['We met by accident at the airport.', '우리는 공항에서 우연히 만났다.'],
+    ]},
+  ]},
+  { w: 'by chance', p: 'phr.', s: [
+    { m: '우연히', syn: ['by accident'], ex: [
+      ['We met by chance in the library.', '우리는 도서관에서 우연히 만났다.'],
+      ['She discovered the truth by chance.', '그녀는 우연히 진실을 알게 되었다.'],
+      ['Did you find it by chance?', '그것을 우연히 찾았니?'],
+    ]},
+  ]},
+  { w: 'by mistake', p: 'phr.', s: [
+    { m: '실수로', syn: [], ex: [
+      ['I took your bag by mistake.', '내가 실수로 네 가방을 가져갔다.'],
+      ['He deleted the file by mistake.', '그는 실수로 그 파일을 지웠다.'],
+      ['She called the wrong number by mistake.', '그녀는 실수로 잘못된 번호로 전화했다.'],
+    ]},
+  ]},
+  { w: 'by oneself', p: 'phr.', s: [
+    { m: '혼자서, 스스로', syn: ['alone'], ex: [
+      ['He fixed the bike by himself.', '그는 혼자서 자전거를 고쳤다.'],
+      ['She lives by herself.', '그녀는 혼자 산다.'],
+      ['The children walked home by themselves.', '아이들은 혼자서 집까지 걸어갔다.'],
+    ]},
+  ]},
+  { w: 'by the way', p: 'phr.', s: [
+    { m: '그런데, 그건 그렇고', syn: [], ex: [
+      ['By the way, did you call her?', '그런데, 그녀에게 전화했니?'],
+      ['By the way, I found your keys.', '그건 그렇고, 네 열쇠를 찾았어.'],
+      ['By the way, the meeting is at three.', '그런데 회의는 세 시야.'],
+    ]},
+  ]},
+  { w: 'call back', p: 'phr.', s: [
+    { m: '나중에 다시 전화하다', syn: [], ex: [
+      ['I will call back in ten minutes.', '10분 뒤에 다시 전화할게.'],
+      ['She promised to call back soon.', '그녀는 곧 다시 전화하겠다고 약속했다.'],
+      ['Please call back after lunch.', '점심 후에 다시 전화해 주세요.'],
+    ]},
+  ]},
+  { w: 'care about', p: 'phr.', s: [
+    { m: '~에 관심을 갖다, 신경 쓰다', syn: [], ex: [
+      ['She cares about the environment.', '그녀는 환경에 관심을 갖는다.'],
+      ['He does not care about money.', '그는 돈에 신경 쓰지 않는다.'],
+      ['Do you really care about what they think?', '너는 정말 그들이 어떻게 생각하는지 신경 쓰니?'],
+    ]},
+  ]},
+  { w: 'catch a cold', p: 'phr.', s: [
+    { m: '감기에 걸리다', syn: [], ex: [
+      ['Wear a coat or you will catch a cold.', '외투를 입어라, 안 그러면 감기에 걸린다.'],
+      ['He caught a cold last week.', '그는 지난주에 감기에 걸렸다.'],
+      ['She catches a cold every winter.', '그녀는 겨울마다 감기에 걸린다.'],
+    ]},
+  ]},
   { w: 'eat', p: 'v.', s: [
     { m: '먹다', syn: ['have'], ex: [
       ['We eat lunch at noon.', '우리는 정오에 점심을 먹는다.'],

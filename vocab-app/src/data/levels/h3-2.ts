@@ -1,5 +1,5 @@
 /**
- * 고등학교 3학년 레벨 2 — 수록 137 / 계획 137개.
+ * 고등학교 3학년 레벨 2 — 수록 153 / 계획 137개.
  *
  * 난이도 층: 고급(고등)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -9,6 +9,118 @@
 import { defineLevel } from '../define';
 
 export const H3_2 = defineLevel('h3-2', [
+  { w: 'in need of', p: 'phr.', s: [
+    { m: '~을 필요로 하는', syn: [], ex: [
+      ['The house is in need of repair.', '그 집은 수리가 필요하다.'],
+      ['Many families are in need of help.', '많은 가정이 도움을 필요로 한다.'],
+      ['She was in need of rest.', '그녀는 휴식이 필요했다.'],
+    ]},
+  ]},
+  { w: 'in other words', p: 'phr.', s: [
+    { m: '다시 말해, 즉', syn: [], ex: [
+      ['In other words, we must start over.', '다시 말해, 우리는 처음부터 시작해야 한다.'],
+      ['He refused; in other words, he said no.', '그는 거절했다, 즉 안 된다고 한 것이다.'],
+      ['In other words, the plan failed.', '다시 말해 그 계획은 실패했다.'],
+    ]},
+  ]},
+  { w: 'in place of', p: 'phr.', s: [
+    { m: '~ 대신에', syn: ['instead of'], ex: [
+      ['Use honey in place of sugar.', '설탕 대신 꿀을 쓰세요.'],
+      ['She spoke in place of the director.', '그녀가 원장 대신 발언했다.'],
+      ['We used cloth in place of paper.', '우리는 종이 대신 천을 썼다.'],
+    ]},
+  ]},
+  { w: 'in proportion to', p: 'phr.', s: [
+    { m: '~에 비례하여', syn: [], ex: [
+      ['Pay rises in proportion to experience.', '급여는 경력에 비례해 오른다.'],
+      ['The cost grows in proportion to size.', '비용은 크기에 비례해 늘어난다.'],
+      ['Rewards were given in proportion to effort.', '보상은 노력에 비례해 주어졌다.'],
+    ]},
+  ]},
+  { w: 'in public', p: 'phr.', s: [
+    { m: '사람들 앞에서, 공개적으로', syn: [], ex: [
+      ['She rarely speaks in public.', '그녀는 사람들 앞에서 좀처럼 말하지 않는다.'],
+      ['He apologized in public.', '그는 공개적으로 사과했다.'],
+      ['Do not argue in public.', '사람들 앞에서 다투지 마라.'],
+    ]},
+  ]},
+  { w: 'in pursuit of', p: 'phr.', s: [
+    { m: '~을 좇아, 추구하여', syn: [], ex: [
+      ['He left home in pursuit of a dream.', '그는 꿈을 좇아 집을 떠났다.'],
+      ['They traveled in pursuit of knowledge.', '그들은 지식을 찾아 여행했다.'],
+      ['She works hard in pursuit of her goal.', '그녀는 목표를 좇아 열심히 일한다.'],
+    ]},
+  ]},
+  { w: 'in response to', p: 'phr.', s: [
+    { m: '~에 대응하여, 답하여', syn: [], ex: [
+      ['In response to the letter, she called.', '그 편지에 답하여 그녀는 전화했다.'],
+      ['Prices fell in response to demand.', '수요에 대응해 가격이 떨어졌다.'],
+      ['The city acted in response to the flood.', '그 도시는 홍수에 대응해 조치를 취했다.'],
+    ]},
+  ]},
+  { w: 'in return for', p: 'phr.', s: [
+    { m: '~에 대한 보답으로', syn: [], ex: [
+      ['He gave her flowers in return for her help.', '그는 도움에 대한 보답으로 그녀에게 꽃을 주었다.'],
+      ['She asked nothing in return for her kindness.', '그녀는 친절의 대가로 아무것도 바라지 않았다.'],
+      ['They offered land in return for peace.', '그들은 평화의 대가로 땅을 내주었다.'],
+    ]},
+  ]},
+  { w: 'in short', p: 'phr.', s: [
+    { m: '요컨대, 간단히 말해', syn: [], ex: [
+      ['In short, the plan will not work.', '요컨대 그 계획은 통하지 않을 것이다.'],
+      ['In short, we need more time.', '간단히 말해 우리는 시간이 더 필요하다.'],
+      ['In short, she was right all along.', '요컨대 그녀가 처음부터 옳았다.'],
+    ]},
+  ]},
+  { w: 'in the course of', p: 'phr.', s: [
+    { m: '~하는 동안에', syn: [], ex: [
+      ['In the course of the year, much changed.', '그해 동안 많은 것이 바뀌었다.'],
+      ['In the course of the talk, he mentioned it.', '이야기하는 동안 그는 그것을 언급했다.'],
+      ['Many trees fell in the course of the storm.', '폭풍이 부는 동안 많은 나무가 쓰러졌다.'],
+    ]},
+  ]},
+  { w: 'in the face of', p: 'phr.', s: [
+    { m: '~에 직면하여, ~에도 불구하고', syn: [], ex: [
+      ['She stayed calm in the face of danger.', '그녀는 위험에 직면해서도 침착했다.'],
+      ['They kept working in the face of criticism.', '그들은 비판에도 불구하고 계속 일했다.'],
+      ['He showed courage in the face of loss.', '그는 상실 앞에서 용기를 보였다.'],
+    ]},
+  ]},
+  { w: 'in the wake of', p: 'phr.', s: [
+    { m: '~의 여파로, ~에 뒤이어', syn: [], ex: [
+      ['The city rebuilt in the wake of the fire.', '그 도시는 화재의 여파로 다시 지어졌다.'],
+      ['Prices rose in the wake of the storm.', '폭풍의 여파로 물가가 올랐다.'],
+      ['New rules came in the wake of the accident.', '그 사고에 뒤이어 새 규칙이 생겼다.'],
+    ]},
+  ]},
+  { w: 'in view of', p: 'phr.', s: [
+    { m: '~을 고려하여', syn: [], ex: [
+      ['In view of the weather, we stayed home.', '날씨를 고려해 우리는 집에 있었다.'],
+      ['In view of his age, that is remarkable.', '그의 나이를 고려하면 그것은 놀랍다.'],
+      ['In view of the cost, we chose another way.', '비용을 고려해 우리는 다른 길을 택했다.'],
+    ]},
+  ]},
+  { w: 'keep abreast of', p: 'phr.', s: [
+    { m: '~에 뒤지지 않고 알고 있다', syn: [], ex: [
+      ['She keeps abreast of the news.', '그녀는 소식에 뒤지지 않고 있다.'],
+      ['Doctors must keep abreast of research.', '의사는 연구를 계속 따라가야 한다.'],
+      ['He keeps abreast of the latest trends.', '그는 최신 흐름을 계속 파악한다.'],
+    ]},
+  ]},
+  { w: 'lay off', p: 'phr.', s: [
+    { m: '(직원을) 해고하다', syn: [], ex: [
+      ['The factory laid off fifty workers.', '그 공장은 노동자 쉰 명을 해고했다.'],
+      ['He was laid off last winter.', '그는 지난겨울에 해고되었다.'],
+      ['They laid off staff to cut costs.', '그들은 비용을 줄이려 직원을 해고했다.'],
+    ]},
+  ]},
+  { w: 'live up to', p: 'phr.', s: [
+    { m: '(기대에) 부응하다', syn: [], ex: [
+      ['The film lived up to its reputation.', '그 영화는 명성에 부응했다.'],
+      ['She lived up to her promise.', '그녀는 약속을 지켰다.'],
+      ['He tried to live up to their hopes.', '그는 그들의 기대에 부응하려 애썼다.'],
+    ]},
+  ]},
   { w: 'obsess', p: 'v.', s: [
     { m: '사로잡다, 집착하게 하다', syn: ['preoccupy'], ex: [
       ['He is obsessed with soccer.', '그는 축구에 푹 빠져 있다.'],

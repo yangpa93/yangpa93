@@ -1,5 +1,5 @@
 /**
- * 중학교 3학년 레벨 3 — 수록 137 / 계획 137개.
+ * 중학교 3학년 레벨 3 — 수록 154 / 계획 137개.
  *
  * 난이도 층: 중급(중학 권장)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -9,6 +9,27 @@
 import { defineLevel } from '../define';
 
 export const M3_3 = defineLevel('m3-3', [
+  { w: 'add up to', p: 'phr.', s: [
+    { m: '합계가 ~이 되다; 결국 ~을 뜻하다', syn: ['amount to'], ex: [
+      ['The costs add up to a large sum.', '비용이 합쳐서 큰 금액이 된다.'],
+      ['These clues add up to one answer.', '이 단서들은 결국 하나의 답을 가리킨다.'],
+      ['The numbers add up to one hundred.', '그 숫자들의 합은 100이다.'],
+    ]},
+  ]},
+  { w: 'appeal to', p: 'phr.', s: [
+    { m: '~의 마음에 들다; ~에 호소하다', syn: [], ex: [
+      ['The design appeals to young people.', '그 디자인은 젊은 사람들의 마음에 든다.'],
+      ['She appealed to the judge for mercy.', '그녀는 판사에게 선처를 호소했다.'],
+      ['This book appeals to me.', '이 책은 내 마음에 든다.'],
+    ]},
+  ]},
+  { w: 'apply for', p: 'phr.', s: [
+    { m: '~에 지원하다, 신청하다', syn: [], ex: [
+      ['He applied for the job last week.', '그는 지난주에 그 일자리에 지원했다.'],
+      ['She applied for a scholarship.', '그녀는 장학금을 신청했다.'],
+      ['You must apply for a visa first.', '먼저 비자를 신청해야 한다.'],
+    ]},
+  ]},
   { w: 'fold', p: 'v.', s: [
     { m: '접다', syn: [], ex: [
       ['Fold the paper in half.', '종이를 반으로 접어라.'],
@@ -975,6 +996,104 @@ export const M3_3 = defineLevel('m3-3', [
       ['She wore blue jeans.', '그녀는 청바지를 입었다.'],
       ['My jeans are too tight.', '내 청바지가 너무 조인다.'],
       ['He bought new jeans.', '그는 새 청바지를 샀다.'],
+    ]},
+  ]},
+  { w: 'take out', p: 'phr.', s: [
+    { m: '꺼내다; 데리고 나가다', syn: [], ex: [
+      ['He took out his wallet.', '그는 지갑을 꺼냈다.'],
+      ['She took the dog out for a walk.', '그녀는 개를 산책시키러 데리고 나갔다.'],
+      ['Take out the trash, please.', '쓰레기 좀 내다 버려 줘.'],
+    ]},
+  ]},
+  { w: 'talk about', p: 'phr.', s: [
+    { m: '~에 대해 이야기하다', syn: ['discuss'], ex: [
+      ['They talked about the movie for hours.', '그들은 몇 시간 동안 그 영화 이야기를 했다.'],
+      ['We need to talk about your grades.', '네 성적에 대해 이야기해야겠다.'],
+      ['She never talks about herself.', '그녀는 자기 이야기를 하지 않는다.'],
+    ]},
+  ]},
+  { w: 'talk to', p: 'phr.', s: [
+    { m: '~에게 말을 걸다, 이야기하다', syn: [], ex: [
+      ['I need to talk to you.', '너와 이야기 좀 해야겠다.'],
+      ['He talked to the manager about it.', '그는 그 일로 매니저와 이야기했다.'],
+      ['She talks to her plants.', '그녀는 자기 식물에게 말을 건다.'],
+    ]},
+  ]},
+  { w: 'thank for', p: 'phr.', s: [
+    { m: '~에 대해 감사하다', syn: [], ex: [
+      ['I thank you for your kindness.', '당신의 친절에 감사드립니다.'],
+      ['She thanked him for the gift.', '그녀는 그에게 선물에 대해 고마워했다.'],
+      ['We thanked them for their help.', '우리는 그들의 도움에 감사했다.'],
+    ]},
+  ]},
+  { w: 'think about', p: 'phr.', s: [
+    { m: '~에 대해 생각하다', syn: [], ex: [
+      ['Let me think about it.', '그것에 대해 생각해 볼게.'],
+      ['She thinks about her future a lot.', '그녀는 자기 미래에 대해 많이 생각한다.'],
+      ['He thought about quitting.', '그는 그만둘까 생각했다.'],
+    ]},
+  ]},
+  { w: 'throw away', p: 'phr.', s: [
+    { m: '버리다, 내던지다', syn: ['discard'], ex: [
+      ['Do not throw away that old letter.', '그 낡은 편지를 버리지 마라.'],
+      ['He threw away the broken chair.', '그는 부서진 의자를 버렸다.'],
+      ['She threw away a good chance.', '그녀는 좋은 기회를 날려 버렸다.'],
+    ]},
+  ]},
+  { w: 'try on', p: 'phr.', s: [
+    { m: '입어 보다, 신어 보다', syn: [], ex: [
+      ['Can I try on these shoes?', '이 신발을 신어 봐도 될까요?'],
+      ['She tried on three dresses.', '그녀는 드레스 세 벌을 입어 보았다.'],
+      ['Try on the jacket before you buy it.', '사기 전에 재킷을 입어 봐라.'],
+    ]},
+  ]},
+  { w: 'turn around', p: 'phr.', s: [
+    { m: '돌아서다, 방향을 바꾸다', syn: [], ex: [
+      ['He turned around and waved.', '그는 돌아서서 손을 흔들었다.'],
+      ['Turn around slowly.', '천천히 돌아서세요.'],
+      ['The car turned around at the corner.', '그 차는 모퉁이에서 방향을 바꿨다.'],
+    ]},
+  ]},
+  { w: 'turn down', p: 'phr.', s: [
+    { m: '(소리를) 줄이다; 거절하다', syn: ['reject'], ex: [
+      ['Please turn down the music.', '음악 소리를 줄여 주세요.'],
+      ['She turned down the offer.', '그녀는 그 제안을 거절했다.'],
+      ['He turned down the heat.', '그는 난방을 낮췄다.'],
+    ]},
+  ]},
+  { w: 'turn into', p: 'phr.', s: [
+    { m: '~로 변하다', syn: ['become', 'change into'], ex: [
+      ['The rain turned into snow.', '비가 눈으로 바뀌었다.'],
+      ['The caterpillar turned into a butterfly.', '애벌레가 나비가 되었다.'],
+      ['Their argument turned into a fight.', '그들의 말다툼이 싸움으로 번졌다.'],
+    ]},
+  ]},
+  { w: 'turn up', p: 'phr.', s: [
+    { m: '나타나다; (소리를) 키우다', syn: [], ex: [
+      ['He turned up an hour late.', '그는 한 시간 늦게 나타났다.'],
+      ['Turn up the volume, please.', '소리를 키워 주세요.'],
+      ['The lost ring turned up in the garden.', '잃어버린 반지가 정원에서 나왔다.'],
+    ]},
+  ]},
+  { w: 'warm up', p: 'phr.', s: [
+    { m: '준비 운동을 하다; 데우다', syn: [], ex: [
+      ['The players warmed up before the game.', '선수들은 경기 전에 몸을 풀었다.'],
+      ['She warmed up the soup.', '그녀는 국을 데웠다.'],
+      ['Warm up for ten minutes first.', '먼저 10분 동안 몸을 푸세요.'],
+    ]},
+  ]},
+  { w: 'work on', p: 'phr.', s: [
+    { m: '~에 공을 들이다, 작업하다', syn: [], ex: [
+      ['He is working on a new song.', '그는 새 노래를 작업하고 있다.'],
+      ['She worked on her speech all night.', '그녀는 밤새 연설문에 공을 들였다.'],
+      ['We are working on the problem.', '우리는 그 문제를 붙들고 있다.'],
+    ]},
+  ]},
+  { w: 'write down', p: 'phr.', s: [
+    { m: '적어 두다', syn: [], ex: [
+      ['Write down your phone number here.', '여기에 전화번호를 적어 두세요.'],
+      ['She wrote down every word.', '그녀는 한 마디도 빼놓지 않고 적었다.'],
+      ['He wrote down the address quickly.', '그는 주소를 재빨리 적었다.'],
     ]},
   ]},
 ], 'curriculum');

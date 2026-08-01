@@ -1,5 +1,5 @@
 /**
- * 고등학교 2학년 레벨 1 — 수록 137 / 계획 137개.
+ * 고등학교 2학년 레벨 1 — 수록 154 / 계획 137개.
  *
  * 난이도 층: 고급(고등)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -975,6 +975,125 @@ export const H2_1 = defineLevel('h2-1', [
       ['The contract has a strange clause.', '그 계약에는 이상한 조항이 있다.'],
       ['This clause explains the rule.', '이 조항이 규칙을 설명한다.'],
       ['A sentence may have two clauses.', '한 문장에 절이 둘 있을 수 있다.'],
+    ]},
+  ]},
+  { w: 'make sense', p: 'phr.', s: [
+    { m: '말이 되다, 이치에 맞다', syn: [], ex: [
+      ['Your explanation makes sense.', '네 설명은 말이 된다.'],
+      ['That does not make sense to me.', '그것은 나에게 말이 안 된다.'],
+      ['It makes sense to leave early.', '일찍 떠나는 것이 이치에 맞다.'],
+    ]},
+  ]},
+  { w: 'make the most of', p: 'phr.', s: [
+    { m: '~을 최대한 활용하다', syn: [], ex: [
+      ['Make the most of your time here.', '여기서의 시간을 최대한 활용해라.'],
+      ['She made the most of a small room.', '그녀는 작은 방을 최대한 활용했다.'],
+      ['We made the most of the sunny day.', '우리는 화창한 날을 마음껏 즐겼다.'],
+    ]},
+  ]},
+  { w: 'object to', p: 'phr.', s: [
+    { m: '~에 반대하다', syn: [], ex: [
+      ['They objected to the new rule.', '그들은 새 규칙에 반대했다.'],
+      ['She objected to being called that.', '그녀는 그렇게 불리는 것에 반대했다.'],
+      ['No one objected to the plan.', '아무도 그 계획에 반대하지 않았다.'],
+    ]},
+  ]},
+  { w: 'participate in', p: 'phr.', s: [
+    { m: '~에 참가하다', syn: ['take part in'], ex: [
+      ['She participated in the contest.', '그녀는 그 대회에 참가했다.'],
+      ['All students participate in the festival.', '모든 학생이 축제에 참가한다.'],
+      ['He participated in the discussion.', '그는 토론에 참여했다.'],
+    ]},
+  ]},
+  { w: 'pass away', p: 'phr.', s: [
+    { m: '세상을 떠나다', syn: ['die'], ex: [
+      ['Her grandfather passed away last year.', '그녀의 할아버지는 작년에 돌아가셨다.'],
+      ['He passed away peacefully.', '그는 평화롭게 세상을 떠났다.'],
+      ['The old dog passed away in winter.', '그 늙은 개는 겨울에 죽었다.'],
+    ]},
+  ]},
+  { w: 'pass by', p: 'phr.', s: [
+    { m: '지나가다, 지나치다', syn: [], ex: [
+      ['A bus passed by the school.', '버스 한 대가 학교를 지나갔다.'],
+      ['Years passed by quickly.', '세월이 빠르게 지나갔다.'],
+      ['She passed by without noticing me.', '그녀는 나를 알아보지 못하고 지나쳤다.'],
+    ]},
+  ]},
+  { w: 'pass on', p: 'phr.', s: [
+    { m: '전하다, 물려주다', syn: [], ex: [
+      ['Please pass on my message.', '내 말을 전해 주세요.'],
+      ['She passed on the recipe to her daughter.', '그녀는 딸에게 그 조리법을 물려주었다.'],
+      ['He passed on the book to a friend.', '그는 그 책을 친구에게 넘겼다.'],
+    ]},
+  ]},
+  { w: 'pay back', p: 'phr.', s: [
+    { m: '갚다', syn: [], ex: [
+      ['I will pay back the money next week.', '다음 주에 돈을 갚을게.'],
+      ['She paid back every won.', '그녀는 한 푼도 남김없이 갚았다.'],
+      ['He paid back their kindness.', '그는 그들의 친절에 보답했다.'],
+    ]},
+  ]},
+  { w: 'pay off', p: 'phr.', s: [
+    { m: '(빚을) 다 갚다; 성과를 내다', syn: [], ex: [
+      ['Her hard work finally paid off.', '그녀의 노력이 마침내 결실을 맺었다.'],
+      ['They paid off the loan in five years.', '그들은 5년 만에 대출을 다 갚았다.'],
+      ['Patience pays off in the end.', '인내는 결국 보답을 준다.'],
+    ]},
+  ]},
+  { w: 'pick out', p: 'phr.', s: [
+    { m: '고르다, 골라내다', syn: ['choose'], ex: [
+      ['Pick out a book you like.', '마음에 드는 책을 골라라.'],
+      ['She picked out the ripe apples.', '그녀는 잘 익은 사과를 골라냈다.'],
+      ['He picked out his sister in the crowd.', '그는 군중 속에서 여동생을 알아보았다.'],
+    ]},
+  ]},
+  { w: 'point out', p: 'phr.', s: [
+    { m: '지적하다, 가리키다', syn: [], ex: [
+      ['She pointed out my mistake.', '그녀는 내 실수를 지적했다.'],
+      ['He pointed out the tallest building.', '그는 가장 높은 건물을 가리켰다.'],
+      ['The report points out several problems.', '그 보고서는 몇 가지 문제를 지적한다.'],
+    ]},
+  ]},
+  { w: 'put forward', p: 'phr.', s: [
+    { m: '(의견을) 내놓다, 제안하다', syn: ['propose'], ex: [
+      ['He put forward a new idea.', '그는 새로운 생각을 내놓았다.'],
+      ['She put forward a plan to save money.', '그녀는 돈을 아낄 방안을 제안했다.'],
+      ['They put forward three candidates.', '그들은 후보 세 명을 내세웠다.'],
+    ]},
+  ]},
+  { w: 'put up with', p: 'phr.', s: [
+    { m: '참다, 견디다', syn: ['tolerate', 'endure'], ex: [
+      ['I cannot put up with the noise.', '나는 그 소음을 참을 수 없다.'],
+      ['She put up with him for years.', '그녀는 몇 년을 그를 참아 주었다.'],
+      ['We had to put up with the cold.', '우리는 추위를 견뎌야 했다.'],
+    ]},
+  ]},
+  { w: 'refer to', p: 'phr.', s: [
+    { m: '언급하다; 참조하다', syn: [], ex: [
+      ['He referred to the accident briefly.', '그는 그 사고를 짧게 언급했다.'],
+      ['Please refer to page ten.', '10쪽을 참조하세요.'],
+      ['She referred to her notes.', '그녀는 자기 필기를 참조했다.'],
+    ]},
+  ]},
+  { w: 'reflect on', p: 'phr.', s: [
+    { m: '되돌아보다, 곰곰이 생각하다', syn: [], ex: [
+      ['She reflected on her childhood.', '그녀는 자기 어린 시절을 되돌아보았다.'],
+      ['Take time to reflect on your choices.', '네 선택을 곰곰이 생각할 시간을 가져라.'],
+      ['He reflected on what had happened.', '그는 일어난 일을 되짚어 보았다.'],
+    ]},
+  ]},
+  { w: 'regard as', p: 'phr.', s: [
+    { m: '~로 여기다, 간주하다', syn: ['consider'], ex: [
+      ['They regard him as a hero.', '그들은 그를 영웅으로 여긴다.'],
+      ['She is regarded as the best player.', '그녀는 최고의 선수로 평가받는다.'],
+      ['We regard this as a serious problem.', '우리는 이것을 심각한 문제로 본다.'],
+    ]},
+  ]},
+  { w: 'remind of', p: 'phr.', s: [
+    { m: '~을 떠올리게 하다', syn: [], ex: [
+      ['This song reminds me of summer.', '이 노래는 나에게 여름을 떠올리게 한다.'],
+      ['She reminds me of my aunt.', '그녀는 내 이모를 생각나게 한다.'],
+      ['The smell reminded him of home.', '그 냄새는 그에게 집을 떠올리게 했다.'],
     ]},
   ]},
 ], 'csat');

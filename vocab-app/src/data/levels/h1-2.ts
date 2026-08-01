@@ -1,5 +1,5 @@
 /**
- * 고등학교 1학년 레벨 2 — 수록 137 / 계획 137개.
+ * 고등학교 1학년 레벨 2 — 수록 154 / 계획 137개.
  *
  * 난이도 층: 중급(중학 권장)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -9,6 +9,125 @@
 import { defineLevel } from '../define';
 
 export const H1_2 = defineLevel('h1-2', [
+  { w: 'come down with', p: 'phr.', s: [
+    { m: '(병에) 걸리다', syn: [], ex: [
+      ['He came down with a fever.', '그는 열이 났다.'],
+      ['She came down with the flu last week.', '그녀는 지난주에 독감에 걸렸다.'],
+      ['Half the class came down with a cold.', '반 학생의 절반이 감기에 걸렸다.'],
+    ]},
+  ]},
+  { w: 'compare to', p: 'phr.', s: [
+    { m: '~에 비유하다, ~와 견주다', syn: [], ex: [
+      ['He compared her voice to a bell.', '그는 그녀의 목소리를 종소리에 비유했다.'],
+      ['Compared to last year, sales are up.', '작년에 비해 매출이 올랐다.'],
+      ['She compared the copy to the original.', '그녀는 사본을 원본과 견주어 보았다.'],
+    ]},
+  ]},
+  { w: 'compare with', p: 'phr.', s: [
+    { m: '~와 비교하다', syn: [], ex: [
+      ['Our sales are small compared with theirs.', '우리 매출은 그들 것과 비교하면 적다.'],
+      ['Our prices compare well with theirs.', '우리 가격은 그들 것과 견주어 괜찮다.'],
+      ['He compared his notes with mine.', '그는 자기 필기를 내 것과 비교했다.'],
+    ]},
+  ]},
+  { w: 'complain about', p: 'phr.', s: [
+    { m: '~에 대해 불평하다', syn: [], ex: [
+      ['She complained about the noise.', '그녀는 소음에 대해 불평했다.'],
+      ['They complained about the service.', '그들은 서비스에 대해 항의했다.'],
+      ['He never complains about anything.', '그는 무엇에도 불평하지 않는다.'],
+    ]},
+  ]},
+  { w: 'concentrate on', p: 'phr.', s: [
+    { m: '~에 집중하다', syn: ['focus on'], ex: [
+      ['Concentrate on your breathing.', '호흡에 집중하세요.'],
+      ['She concentrated on the difficult part.', '그녀는 어려운 부분에 집중했다.'],
+      ['He cannot concentrate on his work.', '그는 일에 집중하지 못한다.'],
+    ]},
+  ]},
+  { w: 'contribute to', p: 'phr.', s: [
+    { m: '~에 기여하다, 원인이 되다', syn: [], ex: [
+      ['Exercise contributes to good health.', '운동은 건강에 기여한다.'],
+      ['Everyone contributed to the success.', '모두가 그 성공에 기여했다.'],
+      ['Smoking contributes to heart disease.', '흡연은 심장병의 원인이 된다.'],
+    ]},
+  ]},
+  { w: 'cope with', p: 'phr.', s: [
+    { m: '~에 대처하다, 잘 처리하다', syn: ['deal with'], ex: [
+      ['She copes with stress by walking.', '그녀는 걷기로 스트레스에 대처한다.'],
+      ['They coped with the crisis calmly.', '그들은 위기에 침착하게 대처했다.'],
+      ['He could not cope with the pressure.', '그는 압박을 견디지 못했다.'],
+    ]},
+  ]},
+  { w: 'correspond to', p: 'phr.', s: [
+    { m: '~에 해당하다, 일치하다', syn: [], ex: [
+      ['This word corresponds to the Korean word.', '이 낱말은 그 한국어 낱말에 해당한다.'],
+      ['The numbers correspond to the seats.', '그 번호는 좌석과 일치한다.'],
+      ['His story corresponds to the facts.', '그의 이야기는 사실과 맞아떨어진다.'],
+    ]},
+  ]},
+  { w: 'derive from', p: 'phr.', s: [
+    { m: '~에서 유래하다, 얻다', syn: [], ex: [
+      ['The word derives from Latin.', '그 낱말은 라틴어에서 유래한다.'],
+      ['She derives joy from teaching.', '그녀는 가르치는 데서 기쁨을 얻는다.'],
+      ['Many medicines derive from plants.', '많은 약이 식물에서 나온다.'],
+    ]},
+  ]},
+  { w: 'devote to', p: 'phr.', s: [
+    { m: '~에 바치다, 쏟다', syn: [], ex: [
+      ['He devoted his life to science.', '그는 평생을 과학에 바쳤다.'],
+      ['She devotes an hour a day to reading.', '그녀는 하루 한 시간을 독서에 쏟는다.'],
+      ['The whole page is devoted to photographs.', '그 쪽 전체가 사진에 할애되어 있다.'],
+    ]},
+  ]},
+  { w: 'differ from', p: 'phr.', s: [
+    { m: '~와 다르다', syn: [], ex: [
+      ['My view differs from yours.', '내 견해는 네 것과 다르다.'],
+      ['This species differs from that one.', '이 종은 저 종과 다르다.'],
+      ['Customs differ from country to country.', '관습은 나라마다 다르다.'],
+    ]},
+  ]},
+  { w: 'do without', p: 'phr.', s: [
+    { m: '~ 없이 지내다', syn: [], ex: [
+      ['We can do without a car in this city.', '이 도시에서는 차 없이 지낼 수 있다.'],
+      ['She had to do without sugar.', '그녀는 설탕 없이 지내야 했다.'],
+      ['They did without electricity for a week.', '그들은 일주일 동안 전기 없이 지냈다.'],
+    ]},
+  ]},
+  { w: 'dress up', p: 'phr.', s: [
+    { m: '차려입다', syn: [], ex: [
+      ['She dressed up for the party.', '그녀는 파티를 위해 차려입었다.'],
+      ['The children dressed up as animals.', '아이들은 동물처럼 차려입었다.'],
+      ['You do not need to dress up.', '차려입을 필요는 없어요.'],
+    ]},
+  ]},
+  { w: 'drop by', p: 'phr.', s: [
+    { m: '잠깐 들르다', syn: ['stop by'], ex: [
+      ['Drop by my house anytime.', '언제든 우리 집에 들러.'],
+      ['She dropped by with some fruit.', '그녀는 과일을 들고 잠깐 들렀다.'],
+      ['He dropped by the office this morning.', '그는 오늘 아침 사무실에 들렀다.'],
+    ]},
+  ]},
+  { w: 'drop out', p: 'phr.', s: [
+    { m: '중퇴하다, 그만두다', syn: [], ex: [
+      ['He dropped out of school last year.', '그는 작년에 학교를 그만두었다.'],
+      ['Two runners dropped out of the race.', '두 명의 주자가 경주에서 기권했다.'],
+      ['She dropped out after one semester.', '그녀는 한 학기 뒤에 그만두었다.'],
+    ]},
+  ]},
+  { w: 'end up', p: 'phr.', s: [
+    { m: '결국 ~하게 되다', syn: [], ex: [
+      ['We ended up walking home.', '우리는 결국 집까지 걸어갔다.'],
+      ['He ended up as a teacher.', '그는 결국 교사가 되었다.'],
+      ['They ended up staying an extra day.', '그들은 결국 하루 더 머물렀다.'],
+    ]},
+  ]},
+  { w: 'engage in', p: 'phr.', s: [
+    { m: '~에 참여하다, 종사하다', syn: [], ex: [
+      ['They engage in volunteer work.', '그들은 자원봉사에 참여한다.'],
+      ['He engaged in a long conversation.', '그는 긴 대화에 빠져들었다.'],
+      ['Students engage in group projects.', '학생들은 조별 과제에 참여한다.'],
+    ]},
+  ]},
   { w: 'purpose', p: 'n.', s: [
     { m: '목적', syn: ['aim', 'goal'], ex: [
       ['What is the purpose of this trip?', '이 여행의 목적은 무엇이니?'],

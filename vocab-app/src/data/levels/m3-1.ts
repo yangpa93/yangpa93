@@ -1,5 +1,5 @@
 /**
- * 중학교 3학년 레벨 1 — 수록 137 / 계획 137개.
+ * 중학교 3학년 레벨 1 — 수록 154 / 계획 137개.
  *
  * 난이도 층: 중급(중학 권장)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -984,6 +984,125 @@ export const M3_1 = defineLevel('m3-1', [
       ['He was desperate for help.', '그는 도움이 절실했다.'],
       ['She made a desperate effort.', '그녀는 필사적으로 노력했다.'],
       ['The situation grew desperate.', '상황이 절박해졌다.'],
+    ]},
+  ]},
+  { w: 'one of', p: 'phr.', s: [
+    { m: '~ 중 하나', syn: [], ex: [
+      ['He is one of my closest friends.', '그는 내 가장 친한 친구 중 하나다.'],
+      ['This is one of the oldest trees here.', '이것은 여기서 가장 오래된 나무 중 하나다.'],
+      ['One of the windows was broken.', '창문 중 하나가 깨져 있었다.'],
+    ]},
+  ]},
+  { w: 'over there', p: 'phr.', s: [
+    { m: '저쪽에, 저기에', syn: [], ex: [
+      ['The library is over there.', '도서관은 저쪽에 있다.'],
+      ['Look at the boy over there.', '저기 있는 소년을 봐.'],
+      ['We will meet over there at noon.', '우리는 정오에 저쪽에서 만날 것이다.'],
+    ]},
+  ]},
+  { w: 'pay attention to', p: 'phr.', s: [
+    { m: '~에 주의를 기울이다', syn: [], ex: [
+      ['Pay attention to the teacher.', '선생님 말씀에 주의를 기울여라.'],
+      ['She pays attention to small details.', '그녀는 작은 세부까지 주의를 기울인다.'],
+      ['He did not pay attention to the sign.', '그는 그 표지판에 주의하지 않았다.'],
+    ]},
+  ]},
+  { w: 'pick up', p: 'phr.', s: [
+    { m: '집어 들다; (차로) 태우러 가다', syn: [], ex: [
+      ['He picked up the pen from the floor.', '그는 바닥에서 펜을 집어 들었다.'],
+      ['I will pick you up at seven.', '일곱 시에 너를 데리러 갈게.'],
+      ['She picked up a few words of French.', '그녀는 프랑스어 몇 마디를 익혔다.'],
+    ]},
+  ]},
+  { w: 'plenty of', p: 'phr.', s: [
+    { m: '많은, 충분한', syn: ['a lot of', 'many'], ex: [
+      ['There is plenty of time left.', '시간이 아직 많이 남았다.'],
+      ['We have plenty of food for everyone.', '모두에게 충분한 음식이 있다.'],
+      ['He gave me plenty of advice.', '그는 나에게 많은 조언을 해 주었다.'],
+    ]},
+  ]},
+  { w: 'prepare for', p: 'phr.', s: [
+    { m: '~을 준비하다', syn: [], ex: [
+      ['She is preparing for the exam.', '그녀는 시험을 준비하고 있다.'],
+      ['We prepared for the worst.', '우리는 최악의 경우를 대비했다.'],
+      ['They prepared for winter early.', '그들은 일찍부터 겨울을 준비했다.'],
+    ]},
+  ]},
+  { w: 'put away', p: 'phr.', s: [
+    { m: '치우다, 제자리에 넣다', syn: [], ex: [
+      ['Put away your toys before dinner.', '저녁 먹기 전에 장난감을 치워라.'],
+      ['She put away the dishes.', '그녀는 그릇을 제자리에 넣었다.'],
+      ['He put the money away for later.', '그는 나중을 위해 돈을 모아 두었다.'],
+    ]},
+  ]},
+  { w: 'put down', p: 'phr.', s: [
+    { m: '내려놓다; 적어 두다', syn: [], ex: [
+      ['Put down that heavy bag.', '그 무거운 가방을 내려놓아라.'],
+      ['She put down her name on the list.', '그녀는 명단에 이름을 적었다.'],
+      ['He put the phone down slowly.', '그는 천천히 전화기를 내려놓았다.'],
+    ]},
+  ]},
+  { w: 'put out', p: 'phr.', s: [
+    { m: '(불을) 끄다; 내놓다', syn: ['extinguish'], ex: [
+      ['Firefighters put out the fire.', '소방관들이 불을 껐다.'],
+      ['Put out the candles before you sleep.', '자기 전에 촛불을 꺼라.'],
+      ['She put the trash out this morning.', '그녀는 오늘 아침 쓰레기를 내놓았다.'],
+    ]},
+  ]},
+  { w: 'put together', p: 'phr.', s: [
+    { m: '조립하다, 짜 맞추다', syn: ['assemble'], ex: [
+      ['He put together the bookshelf alone.', '그는 혼자 책장을 조립했다.'],
+      ['She put together a great team.', '그녀는 훌륭한 팀을 꾸렸다.'],
+      ['They put the puzzle together in an hour.', '그들은 한 시간 만에 퍼즐을 맞췄다.'],
+    ]},
+  ]},
+  { w: 'put up', p: 'phr.', s: [
+    { m: '세우다, 붙이다', syn: [], ex: [
+      ['They put up a tent by the river.', '그들은 강가에 텐트를 세웠다.'],
+      ['She put up a poster on the wall.', '그녀는 벽에 포스터를 붙였다.'],
+      ['We put up the flag every morning.', '우리는 매일 아침 깃발을 올린다.'],
+    ]},
+  ]},
+  { w: 'right away', p: 'phr.', s: [
+    { m: '즉시, 곧바로', syn: ['at once', 'immediately'], ex: [
+      ['I will do it right away.', '내가 곧바로 하겠다.'],
+      ['She answered right away.', '그녀는 즉시 대답했다.'],
+      ['Call me right away if anything happens.', '무슨 일이 있으면 즉시 전화해.'],
+    ]},
+  ]},
+  { w: 'right now', p: 'phr.', s: [
+    { m: '지금 당장', syn: [], ex: [
+      ['I am busy right now.', '나는 지금 바쁘다.'],
+      ['We need help right now.', '우리는 지금 당장 도움이 필요하다.'],
+      ['He is sleeping right now.', '그는 지금 자고 있다.'],
+    ]},
+  ]},
+  { w: 'run into', p: 'phr.', s: [
+    { m: '우연히 만나다; 부딪치다', syn: ['bump into'], ex: [
+      ['I ran into an old friend downtown.', '나는 시내에서 옛 친구를 우연히 만났다.'],
+      ['The car ran into a wall.', '그 차가 벽에 부딪쳤다.'],
+      ['We ran into trouble on the way.', '우리는 가는 길에 문제를 만났다.'],
+    ]},
+  ]},
+  { w: 'run out of', p: 'phr.', s: [
+    { m: '~이 다 떨어지다', syn: [], ex: [
+      ['We ran out of milk this morning.', '오늘 아침에 우유가 다 떨어졌다.'],
+      ['The car ran out of gas.', '차의 기름이 떨어졌다.'],
+      ['They ran out of time before the end.', '그들은 끝나기 전에 시간이 부족했다.'],
+    ]},
+  ]},
+  { w: 'search for', p: 'phr.', s: [
+    { m: '~을 찾다, 수색하다', syn: ['look for'], ex: [
+      ['They searched for the missing dog.', '그들은 잃어버린 개를 찾았다.'],
+      ['She searched for her keys everywhere.', '그녀는 사방으로 열쇠를 찾았다.'],
+      ['Rescuers searched for survivors.', '구조대가 생존자를 수색했다.'],
+    ]},
+  ]},
+  { w: 'set up', p: 'phr.', s: [
+    { m: '설치하다, 세우다; 마련하다', syn: ['establish'], ex: [
+      ['They set up a tent in the yard.', '그들은 마당에 텐트를 쳤다.'],
+      ['She set up her own business.', '그녀는 자기 사업을 시작했다.'],
+      ['We set up a meeting for Monday.', '우리는 월요일에 회의를 잡았다.'],
     ]},
   ]},
 ], 'curriculum');

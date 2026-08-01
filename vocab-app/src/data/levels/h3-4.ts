@@ -1,5 +1,5 @@
 /**
- * 고등학교 3학년 레벨 4 — 수록 136 / 계획 136개.
+ * 고등학교 3학년 레벨 4 — 수록 152 / 계획 136개.
  *
  * 난이도 층: 고급(고등)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -9,6 +9,76 @@
 import { defineLevel } from '../define';
 
 export const H3_4 = defineLevel('h3-4', [
+  { w: 'refrain from', p: 'phr.', s: [
+    { m: '~을 삼가다', syn: [], ex: [
+      ['Please refrain from smoking here.', '여기서는 흡연을 삼가 주세요.'],
+      ['He refrained from commenting.', '그는 언급을 삼갔다.'],
+      ['She refrained from laughing.', '그녀는 웃음을 참았다.'],
+    ]},
+  ]},
+  { w: 'resort to', p: 'phr.', s: [
+    { m: '(최후 수단으로) ~에 의지하다', syn: [], ex: [
+      ['They resorted to force.', '그들은 힘에 의존했다.'],
+      ['She resorted to borrowing money.', '그녀는 결국 돈을 빌리는 수밖에 없었다.'],
+      ['Do not resort to lying.', '거짓말에 기대지 마라.'],
+    ]},
+  ]},
+  { w: 'rule out', p: 'phr.', s: [
+    { m: '배제하다, 제외하다', syn: ['exclude'], ex: [
+      ['Police ruled out an accident.', '경찰은 사고 가능성을 배제했다.'],
+      ['We cannot rule out that option.', '우리는 그 선택지를 배제할 수 없다.'],
+      ['The doctor ruled out infection.', '의사는 감염을 배제했다.'],
+    ]},
+  ]},
+  { w: 'run counter to', p: 'phr.', s: [
+    { m: '~에 어긋나다, 배치되다', syn: [], ex: [
+      ['The result runs counter to our theory.', '그 결과는 우리 이론에 어긋난다.'],
+      ['His action ran counter to the rules.', '그의 행동은 규칙에 어긋났다.'],
+      ['That runs counter to what she said.', '그것은 그녀가 한 말과 어긋난다.'],
+    ]},
+  ]},
+  { w: 'see to', p: 'phr.', s: [
+    { m: '~을 처리하다, 돌보다', syn: [], ex: [
+      ['I will see to the arrangements.', '내가 준비를 처리하겠다.'],
+      ['Please see to it that the door is locked.', '문이 잠기도록 챙겨 주세요.'],
+      ['She saw to the guests herself.', '그녀가 직접 손님들을 챙겼다.'],
+    ]},
+  ]},
+  { w: 'set forth', p: 'phr.', s: [
+    { m: '(생각을) 제시하다; 출발하다', syn: [], ex: [
+      ['He set forth his argument clearly.', '그는 자기 주장을 분명히 제시했다.'],
+      ['The report sets forth three options.', '그 보고서는 세 가지 선택지를 제시한다.'],
+      ['They set forth at dawn.', '그들은 새벽에 출발했다.'],
+    ]},
+  ]},
+  { w: 'shed light on', p: 'phr.', s: [
+    { m: '~을 밝히다, 이해를 돕다', syn: [], ex: [
+      ['The study sheds light on the cause.', '그 연구는 원인을 밝혀 준다.'],
+      ['Her letter shed light on the mystery.', '그녀의 편지가 그 수수께끼를 밝혀 주었다.'],
+      ['New data shed light on the problem.', '새 자료가 그 문제를 이해하게 해 준다.'],
+    ]},
+  ]},
+  { w: 'stand to reason', p: 'phr.', s: [
+    { m: '이치에 맞다, 당연하다', syn: [], ex: [
+      ['It stands to reason that he was tired.', '그가 피곤했던 것은 당연하다.'],
+      ['It stands to reason they would refuse.', '그들이 거절하리라는 것은 당연하다.'],
+      ['That does not stand to reason.', '그것은 이치에 맞지 않는다.'],
+    ]},
+  ]},
+  { w: 'subscribe to', p: 'phr.', s: [
+    { m: '구독하다; (의견에) 동의하다', syn: [], ex: [
+      ['We subscribe to two newspapers.', '우리는 신문 두 종을 구독한다.'],
+      ['She does not subscribe to that view.', '그녀는 그 견해에 동의하지 않는다.'],
+      ['He subscribed to the magazine for years.', '그는 여러 해 그 잡지를 구독했다.'],
+    ]},
+  ]},
+  { w: 'substitute for', p: 'phr.', s: [
+    { m: '~을 대신하다, 대체하다', syn: [], ex: [
+      ['Nothing can substitute for practice.', '무엇도 연습을 대신할 수 없다.'],
+      ['She substituted for the sick teacher.', '그녀가 아픈 선생님을 대신했다.'],
+      ['You can substitute oil for butter.', '버터 대신 기름을 써도 된다.'],
+    ]},
+  ]},
   { w: 'surgery', p: 'n.', s: [
     { m: '수술', syn: ['operation'], ex: [
       ['She had surgery on her knee.', '그녀는 무릎 수술을 받았다.'],
@@ -118,11 +188,32 @@ export const H3_4 = defineLevel('h3-4', [
       ['The tags fell off the new coat.', '새 외투에서 꼬리표가 떨어졌다.'],
     ]},
   ]},
+  { w: 'take a toll on', p: 'phr.', s: [
+    { m: '~에 큰 피해를 주다', syn: [], ex: [
+      ['The long trip took a toll on her health.', '긴 여행이 그녀의 건강을 해쳤다.'],
+      ['Stress takes a toll on the body.', '스트레스는 몸에 큰 부담을 준다.'],
+      ['The drought took a toll on the crops.', '가뭄이 작물에 큰 피해를 주었다.'],
+    ]},
+  ]},
+  { w: 'take for granted', p: 'phr.', s: [
+    { m: '당연하게 여기다', syn: [], ex: [
+      ['We should never take for granted the peace we have.', '우리는 지금의 평화를 결코 당연하게 여겨서는 안 된다.'],
+      ['Do not take your parents for granted.', '부모님을 당연하게 여기지 마라.'],
+      ['She took his help for granted.', '그녀는 그의 도움을 당연하게 여겼다.'],
+    ]},
+  ]},
   { w: 'take into account', p: 'phr.', s: [
     { m: '고려하다, 참작하다', syn: ['consider', 'allow for'], ex: [
       ['Take the weather into account.', '날씨를 고려해라.'],
       ['We took her age into account.', '우리는 그녀의 나이를 참작했다.'],
-      ['You must take costs into account.', '너는 비용을 고려해야 한다.'],
+      ['You must take into account the total cost.', '너는 총비용을 고려해야 한다.'],
+    ]},
+  ]},
+  { w: 'take issue with', p: 'phr.', s: [
+    { m: '~에 이의를 제기하다', syn: [], ex: [
+      ['I take issue with that claim.', '나는 그 주장에 이의를 제기한다.'],
+      ['She took issue with his conclusion.', '그녀는 그의 결론에 이의를 제기했다.'],
+      ['Several members took issue with the plan.', '몇몇 회원이 그 계획에 이의를 제기했다.'],
     ]},
   ]},
   { w: 'talent', p: 'n.', s: [
@@ -130,6 +221,13 @@ export const H3_4 = defineLevel('h3-4', [
       ['She has a talent for music.', '그녀는 음악에 재능이 있다.'],
       ['His talent surprised everyone.', '그의 재능은 모두를 놀라게 했다.'],
       ['Every child has a special talent.', '모든 아이는 특별한 재능이 있다.'],
+    ]},
+  ]},
+  { w: 'talk into', p: 'phr.', s: [
+    { m: '설득해서 ~하게 하다', syn: ['persuade'], ex: [
+      ['She talked me into joining the club.', '그녀는 나를 설득해 동아리에 들게 했다.'],
+      ['He talked his friend into going.', '그는 친구를 설득해 가게 했다.'],
+      ['They talked her into staying.', '그들은 그녀를 설득해 머물게 했다.'],
     ]},
   ]},
   { w: 'tangible', p: 'adj.', s: [
@@ -320,6 +418,13 @@ export const H3_4 = defineLevel('h3-4', [
       ['To some extent, I agree with you.', '어느 정도는 네 말에 동의한다.'],
       ['The rumor is true to some extent.', '그 소문은 어느 정도 사실이다.'],
       ['Success depends on luck to some extent.', '성공은 어느 정도 운에 달려 있다.'],
+    ]},
+  ]},
+  { w: 'to the point', p: 'phr.', s: [
+    { m: '요점을 찌르는, 간결한', syn: [], ex: [
+      ['Her answer was short and to the point.', '그녀의 대답은 짧고 요점을 찔렀다.'],
+      ['Please keep your remarks to the point.', '말씀은 요점만 해 주세요.'],
+      ['His writing is always to the point.', '그의 글은 늘 간결하다.'],
     ]},
   ]},
   { w: 'torture', p: 'n.', s: [
@@ -933,6 +1038,13 @@ export const H3_4 = defineLevel('h3-4', [
       ['With regard to your question, I agree.', '당신 질문에 관해서는 동의합니다.'],
       ['Nothing changed with regard to the rules.', '규칙에 관해서는 아무것도 바뀌지 않았다.'],
       ['He wrote with regard to the new policy.', '그는 새 정책에 관해 편지를 썼다.'],
+    ]},
+  ]},
+  { w: 'with respect to', p: 'phr.', s: [
+    { m: '~에 관하여', syn: ['regarding', 'concerning'], ex: [
+      ['With respect to cost, we have concerns.', '비용에 관하여 우리는 우려가 있다.'],
+      ['He said nothing with respect to the delay.', '그는 지연에 관해 아무 말도 하지 않았다.'],
+      ['With respect to safety, the rules are strict.', '안전에 관해서는 규칙이 엄격하다.'],
     ]},
   ]},
   { w: 'withdraw', p: 'v.', s: [

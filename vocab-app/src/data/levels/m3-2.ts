@@ -1,5 +1,5 @@
 /**
- * 중학교 3학년 레벨 2 — 수록 137 / 계획 137개.
+ * 중학교 3학년 레벨 2 — 수록 154 / 계획 137개.
  *
  * 난이도 층: 중급(중학 권장)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -978,6 +978,125 @@ export const M3_2 = defineLevel('m3-2', [
       ['Thick fog covered the road.', '짙은 안개가 길을 덮었다.'],
       ['The fog cleared by noon.', '안개가 정오쯤 걷혔다.'],
       ['We could not drive in the fog.', '우리는 안개 속에서 운전할 수 없었다.'],
+    ]},
+  ]},
+  { w: 'show up', p: 'phr.', s: [
+    { m: '나타나다, 모습을 보이다', syn: ['appear', 'turn up'], ex: [
+      ['He did not show up at the party.', '그는 파티에 나타나지 않았다.'],
+      ['She showed up an hour late.', '그녀는 한 시간 늦게 나타났다.'],
+      ['Only three people showed up.', '세 명만 나타났다.'],
+    ]},
+  ]},
+  { w: 'sign up', p: 'phr.', s: [
+    { m: '등록하다, 신청하다', syn: ['register'], ex: [
+      ['I signed up for the swimming class.', '나는 수영 강좌에 등록했다.'],
+      ['She signed up as a volunteer.', '그녀는 자원봉사자로 신청했다.'],
+      ['Sign up before the deadline.', '마감 전에 신청하세요.'],
+    ]},
+  ]},
+  { w: 'sit down', p: 'phr.', s: [
+    { m: '앉다', syn: [], ex: [
+      ['Please sit down and wait.', '앉아서 기다려 주세요.'],
+      ['He sat down on the bench.', '그는 벤치에 앉았다.'],
+      ['They sat down to eat together.', '그들은 함께 먹으려고 앉았다.'],
+    ]},
+  ]},
+  { w: 'slow down', p: 'phr.', s: [
+    { m: '속도를 늦추다', syn: [], ex: [
+      ['Slow down, you are driving too fast.', '속도를 줄여, 너무 빨리 달리고 있어.'],
+      ['The train slowed down at the curve.', '기차가 굽은 길에서 속도를 늦췄다.'],
+      ['He needs to slow down and rest.', '그는 속도를 늦추고 쉬어야 한다.'],
+    ]},
+  ]},
+  { w: 'some of', p: 'phr.', s: [
+    { m: '~ 중 일부', syn: [], ex: [
+      ['Some of the students were late.', '학생 중 일부가 늦었다.'],
+      ['I read some of the book last night.', '나는 어젯밤 그 책의 일부를 읽었다.'],
+      ['Some of these apples are rotten.', '이 사과 중 일부는 썩었다.'],
+    ]},
+  ]},
+  { w: 'stand up', p: 'phr.', s: [
+    { m: '일어서다', syn: [], ex: [
+      ['Everyone stood up when she entered.', '그녀가 들어오자 모두 일어섰다.'],
+      ['Stand up straight, please.', '똑바로 서 주세요.'],
+      ['He stood up and left the room.', '그는 일어서서 방을 나갔다.'],
+    ]},
+  ]},
+  { w: 'stay up', p: 'phr.', s: [
+    { m: '자지 않고 깨어 있다', syn: [], ex: [
+      ['She stayed up to finish her homework.', '그녀는 숙제를 끝내려고 자지 않고 있었다.'],
+      ['Do not stay up too late.', '너무 늦게까지 깨어 있지 마라.'],
+      ['We stayed up watching the stars.', '우리는 별을 보며 밤을 새웠다.'],
+    ]},
+  ]},
+  { w: 'stop by', p: 'phr.', s: [
+    { m: '잠깐 들르다', syn: ['drop by'], ex: [
+      ['Stop by my office after lunch.', '점심 후에 내 사무실에 잠깐 들러.'],
+      ['She stopped by to say hello.', '그녀는 인사하러 잠깐 들렀다.'],
+      ['We stopped by the bakery on the way.', '우리는 가는 길에 빵집에 들렀다.'],
+    ]},
+  ]},
+  { w: 'such as', p: 'phr.', s: [
+    { m: '~와 같은, 예를 들면', syn: ['like', 'for example'], ex: [
+      ['Fruits such as apples are healthy.', '사과 같은 과일은 건강에 좋다.'],
+      ['She plays sports such as tennis and golf.', '그녀는 테니스와 골프 같은 운동을 한다.'],
+      ['Bring warm clothes such as a scarf.', '목도리 같은 따뜻한 옷을 가져와라.'],
+    ]},
+  ]},
+  { w: 'take a break', p: 'phr.', s: [
+    { m: '잠시 쉬다', syn: [], ex: [
+      ['Let\'s take a break for ten minutes.', '10분만 쉬자.'],
+      ['She took a break after two hours.', '그녀는 두 시간 뒤에 잠시 쉬었다.'],
+      ['You should take a break sometimes.', '가끔은 쉬어야 한다.'],
+    ]},
+  ]},
+  { w: 'take a look', p: 'phr.', s: [
+    { m: '한번 보다', syn: [], ex: [
+      ['Take a look at this photo.', '이 사진 좀 봐.'],
+      ['He took a look inside the box.', '그는 상자 안을 들여다보았다.'],
+      ['Let me take a look at your work.', '네 작품을 한번 볼게.'],
+    ]},
+  ]},
+  { w: 'take a picture', p: 'phr.', s: [
+    { m: '사진을 찍다', syn: [], ex: [
+      ['Can you take a picture of us?', '우리 사진 좀 찍어 줄래?'],
+      ['She took a picture of the sunset.', '그녀는 노을 사진을 찍었다.'],
+      ['He takes a picture every morning.', '그는 매일 아침 사진을 찍는다.'],
+    ]},
+  ]},
+  { w: 'take a rest', p: 'phr.', s: [
+    { m: '쉬다, 휴식을 취하다', syn: [], ex: [
+      ['You look tired, take a rest.', '피곤해 보인다, 좀 쉬어라.'],
+      ['They took a rest under the tree.', '그들은 나무 아래에서 쉬었다.'],
+      ['She took a short rest after lunch.', '그녀는 점심 후 잠시 쉬었다.'],
+    ]},
+  ]},
+  { w: 'take a shower', p: 'phr.', s: [
+    { m: '샤워하다', syn: [], ex: [
+      ['He takes a shower every morning.', '그는 매일 아침 샤워한다.'],
+      ['She took a shower after the game.', '그녀는 경기 후에 샤워했다.'],
+      ['I will take a shower before dinner.', '저녁 먹기 전에 샤워할게.'],
+    ]},
+  ]},
+  { w: 'take a trip', p: 'phr.', s: [
+    { m: '여행을 가다', syn: [], ex: [
+      ['We took a trip to the mountains.', '우리는 산으로 여행을 갔다.'],
+      ['They take a trip every summer.', '그들은 여름마다 여행을 간다.'],
+      ['She wants to take a trip abroad.', '그녀는 해외여행을 가고 싶어 한다.'],
+    ]},
+  ]},
+  { w: 'take away', p: 'phr.', s: [
+    { m: '치우다, 가져가다', syn: ['remove'], ex: [
+      ['Please take away these dishes.', '이 접시들을 치워 주세요.'],
+      ['The waiter took away the empty plates.', '종업원이 빈 접시를 가져갔다.'],
+      ['Nothing can take away that memory.', '그 기억은 무엇도 앗아 갈 수 없다.'],
+    ]},
+  ]},
+  { w: 'take back', p: 'phr.', s: [
+    { m: '되돌려 받다; (말을) 취소하다', syn: [], ex: [
+      ['I take back what I said.', '내가 한 말을 취소한다.'],
+      ['She took back the book she lent me.', '그녀는 나에게 빌려준 책을 되가져갔다.'],
+      ['He took the shirt back to the store.', '그는 셔츠를 가게에 반품했다.'],
     ]},
   ]},
 ], 'curriculum');

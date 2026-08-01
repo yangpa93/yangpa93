@@ -1,5 +1,5 @@
 /**
- * 중학교 2학년 레벨 2 — 수록 137 / 계획 137개.
+ * 중학교 2학년 레벨 2 — 수록 154 / 계획 137개.
  *
  * 난이도 층: 기초(초등 권장)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -9,6 +9,125 @@
 import { defineLevel } from '../define';
 
 export const M2_2 = defineLevel('m2-2', [
+  { w: 'go back', p: 'phr.', s: [
+    { m: '돌아가다', syn: ['return'], ex: [
+      ['I want to go back home.', '나는 집에 돌아가고 싶다.'],
+      ['They went back to the same restaurant.', '그들은 같은 식당으로 다시 갔다.'],
+      ['She went back to school in September.', '그녀는 9월에 학교로 돌아갔다.'],
+    ]},
+  ]},
+  { w: 'go down', p: 'phr.', s: [
+    { m: '내려가다; (값이) 떨어지다', syn: [], ex: [
+      ['Prices went down last month.', '지난달에 물가가 떨어졌다.'],
+      ['The sun goes down early in winter.', '겨울에는 해가 일찍 진다.'],
+      ['He went down the stairs quietly.', '그는 조용히 계단을 내려갔다.'],
+    ]},
+  ]},
+  { w: 'go out', p: 'phr.', s: [
+    { m: '외출하다; (불이) 꺼지다', syn: [], ex: [
+      ['They went out for dinner.', '그들은 저녁을 먹으러 나갔다.'],
+      ['The candle went out in the wind.', '촛불이 바람에 꺼졌다.'],
+      ['She goes out every Saturday.', '그녀는 토요일마다 외출한다.'],
+    ]},
+  ]},
+  { w: 'go straight', p: 'phr.', s: [
+    { m: '곧장 가다', syn: [], ex: [
+      ['Go straight and turn left.', '곧장 가다가 왼쪽으로 도세요.'],
+      ['He went straight to bed.', '그는 곧장 잠자리에 들었다.'],
+      ['Go straight for two blocks.', '두 블록 곧장 가세요.'],
+    ]},
+  ]},
+  { w: 'go up', p: 'phr.', s: [
+    { m: '올라가다; (값이) 오르다', syn: [], ex: [
+      ['Prices go up every year.', '물가는 해마다 오른다.'],
+      ['We went up to the roof.', '우리는 옥상으로 올라갔다.'],
+      ['The temperature went up quickly.', '기온이 빠르게 올라갔다.'],
+    ]},
+  ]},
+  { w: 'had better', p: 'phr.', s: [
+    { m: '~하는 편이 낫다', syn: [], ex: [
+      ['You had better see a doctor.', '너는 의사에게 가 보는 편이 낫다.'],
+      ['We had better leave now.', '우리는 지금 떠나는 편이 낫다.'],
+      ['He had better tell the truth.', '그는 사실대로 말하는 편이 낫다.'],
+    ]},
+  ]},
+  { w: 'hand in', p: 'phr.', s: [
+    { m: '제출하다', syn: ['submit', 'turn in'], ex: [
+      ['Hand in your homework by Friday.', '금요일까지 숙제를 제출하세요.'],
+      ['She handed in her report early.', '그녀는 보고서를 일찍 제출했다.'],
+      ['He forgot to hand in the form.', '그는 그 양식을 제출하는 것을 잊었다.'],
+    ]},
+  ]},
+  { w: 'hang out', p: 'phr.', s: [
+    { m: '어울려 놀다, 시간을 보내다', syn: [], ex: [
+      ['They hang out at the park after school.', '그들은 방과 후에 공원에서 논다.'],
+      ['We hung out together all summer.', '우리는 여름 내내 함께 어울렸다.'],
+      ['He likes to hang out with his cousins.', '그는 사촌들과 어울리는 것을 좋아한다.'],
+    ]},
+  ]},
+  { w: 'hang up', p: 'phr.', s: [
+    { m: '전화를 끊다; 걸어 두다', syn: [], ex: [
+      ['She hung up before I could answer.', '내가 대답하기도 전에 그녀는 전화를 끊었다.'],
+      ['Hang up your coat on the hook.', '외투를 고리에 걸어 두어라.'],
+      ['He hung up angrily.', '그는 화가 나서 전화를 끊었다.'],
+    ]},
+  ]},
+  { w: 'hear from', p: 'phr.', s: [
+    { m: '~에게서 소식을 듣다', syn: [], ex: [
+      ['I heard from my old teacher yesterday.', '나는 어제 옛 선생님께 연락을 받았다.'],
+      ['Have you heard from her lately?', '최근에 그녀에게서 소식 들었니?'],
+      ['We have not heard from him for years.', '우리는 몇 년째 그에게서 소식을 못 들었다.'],
+    ]},
+  ]},
+  { w: 'help oneself', p: 'phr.', s: [
+    { m: '마음껏 먹다, 알아서 가져다 쓰다', syn: [], ex: [
+      ['Help yourself to the cookies.', '쿠키를 마음껏 드세요.'],
+      ['He helped himself to another slice.', '그는 한 조각을 더 가져다 먹었다.'],
+      ['Please help yourselves to drinks.', '음료는 알아서 드세요.'],
+    ]},
+  ]},
+  { w: 'hold on', p: 'phr.', s: [
+    { m: '잠깐 기다리다; 꽉 붙잡다', syn: ['wait'], ex: [
+      ['Hold on, I will be right back.', '잠깐만, 금방 올게.'],
+      ['Hold on tight to the rope.', '밧줄을 꽉 붙잡아라.'],
+      ['She told me to hold on a minute.', '그녀는 나에게 잠깐 기다리라고 했다.'],
+    ]},
+  ]},
+  { w: 'hurry up', p: 'phr.', s: [
+    { m: '서두르다', syn: [], ex: [
+      ['Hurry up or we will miss the bus.', '서둘러, 안 그러면 버스를 놓친다.'],
+      ['He hurried up and finished his meal.', '그는 서둘러 식사를 마쳤다.'],
+      ['Hurry up, the movie is starting.', '서둘러, 영화가 시작한다.'],
+    ]},
+  ]},
+  { w: 'in a hurry', p: 'phr.', s: [
+    { m: '서둘러, 급히', syn: [], ex: [
+      ['She left in a hurry.', '그녀는 급히 떠났다.'],
+      ['He ate breakfast in a hurry.', '그는 아침을 급히 먹었다.'],
+      ['Do not do it in a hurry.', '서둘러서 하지 마라.'],
+    ]},
+  ]},
+  { w: 'in fact', p: 'phr.', s: [
+    { m: '사실은, 실제로', syn: ['actually', 'in reality'], ex: [
+      ['In fact, I have never been there.', '사실 나는 거기 가 본 적이 없다.'],
+      ['He looks young, but in fact he is fifty.', '그는 젊어 보이지만 사실 쉰 살이다.'],
+      ['In fact, the answer was simple.', '사실 답은 간단했다.'],
+    ]},
+  ]},
+  { w: 'in the end', p: 'phr.', s: [
+    { m: '결국, 마침내', syn: ['finally', 'eventually'], ex: [
+      ['In the end they agreed.', '결국 그들은 동의했다.'],
+      ['In the end everything worked out.', '결국 모든 것이 잘 되었다.'],
+      ['She won in the end.', '그녀가 결국 이겼다.'],
+    ]},
+  ]},
+  { w: 'in the future', p: 'phr.', s: [
+    { m: '앞으로, 미래에', syn: [], ex: [
+      ['Be more careful in the future.', '앞으로는 더 조심해라.'],
+      ['In the future cars may fly.', '미래에는 차가 날지도 모른다.'],
+      ['She wants to be a vet in the future.', '그녀는 앞으로 수의사가 되고 싶어 한다.'],
+    ]},
+  ]},
   { w: 'service', p: 'n.', s: [
     { m: '서비스, 봉사', syn: [], ex: [
       ['The service at that shop is good.', '그 가게는 서비스가 좋다.'],

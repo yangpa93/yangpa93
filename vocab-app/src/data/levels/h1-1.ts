@@ -1,5 +1,5 @@
 /**
- * 고등학교 1학년 레벨 1 — 수록 137 / 계획 137개.
+ * 고등학교 1학년 레벨 1 — 수록 154 / 계획 137개.
  *
  * 난이도 층: 중급(중학 권장)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -9,6 +9,125 @@
 import { defineLevel } from '../define';
 
 export const H1_1 = defineLevel('h1-1', [
+  { w: 'be supposed to', p: 'phr.', s: [
+    { m: '~하기로 되어 있다', syn: [], ex: [
+      ['You are supposed to wear a helmet.', '너는 헬멧을 써야 한다.'],
+      ['The train was supposed to arrive at six.', '기차는 여섯 시에 도착하기로 되어 있었다.'],
+      ['We are supposed to meet at noon.', '우리는 정오에 만나기로 되어 있다.'],
+    ]},
+  ]},
+  { w: 'be used to', p: 'phr.', s: [
+    { m: '~에 익숙하다', syn: [], ex: [
+      ['She is used to getting up early.', '그녀는 일찍 일어나는 데 익숙하다.'],
+      ['He is not used to the cold.', '그는 추위에 익숙하지 않다.'],
+      ['They are used to working together.', '그들은 함께 일하는 데 익숙하다.'],
+    ]},
+  ]},
+  { w: 'benefit from', p: 'phr.', s: [
+    { m: '~에서 이익을 얻다', syn: [], ex: [
+      ['Students benefit from small classes.', '학생들은 소규모 학급에서 이익을 얻는다.'],
+      ['We all benefited from her advice.', '우리 모두 그녀의 조언에서 도움을 얻었다.'],
+      ['The city benefited from the festival.', '그 도시는 축제로 이익을 얻었다.'],
+    ]},
+  ]},
+  { w: 'break down', p: 'phr.', s: [
+    { m: '고장 나다; 무너지다', syn: [], ex: [
+      ['The car broke down on the highway.', '차가 고속도로에서 고장 났다.'],
+      ['Talks between the two sides broke down.', '양측의 회담이 결렬되었다.'],
+      ['She broke down and cried.', '그녀는 무너져 울음을 터뜨렸다.'],
+    ]},
+  ]},
+  { w: 'break into', p: 'phr.', s: [
+    { m: '침입하다; 갑자기 ~하기 시작하다', syn: [], ex: [
+      ['Someone broke into our house.', '누군가 우리 집에 침입했다.'],
+      ['He broke into a run.', '그는 갑자기 달리기 시작했다.'],
+      ['Thieves broke into the shop at night.', '도둑들이 밤에 그 가게에 침입했다.'],
+    ]},
+  ]},
+  { w: 'break out', p: 'phr.', s: [
+    { m: '(전쟁·화재가) 발생하다', syn: [], ex: [
+      ['A fire broke out in the kitchen.', '부엌에서 불이 났다.'],
+      ['War broke out that summer.', '그해 여름 전쟁이 일어났다.'],
+      ['Panic broke out in the crowd.', '군중 사이에 공포가 번졌다.'],
+    ]},
+  ]},
+  { w: 'break up', p: 'phr.', s: [
+    { m: '헤어지다; 부서지다', syn: [], ex: [
+      ['They broke up after two years.', '그들은 2년 만에 헤어졌다.'],
+      ['The ice broke up in spring.', '봄에 얼음이 깨졌다.'],
+      ['The meeting broke up at noon.', '회의는 정오에 끝났다.'],
+    ]},
+  ]},
+  { w: 'bring back', p: 'phr.', s: [
+    { m: '되돌려 놓다; 떠올리게 하다', syn: [], ex: [
+      ['Please bring back my book tomorrow.', '내일 내 책을 돌려줘.'],
+      ['The song brings back old memories.', '그 노래는 옛 기억을 떠올리게 한다.'],
+      ['He brought back gifts from his trip.', '그는 여행에서 선물을 가져왔다.'],
+    ]},
+  ]},
+  { w: 'build up', p: 'phr.', s: [
+    { m: '쌓아 올리다, 늘리다', syn: [], ex: [
+      ['She built up her strength slowly.', '그녀는 천천히 체력을 키웠다.'],
+      ['Dust builds up under the bed.', '침대 밑에 먼지가 쌓인다.'],
+      ['He built up a large collection.', '그는 큰 수집품을 모았다.'],
+    ]},
+  ]},
+  { w: 'burst into', p: 'phr.', s: [
+    { m: '갑자기 ~을 터뜨리다; 뛰어들다', syn: [], ex: [
+      ['She burst into tears.', '그녀는 갑자기 울음을 터뜨렸다.'],
+      ['He burst into the room without knocking.', '그는 노크도 없이 방으로 뛰어들었다.'],
+      ['They burst into laughter.', '그들은 웃음을 터뜨렸다.'],
+    ]},
+  ]},
+  { w: 'call for', p: 'phr.', s: [
+    { m: '요구하다; ~을 필요로 하다', syn: ['require', 'demand'], ex: [
+      ['The situation calls for patience.', '그 상황은 인내를 요구한다.'],
+      ['They called for an immediate answer.', '그들은 즉각적인 답변을 요구했다.'],
+      ['This recipe calls for two eggs.', '이 조리법에는 달걀 두 개가 필요하다.'],
+    ]},
+  ]},
+  { w: 'call off', p: 'phr.', s: [
+    { m: '취소하다', syn: ['cancel'], ex: [
+      ['They called off the picnic because of rain.', '그들은 비 때문에 소풍을 취소했다.'],
+      ['The game was called off at the last minute.', '그 경기는 마지막 순간에 취소되었다.'],
+      ['She called off the wedding.', '그녀는 결혼식을 취소했다.'],
+    ]},
+  ]},
+  { w: 'call on', p: 'phr.', s: [
+    { m: '방문하다; 요청하다', syn: [], ex: [
+      ['We called on our grandmother yesterday.', '우리는 어제 할머니를 찾아뵈었다.'],
+      ['The teacher called on me to answer.', '선생님이 나에게 대답하라고 시켰다.'],
+      ['He called on them to help.', '그는 그들에게 도와 달라고 요청했다.'],
+    ]},
+  ]},
+  { w: 'care for', p: 'phr.', s: [
+    { m: '돌보다; 좋아하다', syn: ['look after'], ex: [
+      ['She cares for her sick father.', '그녀는 아픈 아버지를 돌본다.'],
+      ['I do not care for spicy food.', '나는 매운 음식을 좋아하지 않는다.'],
+      ['Nurses care for patients day and night.', '간호사들은 밤낮으로 환자를 돌본다.'],
+    ]},
+  ]},
+  { w: 'carry on', p: 'phr.', s: [
+    { m: '계속하다', syn: ['continue'], ex: [
+      ['Carry on with your work.', '하던 일을 계속하세요.'],
+      ['They carried on despite the rain.', '그들은 비에도 아랑곳없이 계속했다.'],
+      ['She carried on the family tradition.', '그녀는 집안의 전통을 이어 갔다.'],
+    ]},
+  ]},
+  { w: 'catch up with', p: 'phr.', s: [
+    { m: '따라잡다', syn: [], ex: [
+      ['He ran to catch up with the others.', '그는 다른 사람들을 따라잡으려고 뛰었다.'],
+      ['She caught up with the class quickly.', '그녀는 금세 수업 진도를 따라잡았다.'],
+      ['I will catch up with you later.', '나중에 따라갈게.'],
+    ]},
+  ]},
+  { w: 'come across', p: 'phr.', s: [
+    { m: '우연히 마주치다, 발견하다', syn: ['run into'], ex: [
+      ['I came across an old photo today.', '나는 오늘 우연히 옛 사진을 발견했다.'],
+      ['She came across her teacher at the market.', '그녀는 시장에서 선생님을 우연히 만났다.'],
+      ['He came across a rare book.', '그는 희귀한 책을 우연히 발견했다.'],
+    ]},
+  ]},
   { w: 'objective', p: 'n., adj.', s: [
     { m: '목표', syn: ['goal', 'aim'], ex: [
       ['Our main objective is safety.', '우리의 주요 목표는 안전이다.'],

@@ -1,5 +1,5 @@
 /**
- * 중학교 2학년 레벨 3 — 수록 137 / 계획 137개.
+ * 중학교 2학년 레벨 3 — 수록 154 / 계획 137개.
  *
  * 난이도 층: 기초(초등 권장), 중급(중학 권장)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -363,6 +363,125 @@ export const M2_3 = defineLevel('m2-3', [
       ['The annual festival is in May.', '연례 축제는 5월에 있다.'],
       ['We hold an annual meeting.', '우리는 해마다 회의를 연다.'],
       ['This is our annual report.', '이것이 우리의 연례 보고서다.'],
+    ]},
+  ]},
+  { w: 'in the past', p: 'phr.', s: [
+    { m: '과거에, 예전에', syn: [], ex: [
+      ['In the past people wrote letters.', '예전에는 사람들이 편지를 썼다.'],
+      ['He was a teacher in the past.', '그는 예전에 교사였다.'],
+      ['In the past this river was clean.', '과거에 이 강은 깨끗했다.'],
+    ]},
+  ]},
+  { w: 'in time', p: 'phr.', s: [
+    { m: '시간 안에, 늦지 않게', syn: [], ex: [
+      ['We arrived in time for the show.', '우리는 공연에 늦지 않게 도착했다.'],
+      ['She finished the work in time.', '그녀는 시간 안에 일을 끝냈다.'],
+      ['He got there just in time.', '그는 아슬아슬하게 도착했다.'],
+    ]},
+  ]},
+  { w: 'in trouble', p: 'phr.', s: [
+    { m: '곤경에 처한', syn: [], ex: [
+      ['He is in trouble with his teacher.', '그는 선생님께 혼나는 처지다.'],
+      ['The company is in trouble.', '그 회사는 곤경에 처해 있다.'],
+      ['She knew she was in trouble.', '그녀는 자기가 곤란해졌음을 알았다.'],
+    ]},
+  ]},
+  { w: 'keep a diary', p: 'phr.', s: [
+    { m: '일기를 쓰다', syn: [], ex: [
+      ['She keeps a diary every night.', '그녀는 매일 밤 일기를 쓴다.'],
+      ['He kept a diary for ten years.', '그는 10년 동안 일기를 썼다.'],
+      ['Keeping a diary helps you remember.', '일기를 쓰면 기억하는 데 도움이 된다.'],
+    ]},
+  ]},
+  { w: 'keep in touch', p: 'phr.', s: [
+    { m: '연락을 유지하다', syn: [], ex: [
+      ['Let\'s keep in touch after graduation.', '졸업 후에도 연락하고 지내자.'],
+      ['They kept in touch by email.', '그들은 이메일로 연락을 유지했다.'],
+      ['We keep in touch every month.', '우리는 매달 연락한다.'],
+    ]},
+  ]},
+  { w: 'keep on', p: 'phr.', s: [
+    { m: '계속하다', syn: ['continue'], ex: [
+      ['She kept on running despite the rain.', '그녀는 비가 오는데도 계속 달렸다.'],
+      ['He kept on asking the same question.', '그는 같은 질문을 계속했다.'],
+      ['Keep on trying and you will succeed.', '계속 시도하면 성공할 것이다.'],
+    ]},
+  ]},
+  { w: 'laugh at', p: 'phr.', s: [
+    { m: '~을 비웃다, 보고 웃다', syn: [], ex: [
+      ['Do not laugh at other people.', '남을 비웃지 마라.'],
+      ['We laughed at his funny hat.', '우리는 그의 우스운 모자를 보고 웃었다.'],
+      ['She laughed at herself.', '그녀는 자기 자신을 보고 웃었다.'],
+    ]},
+  ]},
+  { w: 'leave for', p: 'phr.', s: [
+    { m: '~로 떠나다', syn: [], ex: [
+      ['They leave for Busan tomorrow.', '그들은 내일 부산으로 떠난다.'],
+      ['She left for work at seven.', '그녀는 일곱 시에 출근했다.'],
+      ['He left for the airport early.', '그는 일찍 공항으로 떠났다.'],
+    ]},
+  ]},
+  { w: 'listen to', p: 'phr.', s: [
+    { m: '~을 듣다', syn: [], ex: [
+      ['I listen to music while studying.', '나는 공부하면서 음악을 듣는다.'],
+      ['Listen to what she is saying.', '그녀가 하는 말을 들어라.'],
+      ['He listens to the radio every morning.', '그는 매일 아침 라디오를 듣는다.'],
+    ]},
+  ]},
+  { w: 'look around', p: 'phr.', s: [
+    { m: '둘러보다', syn: [], ex: [
+      ['We looked around the museum.', '우리는 박물관을 둘러보았다.'],
+      ['She looked around but saw no one.', '그녀는 둘러보았지만 아무도 보지 못했다.'],
+      ['Feel free to look around the shop.', '가게를 편하게 둘러보세요.'],
+    ]},
+  ]},
+  { w: 'look at', p: 'phr.', s: [
+    { m: '~을 보다', syn: [], ex: [
+      ['Look at that beautiful sunset.', '저 아름다운 노을을 봐.'],
+      ['He looked at the map carefully.', '그는 지도를 주의 깊게 보았다.'],
+      ['She looked at me and smiled.', '그녀는 나를 보고 미소 지었다.'],
+    ]},
+  ]},
+  { w: 'look forward to', p: 'phr.', s: [
+    { m: '~을 기대하다, 고대하다', syn: [], ex: [
+      ['I look forward to seeing you again.', '당신을 다시 만나기를 고대합니다.'],
+      ['She is looking forward to the trip.', '그녀는 그 여행을 기대하고 있다.'],
+      ['We look forward to your reply.', '답장을 기다리겠습니다.'],
+    ]},
+  ]},
+  { w: 'look into', p: 'phr.', s: [
+    { m: '조사하다, 살펴보다', syn: ['investigate'], ex: [
+      ['The police will look into the case.', '경찰이 그 사건을 조사할 것이다.'],
+      ['We are looking into the problem.', '우리는 그 문제를 살펴보고 있다.'],
+      ['She promised to look into it.', '그녀는 그것을 알아보겠다고 약속했다.'],
+    ]},
+  ]},
+  { w: 'look like', p: 'phr.', s: [
+    { m: '~처럼 보이다, 닮다', syn: [], ex: [
+      ['She looks like her mother.', '그녀는 어머니를 닮았다.'],
+      ['It looks like rain.', '비가 올 것 같다.'],
+      ['That cloud looks like a rabbit.', '저 구름은 토끼처럼 보인다.'],
+    ]},
+  ]},
+  { w: 'look out', p: 'phr.', s: [
+    { m: '조심하다', syn: ['watch out'], ex: [
+      ['Look out, there is a car coming.', '조심해, 차가 온다.'],
+      ['Look out for the wet floor.', '바닥이 젖었으니 조심하세요.'],
+      ['He shouted at her to look out.', '그는 그녀에게 조심하라고 소리쳤다.'],
+    ]},
+  ]},
+  { w: 'look up', p: 'phr.', s: [
+    { m: '(사전에서) 찾아보다; 올려다보다', syn: [], ex: [
+      ['Look up the word in the dictionary.', '그 낱말을 사전에서 찾아봐라.'],
+      ['She looked up at the stars.', '그녀는 별을 올려다보았다.'],
+      ['I looked up his number online.', '나는 인터넷에서 그의 번호를 찾았다.'],
+    ]},
+  ]},
+  { w: 'make a decision', p: 'phr.', s: [
+    { m: '결정을 내리다', syn: ['decide'], ex: [
+      ['We must make a decision today.', '우리는 오늘 결정을 내려야 한다.'],
+      ['She made a difficult decision.', '그녀는 어려운 결정을 내렸다.'],
+      ['He made a decision to move abroad.', '그는 외국으로 이주하기로 결정했다.'],
     ]},
   ]},
   { w: 'try', p: 'v.', s: [

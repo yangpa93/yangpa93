@@ -1,5 +1,5 @@
 /**
- * 고등학교 2학년 레벨 2 — 수록 137 / 계획 137개.
+ * 고등학교 2학년 레벨 2 — 수록 154 / 계획 137개.
  *
  * 난이도 층: 고급(고등)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -984,6 +984,125 @@ export const H2_2 = defineLevel('h2-2', [
       ['War deprived them of a home.', '전쟁이 그들에게서 집을 빼앗았다.'],
       ['Do not deprive her of rest.', '그녀에게서 휴식을 빼앗지 마라.'],
       ['They were deprived of freedom.', '그들은 자유를 빼앗겼다.'],
+    ]},
+  ]},
+  { w: 'result from', p: 'phr.', s: [
+    { m: '~에서 비롯되다', syn: [], ex: [
+      ['The delay resulted from bad weather.', '그 지연은 나쁜 날씨에서 비롯되었다.'],
+      ['Many errors result from carelessness.', '많은 실수가 부주의에서 비롯된다.'],
+      ['His illness resulted from overwork.', '그의 병은 과로에서 비롯되었다.'],
+    ]},
+  ]},
+  { w: 'run over', p: 'phr.', s: [
+    { m: '(차가) 치다; 넘치다', syn: [], ex: [
+      ['A car ran over the cat.', '차가 고양이를 쳤다.'],
+      ['The water ran over the edge.', '물이 가장자리로 넘쳤다.'],
+      ['Be careful not to run over the dog.', '개를 치지 않게 조심해라.'],
+    ]},
+  ]},
+  { w: 'see off', p: 'phr.', s: [
+    { m: '배웅하다', syn: [], ex: [
+      ['We went to see him off at the airport.', '우리는 공항으로 그를 배웅하러 갔다.'],
+      ['We went to see off the visiting team.', '우리는 원정팀을 배웅하러 갔다.'],
+      ['They saw us off with a wave.', '그들은 손을 흔들며 우리를 배웅했다.'],
+    ]},
+  ]},
+  { w: 'send for', p: 'phr.', s: [
+    { m: '부르러 보내다, 요청하다', syn: [], ex: [
+      ['They sent for a doctor at once.', '그들은 즉시 의사를 부르러 보냈다.'],
+      ['She sent for help.', '그녀는 도움을 요청했다.'],
+      ['He sent for his luggage.', '그는 짐을 가져오라고 시켰다.'],
+    ]},
+  ]},
+  { w: 'set aside', p: 'phr.', s: [
+    { m: '따로 떼어 두다', syn: [], ex: [
+      ['She sets aside money every month.', '그녀는 매달 돈을 따로 떼어 둔다.'],
+      ['Set aside an hour for reading.', '독서를 위해 한 시간을 비워 두어라.'],
+      ['He set aside his own feelings.', '그는 자기 감정을 접어 두었다.'],
+    ]},
+  ]},
+  { w: 'set off', p: 'phr.', s: [
+    { m: '출발하다; 촉발하다', syn: [], ex: [
+      ['They set off at dawn.', '그들은 새벽에 출발했다.'],
+      ['The noise set off the alarm.', '그 소리가 경보를 울리게 했다.'],
+      ['We set off for the mountains early.', '우리는 일찍 산으로 출발했다.'],
+    ]},
+  ]},
+  { w: 'set out', p: 'phr.', s: [
+    { m: '출발하다; 착수하다', syn: [], ex: [
+      ['He set out on a long journey.', '그는 긴 여행을 떠났다.'],
+      ['She set out to prove them wrong.', '그녀는 그들이 틀렸음을 증명하러 나섰다.'],
+      ['They set out before sunrise.', '그들은 해 뜨기 전에 출발했다.'],
+    ]},
+  ]},
+  { w: 'settle down', p: 'phr.', s: [
+    { m: '자리 잡다, 안정되다', syn: [], ex: [
+      ['They settled down in a small town.', '그들은 작은 마을에 자리를 잡았다.'],
+      ['The class settled down after a while.', '학급은 잠시 뒤 조용해졌다.'],
+      ['He wants to settle down and start a family.', '그는 자리를 잡고 가정을 이루고 싶어 한다.'],
+    ]},
+  ]},
+  { w: 'sort out', p: 'phr.', s: [
+    { m: '정리하다; 해결하다', syn: [], ex: [
+      ['She sorted out the old papers.', '그녀는 오래된 서류를 정리했다.'],
+      ['We need to sort out this problem.', '우리는 이 문제를 해결해야 한다.'],
+      ['He sorted out his clothes by color.', '그는 옷을 색깔별로 정리했다.'],
+    ]},
+  ]},
+  { w: 'specialize in', p: 'phr.', s: [
+    { m: '~을 전문으로 하다', syn: [], ex: [
+      ['This shop specializes in old books.', '이 가게는 고서를 전문으로 한다.'],
+      ['She specializes in children\'s medicine.', '그녀는 소아과를 전문으로 한다.'],
+      ['They specialize in Italian food.', '그들은 이탈리아 음식을 전문으로 한다.'],
+    ]},
+  ]},
+  { w: 'stand by', p: 'phr.', s: [
+    { m: '(곁에서) 지지하다; 대기하다', syn: [], ex: [
+      ['She stood by her friend.', '그녀는 친구 곁을 지켰다.'],
+      ['Please stand by for an announcement.', '안내 방송을 위해 대기해 주세요.'],
+      ['He stood by his decision.', '그는 자기 결정을 굽히지 않았다.'],
+    ]},
+  ]},
+  { w: 'stand for', p: 'phr.', s: [
+    { m: '~을 나타내다, 상징하다', syn: ['represent'], ex: [
+      ['What does this symbol stand for?', '이 기호는 무엇을 나타내나요?'],
+      ['The letters stand for her name.', '그 글자들은 그녀의 이름을 나타낸다.'],
+      ['The flag stands for freedom.', '그 깃발은 자유를 상징한다.'],
+    ]},
+  ]},
+  { w: 'stand out', p: 'phr.', s: [
+    { m: '두드러지다, 눈에 띄다', syn: [], ex: [
+      ['Her red coat stood out in the crowd.', '그녀의 빨간 외투가 군중 속에서 눈에 띄었다.'],
+      ['His work stands out from the rest.', '그의 작품은 나머지와 확연히 다르다.'],
+      ['One name stood out on the list.', '명단에서 한 이름이 두드러졌다.'],
+    ]},
+  ]},
+  { w: 'stick to', p: 'phr.', s: [
+    { m: '~을 고수하다, 계속 지키다', syn: [], ex: [
+      ['Stick to your plan.', '네 계획을 고수해라.'],
+      ['She sticks to a strict schedule.', '그녀는 엄격한 일정을 지킨다.'],
+      ['He stuck to the truth.', '그는 진실을 굽히지 않았다.'],
+    ]},
+  ]},
+  { w: 'succeed in', p: 'phr.', s: [
+    { m: '~에 성공하다', syn: [], ex: [
+      ['She succeeded in passing the exam.', '그녀는 시험에 합격하는 데 성공했다.'],
+      ['They succeeded in raising the money.', '그들은 그 돈을 모으는 데 성공했다.'],
+      ['He finally succeeded in his work.', '그는 마침내 일에서 성공했다.'],
+    ]},
+  ]},
+  { w: 'suffer from', p: 'phr.', s: [
+    { m: '~로 고통받다, ~을 앓다', syn: [], ex: [
+      ['He suffers from headaches.', '그는 두통을 앓는다.'],
+      ['Many people suffer from hunger.', '많은 사람이 굶주림에 시달린다.'],
+      ['She suffered from a long illness.', '그녀는 오랜 병을 앓았다.'],
+    ]},
+  ]},
+  { w: 'take advantage of', p: 'phr.', s: [
+    { m: '~을 이용하다, 활용하다', syn: [], ex: [
+      ['Take advantage of this chance.', '이 기회를 활용해라.'],
+      ['He took advantage of the good weather.', '그는 좋은 날씨를 잘 이용했다.'],
+      ['They took advantage of her kindness.', '그들은 그녀의 친절을 이용했다.'],
     ]},
   ]},
 ], 'csat');

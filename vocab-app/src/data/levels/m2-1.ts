@@ -1,5 +1,5 @@
 /**
- * 중학교 2학년 레벨 1 — 수록 137 / 계획 137개.
+ * 중학교 2학년 레벨 1 — 수록 153 / 계획 137개.
  *
  * 난이도 층: 기초(초등 권장)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -9,6 +9,125 @@
 import { defineLevel } from '../define';
 
 export const M2_1 = defineLevel('m2-1', [
+  { w: 'for a long time', p: 'phr.', s: [
+    { m: '오랫동안', syn: [], ex: [
+      ['We waited for a long time.', '우리는 오랫동안 기다렸다.'],
+      ['He has lived here for a long time.', '그는 여기서 오래 살았다.'],
+      ['They talked for a long time.', '그들은 오랫동안 이야기했다.'],
+    ]},
+  ]},
+  { w: 'for a while', p: 'phr.', s: [
+    { m: '잠시 동안', syn: [], ex: [
+      ['Let\'s rest for a while.', '잠시 쉬자.'],
+      ['She stayed silent for a while.', '그녀는 잠시 말이 없었다.'],
+      ['I have not seen him for a while.', '나는 그를 한동안 못 봤다.'],
+    ]},
+  ]},
+  { w: 'for free', p: 'phr.', s: [
+    { m: '공짜로, 무료로', syn: [], ex: [
+      ['The museum lets students in for free.', '그 박물관은 학생을 무료로 들여보낸다.'],
+      ['He fixed my bike for free.', '그는 내 자전거를 공짜로 고쳐 주었다.'],
+      ['You can download the app for free.', '그 앱은 무료로 내려받을 수 있다.'],
+    ]},
+  ]},
+  { w: 'for the first time', p: 'phr.', s: [
+    { m: '처음으로', syn: [], ex: [
+      ['I saw the sea for the first time.', '나는 처음으로 바다를 보았다.'],
+      ['She spoke in public for the first time.', '그녀는 처음으로 사람들 앞에서 말했다.'],
+      ['He cooked for the first time yesterday.', '그는 어제 처음으로 요리를 했다.'],
+    ]},
+  ]},
+  { w: 'from now on', p: 'phr.', s: [
+    { m: '이제부터', syn: [], ex: [
+      ['From now on I will study every day.', '이제부터 매일 공부하겠다.'],
+      ['From now on the store opens at nine.', '이제부터 가게는 아홉 시에 연다.'],
+      ['Be careful from now on.', '이제부터 조심해라.'],
+    ]},
+  ]},
+  { w: 'from time to time', p: 'phr.', s: [
+    { m: '때때로, 이따금', syn: ['occasionally', 'sometimes'], ex: [
+      ['We meet from time to time.', '우리는 이따금 만난다.'],
+      ['She writes to her aunt from time to time.', '그녀는 때때로 이모에게 편지를 쓴다.'],
+      ['Check the water level from time to time.', '수위를 때때로 확인해라.'],
+    ]},
+  ]},
+  { w: 'get in', p: 'phr.', s: [
+    { m: '(차 등에) 타다; 들어가다', syn: [], ex: [
+      ['Get in the car, we are late.', '차에 타, 우리 늦었어.'],
+      ['He got in through the back door.', '그는 뒷문으로 들어갔다.'],
+      ['She got in and closed the door.', '그녀는 타고 나서 문을 닫았다.'],
+    ]},
+  ]},
+  { w: 'get married', p: 'phr.', s: [
+    { m: '결혼하다', syn: [], ex: [
+      ['They got married last spring.', '그들은 지난봄에 결혼했다.'],
+      ['She got married in her hometown.', '그녀는 고향에서 결혼했다.'],
+      ['My brother is getting married soon.', '내 형이 곧 결혼한다.'],
+    ]},
+  ]},
+  { w: 'get off', p: 'phr.', s: [
+    { m: '(차에서) 내리다', syn: [], ex: [
+      ['Get off at the next stop.', '다음 정류장에서 내리세요.'],
+      ['She got off the bus in the rain.', '그녀는 빗속에서 버스에서 내렸다.'],
+      ['We got off at the wrong station.', '우리는 엉뚱한 역에서 내렸다.'],
+    ]},
+  ]},
+  { w: 'get on', p: 'phr.', s: [
+    { m: '(차에) 타다', syn: [], ex: [
+      ['He got on the train at Seoul.', '그는 서울에서 기차를 탔다.'],
+      ['Get on quickly, it is leaving.', '빨리 타, 출발한다.'],
+      ['She got on the bus with her dog.', '그녀는 개를 데리고 버스에 탔다.'],
+    ]},
+  ]},
+  { w: 'get out of', p: 'phr.', s: [
+    { m: '~에서 나오다, 벗어나다', syn: [], ex: [
+      ['Get out of the water, it is cold.', '물에서 나와, 차가워.'],
+      ['He got out of the car slowly.', '그는 천천히 차에서 내렸다.'],
+      ['She wants to get out of this town.', '그녀는 이 마을을 벗어나고 싶어 한다.'],
+    ]},
+  ]},
+  { w: 'get over', p: 'phr.', s: [
+    { m: '(어려움·병을) 이겨 내다, 극복하다', syn: ['overcome', 'recover from'], ex: [
+      ['It took him a month to get over the flu.', '그가 독감을 이겨 내는 데 한 달이 걸렸다.'],
+      ['She never got over her fear of heights.', '그녀는 높은 곳에 대한 두려움을 끝내 이겨 내지 못했다.'],
+      ['He is trying to get over the loss.', '그는 그 상실을 극복하려 하고 있다.'],
+    ]},
+  ]},
+  { w: 'get to', p: 'phr.', s: [
+    { m: '~에 도착하다, 이르다', syn: ['reach', 'arrive at'], ex: [
+      ['What time did you get to school?', '몇 시에 학교에 도착했니?'],
+      ['We got to the top before sunset.', '우리는 해 지기 전에 정상에 도착했다.'],
+      ['How do I get to the museum?', '박물관에 어떻게 가나요?'],
+    ]},
+  ]},
+  { w: 'get together', p: 'phr.', s: [
+    { m: '모이다, 만나다', syn: ['meet'], ex: [
+      ['Let\'s get together this weekend.', '이번 주말에 모이자.'],
+      ['The family gets together every New Year.', '그 가족은 새해마다 모인다.'],
+      ['We got together to plan the trip.', '우리는 여행을 계획하려고 모였다.'],
+    ]},
+  ]},
+  { w: 'give back', p: 'phr.', s: [
+    { m: '돌려주다', syn: ['return'], ex: [
+      ['Please give back my pen.', '내 펜을 돌려줘.'],
+      ['He gave back the money he borrowed.', '그는 빌린 돈을 돌려주었다.'],
+      ['She gave the book back to the library.', '그녀는 그 책을 도서관에 돌려주었다.'],
+    ]},
+  ]},
+  { w: 'go ahead', p: 'phr.', s: [
+    { m: '먼저 하다, 계속하다', syn: [], ex: [
+      ['Go ahead, I will follow you.', '먼저 가, 내가 따라갈게.'],
+      ['She told him to go ahead with the plan.', '그녀는 그에게 계획을 진행하라고 했다.'],
+      ['Go ahead and ask your question.', '어서 질문하세요.'],
+    ]},
+  ]},
+  { w: 'go away', p: 'phr.', s: [
+    { m: '떠나가다, 사라지다', syn: ['leave'], ex: [
+      ['The pain went away after an hour.', '통증이 한 시간 뒤에 사라졌다.'],
+      ['Go away and leave me alone.', '저리 가서 나를 좀 내버려 둬.'],
+      ['The clouds went away by noon.', '구름은 정오쯤 걷혔다.'],
+    ]},
+  ]},
   { w: 'neck', p: 'n.', s: [
     { m: '목', syn: [], ex: [
       ['My neck hurts this morning.', '오늘 아침 목이 아프다.'],

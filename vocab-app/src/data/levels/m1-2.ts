@@ -1,5 +1,5 @@
 /**
- * 중학교 1학년 레벨 2 — 수록 137 / 계획 137개.
+ * 중학교 1학년 레벨 2 — 수록 154 / 계획 137개.
  *
  * 난이도 층: 기초(초등 권장)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -9,6 +9,125 @@
 import { defineLevel } from '../define';
 
 export const M1_2 = defineLevel('m1-2', [
+  { w: 'at least', p: 'phr.', s: [
+    { m: '적어도, 최소한', syn: [], ex: [
+      ['It will take at least an hour.', '적어도 한 시간은 걸릴 것이다.'],
+      ['At least twenty people came.', '적어도 스무 명이 왔다.'],
+      ['You should at least say thank you.', '최소한 고맙다는 말은 해야지.'],
+    ]},
+  ]},
+  { w: 'at night', p: 'phr.', s: [
+    { m: '밤에', syn: [], ex: [
+      ['Owls hunt at night.', '올빼미는 밤에 사냥한다.'],
+      ['She reads at night before sleeping.', '그녀는 자기 전 밤에 책을 읽는다.'],
+      ['The streets are quiet at night.', '밤에는 거리가 조용하다.'],
+    ]},
+  ]},
+  { w: 'at once', p: 'phr.', s: [
+    { m: '즉시, 당장', syn: ['immediately', 'right away'], ex: [
+      ['Come here at once.', '당장 이리 오너라.'],
+      ['The doctor came at once.', '의사가 즉시 왔다.'],
+      ['She recognized him at once.', '그녀는 그를 곧바로 알아보았다.'],
+    ]},
+  ]},
+  { w: 'at the same time', p: 'phr.', s: [
+    { m: '동시에', syn: ['simultaneously'], ex: [
+      ['They both spoke at the same time.', '그 둘은 동시에 말했다.'],
+      ['You cannot do two things at the same time.', '두 가지를 동시에 할 수는 없다.'],
+      ['The lights went out at the same time.', '불이 동시에 꺼졌다.'],
+    ]},
+  ]},
+  { w: 'be about to', p: 'phr.', s: [
+    { m: '막 ~하려던 참이다', syn: [], ex: [
+      ['I was about to call you.', '막 너에게 전화하려던 참이었다.'],
+      ['The train is about to leave.', '기차가 막 떠나려 한다.'],
+      ['She was about to cry when he arrived.', '그가 도착했을 때 그녀는 막 울려던 참이었다.'],
+    ]},
+  ]},
+  { w: 'be angry with', p: 'phr.', s: [
+    { m: '~에게 화가 나다', syn: [], ex: [
+      ['He was angry with his brother.', '그는 형에게 화가 나 있었다.'],
+      ['Do not be angry with me.', '나에게 화내지 마.'],
+      ['She is still angry with them.', '그녀는 아직도 그들에게 화가 나 있다.'],
+    ]},
+  ]},
+  { w: 'be busy with', p: 'phr.', s: [
+    { m: '~로 바쁘다', syn: [], ex: [
+      ['She is busy with her homework.', '그녀는 숙제로 바쁘다.'],
+      ['He was busy with preparations all day.', '그는 하루 종일 준비로 바빴다.'],
+      ['They are busy with the new project.', '그들은 새 프로젝트로 바쁘다.'],
+    ]},
+  ]},
+  { w: 'be covered with', p: 'phr.', s: [
+    { m: '~로 덮여 있다', syn: [], ex: [
+      ['The field was covered with snow.', '들판이 눈으로 덮여 있었다.'],
+      ['His shoes were covered with mud.', '그의 신발은 진흙으로 덮여 있었다.'],
+      ['The table is covered with books.', '탁자가 책으로 덮여 있다.'],
+    ]},
+  ]},
+  { w: 'be different from', p: 'phr.', s: [
+    { m: '~와 다르다', syn: [], ex: [
+      ['My opinion is different from yours.', '내 의견은 네 의견과 다르다.'],
+      ['This city is different from what I imagined.', '이 도시는 내가 상상한 것과 다르다.'],
+      ['Her style is different from his.', '그녀의 방식은 그의 것과 다르다.'],
+    ]},
+  ]},
+  { w: 'be famous for', p: 'phr.', s: [
+    { m: '~로 유명하다', syn: ['be known for'], ex: [
+      ['The town is famous for its bridge.', '그 마을은 다리로 유명하다.'],
+      ['She is famous for her paintings.', '그녀는 그림으로 유명하다.'],
+      ['Korea is famous for its food.', '한국은 음식으로 유명하다.'],
+    ]},
+  ]},
+  { w: 'be filled with', p: 'phr.', s: [
+    { m: '~로 가득 차다', syn: ['be full of'], ex: [
+      ['The room was filled with laughter.', '방은 웃음으로 가득 찼다.'],
+      ['His eyes were filled with tears.', '그의 눈은 눈물로 가득했다.'],
+      ['The box was filled with old photos.', '그 상자는 오래된 사진으로 가득했다.'],
+    ]},
+  ]},
+  { w: 'be good for', p: 'phr.', s: [
+    { m: '~에 좋다, 이롭다', syn: [], ex: [
+      ['Walking is good for your health.', '걷기는 건강에 좋다.'],
+      ['This medicine is good for a cough.', '이 약은 기침에 좋다.'],
+      ['Sleep is good for the brain.', '잠은 뇌에 좋다.'],
+    ]},
+  ]},
+  { w: 'be kind to', p: 'phr.', s: [
+    { m: '~에게 친절하다', syn: [], ex: [
+      ['Please be kind to your classmates.', '반 친구들에게 친절하게 대하렴.'],
+      ['She was kind to everyone she met.', '그녀는 만나는 모든 사람에게 친절했다.'],
+      ['He is always kind to animals.', '그는 늘 동물에게 친절하다.'],
+    ]},
+  ]},
+  { w: 'be late for', p: 'phr.', s: [
+    { m: '~에 늦다', syn: [], ex: [
+      ['I was late for school again.', '나는 또 학교에 지각했다.'],
+      ['Do not be late for the meeting.', '회의에 늦지 마라.'],
+      ['She was late for her own party.', '그녀는 자기 파티에 늦었다.'],
+    ]},
+  ]},
+  { w: 'be made of', p: 'phr.', s: [
+    { m: '~로 만들어지다 (재료가 그대로 보일 때)', syn: [], ex: [
+      ['The chair is made of wood.', '그 의자는 나무로 만들어졌다.'],
+      ['This ring is made of gold.', '이 반지는 금으로 만들어졌다.'],
+      ['The walls are made of stone.', '그 벽은 돌로 만들어졌다.'],
+    ]},
+  ]},
+  { w: 'be proud of', p: 'phr.', s: [
+    { m: '~을 자랑스러워하다', syn: [], ex: [
+      ['I am proud of my sister.', '나는 내 여동생이 자랑스럽다.'],
+      ['She was proud of her work.', '그녀는 자신의 일을 자랑스러워했다.'],
+      ['They are proud of what they built.', '그들은 자신들이 만든 것을 자랑스러워한다.'],
+    ]},
+  ]},
+  { w: 'be ready for', p: 'phr.', s: [
+    { m: '~할 준비가 되다', syn: [], ex: [
+      ['Are you ready for the test?', '시험 볼 준비가 되었니?'],
+      ['We are ready for winter.', '우리는 겨울을 맞을 준비가 되었다.'],
+      ['He was not ready for the question.', '그는 그 질문에 준비되어 있지 않았다.'],
+    ]},
+  ]},
   { w: 'by', p: 'prep.', s: [
     { m: '~ 옆에, ~로, ~까지', syn: [], ex: [
       ['She sat by the window.', '그녀는 창가에 앉았다.'],

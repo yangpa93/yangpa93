@@ -1,5 +1,5 @@
 /**
- * 중학교 1학년 레벨 1 — 수록 137 / 계획 137개.
+ * 중학교 1학년 레벨 1 — 수록 154 / 계획 137개.
  *
  * 난이도 층: 기초(초등 권장)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -16,6 +16,13 @@ export const M1_1 = defineLevel('m1-1', [
       ['A boy is waiting outside.', '한 소년이 밖에서 기다리고 있다.'],
     ]},
   ]},
+  { w: 'a couple of', p: 'phr.', s: [
+    { m: '두어 개의, 몇몇의', syn: ['a few', 'some'], ex: [
+      ['I need a couple of minutes to finish this.', '이걸 끝내려면 몇 분 정도 필요해.'],
+      ['We stayed there for a couple of days.', '우리는 그곳에 이틀쯤 머물렀다.'],
+      ['She asked me a couple of questions.', '그녀는 나에게 몇 가지 질문을 했다.'],
+    ]},
+  ]},
   { w: 'a few', p: 'phr.', s: [
     { m: '조금, 약간의 (몇 개의)', syn: ['some'], ex: [
       ['I have a few questions.', '나는 질문이 몇 개 있다.'],
@@ -23,11 +30,39 @@ export const M1_1 = defineLevel('m1-1', [
       ['We stayed there for a few days.', '우리는 그곳에 며칠 머물렀다.'],
     ]},
   ]},
+  { w: 'a kind of', p: 'phr.', s: [
+    { m: '일종의, ~같은 것', syn: ['a sort of', 'a type of'], ex: [
+      ['A whale is a kind of mammal.', '고래는 포유류의 일종이다.'],
+      ['It was a kind of game we invented ourselves.', '그것은 우리가 직접 만든 일종의 놀이였다.'],
+      ['He felt a kind of relief when it ended.', '그것이 끝났을 때 그는 일종의 안도감을 느꼈다.'],
+    ]},
+  ]},
   { w: 'a lot of', p: 'phr.', s: [
     { m: '많은', syn: ['many', 'much', 'lots of'], ex: [
       ['There are a lot of books here.', '여기에 책이 많이 있다.'],
       ['She has a lot of homework today.', '그녀는 오늘 숙제가 많다.'],
       ['A lot of people came to the festival.', '많은 사람들이 축제에 왔다.'],
+    ]},
+  ]},
+  { w: 'a number of', p: 'phr.', s: [
+    { m: '다수의, 여러', syn: ['several', 'many'], ex: [
+      ['A number of students joined the club.', '여러 학생이 그 동아리에 들어왔다.'],
+      ['We found a number of mistakes in the report.', '우리는 보고서에서 여러 오류를 발견했다.'],
+      ['A number of people were waiting outside.', '여러 사람이 밖에서 기다리고 있었다.'],
+    ]},
+  ]},
+  { w: 'a pair of', p: 'phr.', s: [
+    { m: '한 쌍의, 한 켤레의', syn: ['a couple of'], ex: [
+      ['I bought a pair of shoes yesterday.', '나는 어제 신발 한 켤레를 샀다.'],
+      ['She wore a pair of glasses.', '그녀는 안경을 쓰고 있었다.'],
+      ['He needs a pair of clean socks.', '그는 깨끗한 양말 한 켤레가 필요하다.'],
+    ]},
+  ]},
+  { w: 'a piece of', p: 'phr.', s: [
+    { m: '한 조각의, 한 개의', syn: [], ex: [
+      ['Can I have a piece of cake?', '케이크 한 조각 먹어도 될까요?'],
+      ['She gave me a piece of paper.', '그녀는 나에게 종이 한 장을 주었다.'],
+      ['That was a useful piece of advice.', '그것은 유용한 조언 하나였다.'],
     ]},
   ]},
   { w: 'ability', p: 'n.', s: [
@@ -114,6 +149,13 @@ export const M1_1 = defineLevel('m1-1', [
       ['Wash your hands after work.', '일이 끝나면 손을 씻어라.'],
     ]},
   ]},
+  { w: 'after all', p: 'phr.', s: [
+    { m: '결국, 그래도 (생각과 달리)', syn: ['in the end'], ex: [
+      ['It did not rain after all.', '결국 비는 오지 않았다.'],
+      ['He came to the party after all.', '그는 결국 파티에 왔다.'],
+      ['After all, we are still friends.', '그래도 우리는 여전히 친구다.'],
+    ]},
+  ]},
   { w: 'afternoon', p: 'n.', s: [
     { m: '오후', syn: [], ex: [
       ['I have a class this afternoon.', '나는 오늘 오후에 수업이 있다.'],
@@ -156,6 +198,13 @@ export const M1_1 = defineLevel('m1-1', [
       ['My parents did not agree at first.', '부모님은 처음에는 동의하지 않으셨다.'],
     ]},
   ]},
+  { w: 'agree with', p: 'phr.', s: [
+    { m: '~에 동의하다', syn: ['accept', 'approve of'], ex: [
+      ['I agree with your opinion.', '나는 네 의견에 동의한다.'],
+      ['Not everyone agreed with the plan.', '모두가 그 계획에 동의한 것은 아니었다.'],
+      ['Do you agree with what she said?', '너는 그녀가 한 말에 동의하니?'],
+    ]},
+  ]},
   { w: 'ahead', p: 'adv.', s: [
     { m: '앞으로, 앞에', syn: [], ex: [
       ['The car ahead stopped suddenly.', '앞에 있는 차가 갑자기 멈췄다.'],
@@ -189,6 +238,34 @@ export const M1_1 = defineLevel('m1-1', [
       ['All students must come.', '모든 학생이 와야 한다.'],
       ['She ate all the bread.', '그녀는 빵을 전부 먹었다.'],
       ['We waited all day.', '우리는 하루 종일 기다렸다.'],
+    ]},
+  ]},
+  { w: 'all day long', p: 'phr.', s: [
+    { m: '하루 종일', syn: [], ex: [
+      ['It rained all day long.', '하루 종일 비가 내렸다.'],
+      ['She practiced the piano all day long.', '그녀는 하루 종일 피아노를 연습했다.'],
+      ['The baby slept all day long.', '아기는 하루 종일 잤다.'],
+    ]},
+  ]},
+  { w: 'all kinds of', p: 'phr.', s: [
+    { m: '온갖 종류의', syn: ['various', 'all sorts of'], ex: [
+      ['The market sells all kinds of fruit.', '그 시장은 온갖 종류의 과일을 판다.'],
+      ['He has all kinds of excuses.', '그는 온갖 핑계를 댄다.'],
+      ['We saw all kinds of birds in the park.', '우리는 공원에서 온갖 새를 보았다.'],
+    ]},
+  ]},
+  { w: 'all over the world', p: 'phr.', s: [
+    { m: '전 세계에서, 온 세계에', syn: ['worldwide'], ex: [
+      ['People all over the world watched the game.', '전 세계 사람들이 그 경기를 보았다.'],
+      ['This song is loved all over the world.', '이 노래는 전 세계에서 사랑받는다.'],
+      ['She has traveled all over the world.', '그녀는 전 세계를 여행했다.'],
+    ]},
+  ]},
+  { w: 'all the time', p: 'phr.', s: [
+    { m: '늘, 언제나', syn: ['always', 'constantly'], ex: [
+      ['He complains all the time.', '그는 늘 불평한다.'],
+      ['The library is open all the time.', '그 도서관은 언제나 열려 있다.'],
+      ['She was thinking about it all the time.', '그녀는 그것을 계속 생각하고 있었다.'],
     ]},
   ]},
   { w: 'almost', p: 'adv.', s: [
@@ -306,6 +383,13 @@ export const M1_1 = defineLevel('m1-1', [
       ['She apologized and left quietly.', '그녀는 사과하고 조용히 떠났다.'],
     ]},
   ]},
+  { w: 'apologize to', p: 'phr.', s: [
+    { m: '~에게 사과하다', syn: [], ex: [
+      ['You should apologize to your sister.', '너는 여동생에게 사과해야 한다.'],
+      ['He apologized to the teacher for being late.', '그는 늦은 것에 대해 선생님께 사과했다.'],
+      ['She never apologized to anyone.', '그녀는 누구에게도 사과하지 않았다.'],
+    ]},
+  ]},
   { w: 'apple', p: 'n.', s: [
     { m: '사과', syn: [], ex: [
       ['I eat an apple every morning.', '나는 매일 아침 사과를 먹는다.'],
@@ -339,6 +423,13 @@ export const M1_1 = defineLevel('m1-1', [
       ['We arrived at school early.', '우리는 학교에 일찍 도착했다.'],
       ['The train arrives at six.', '기차는 6시에 도착한다.'],
       ['They arrived in Seoul last night.', '그들은 어젯밤 서울에 도착했다.'],
+    ]},
+  ]},
+  { w: 'arrive at', p: 'phr.', s: [
+    { m: '~에 도착하다', syn: ['reach', 'get to'], ex: [
+      ['We arrived at the station on time.', '우리는 제시간에 역에 도착했다.'],
+      ['They arrived at the hotel after midnight.', '그들은 자정이 지나서 호텔에 도착했다.'],
+      ['She arrived at school before anyone else.', '그녀는 누구보다 먼저 학교에 도착했다.'],
     ]},
   ]},
   { w: 'art', p: 'n.', s: [
@@ -379,11 +470,39 @@ export const M1_1 = defineLevel('m1-1', [
       ['I will ask her to come early.', '나는 그녀에게 일찍 오라고 부탁할 것이다.'],
     ]},
   ]},
+  { w: 'ask for', p: 'phr.', s: [
+    { m: '~을 요청하다, 달라고 하다', syn: ['request'], ex: [
+      ['He asked for a glass of water.', '그는 물 한 잔을 달라고 했다.'],
+      ['Do not be afraid to ask for help.', '도움을 청하는 것을 두려워하지 마라.'],
+      ['She asked for more time to finish.', '그녀는 끝낼 시간을 더 달라고 했다.'],
+    ]},
+  ]},
   { w: 'at', p: 'prep.', s: [
     { m: '~에서, ~에', syn: [], ex: [
       ['We meet at the station.', '우리는 역에서 만난다.'],
       ['The class starts at nine.', '수업은 9시에 시작한다.'],
       ['She is at home now.', '그녀는 지금 집에 있다.'],
+    ]},
+  ]},
+  { w: 'at first', p: 'phr.', s: [
+    { m: '처음에는', syn: ['initially'], ex: [
+      ['At first I did not like the movie.', '처음에는 그 영화가 마음에 들지 않았다.'],
+      ['At first the work seemed easy.', '처음에는 그 일이 쉬워 보였다.'],
+      ['She was shy at first, but soon relaxed.', '그녀는 처음에는 수줍어했지만 곧 편해졌다.'],
+    ]},
+  ]},
+  { w: 'at home', p: 'phr.', s: [
+    { m: '집에, 집에서', syn: ['indoors'], ex: [
+      ['My mother is at home now.', '어머니는 지금 집에 계신다.'],
+      ['We stayed at home all weekend.', '우리는 주말 내내 집에 있었다.'],
+      ['He works at home on Fridays.', '그는 금요일에는 집에서 일한다.'],
+    ]},
+  ]},
+  { w: 'at last', p: 'phr.', s: [
+    { m: '마침내, 드디어', syn: ['finally', 'at length'], ex: [
+      ['At last the rain stopped.', '마침내 비가 그쳤다.'],
+      ['She finished the book at last.', '그녀는 드디어 그 책을 다 읽었다.'],
+      ['At last we found the right answer.', '마침내 우리는 정답을 찾았다.'],
     ]},
   ]},
   { w: 'aunt', p: 'n.', s: [

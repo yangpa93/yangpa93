@@ -1,5 +1,5 @@
 /**
- * 고등학교 1학년 레벨 3 — 수록 137 / 계획 137개.
+ * 고등학교 1학년 레벨 3 — 수록 154 / 계획 137개.
  *
  * 난이도 층: 중급(중학 권장)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -9,6 +9,125 @@
 import { defineLevel } from '../define';
 
 export const H1_3 = defineLevel('h1-3', [
+  { w: 'escape from', p: 'phr.', s: [
+    { m: '~에서 탈출하다, 벗어나다', syn: [], ex: [
+      ['The bird escaped from its cage.', '새가 새장에서 탈출했다.'],
+      ['She escaped from the burning building.', '그녀는 불타는 건물에서 빠져나왔다.'],
+      ['He wanted to escape from city life.', '그는 도시 생활에서 벗어나고 싶었다.'],
+    ]},
+  ]},
+  { w: 'figure out', p: 'phr.', s: [
+    { m: '알아내다, 이해하다', syn: ['work out'], ex: [
+      ['I cannot figure out this puzzle.', '나는 이 퍼즐을 못 풀겠다.'],
+      ['She figured out the answer quickly.', '그녀는 재빨리 답을 알아냈다.'],
+      ['We figured out how it works.', '우리는 그것이 어떻게 작동하는지 알아냈다.'],
+    ]},
+  ]},
+  { w: 'fill up', p: 'phr.', s: [
+    { m: '가득 채우다', syn: [], ex: [
+      ['He filled up the tank with gas.', '그는 연료 탱크를 가득 채웠다.'],
+      ['The hall filled up quickly.', '강당이 금세 가득 찼다.'],
+      ['She filled up her cup again.', '그녀는 컵을 다시 가득 채웠다.'],
+    ]},
+  ]},
+  { w: 'find fault with', p: 'phr.', s: [
+    { m: '~의 흠을 잡다', syn: [], ex: [
+      ['He always finds fault with my work.', '그는 늘 내 일에 흠을 잡는다.'],
+      ['She found fault with every detail.', '그녀는 모든 세부에 트집을 잡았다.'],
+      ['Do not find fault with your friends.', '친구의 흠을 잡지 마라.'],
+    ]},
+  ]},
+  { w: 'get around', p: 'phr.', s: [
+    { m: '돌아다니다; (문제를) 피해 가다', syn: [], ex: [
+      ['It is easy to get around by subway.', '지하철로 돌아다니기 쉽다.'],
+      ['They found a way to get around the rule.', '그들은 그 규칙을 피해 가는 방법을 찾았다.'],
+      ['She gets around the city on a bike.', '그녀는 자전거로 도시를 돌아다닌다.'],
+    ]},
+  ]},
+  { w: 'get away', p: 'phr.', s: [
+    { m: '달아나다; 벗어나다', syn: ['escape'], ex: [
+      ['The thief got away with the money.', '도둑은 돈을 갖고 달아났다.'],
+      ['We want to get away for the weekend.', '우리는 주말에 어디론가 떠나고 싶다.'],
+      ['He could not get away from work.', '그는 일에서 벗어날 수 없었다.'],
+    ]},
+  ]},
+  { w: 'get by', p: 'phr.', s: [
+    { m: '그럭저럭 살아가다, 견디다', syn: ['manage'], ex: [
+      ['They get by on a small income.', '그들은 적은 수입으로 그럭저럭 살아간다.'],
+      ['She gets by with a little help.', '그녀는 약간의 도움으로 버텨 나간다.'],
+      ['We can get by without a car.', '우리는 차 없이도 그럭저럭 지낼 수 있다.'],
+    ]},
+  ]},
+  { w: 'get rid of', p: 'phr.', s: [
+    { m: '없애다, 처분하다', syn: ['remove'], ex: [
+      ['We need to get rid of these old boxes.', '우리는 이 낡은 상자들을 없애야 한다.'],
+      ['She got rid of her bad habit.', '그녀는 나쁜 습관을 없앴다.'],
+      ['How can I get rid of this smell?', '이 냄새를 어떻게 없애죠?'],
+    ]},
+  ]},
+  { w: 'get through', p: 'phr.', s: [
+    { m: '통과하다; 견뎌 내다', syn: [], ex: [
+      ['She got through the exam easily.', '그녀는 시험을 쉽게 통과했다.'],
+      ['They got through a hard winter.', '그들은 힘든 겨울을 견뎌 냈다.'],
+      ['We could not get through the crowd.', '우리는 사람들 틈을 뚫고 갈 수 없었다.'],
+    ]},
+  ]},
+  { w: 'give in', p: 'phr.', s: [
+    { m: '굴복하다, 항복하다', syn: ['surrender', 'yield'], ex: [
+      ['He finally gave in to their demands.', '그는 마침내 그들의 요구에 굴복했다.'],
+      ['She never gives in easily.', '그녀는 결코 쉽게 굴복하지 않는다.'],
+      ['Do not give in to fear.', '두려움에 굴복하지 마라.'],
+    ]},
+  ]},
+  { w: 'give off', p: 'phr.', s: [
+    { m: '(냄새·빛을) 내뿜다', syn: ['emit'], ex: [
+      ['The flowers give off a sweet smell.', '그 꽃들은 달콤한 향을 내뿜는다.'],
+      ['The lamp gives off a warm light.', '그 등은 따뜻한 빛을 낸다.'],
+      ['Rotten eggs give off a bad smell.', '썩은 달걀은 고약한 냄새를 낸다.'],
+    ]},
+  ]},
+  { w: 'give out', p: 'phr.', s: [
+    { m: '나눠 주다; (힘이) 다하다', syn: ['distribute'], ex: [
+      ['She gave out flyers on the street.', '그녀는 거리에서 전단을 나눠 주었다.'],
+      ['His strength gave out at the end.', '그는 마지막에 힘이 다했다.'],
+      ['Teachers gave out the test papers.', '선생님들이 시험지를 나눠 주었다.'],
+    ]},
+  ]},
+  { w: 'go after', p: 'phr.', s: [
+    { m: '쫓아가다, 추구하다', syn: ['pursue'], ex: [
+      ['The dog went after the ball.', '개가 공을 쫓아갔다.'],
+      ['She went after her dream.', '그녀는 자기 꿈을 좇았다.'],
+      ['Police went after the suspect.', '경찰이 용의자를 뒤쫓았다.'],
+    ]},
+  ]},
+  { w: 'go along with', p: 'phr.', s: [
+    { m: '~에 동조하다, 따르다', syn: [], ex: [
+      ['I will go along with your decision.', '나는 네 결정에 따르겠다.'],
+      ['He went along with the joke.', '그는 그 농담에 맞장구쳤다.'],
+      ['Not everyone went along with the idea.', '모두가 그 생각에 동조한 것은 아니었다.'],
+    ]},
+  ]},
+  { w: 'go over', p: 'phr.', s: [
+    { m: '검토하다, 훑어보다', syn: ['review'], ex: [
+      ['Let\'s go over the plan again.', '계획을 다시 검토해 보자.'],
+      ['She went over her notes before the test.', '그녀는 시험 전에 필기를 훑어보았다.'],
+      ['He went over every line carefully.', '그는 한 줄 한 줄 꼼꼼히 살폈다.'],
+    ]},
+  ]},
+  { w: 'go through', p: 'phr.', s: [
+    { m: '겪다; 살펴보다', syn: [], ex: [
+      ['She went through a difficult time.', '그녀는 힘든 시기를 겪었다.'],
+      ['He went through the papers one by one.', '그는 서류를 하나씩 살펴보았다.'],
+      ['They went through many changes.', '그들은 많은 변화를 겪었다.'],
+    ]},
+  ]},
+  { w: 'hand out', p: 'phr.', s: [
+    { m: '나눠 주다', syn: ['distribute'], ex: [
+      ['The teacher handed out worksheets.', '선생님이 학습지를 나눠 주었다.'],
+      ['Volunteers handed out water.', '자원봉사자들이 물을 나눠 주었다.'],
+      ['He handed out invitations to everyone.', '그는 모두에게 초대장을 나눠 주었다.'],
+    ]},
+  ]},
   { w: 'shelter', p: 'n.', s: [
     { m: '보호소, 대피처', syn: [], ex: [
       ['We found shelter from the rain.', '우리는 비를 피할 곳을 찾았다.'],

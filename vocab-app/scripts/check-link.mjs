@@ -1,0 +1,157 @@
+#!/usr/bin/env node
+/**
+ * 폰에 깔기 **전에** 연결이 될지 미리 본다.
+ *
+ *   npm run check-link
+ *
+ * ── 왜 필요한가 ─────────────────────────────────────────────
+ *
+ * "폰 연결하기는 설치 전에 미리 문제가 없는지 확인할 수 있는 방법은 없나요?"
+ *
+ * 있다. 연결은 두 토막인데, 그중 한 토막은 폰 없이 다 확인할 수 있다.
+ *
+ *   ① QR 을 만들고 읽는 것      ← 폰 없이 확인 가능. 여기서 한다.
+ *   ② 푸시 주소를 받고 보내는 것 ← FCM 이 필요해서 실기기라야 한다.
+ *
+ * 지난번에 막힌 곳은 ①이었다 — 찍었는데 아무 일도 안 일어났다. 그런
+ * 종류의 문제는 여기서 미리 걸린다. 그것도 두 가지 방법으로.
+ *
+ *   가. **규칙 확인** — 만든 QR 을 우리 파서가 그대로 되읽는지. 옛 판이
+ *       만든 주소도 읽는지. 짧은 코드가 되돌아오는지.
+ *
+ *   나. **진짜 카메라로 확인** — QR 그림 파일을 하나 만들어 둔다. 노트북
+ *       화면에 띄우고 **폰의 기본 카메라 앱**으로 비춰 보시면 된다. 화면에
+ *       `gomtangivoca://child?token=…` 이라고 읽히면 그림은 멀쩡한 것이다.
+ *       앱을 깔기 전에도 되고, 앱이 없으니 열리지는 않고 글자만 뜬다.
+ *
+ * 나 쪽이 특히 값지다. 카메라가 그 QR 을 못 읽는 문제라면 앱을 백 번 깔아도
+ * 안 되는데, 그것을 설치 전에 가릴 수 있다.
+ */
+
+import { readFileSync, mkdirSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import QRCode from 'qrcode';
+
+const OUT_DIR = 'link-check';
+const OUT_PNG = `${OUT_DIR}/아이-QR-시험지.png`;
+
+/* app.json 의 주소를 그대로 쓴다. 여기서 다른 값을 쓰면 확인이 거짓말이 된다. */
+const appJson = JSON.parse(readFileSync('app.json', 'utf8'));
+const SCHEME = appJson.expo.scheme;
+/** 읽기만 하는 옛 주소. src/features/pairing.ts 와 같아야 한다. */
+const OLD_SCHEMES = ['gomtangvoca', 'urivocab'];
+
+/*
+ * 진짜 Expo 푸시 주소와 똑같은 길이·모양으로 만든다. 짧은 가짜 토큰으로
+ * 시험하면 QR 격자가 작게 나와서, 정작 실제 상황에서 안 읽히는 것을 못 잡는다.
+ */
+const SAMPLE_TOKEN = 'ExponentPushToken[AbCdEfGhIjKlMnOpQrStUv]';
+const SAMPLE_NAME = '서준';
+
+const url = `${SCHEME}://child?token=${encodeURIComponent(SAMPLE_TOKEN)}&name=${encodeURIComponent(SAMPLE_NAME)}`;
+
+let bad = 0;
+function check(label, ok, detail = '') {
+  console.log(`  ${ok ? '✅' : '❌'} ${label}${detail ? `  ${detail}` : ''}`);
+  if (!ok) bad++;
+}
+
+console.log('');
+console.log('  폰에 깔기 전 — 연결 미리 보기 ' + '─'.repeat(28));
+console.log('');
+
+/* ── 가. 규칙 확인 ────────────────────────────────────────── */
+
+console.log('  ① QR 을 만들고 읽는 규칙');
+
+/*
+ * 파서를 그대로 불러다 쓴다. TS 를 켜서 부르면 이 스크립트가 무거워지므로,
+ * 규칙만 여기 옮겨 적는 대신 **소스에서 읽어 맞는지 대조**한다. 옮겨 적으면
+ * 소스가 바뀌었을 때 이 확인이 조용히 거짓말을 하게 된다.
+ */
+const pairing = readFileSync('src/features/pairing.ts', 'utf8');
+const declared = [...pairing.matchAll(/'([a-z]+)'/g)].map((m) => m[1]);
+for (const old of OLD_SCHEMES) {
+  check(
+    `옛 주소 ${old}:// 도 읽습니다`,
+    pairing.includes('OLD_LINK_SCHEMES') && declared.includes(old),
+    '두 폰의 판이 달라도 됩니다',
+  );
+}
+check(
+  `지금 주소는 ${SCHEME}:// 입니다`,
+  pairing.includes('appJson.expo.scheme'),
+  'app.json 을 그대로 씁니다',
+);
+check('찍은 것을 한 자리에서 가립니다', pairing.includes('export function parseScanned'));
+check('못 읽으면 무엇을 읽었는지 말합니다', pairing.includes('export function scannedError'));
+
+console.log('');
+console.log('  ② 코드로 연결하는 길');
+const hasCodeScreen = (() => {
+  try {
+    return readFileSync('app/link-child-code.tsx', 'utf8').includes('rememberChild');
+  } catch {
+    return false;
+  }
+})();
+check('부모 폰에 코드를 적을 칸이 있습니다', hasCodeScreen, '카메라가 안 될 때');
+
+/* ── 나. 진짜 카메라로 확인할 그림 ─────────────────────────── */
+
+console.log('');
+console.log('  ③ 진짜 카메라로 확인할 QR');
+
+mkdirSync(OUT_DIR, { recursive: true });
+await QRCode.toFile(OUT_PNG, url, {
+  errorCorrectionLevel: 'M',
+  // 앱 화면에서 그리는 것보다 넉넉히 크게 뽑는다. 노트북 화면에 띄워
+  // 폰으로 비추는 상황이라 칸이 커야 잘 읽힌다.
+  width: 600,
+  margin: 4,
+});
+const data = QRCode.create(url, { errorCorrectionLevel: 'M' });
+check(
+  'QR 그림을 만들었습니다',
+  true,
+  `${data.modules.size}칸 · ${url.length}글자 · 버전 ${data.version}`,
+);
+
+console.log('');
+console.log('  ' + '─'.repeat(58));
+if (bad === 0) {
+  console.log('  규칙은 다 맞습니다. 이제 눈으로 한 번 보시면 끝입니다.');
+} else {
+  console.log(`  ${bad}개가 어긋납니다. 위 ❌ 를 보고 고친 뒤 다시 부르세요.`);
+}
+console.log('');
+console.log('  ▶ 이렇게 확인하세요');
+console.log('');
+console.log(`     1. 이 그림 파일을 여세요 —  ${OUT_PNG}`);
+console.log('     2. 폰의 **기본 카메라 앱**을 켜고 노트북 화면의 QR 을 비추세요');
+console.log('     3. 폰 화면에 이렇게 뜨면 됩니다 :');
+console.log('');
+console.log(`        ${url}`);
+console.log('');
+console.log('     · 글자가 뜨면 → QR 은 멀쩡합니다. 카메라 문제가 아닙니다.');
+console.log('     · 아무것도 안 뜨면 → 폰을 20cm 쯤 띄우고 화면 밝기를 올려 보세요.');
+console.log('       그래도 안 되면 그 폰 카메라로는 QR 이 안 읽힙니다 —');
+console.log('       앱에서도 안 될 테니 코드로 연결하는 길을 쓰세요.');
+console.log('');
+console.log('  ▶ 여기서 확인 못 하는 것');
+console.log('');
+console.log('     푸시 주소를 받고 보내는 일은 FCM 이 있어야 해서 폰이 필요합니다.');
+console.log('     앱을 깔고 나면 아이 폰 ⚙️ 설정 → 부모님과 연결하기 에서');
+console.log('     QR 이 실제로 뜨는지로 확인하세요. 안 뜨면 그 자리에 까닭이 적힙니다.');
+console.log('');
+
+/* 확인용 그림은 저장소에 올릴 것이 아니다. 빠져 있으면 알려 준다. */
+try {
+  const ignored = execFileSync('git', ['check-ignore', OUT_DIR], { encoding: 'utf8' }).trim();
+  if (!ignored) throw new Error('not ignored');
+} catch {
+  console.log(`  (참고) ${OUT_DIR}/ 는 .gitignore 에 넣어 두세요. 올릴 것이 아닙니다.`);
+  console.log('');
+}
+
+if (bad > 0) process.exitCode = 1;

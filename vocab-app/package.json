@@ -67,7 +67,9 @@
     "verify": "node scripts/verify-relations.mjs",
     "verify:meaning": "node scripts/verify-meaning.mjs",
     "reference": "node scripts/fetch-reference.mjs",
-    "export": "node scripts/export-review.mjs"
+    "export": "node scripts/export-review.mjs",
+    "check-link": "node scripts/check-link.mjs",
+    "e2e": "node scripts/e2e.mjs"
   },
   "private": true
 }

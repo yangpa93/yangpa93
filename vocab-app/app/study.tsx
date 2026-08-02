@@ -209,7 +209,8 @@ export default function Study() {
 
     if (index + 1 >= queue.length) {
       const seconds = Math.round((Date.now() - startedAt.current) / 1000);
-      finishSession({ studied: studiedIds.current.size, seconds });
+      // 큐를 끝까지 다 봤다. 이때만 '오늘 다 했다' 로 적힌다.
+      finishSession({ studied: studiedIds.current.size, seconds, reachedEnd: true });
       router.replace({
         pathname: '/result',
         params: {
@@ -227,16 +228,24 @@ export default function Study() {
   }, [index, queue.length, stats, finishSession]);
 
   function quit() {
-    Alert.alert('학습을 그만할까요?', '지금까지 푼 문제는 저장돼요.', [
+    Alert.alert('학습을 그만할까요?', '지금까지 푼 문제는 저장돼요. 다만 오늘 공부는 아직 안 끝난 것으로 남습니다.', [
       { text: '계속하기', style: 'cancel' },
       {
         text: '그만하기',
         style: 'destructive',
         onPress: () => {
           stopSpeaking();
+          /*
+           * 중간에 그만뒀다. 푼 것은 저장하되 **다 한 것으로는 안 적는다.**
+           *
+           * 예전에는 개수만 보고 판단했는데, 한 낱말이 하루에 세 바퀴 나오므로
+           * 첫 바퀴만 돌아도 '만난 낱말의 가짓수' 가 목표와 같아졌다. 그래서
+           * 여기서 그만둬도 다 한 것으로 찍혔다.
+           */
           finishSession({
             studied: studiedIds.current.size,
             seconds: Math.round((Date.now() - startedAt.current) / 1000),
+            reachedEnd: false,
           });
           router.replace(homePath);
         },

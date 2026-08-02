@@ -36,6 +36,7 @@ import {
 import { ALL_ENTRIES, entriesOf } from '../data';
 import { Award, buildRewardRequest, claimAward, ratesOf } from '../features/awards';
 import { MAX_CHILDREN, canAcceptChild } from '../features/children';
+import { addAnswer, closeSession, emptyDay } from '../features/dayRecord';
 import {
   addParentLink,
   primaryParent,
@@ -94,7 +95,7 @@ interface Ctx {
   /** 채점 결과 한 건을 반영한다. */
   recordAnswer(log: AnswerLog): void;
   /** 세션이 끝났을 때 하루 기록을 갱신한다. */
-  finishSession(args: { studied: number; seconds: number }): void;
+  finishSession(args: { studied: number; seconds: number; reachedEnd: boolean }): void;
 
   /** 영어 레벨업 확정. 다음 학년으로 올리고 보상 요청 자격을 준다. */
   levelUp(): void;
@@ -395,28 +396,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       const existing: CardState = data.cards[log.entryId] ?? createCard(log.entryId, log.at);
       const graded = grade(existing, log.correct, today, log.at);
 
-      const day: DailyRecord = data.days[today] ?? {
-        date: today,
-        goal: profileGoal(ref.current.state, data),
-        studied: 0,
-        correct: 0,
-        wrong: 0,
-        seconds: 0,
-        completed: false,
-        wrongEntryIds: [],
-      };
+      const day = data.days[today] ?? emptyDay(today, profileGoal(ref.current.state, data));
 
       persistData({
         ...data,
         cards: { ...data.cards, [log.entryId]: graded },
         days: {
           ...data.days,
-          [today]: {
-            ...day,
-            correct: day.correct + (log.correct ? 1 : 0),
-            wrong: day.wrong + (log.correct ? 0 : 1),
-            wrongEntryIds: log.correct ? day.wrongEntryIds : [...day.wrongEntryIds, log.entryId],
-          },
+          [today]: addAnswer(day, log.entryId, log.correct),
         },
         answers: [...data.answers, log],
       });
@@ -425,38 +412,36 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   );
 
   const finishSession = useCallback(
-    ({ studied, seconds }: { studied: number; seconds: number }) => {
+    ({
+      studied,
+      seconds,
+      reachedEnd,
+    }: {
+      studied: number;
+      seconds: number;
+      /**
+       * 오늘 낼 문제를 끝까지 다 봤는지.
+       *
+       * 개수만으로는 못 가린다 — 한 낱말이 하루에 세 바퀴 나오므로 첫 바퀴만
+       * 돌아도 '만난 낱말의 가짓수' 는 이미 목표와 같아진다. 그래서 중간에
+       * 그만둬도 다 한 것으로 적혔다. 부른 쪽이 알고 있는 값을 받는다.
+       */
+      reachedEnd: boolean;
+    }) => {
       const { data, state } = ref.current;
       const active = state.profiles.find((p) => p.id === state.activeProfileId);
       if (!active) return;
 
       const today = todayKey();
-      const day: DailyRecord = data.days[today] ?? {
-        date: today,
-        goal: profileGoal(state, data),
-        studied: 0,
-        correct: 0,
-        wrong: 0,
-        seconds: 0,
-        completed: false,
-        wrongEntryIds: [],
-      };
-
-      const totalStudied = day.studied + studied;
-      const completed = totalStudied >= day.goal;
+      const day = data.days[today] ?? emptyDay(today, profileGoal(state, data));
       const wasCompleted = day.completed;
+
+      const closed = closeSession(day, { studied, seconds, reachedEnd });
+      const completed = closed.completed;
 
       const nextData: ProfileData = {
         ...data,
-        days: {
-          ...data.days,
-          [today]: {
-            ...day,
-            studied: totalStudied,
-            seconds: day.seconds + seconds,
-            completed,
-          },
-        },
+        days: { ...data.days, [today]: closed },
       };
       persistData(nextData);
 

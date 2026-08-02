@@ -127,6 +127,10 @@ const MARKS = [
   ['부모 폰에서 코드로 아이 연결', 'app/link-child-code.tsx', 'rememberChild'],
   ['안 읽히는 QR 을 말해 준다', 'src/features/pairing.ts', 'scannedError'],
   ['옛 판이 만든 QR 도 읽기', 'src/features/pairing.ts', 'OLD_LINK_SCHEMES'],
+  ['중간에 그만두면 미완료', 'src/features/dayRecord.ts', 'reachedEnd'],
+  ['오늘 배운 것 먼저 보기', 'src/components/TodayWordsList.tsx', 'studiedToday'],
+  ['부모 홈에 오답 노트·단어장', 'app/parent-home.tsx', "router.push('/wordbook')"],
+  ['설치 전 연결 미리 보기', 'scripts/check-link.mjs', '기본 카메라 앱'],
 ];
 
 /* 판 번호도 같이 적는다. "몇 판을 받았나"가 제일 먼저 궁금한 것이다. */

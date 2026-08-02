@@ -64,3 +64,6 @@ service-account*.json
 .env
 .env.local
 *stdict-key*
+
+# 연결 미리 보기가 만드는 QR 그림. 올릴 것이 아니다.
+link-check/

@@ -175,10 +175,38 @@ export default function ParentHome() {
           */}
           <H3 style={{ marginTop: spacing.xl }}>📈 내 학습 기록</H3>
           <ParentRecordCards />
+
+          {/*
+            ③ 오답 노트와 단어장. **부모 화면에는 아예 없었다.**
+
+            아이 홈에는 처음부터 있었는데 부모 홈에는 빠져 있었다. 부모도 똑같이
+            문제를 풀고 똑같이 틀리는데 되짚어 볼 자리가 없었던 것이다. 공부를
+            안 하기로 한 부모에게는 뜻이 없으므로 공부 카드와 함께 사라진다.
+          */}
+          <Row style={{ marginTop: spacing.lg, gap: spacing.sm }}>
+            <Pressable
+              style={s.half}
+              onPress={() => router.push('/mistakes')}
+              accessibilityRole="button"
+            >
+              <Text style={s.halfIcon}>📕</Text>
+              <Text style={s.halfTitle}>오답 노트</Text>
+              <Text style={s.halfHint}>오늘 틀린 것부터</Text>
+            </Pressable>
+            <Pressable
+              style={s.half}
+              onPress={() => router.push('/wordbook')}
+              accessibilityRole="button"
+            >
+              <Text style={s.halfIcon}>📗</Text>
+              <Text style={s.halfTitle}>단어장</Text>
+              <Text style={s.halfHint}>오늘 배운 것부터</Text>
+            </Pressable>
+          </Row>
         </>
       )}
 
-      {/* ③ 아이들 */}
+      {/* ④ 아이들 */}
       <Tile
         icon="👧"
         title="아이들 학습 보고서"
@@ -234,6 +262,21 @@ function Tile({
 }
 
 const s = StyleSheet.create({
+  /*
+   * 오답 노트 · 단어장은 나란히 둘로. 아이 홈과 같은 모양이라 부모가 아이
+   * 폰을 봐 줄 때 같은 곳을 찾는다.
+   */
+  half: {
+    flex: 1,
+    padding: spacing.lg,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.card,
+  },
+  halfIcon: { fontSize: 24 },
+  halfTitle: { fontSize: font.body, fontWeight: '800', color: colors.text, marginTop: spacing.xs },
+  halfHint: { fontSize: font.tiny, color: colors.subtext, marginTop: 2 },
   who: { flexDirection: 'row', alignItems: 'center', flex: 1 },
   iconBtn: {
     paddingHorizontal: spacing.md,

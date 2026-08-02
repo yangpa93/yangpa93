@@ -19,16 +19,14 @@
 import { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
-import { Body, Button, Card, H3, Muted, ProgressBar, Row } from './ui';
+import { Body, Button, Card, H3, Muted, Row } from './ui';
 import { useApp } from '../store/AppProvider';
 import { ALL_ENTRIES } from '../data';
-import { DAILY_ENTRIES, dailyTheme } from '../data/daily';
+import { DAILY_ENTRIES } from '../data/daily';
 import { KO_ENTRIES } from '../data/korean/levels';
 import { meaningLine } from '../data/entry';
-import { parentTrackProgress, TRACK_ORDER } from '../srs/parentSession';
 import { buildWeeklySummary } from '../features/report';
 import { buildMonth, monthOf } from '../features/calendar';
-import { LEVEL_SHORT, PARENT_TRACK_LABEL } from '../types';
 import { lastNDays, todayKey } from '../lib/date';
 import { colors, spacing } from '../theme';
 
@@ -65,8 +63,6 @@ export function ParentRecordCards() {
 
   if (!profile) return null;
 
-  const study = profile.parentStudy;
-
   return (
     <View>
       {/* 최근 7일 */}
@@ -98,45 +94,18 @@ export function ParentRecordCards() {
         </Muted>
       </Card>
 
-      {/* 갈래별 진도 */}
-      <Card style={{ marginTop: spacing.md }}>
-        <H3>무엇을 얼마나 익혔나</H3>
-        {study.tracks.length === 0 ? (
-          <Muted style={{ marginTop: spacing.sm }}>
-            아직 공부할 것을 안 골랐어요. ⚙️ 설정 → 내 공부 설정 에서 정하시면 오늘치가
-            만들어집니다.
-          </Muted>
-        ) : (
-          TRACK_ORDER.filter((t) => study.tracks.includes(t)).map((t) => {
-            const p = parentTrackProgress(profile, data.cards, t);
-            const where =
-              t === 'daily'
-                ? dailyTheme(study.dailyTheme).label
-                : t === 'enWord'
-                  ? LEVEL_SHORT[profile.level]
-                  : LEVEL_SHORT[profile.koLevel];
-            return (
-              <View key={t} style={{ marginTop: spacing.lg }}>
-                <Row style={{ justifyContent: 'space-between' }}>
-                  <Body style={{ fontWeight: '700', flex: 1 }}>
-                    {PARENT_TRACK_LABEL[t]} · {where}
-                  </Body>
-                  <Muted>
-                    {p.seen} / {p.total}
-                  </Muted>
-                </Row>
-                <View style={{ marginTop: spacing.sm }}>
-                  <ProgressBar
-                    value={p.total === 0 ? 0 : p.seen / p.total}
-                    color={colors.parent}
-                    height={6}
-                  />
-                </View>
-              </View>
-            );
-          })
-        )}
-      </Card>
+      {/*
+        '무엇을 얼마나 익혔나' 는 뺐다.
+
+        갈래마다 `0 / 154` 같은 진도 막대를 세 줄 세워 두었는데, **부모에게
+        이건 볼 일이 없는 숫자였다.** 154개를 다 익히는 것이 목표가 아니라
+        하루치를 꾸준히 하는 것이 목표인데, 매일 열 때마다 거의 안 움직이는
+        큰 분모가 눈에 먼저 들어온다. 게다가 그 아래 '이번 달' 카드가 이미
+        "며칠 공부했고 몇 개 봤나" 를 말하고 있어서 자리만 밀어냈다.
+
+        고르는 자리(⚙️ 설정 → 내 공부 설정)에는 그대로 남아 있다. 거기서는
+        레벨과 주제를 바꾸려고 보는 것이라 뜻이 있다.
+      */}
 
       {/* 이번 달 */}
       <Card style={{ marginTop: spacing.md }}>

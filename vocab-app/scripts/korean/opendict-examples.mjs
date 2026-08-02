@@ -105,7 +105,7 @@ function parseExamples(html, word) {
 
 async function lookup(word) {
   const url = `${BASE}?query=${encodeURIComponent(word)}&dicType=4&wordMatch=N&infoType=confirm`;
-  const res = await fetch(url, { headers: { 'user-agent': 'gomtangvoca-vocab-builder/1.0' } });
+  const res = await fetch(url, { headers: { 'user-agent': 'gomtangivoca-vocab-builder/1.0' } });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return parseExamples(await res.text(), word);
 }

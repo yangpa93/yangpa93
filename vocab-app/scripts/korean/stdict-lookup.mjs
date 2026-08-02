@@ -110,7 +110,7 @@ function parseEntries(html, want) {
 async function fetchPage(word, page) {
   const url = `${BASE}?pageIndex=${page}&searchKeyword=${encodeURIComponent(word)}`;
   const res = await fetch(url, {
-    headers: { 'user-agent': 'gomtangvoca-vocab-builder/1.0' },
+    headers: { 'user-agent': 'gomtangivoca-vocab-builder/1.0' },
   });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.text();

@@ -40,7 +40,7 @@ export interface Release {
  * 실제 설치된 앱에서 읽어 오는데(build-info.ts), 그 값과 여기 목록이 어긋나면
  * "0.10.0 을 쓰는데 0.9.0 의 변경 내역이 보이는" 일이 생긴다.
  */
-export const APP_VERSION = '0.13.1';
+export const APP_VERSION = '0.14.0';
 
 /**
  * 새 판이 맨 앞. 화면도 이 순서 그대로 보여준다.
@@ -49,6 +49,16 @@ export const APP_VERSION = '0.13.1';
  * 가리는 데 충분하고, 목록이 길면 아무도 안 읽는다.
  */
 export const RELEASES: Release[] = [
+  {
+    version: '0.14.0',
+    date: '2026-08-02',
+    title: '앱 주소와 패키지 이름까지 gomtangivoca 로',
+    items: [
+      'QR 과 연결 링크의 주소가 gomtangivoca:// 로 바뀌었습니다. 예전 주소로 만든 QR 도 그대로 읽힙니다.',
+      '안드로이드·아이폰 패키지 이름도 com.yangpa93.gomtangivoca 가 되었습니다.',
+      '패키지 이름을 바꾸면 파이어베이스 설정도 같이 바꿔야 알림이 옵니다. 빌드 전 점검이 그것을 잡아 줍니다.',
+    ],
+  },
   {
     version: '0.13.1',
     date: '2026-08-02',

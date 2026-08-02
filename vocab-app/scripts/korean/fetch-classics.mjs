@@ -112,7 +112,7 @@ async function fetchWiki(title) {
 
   // 429(요청 과다)는 잠깐 기다렸다 다시 물으면 대개 풀린다.
   for (let attempt = 0; attempt < 4; attempt++) {
-    const res = await fetch(url, { headers: { 'user-agent': 'gomtangvoca-vocab-builder/1.0' } });
+    const res = await fetch(url, { headers: { 'user-agent': 'gomtangivoca-vocab-builder/1.0' } });
     if (res.status === 429) {
       await sleep(3000 * (attempt + 1));
       continue;

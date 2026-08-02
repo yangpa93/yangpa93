@@ -39,11 +39,11 @@ describe('아이 QR', () => {
   });
 
   it('토큰이 없으면 안 받는다', () => {
-    expect(parseChildLinkUrl('gomtangvoca://child?name=서준')).toBeNull();
+    expect(parseChildLinkUrl('gomtangivoca://child?name=서준')).toBeNull();
   });
 
   it('이름이 없으면 기본 이름을 준다', () => {
-    const got = parseChildLinkUrl(`gomtangvoca://child?token=${encodeURIComponent(CHILD)}`);
+    const got = parseChildLinkUrl(`gomtangivoca://child?token=${encodeURIComponent(CHILD)}`);
     expect(got?.name).toBe('아이');
   });
 

@@ -168,6 +168,16 @@ export function parseLinkBack(data: unknown): LinkBackPayload | null {
 }
 
 /**
+ * 이름을 바꾸기 전에 쓰던 스킴. **읽을 때만 받는다.**
+ *
+ * 앱 이름을 gomtangivoca 로 통일하면서 `gomtangvoca` → `gomtangivoca` 로
+ * 바뀌었다(i 하나). 그런데 QR 은 종이에 인쇄되기도 하고 카톡 대화에 남기도
+ * 해서, 어제 만든 것이 오늘 갑자기 "우리 것이 아니다"가 되면 안 된다.
+ * 새로 만드는 것은 늘 새 스킴이고, 읽을 때만 옛것을 함께 받는다.
+ */
+const OLD_LINK_SCHEME = 'gomtangvoca';
+
+/**
  * 우리 딥링크에서 물음표 뒤를 읽는다.
  *
  * URL 클래스는 낯선 스킴의 검색 문자열을 기기마다 다르게 다룬다. 직접 읽는
@@ -175,7 +185,10 @@ export function parseLinkBack(data: unknown): LinkBackPayload | null {
  */
 function queryOf(url: string, path: string): Map<string, string> | null {
   const raw = url.trim();
-  if (!raw.startsWith(`${LINK_SCHEME}://${path}?`)) return null;
+  const mine =
+    raw.startsWith(`${LINK_SCHEME}://${path}?`) ||
+    raw.startsWith(`${OLD_LINK_SCHEME}://${path}?`);
+  if (!mine) return null;
 
   const params = new Map<string, string>();
   for (const pair of raw.slice(raw.indexOf('?') + 1).split('&')) {

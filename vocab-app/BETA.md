@@ -65,7 +65,7 @@ npm run typecheck
   ✅ 알림 아이콘 있음
   ✅ POST_NOTIFICATIONS 권한 있음 (안드로이드 13+ 알림)
   ✅ 불필요한 권한 3개 차단됨
-  ✅ 패키지 com.yangpa93.gomtangvoca
+  ✅ 패키지 com.yangpa93.gomtangivoca
   ✅ 어휘 3286개 전부 수록
 
   ❌ app.json에 EAS 프로젝트 ID가 없습니다. `eas init`을 먼저 하세요.

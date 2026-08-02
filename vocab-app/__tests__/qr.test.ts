@@ -84,12 +84,28 @@ describe('QR 로 만든 링크를 다시 읽는다', () => {
   });
 
   it('토큰이 빠진 우리 링크도 걸러진다', () => {
-    expect(parseLinkUrl('gomtangvoca://link?label=엄마')).toBeNull();
+    expect(parseLinkUrl('gomtangivoca://link?label=엄마')).toBeNull();
   });
 
   it('이름이 없으면 기본 이름을 준다', () => {
-    const got = parseLinkUrl(`gomtangvoca://link?token=${encodeURIComponent(TOKEN)}`);
+    const got = parseLinkUrl(`gomtangivoca://link?token=${encodeURIComponent(TOKEN)}`);
     expect(got?.label).toBe('부모님 폰');
+  });
+
+  it('이름을 바꾸기 전 스킴으로 만든 QR 도 읽힌다', () => {
+    /*
+     * 앱 이름을 통일하면서 gomtangvoca → gomtangivoca 로 바뀌었다(i 하나).
+     * QR 은 종이에 인쇄되기도 하고 카톡 대화에 남기도 해서, 어제 만든 것이
+     * 오늘 "우리 것이 아니다"가 되면 부모는 이유도 모른 채 연결에 실패한다.
+     */
+    const got = parseLinkUrl(`gomtangvoca://link?token=${encodeURIComponent(TOKEN)}&label=엄마`);
+    expect(got?.token).toBe(TOKEN);
+    expect(got?.label).toBe('엄마');
+  });
+
+  it('새로 만드는 QR 은 늘 새 스킴이다', () => {
+    // 옛것을 받아 준다고 새로 만드는 것까지 옛 이름으로 두면 영영 안 바뀐다.
+    expect(buildLinkUrl(TOKEN, '엄마').startsWith('gomtangivoca://')).toBe(true);
   });
 });
 

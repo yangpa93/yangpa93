@@ -2,8 +2,8 @@
   "expo": {
     "name": "곰탱이보카",
     "slug": "vocab-app",
-    "scheme": "gomtangvoca",
-    "version": "0.13.1",
+    "scheme": "gomtangivoca",
+    "version": "0.14.0",
     "runtimeVersion": {
       "policy": "appVersion"
     },
@@ -12,10 +12,10 @@
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.yangpa93.gomtangvoca"
+      "bundleIdentifier": "com.yangpa93.gomtangivoca"
     },
     "android": {
-      "package": "com.yangpa93.gomtangvoca",
+      "package": "com.yangpa93.gomtangivoca",
       "googleServicesFile": "./google-services.json",
       "permissions": [
         "android.permission.POST_NOTIFICATIONS"

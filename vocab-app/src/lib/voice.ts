@@ -164,3 +164,32 @@ export function snapRate(n: unknown): number {
   }
   return best;
 }
+
+/** 지금 속도가 무엇인지 한 낱말로. 설정을 열지 않고도 알 수 있게. */
+export function rateLabel(n: unknown): string {
+  const v = snapRate(n);
+  return SPEECH_RATES.find((r) => r.value === v)?.label ?? '보통';
+}
+
+/**
+ * 소리 설정을 한 줄로 간추린다. 설정 목록의 안내 문구에 쓴다.
+ *
+ * **왜 문구를 함수로 빼는가.** "확인하고 들어보는 자리가 없다" 는 말을
+ * 들었다. 자리를 만들어 두어도 **들어가 봐야 지금 무엇으로 읽는지 알 수
+ * 있다면** 여전히 없는 것과 비슷하다. 목록에 그대로 적어 두면 눌러 보지
+ * 않아도 보인다.
+ *
+ * 화면을 안 끌어오므로 기기 없이 확인할 수 있다.
+ */
+export function soundSummary(opts: {
+  ttsEnabled: boolean;
+  voiceName?: string | null;
+  speechRate?: number | null;
+}): string {
+  if (!opts.ttsEnabled) return '지금은 소리로 안 읽어 줘요. 여기서 켤 수 있어요';
+  const name = (opts.voiceName ?? '').trim();
+  const speed = `${rateLabel(opts.speechRate)} 읽기`;
+  // 목소리 이름을 아직 모를 수 있다(음성 목록을 읽는 중이거나, 영어 음성이
+  // 없거나). 그때 빈 자리를 남기느니 무엇을 할 수 있는지를 적는다.
+  return name ? `${name} · ${speed} · 들어보고 바꾸기` : `${speed} · 목소리 들어보고 고르기`;
+}

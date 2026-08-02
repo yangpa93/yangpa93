@@ -107,7 +107,7 @@ const MARKS = [
   ['연결 카드 한 장으로', 'src/components/LinkChildCard.tsx', '내폰에서 찍어 연결하기'],
   ['요청권 금액 직접 적기', 'src/components/AwardRatesEditor.tsx', 'parseWon'],
   ['부모 홈에 학습 기록 바로 보이기', 'app/parent-home.tsx', 'ParentRecordCards'],
-  ['설정이 두 갈래로', 'app/parent-settings.tsx', '아이들 폰 설정'],
+  ['부모 설정이 갈래로 나뉨', 'app/parent-settings.tsx', '아이들 폰 설정'],
   ['내 공부 설정 따로', 'app/parent-plan.tsx', 'ParentStudyPlan'],
   ['말을 동기 부여 요청권으로 통일', 'app/home.tsx', '내 동기 부여 요청권'],
   ['오늘의 공부를 한 줄에 하나씩', 'app/parent-home.tsx', 'TRACK_SHORT'],
@@ -117,11 +117,13 @@ const MARKS = [
   ['주 부모 고르기', 'src/components/ConnectParentCard.tsx', 'setPrimaryParent'],
   ['요청권은 주 부모에게만', 'src/store/AppProvider.tsx', 'sendRewardAskToParent'],
   ['백업을 폴더에 저장', 'app/backup.tsx', 'pickDirectoryAsync'],
-  ['영어 목소리 골라 듣기', 'app/settings.tsx', 'tryVoice'],
+  ['영어 목소리 골라 듣기', 'src/components/SoundCard.tsx', 'tryVoice'],
   ['자연스러운 목소리 먼저', 'src/lib/voice.ts', 'rankEnglishVoices'],
   ['다른 앱으로 열기로 백업 받기', 'src/features/OpenFileBridge.tsx', 'isOpenedFileUrl'],
   ['읽는 속도 앱에서 고르기', 'src/lib/voice.ts', 'SPEECH_RATES'],
   ['폰에 깔고 소리 맞추는 법', '폰에 깔고 소리 맞추는 법.md', '무시하고 설치'],
+  ['부모 설정에도 목소리 고르기', 'app/parent-sound.tsx', 'SoundCard'],
+  ['설정 목록에 지금 목소리 적기', 'src/lib/voice.ts', 'soundSummary'],
 ];
 
 /* 판 번호도 같이 적는다. "몇 판을 받았나"가 제일 먼저 궁금한 것이다. */

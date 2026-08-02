@@ -58,6 +58,8 @@ export default function RootLayout() {
             */}
             <Stack.Screen name="parent-plan" options={{ title: '내 공부 설정' }} />
             <Stack.Screen name="parent-child-devices" options={{ title: '아이들 폰 설정' }} />
+            {/* 부모도 영어를 듣는다. 목소리·속도를 고르는 자리가 부모 쪽에도 필요했다. */}
+            <Stack.Screen name="parent-sound" options={{ title: '소리와 목소리' }} />
             <Stack.Screen name="parent-children" options={{ title: '아이들 학습 보고서' }} />
             <Stack.Screen name="child-report" options={{ title: '아이 보고서와 설정' }} />
             <Stack.Screen name="parent-dashboard" options={{ title: '학습 리포트' }} />

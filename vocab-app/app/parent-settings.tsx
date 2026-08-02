@@ -1,8 +1,11 @@
+import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { Chip, Muted, Row, Screen } from '../src/components/ui';
 import { useApp } from '../src/store/AppProvider';
 import { buildInfo, buildLabel } from '../src/features/build-info';
+import { englishVoiceName, prepareVoice } from '../src/lib/feedback';
+import { soundSummary } from '../src/lib/voice';
 import { PARENT_TRACK_SHORT } from '../src/types';
 import { perTrackCount, TRACK_ORDER } from '../src/srs/parentSession';
 import { colors, font, radius, spacing } from '../src/theme';
@@ -29,6 +32,22 @@ import { colors, font, radius, spacing } from '../src/theme';
 export default function ParentSettings() {
   const { state, profile } = useApp();
   const build = buildInfo();
+
+  /*
+   * 목소리 이름은 기기 음성 목록을 다 읽어야 나온다. 앱이 뜰 때 한 번
+   * 정해지지만 이 화면에 먼저 닿았을 수 있어 한 번 더 부른다(이미 정해졌으면
+   * 그냥 돌아온다). 목록에 이름을 적으려면 여기서도 알아야 한다.
+   */
+  const [voiceName, setVoiceName] = useState(englishVoiceName() ?? '');
+  useEffect(() => {
+    let cancelled = false;
+    void prepareVoice().then(() => {
+      if (!cancelled) setVoiceName(englishVoiceName() ?? '');
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [profile?.settings.voiceId]);
 
   const childProfiles = state.profiles.filter((p) => p.kind === 'child');
   const remoteNames = (state.knownChildren ?? []).map((c) => c.name);
@@ -70,6 +89,30 @@ export default function ParentSettings() {
             : tracks.join(' · ')
         }
         onPress={() => router.push('/parent-plan')}
+      />
+
+      {/*
+        소리는 세 번째 갈래로 둔다.
+
+        "부모 설정에는 목소리를 확인하고 읽어보는 부분이 없다" — 맞는 말이었다.
+        목소리 고르기는 아이 설정 화면 안에만 있었는데 부모는 거기 못 들어간다.
+        부모도 일상 문장·영어 단어를 소리로 듣는데 바꿀 자리가 없었던 것이다.
+
+        '내 공부 설정' 안에 넣을까 하다가 따로 뒀다. 그쪽은 **무엇을 몇 개**
+        볼지이고 이쪽은 **어떻게 들릴지**라, 섞으면 다시 "어디 있더라"가 된다.
+
+        지금 무엇으로 읽는지는 눌러 보지 않아도 여기 적혀 있다. 자리를 만들어
+        놓고도 들어가 봐야 알 수 있으면 없는 것과 크게 다르지 않다.
+      */}
+      <Tile
+        icon="🔊"
+        title="소리와 목소리"
+        hint={soundSummary({
+          ttsEnabled: profile?.settings.ttsEnabled ?? true,
+          voiceName: voiceName,
+          speechRate: profile?.settings.speechRate,
+        })}
+        onPress={() => router.push('/parent-sound')}
       />
 
       {/* 판을 누르면 이번 판에 무엇이 들어 있는지 나온다. */}

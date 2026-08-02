@@ -12,7 +12,10 @@ import {
   isNetworkVoice,
   pickEnglishVoice,
   rankEnglishVoices,
+  rateLabel,
   SENTENCE_RATE,
+  snapRate,
+  soundSummary,
   voiceLabel,
   WORD_RATE,
   VoiceLike,
@@ -196,5 +199,49 @@ describe('isNetworkVoice / isEnhanced', () => {
     expect(isEnhanced(v({ identifier: 'a', quality: 'Enhanced' }))).toBe(true);
     expect(isEnhanced(v({ identifier: 'b', quality: 'Default' }))).toBe(false);
     expect(isEnhanced(v({ identifier: 'c' }))).toBe(false);
+  });
+});
+
+describe('rateLabel', () => {
+  it('저장된 숫자를 사람이 읽는 말로 되돌린다', () => {
+    // 설정 목록에 '0.7' 이라고 적을 수는 없다.
+    expect(rateLabel(0.7)).toBe('느리게');
+    expect(rateLabel(0.9)).toBe('보통');
+    expect(rateLabel(1.05)).toBe('빠르게');
+  });
+
+  it('아직 안 골랐으면 보통이라고 한다', () => {
+    // 값이 없는 것은 '보통' 으로 읽고 있다는 뜻이다. 빈칸을 보이지 않는다.
+    expect(rateLabel(undefined)).toBe('보통');
+    expect(rateLabel(null)).toBe('보통');
+  });
+
+  it('깨진 값이 와도 셋 중 하나로 말한다', () => {
+    expect(['느리게', '보통', '빠르게']).toContain(rateLabel(0.83));
+    expect(['느리게', '보통', '빠르게']).toContain(rateLabel(99));
+    expect(rateLabel(snapRate('이상한 값'))).toBe('보통');
+  });
+});
+
+describe('soundSummary', () => {
+  it('꺼져 있으면 켤 수 있다고 알려 준다', () => {
+    // 목소리 이름을 적어 봐야 소리가 안 나니 소용이 없다.
+    const got = soundSummary({ ttsEnabled: false, voiceName: 'Samantha', speechRate: 0.7 });
+    expect(got).toContain('안 읽어');
+    expect(got).not.toContain('Samantha');
+  });
+
+  it('무엇으로 얼마나 빠르게 읽는지 눌러 보지 않아도 보인다', () => {
+    const got = soundSummary({ ttsEnabled: true, voiceName: 'Samantha', speechRate: 0.7 });
+    expect(got).toContain('Samantha');
+    expect(got).toContain('느리게');
+  });
+
+  it('목소리 이름을 아직 모르면 빈칸 대신 할 수 있는 일을 적는다', () => {
+    // 음성 목록을 읽는 중이거나 영어 음성이 아예 없는 때다.
+    const got = soundSummary({ ttsEnabled: true, voiceName: '', speechRate: 0.9 });
+    expect(got).not.toMatch(/^ ·|· ·|· $/);
+    expect(got).toContain('보통');
+    expect(got).toContain('고르기');
   });
 });

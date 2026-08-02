@@ -3,7 +3,7 @@
     "name": "곰탱이보카",
     "slug": "vocab-app",
     "scheme": "gomtangivoca",
-    "version": "0.16.0",
+    "version": "0.16.1",
     "runtimeVersion": {
       "policy": "appVersion"
     },
@@ -12,7 +12,21 @@
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.yangpa93.gomtangivoca"
+      "bundleIdentifier": "com.yangpa93.gomtangivoca",
+      "infoPlist": {
+        "LSSupportsOpeningDocumentsInPlace": true,
+        "CFBundleDocumentTypes": [
+          {
+            "CFBundleTypeName": "곰탱이보카 백업",
+            "CFBundleTypeRole": "Editor",
+            "LSHandlerRank": "Alternate",
+            "LSItemContentTypes": [
+              "public.json",
+              "public.plain-text"
+            ]
+          }
+        ]
+      }
     },
     "android": {
       "package": "com.yangpa93.gomtangivoca",
@@ -31,7 +45,42 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "category": [
+            "DEFAULT",
+            "BROWSABLE"
+          ],
+          "data": [
+            {
+              "scheme": "content",
+              "mimeType": "application/json"
+            },
+            {
+              "scheme": "content",
+              "mimeType": "text/json"
+            },
+            {
+              "scheme": "content",
+              "mimeType": "application/octet-stream"
+            },
+            {
+              "scheme": "content",
+              "mimeType": "text/plain"
+            },
+            {
+              "scheme": "file",
+              "mimeType": "application/json"
+            },
+            {
+              "scheme": "file",
+              "mimeType": "application/octet-stream"
+            }
+          ]
+        }
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png",

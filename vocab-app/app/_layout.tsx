@@ -5,6 +5,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppProvider } from '../src/store/AppProvider';
 import { PushBridge } from '../src/features/PushBridge';
+import { OpenFileBridge } from '../src/features/OpenFileBridge';
 import { prepareSounds, prepareVoice } from '../src/lib/feedback';
 import { colors } from '../src/theme';
 
@@ -25,6 +26,8 @@ export default function RootLayout() {
         <AppProvider>
           <StatusBar style="dark" />
           <PushBridge />
+          {/* 다른 앱이 '열기'로 넘긴 백업 파일을 받아 백업 화면으로 데려간다. */}
+          <OpenFileBridge />
           <Stack
             screenOptions={{
               headerStyle: { backgroundColor: colors.bg },

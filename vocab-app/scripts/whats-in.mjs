@@ -119,6 +119,7 @@ const MARKS = [
   ['백업을 폴더에 저장', 'app/backup.tsx', 'pickDirectoryAsync'],
   ['영어 목소리 골라 듣기', 'app/settings.tsx', 'tryVoice'],
   ['자연스러운 목소리 먼저', 'src/lib/voice.ts', 'rankEnglishVoices'],
+  ['다른 앱으로 열기로 백업 받기', 'src/features/OpenFileBridge.tsx', 'isOpenedFileUrl'],
 ];
 
 /* 판 번호도 같이 적는다. "몇 판을 받았나"가 제일 먼저 궁금한 것이다. */

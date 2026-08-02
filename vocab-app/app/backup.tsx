@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, StyleSheet, Text, View } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
 import { Directory, File, Paths } from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import Constants from 'expo-constants';
@@ -15,6 +16,7 @@ import {
   restoreReplace,
   serializeBackup,
 } from '../src/features/backup';
+import { fileNameFromUrl } from '../src/features/openedFile';
 import { LEVEL_SHORT, LevelId } from '../src/types';
 import { colors, radius, spacing } from '../src/theme';
 
@@ -36,6 +38,8 @@ export default function ParentBackup() {
   const [picked, setPicked] = useState<BackupFile | null>(null);
   /** 방금 저장한 파일 이름. 화면에 남겨 둔다 — 어디에 뒀는지 잊기 쉽다. */
   const [saved, setSaved] = useState<string | null>(null);
+  /** 다른 앱이 넘긴 파일 주소. '다른 앱으로 열기' 로 들어오면 채워진다. */
+  const { src } = useLocalSearchParams<{ src?: string }>();
 
   const appVersion = Constants.expoConfig?.version ?? '1.0.0';
   const childCount = state.profiles.length;
@@ -127,6 +131,38 @@ export default function ParentBackup() {
       setBusy(null);
     }
   }
+
+  /* ---------------- 다른 앱이 넘긴 파일 ---------------- */
+
+  /**
+   * 카톡 등에서 **다른 앱으로 열기 → 곰탱이보카** 로 넘어온 파일을 읽는다.
+   *
+   * 카톡은 json 내려받기를 막는다. 그래서 대화방 안에 갇힌 백업을 꺼내는
+   * 길이 이것뿐인 경우가 있다. 파일을 고르는 것과 똑같이 **먼저 보여주고**
+   * 되돌릴지는 그다음에 정하게 한다 — 넘겨받았다고 바로 덮어쓰면 되돌릴 수
+   * 없는 일이 한 번의 오조작으로 일어난다.
+   */
+  const openFromUrl = useCallback(async (uri: string) => {
+    setBusy('파일을 읽는 중');
+    try {
+      const text = await new File(uri).text();
+      const parsed = readBackup(text);
+      if (!parsed.ok) {
+        const name = fileNameFromUrl(uri);
+        Alert.alert('읽을 수 없는 파일이에요', `${name ? name + '\n\n' : ''}${parsed.reason}`);
+        return;
+      }
+      setPicked(parsed.backup);
+    } catch (e) {
+      Alert.alert('파일을 열지 못했어요', String(e));
+    } finally {
+      setBusy(null);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof src === 'string' && src) void openFromUrl(src);
+  }, [src, openFromUrl]);
 
   /* ---------------- 파일 고르기 ---------------- */
 
@@ -345,6 +381,11 @@ export default function ParentBackup() {
           정하면 돼요.
         </Muted>
         <Button title="백업 파일 고르기" variant="secondary" onPress={pickBackup} style={{ marginTop: spacing.md }} />
+        <Muted style={{ marginTop: spacing.sm }}>
+          카카오톡에 있는 백업은 받는 쪽에서 내려받기가 막힙니다. 그때는 그 파일을 길게 눌러
+          <Text style={{ fontWeight: '800' }}> 다른 앱으로 열기 → 곰탱이보카</Text> 를 고르시면
+          이 화면으로 바로 들어옵니다.
+        </Muted>
       </Card>
 
       <Muted style={{ marginTop: spacing.lg, textAlign: 'center' }}>

@@ -22,8 +22,24 @@
  */
 
 import { chromium } from 'playwright';
+import { existsSync } from 'node:fs';
 
 const BASE = process.env.E2E_BASE ?? 'http://localhost:8088';
+
+/**
+ * 브라우저를 어디서 찾을지.
+ *
+ * **아무것도 안 정하는 것이 기본이다.** 그러면 playwright 가 자기가 받아 둔
+ * 것을 알아서 쓴다 — 윈도우든 맥이든 리눅스든 그게 맞다.
+ *
+ * 처음에는 개발 컨테이너의 경로를 그대로 박아 두었다. 그 기계에서는 잘 돌았고,
+ * 윈도우 노트북에서는 "executable doesn't exist" 로 죽었다. 당연한 일이었다 —
+ * 그 경로는 그 기계에만 있다. **내가 도는 곳에서만 도는 시험은 시험이 아니다.**
+ *
+ * CHROME 을 손으로 정해 줄 수는 있게 남긴다. 다만 그 파일이 실제로 있을 때만
+ * 쓴다. 없는 경로를 넘기면 playwright 가 자기 것을 찾아보지도 않고 죽는다.
+ */
+const CHROME = process.env.CHROME && existsSync(process.env.CHROME) ? process.env.CHROME : undefined;
 
 let pass = 0;
 let fail = 0;
@@ -77,9 +93,77 @@ async function seed(page, label) {
   await page.waitForTimeout(1500);
 }
 
-const browser = await chromium.launch({
-  executablePath: process.env.CHROME ?? '/opt/pw-browsers/chromium-1194/chrome-linux/chrome',
-});
+/*
+ * 미리보기가 안 떠 있으면 여기서 멈춘다.
+ *
+ * 안 그러면 화면마다 하나씩 서른여덟 번 실패하고, 그 목록만 보고는 "앱이 다
+ * 깨졌다" 로 읽힌다. 정작 원인은 창 하나를 안 띄운 것이다.
+ */
+try {
+  const res = await fetch(`${BASE}/demo/`);
+  if (!res.ok) throw new Error(String(res.status));
+} catch {
+  console.log('');
+  console.log('  ❌ 미리보기가 안 떠 있습니다.');
+  console.log('');
+  console.log('     창을 하나 더 열어 이것부터 돌리세요. 켜 둔 채로 두시면 됩니다.');
+  console.log('');
+  console.log('         npm run preview');
+  console.log('');
+  console.log(`     (다 굽고 "준비됐습니다" 가 뜬 뒤에 이 창에서 npm run e2e)`);
+  console.log('');
+  process.exit(1);
+}
+
+/*
+ * 띄우는 법을 몇 가지 차례로 해 본다.
+ *
+ * playwright 는 요즘 기본으로 **헤드리스 껍데기**(chrome-headless-shell)를
+ * 찾는데, 기계에 따라 그건 없고 온전한 크로미움만 받아져 있는 경우가 있다.
+ * 그러면 크로미움이 멀쩡히 있는데도 "없다" 며 죽는다. 실제로 이 기계가
+ * 그랬다. 하나 실패했다고 바로 손 들지 않는다.
+ */
+const WAYS = [
+  ...(CHROME ? [{ executablePath: CHROME }] : []),
+  {},
+  { channel: 'chromium' },
+];
+
+let browser;
+let lastError;
+for (const way of WAYS) {
+  try {
+    browser = await chromium.launch(way);
+    break;
+  } catch (e) {
+    lastError = e;
+  }
+}
+if (!browser) {
+  const e = lastError;
+  /*
+   * playwright 는 깔려 있는데 **브라우저 알맹이**를 아직 안 받은 경우가 흔하다.
+   * npm install 은 라이브러리만 가져오고 크로미움은 따로 받아야 한다.
+   * 여기서 그 한 줄을 알려 주지 않으면 영문 스택 트레이스만 남는다.
+   */
+  console.log('');
+  console.log('  ❌ 브라우저를 못 띄웠습니다.');
+  console.log('');
+  console.log('     크로미움을 아직 안 받으신 것 같습니다. 한 번만 받으면 됩니다.');
+  console.log('');
+  console.log('         npx playwright install chromium');
+  console.log('');
+  console.log('     받은 뒤 다시 npm run e2e 를 부르세요.');
+  console.log('');
+  console.log('     이미 받으셨는데도 이 말이 나오면, 쓰실 크롬 경로를 손으로 정해 주세요.');
+  console.log('       윈도우 : set CHROME=C:\\경로\\chrome.exe  &&  npm run e2e');
+  console.log('       맥/리눅스 : CHROME=/경로/chrome npm run e2e');
+  console.log('');
+  console.log(`     (원래 오류 — ${e instanceof Error ? e.message.split('\n')[0] : String(e)})`);
+  console.log('');
+  process.exit(1);
+}
+
 const page = await browser.newPage({ viewport: { width: 420, height: 900 } });
 
 const pageErrors = [];

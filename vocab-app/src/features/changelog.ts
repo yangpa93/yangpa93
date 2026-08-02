@@ -40,7 +40,7 @@ export interface Release {
  * 실제 설치된 앱에서 읽어 오는데(build-info.ts), 그 값과 여기 목록이 어긋나면
  * "0.10.0 을 쓰는데 0.9.0 의 변경 내역이 보이는" 일이 생긴다.
  */
-export const APP_VERSION = '0.19.1';
+export const APP_VERSION = '0.19.2';
 
 /**
  * 새 판이 맨 앞. 화면도 이 순서 그대로 보여준다.
@@ -49,6 +49,16 @@ export const APP_VERSION = '0.19.1';
  * 가리는 데 충분하고, 목록이 길면 아무도 안 읽는다.
  */
 export const RELEASES: Release[] = [
+  {
+    version: '0.19.2',
+    date: '2026-08-02',
+    title: '확인 도구가 윈도우에서도 돕니다',
+    items: [
+      'npm run e2e 가 윈도우에서 죽던 것을 고쳤습니다. 브라우저 경로를 박아 두고 있었어요.',
+      '미리보기가 안 떠 있거나 브라우저를 못 받았으면, 무엇을 하면 되는지 한 줄로 알려 줍니다.',
+      'npm run check-link 이 만든 QR 을 도로 읽어 봐서 제대로 된 QR 인지까지 확인합니다.',
+    ],
+  },
   {
     version: '0.19.1',
     date: '2026-08-02',

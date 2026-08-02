@@ -33,6 +33,8 @@ import { execFileSync, spawn } from 'node:child_process';
 import { resolve } from 'node:path';
 import { platform } from 'node:os';
 import QRCode from 'qrcode';
+import jsQR from 'jsqr';
+import { PNG } from 'pngjs';
 
 const OUT_DIR = 'link-check';
 const OUT_PNG = `${OUT_DIR}/아이-QR-시험지.png`;
@@ -171,6 +173,25 @@ writeFileSync(
   'utf8',
 );
 check('설명이 붙은 시험지도 만들었습니다', true);
+
+/*
+ * **만든 QR 을 도로 읽어 본다.**
+ *
+ * 여태까지는 "그렸다" 까지만 확인했다. 그런데 지난번에 막힌 곳이 바로 읽는
+ * 쪽이었으니, 그린 것으로는 모자란다. 그림을 픽셀로 풀어서 QR 읽개에 넣고,
+ * 나온 글자가 넣은 주소와 한 글자도 안 틀리는지 본다.
+ *
+ * 이러면 카메라를 대기 전에 이미 안다 — 우리가 만든 그림이 **기계가 읽을 수
+ * 있는 QR** 인지. 폰에서 안 읽히면 그때는 그림이 아니라 카메라나 화면 문제다.
+ * 둘을 갈라 놓아야 어디를 봐야 하는지 알 수 있다.
+ */
+const png = PNG.sync.read(readFileSync(OUT_PNG));
+const decoded = jsQR(new Uint8ClampedArray(png.data), png.width, png.height);
+check(
+  '만든 QR 을 도로 읽어 봤습니다',
+  decoded?.data === url,
+  decoded ? (decoded.data === url ? '넣은 주소와 똑같이 나옵니다' : `다르게 읽힙니다 — ${decoded.data.slice(0, 40)}`) : '읽히지 않습니다',
+);
 
 console.log('');
 console.log('  ' + '─'.repeat(58));

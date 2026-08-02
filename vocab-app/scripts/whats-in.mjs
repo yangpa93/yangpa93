@@ -131,6 +131,9 @@ const MARKS = [
   ['오늘 배운 것 먼저 보기', 'src/components/TodayWordsList.tsx', 'studiedToday'],
   ['부모 홈에 오답 노트·단어장', 'app/parent-home.tsx', "router.push('/wordbook')"],
   ['설치 전 연결 미리 보기', 'scripts/check-link.mjs', '기본 카메라 앱'],
+  ['만든 QR 을 도로 읽어 확인', 'scripts/check-link.mjs', 'jsQR'],
+  ['눌러 보는 시험을 대신', 'scripts/e2e.mjs', '실제로 눌러 보는 시험'],
+  ['아이 홈 안내도 오늘부터', 'app/home.tsx', '오늘 배운 것부터'],
 ];
 
 /* 판 번호도 같이 적는다. "몇 판을 받았나"가 제일 먼저 궁금한 것이다. */

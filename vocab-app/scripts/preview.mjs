@@ -185,6 +185,15 @@ function demoPage() {
   <span>'무엇을 공부할지 정하기'부터 시작합니다</span>
 </button>
 
+<h2>4. 영어 소리 들어보기</h2>
+<p class="sub" style="margin-bottom:8px">
+  앱이 어느 목소리로 읽는지 여기서 바로 들으실 수 있습니다.
+  <b>노트북 스피커를 켜 주세요.</b>
+</p>
+<div id="voicebox" class="warn" style="background:#EEF2FF;border-color:#C7D2FE">
+  목소리를 찾는 중…
+</div>
+
 <div class="warn" style="margin-top:28px">
   <b>브라우저에서 확인할 수 없는 것</b><br>
   · <b>QR 찍기</b> — 카메라가 폰과 다르게 동작합니다<br>
@@ -254,6 +263,75 @@ function put(state, data) {
 }
 
 function wipe() { localStorage.clear(); location.href = '/'; }
+
+/* ---------------- 영어 소리 ---------------- */
+
+/**
+ * 앱과 **같은 규칙**으로 영어 목소리를 고른다.
+ * 규칙 자체는 src/lib/voice.ts 에 있고 거기가 원본이다. 이 페이지는 굽는
+ * 폴더에만 생기는 확인용이라 규칙을 따로 적었다 — 바뀌면 양쪽을 맞춰야 한다.
+ */
+function pickEnglish(voices) {
+  const en = voices.filter(v => {
+    const l = (v.lang||'').replace('_','-').toLowerCase();
+    return l === 'en' || l.startsWith('en-');
+  });
+  if (!en.length) return null;
+  const score = v => {
+    const l = (v.lang||'').replace('_','-').toLowerCase();
+    let n = 0;
+    if (l.startsWith('en-us')) n += 8; else if (l.startsWith('en-gb')) n += 4;
+    if (/network/i.test(v.name||'')) n -= 1;
+    return n;
+  };
+  return [...en].sort((a,b) => (score(b)-score(a)) || (a.voiceURI||'').localeCompare(b.voiceURI||''))[0];
+}
+
+const SAMPLE = "Let's make sure we're all on the same page.";
+
+function say(text, voice, rate) {
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  if (voice) { u.voice = voice; u.lang = voice.lang; }
+  u.rate = rate ?? 0.9;
+  speechSynthesis.speak(u);
+}
+
+function showVoices() {
+  const box = document.getElementById('voicebox');
+  const voices = speechSynthesis.getVoices();
+  if (!voices.length) { box.textContent = '목소리를 찾는 중…'; return; }
+
+  const en = pickEnglish(voices);
+  const ko = voices.find(v => (v.lang||'').toLowerCase().startsWith('ko'));
+
+  if (!en) {
+    box.innerHTML = '<b>이 브라우저에 영어 목소리가 없습니다.</b><br>' +
+      '앱은 이럴 때 <b>아무 소리도 안 냅니다</b> — 한국어 목소리로 영어를 읽으면 ' +
+      "'beautiful' 이 '베아우티풀' 로 나와서, 그런 발음을 들려주느니 조용한 편이 낫습니다. " +
+      '폰에서는 설정 → 접근성 → 텍스트 음성 변환에서 English 음성을 받으시면 됩니다.';
+    return;
+  }
+
+  box.innerHTML =
+    '<b>앱이 고른 목소리 : ' + en.name + ' (' + en.lang + ')</b><br>' +
+    '<span style="color:#6B7280;font-size:13px">미국 영어 → 고품질 → 인터넷 없이 되는 것 순으로 고릅니다.</span>' +
+    '<div style="margin-top:10px"></div>';
+
+  const mk = (label, fn) => {
+    const b = document.createElement('button');
+    b.textContent = label; b.style.marginTop = '6px';
+    b.onclick = fn; box.appendChild(b); return b;
+  };
+  mk('🔊 문장 듣기  “' + SAMPLE + '”', () => say(SAMPLE, en, 0.9));
+  mk('🔊 낱말 듣기  “beautiful” (더 느리게)', () => say('beautiful', en, 0.75));
+  if (ko) {
+    mk('⚠️ 한국어 목소리로 읽으면 (예전에 이랬습니다)', () => say(SAMPLE, ko, 0.9));
+  }
+}
+
+speechSynthesis.onvoiceschanged = showVoices;
+showVoices();
 
 function seed(which) {
   if (which === 'child') {

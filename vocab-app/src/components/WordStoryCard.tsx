@@ -28,7 +28,7 @@ import {
 import { VocabEntry } from '../types';
 import { Exposure, posLabel, synonymLead, videoUrl } from '../data/entry';
 import { variantOf } from '../data/spelling';
-import { speak, stopSpeaking } from '../lib/feedback';
+import { speak, speakWord, stopSpeaking } from '../lib/feedback';
 import { colors, font, radius, spacing } from '../theme';
 import { Button, Chip, Muted, Row } from './ui';
 import { HighlightedSentence } from './HighlightedSentence';
@@ -132,7 +132,7 @@ export function WordStoryCard({
         <Row style={{ marginTop: spacing.md, alignItems: 'flex-end' }}>
           <Text style={s.word}>{entry.word}</Text>
           <Pressable
-            onPress={() => speak(entry.word, ttsEnabled)}
+            onPress={() => speakWord(entry.word, ttsEnabled)}
             style={s.iconBtn}
             accessibilityRole="button"
             accessibilityLabel="단어 듣기"

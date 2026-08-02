@@ -101,6 +101,7 @@ const MARKS = [
   ['아이별 보고서와 설정', 'app/child-report.tsx', '요구권 금액'],
   ['숙어 목록', 'data/idiom-vocabulary.txt', 'put up with'],
   ['자리 잠금', 'data/placement.json', 'm1-1'],
+  ['영어 발음 목소리 고르기', 'src/lib/voice.ts', 'pickEnglishVoice'],
 ];
 
 console.log('  이번 판에 들어 있어야 할 것 ' + '─'.repeat(29));

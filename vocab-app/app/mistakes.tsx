@@ -6,7 +6,7 @@ import { ALL_ENTRIES } from '../src/data';
 import { allSynonyms, posLabel, videoUrl } from '../src/data/entry';
 import { SynonymLine } from '../src/components/SynonymLine';
 import { troubleWords } from '../src/srs/progress';
-import { speak } from '../src/lib/feedback';
+import { speak, speakWord } from '../src/lib/feedback';
 import { colors, font, radius, spacing } from '../src/theme';
 
 /** 자주 틀린 단어를 모아 보는 오답 노트. 뜻·동의어·예문을 펼쳐 볼 수 있다. */
@@ -92,7 +92,7 @@ export default function Mistakes() {
                   <Row style={{ gap: spacing.sm }}>
                     <Pressable
                       style={s.btn}
-                      onPress={() => speak(entry.word, profile.settings.ttsEnabled)}
+                      onPress={() => speakWord(entry.word, profile.settings.ttsEnabled)}
                       accessibilityRole="button"
                     >
                       <Text style={s.btnText}>🔊 발음 듣기</Text>

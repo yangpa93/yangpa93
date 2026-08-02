@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Pressable, Switch, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { Button, Card, H3, Muted, Row, Screen } from '../src/components/ui';
@@ -7,7 +8,13 @@ import { AvatarPicker, labelOf } from '../src/components/AvatarPicker';
 import { FeedbackCard } from '../src/components/FeedbackCard';
 import { ConnectParentCard } from '../src/components/ConnectParentCard';
 import { APP_NAME, buildInfo, buildLabel } from '../src/features/build-info';
-import { speak, tapCorrect } from '../src/lib/feedback';
+import {
+  englishVoiceName,
+  englishVoiceStatus,
+  prepareVoice,
+  speak,
+  tapCorrect,
+} from '../src/lib/feedback';
 import { colors, font, radius, spacing } from '../src/theme';
 
 /** 하루에 새로 만날 단어 수. 아이가 고른다. */
@@ -23,6 +30,23 @@ const NEW_PER_DAY = [5, 8, 10, 12, 15, 20];
  */
 export default function ChildSettings() {
   const { state, profile, updateSettings, updateProfile } = useApp();
+  /*
+   * 목소리는 앱이 뜰 때 정해지지만, 이 화면에 바로 들어왔을 때 아직 안
+   * 끝났을 수 있다. 한 번 더 부르고(이미 정해졌으면 그냥 돌아온다) 결과를
+   * 화면에 반영한다.
+   */
+  const [voice, setVoice] = useState(englishVoiceStatus());
+  const voiceName = englishVoiceName() ?? '';
+
+  useEffect(() => {
+    let cancelled = false;
+    void prepareVoice().then(() => {
+      if (!cancelled) setVoice(englishVoiceStatus());
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   if (!profile) return null;
 
@@ -112,7 +136,11 @@ export default function ChildSettings() {
         <Row style={{ justifyContent: 'space-between', marginTop: spacing.lg }}>
           <View style={{ flex: 1, paddingRight: spacing.md }}>
             <Text style={s.label}>🔊 소리로 읽어주기</Text>
-            <Muted style={{ marginTop: 2 }}>영어 문장을 소리로 들려줘요.</Muted>
+            <Muted style={{ marginTop: 2 }}>
+              {voice === 'ready'
+                ? `영어 문장을 소리로 들려줘요. (${voiceName})`
+                : '영어 문장을 소리로 들려줘요.'}
+            </Muted>
           </View>
           <Switch
             value={ttsEnabled}
@@ -120,10 +148,37 @@ export default function ChildSettings() {
               updateSettings(profile.id, { ttsEnabled: v });
               // 켠 순간 한 번 읽어 준다. 켜졌는지 확인하러 공부를
               // 시작해 볼 필요가 없다.
-              if (v) speak('Hello!', true);
+              if (v) speak('Hello! Nice to meet you.', true);
             }}
           />
         </Row>
+
+        {/*
+          영어 목소리가 없으면 왜 조용한지 알려 준다.
+
+          이게 없으면 아이는 스위치를 켰는데 소리가 안 난다고만 여긴다.
+          더 나쁜 것은 예전 판이었다 — 영어 목소리가 없으면 한국어 엔진이
+          영어 글자를 읽어서 'beautiful' 이 '베아우티풀' 로 나왔다. 오류도
+          안 나고 소리는 나오니 고장인 줄도 모르고 그 발음을 배웠다.
+          지금은 그런 소리를 내느니 조용히 있고, 대신 여기서 길을 알려 준다.
+        */}
+        {ttsEnabled && voice === 'missing' ? (
+          <View style={s.voiceWarn}>
+            <Text style={s.voiceWarnTitle}>영어 목소리가 이 기기에 없어요</Text>
+            <Muted style={{ marginTop: spacing.xs }}>
+              그래서 영어는 소리로 안 읽어 줍니다. 한국어 목소리로 영어를 읽으면
+              발음이 잘못 들려서, 차라리 조용히 두었어요.
+              {'\n\n'}
+              안드로이드 : 설정 → 일반 → 접근성 → 텍스트 음성 변환 →
+              기본 엔진 설정 → 음성 데이터 설치 → <Text style={{ fontWeight: '700' }}>English</Text>
+              {'\n'}
+              아이폰 : 설정 → 손쉬운 사용 → 음성 콘텐츠 → 음성 →
+              <Text style={{ fontWeight: '700' }}> English</Text>
+              {'\n\n'}
+              받은 뒤 앱을 껐다 켜면 바로 읽어 줍니다.
+            </Muted>
+          </View>
+        ) : null}
 
         <Row style={{ justifyContent: 'space-between', marginTop: spacing.lg }}>
           <View style={{ flex: 1, paddingRight: spacing.md }}>
@@ -240,6 +295,15 @@ const s = StyleSheet.create({
   chipOn: { backgroundColor: colors.primary, borderColor: colors.primary },
   chipText: { fontSize: font.small, fontWeight: '700', color: colors.subtext },
   chipTextOn: { color: '#fff' },
+  voiceWarn: {
+    marginTop: spacing.md,
+    padding: spacing.md,
+    borderRadius: radius.md,
+    backgroundColor: colors.accentSoft,
+    borderWidth: 1,
+    borderColor: colors.accent,
+  },
+  voiceWarnTitle: { fontSize: font.body, fontWeight: '800', color: '#B45309' },
   estimate: {
     marginTop: spacing.md,
     padding: spacing.md,

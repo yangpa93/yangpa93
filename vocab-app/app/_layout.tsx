@@ -5,14 +5,18 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppProvider } from '../src/store/AppProvider';
 import { PushBridge } from '../src/features/PushBridge';
-import { prepareSounds } from '../src/lib/feedback';
+import { prepareSounds, prepareVoice } from '../src/lib/feedback';
 import { colors } from '../src/theme';
 
 export default function RootLayout() {
   // 효과음을 미리 열어 둔다. 첫 문제를 풀 때 소리가 늦게 나오지 않도록,
   // 그리고 무음 스위치를 켠 아이폰에서도 들리도록.
+  //
+  // 영어 목소리도 여기서 한 번 정해 둔다. 문제를 풀 때마다 기기의 음성
+  // 목록을 훑으면 첫 소리가 늦게 나온다.
   useEffect(() => {
     void prepareSounds();
+    void prepareVoice();
   }, []);
 
   return (

@@ -1,36 +1,38 @@
+/**
+ * 부모님 자신의 학습 기록. **부모 홈에 그대로 펼쳐 둔다.**
+ *
+ * ── 왜 화면이 아니라 부품인가 ────────────────────────────────
+ *
+ * 예전에는 `/parent-record` 라는 화면이었고 홈에는 '내 학습 기록' 타일 하나만
+ * 있었다. 그런데 부모가 홈에서 제일 먼저 보고 싶은 것이 바로 그것이다 —
+ * 며칠째 하고 있는지, 무엇을 얼마나 익혔는지. 한 번 더 눌러야 보이면 대부분
+ * 안 누르고, 안 누르면 자기 진도를 모른 채 며칠이 지나 그만두게 된다.
+ *
+ * 그래서 홈에 그대로 편다. 화면 하나가 줄고, 부모가 앱을 열자마자 자기
+ * 숫자를 본다.
+ *
+ * **‘오늘’ 카드는 여기 없다.** 홈 맨 위 '오늘의 공부'에 이미 같은 숫자가
+ * 크게 적혀 있어서, 한 화면에 같은 값이 두 번 나오면 어느 쪽이 맞는지
+ * 헷갈린다.
+ */
+
 import { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
-import { Body, Button, Card, Chip, H3, Muted, ProgressBar, Row, Screen } from '../src/components/ui';
-import { useApp } from '../src/store/AppProvider';
-import { ALL_ENTRIES } from '../src/data';
-import { DAILY_ENTRIES, dailyTheme } from '../src/data/daily';
-import { KO_ENTRIES } from '../src/data/korean/levels';
-import { meaningLine } from '../src/data/entry';
-import { ParentStudyPlan } from '../src/components/ParentStudyPlan';
-import { parentTrackProgress, TRACK_ORDER } from '../src/srs/parentSession';
-import { buildWeeklySummary } from '../src/features/report';
-import { buildMonth, monthOf } from '../src/features/calendar';
-import { LEVEL_SHORT, PARENT_TRACK_LABEL } from '../src/types';
-import { lastNDays, todayKey } from '../src/lib/date';
-import { colors, font, spacing } from '../src/theme';
+import { Body, Button, Card, H3, Muted, ProgressBar, Row } from './ui';
+import { useApp } from '../store/AppProvider';
+import { ALL_ENTRIES } from '../data';
+import { DAILY_ENTRIES, dailyTheme } from '../data/daily';
+import { KO_ENTRIES } from '../data/korean/levels';
+import { meaningLine } from '../data/entry';
+import { parentTrackProgress, TRACK_ORDER } from '../srs/parentSession';
+import { buildWeeklySummary } from '../features/report';
+import { buildMonth, monthOf } from '../features/calendar';
+import { LEVEL_SHORT, PARENT_TRACK_LABEL } from '../types';
+import { lastNDays, todayKey } from '../lib/date';
+import { colors, spacing } from '../theme';
 
-/**
- * 부모님 자신의 학습 기록과 설정.
- *
- * 아이 리포트와 따로 둔다. 같은 화면에 두면 "내가 얼마나 했나"가 아이들
- * 기록에 묻힌다. 부모도 자기 공부를 이어 가려면 자기 숫자를 봐야 한다.
- *
- * 아이 화면과 달리 레벨 시험도 요구권도 없다. 어른에게 필요한 것은
- * **얼마나 꾸준했는가**와 **무엇을 얼마나 익혔는가** 둘이다.
- *
- * **설정도 여기 있다.** 예전에는 `/parent-plan` 이라는 화면이 따로 있었고
- * 부모 홈에 '무엇을 공부할지 바꾸기' 라는 흐린 버튼으로 걸려 있었는데,
- * 아래 '내 학습 기록' 타일과 무엇이 다른지 알 수 없다는 말을 들었다.
- * 기록을 보고 나서 "국어를 빼야겠다"고 생각한 그 자리에서 바로 고칠 수
- * 있어야 한다. 다른 화면을 찾아 나가면 대부분 그냥 넘어간다.
- */
-export default function ParentRecord() {
+export function ParentRecordCards() {
   const { profile, data } = useApp();
   const today = todayKey();
 
@@ -64,44 +66,16 @@ export default function ParentRecord() {
   if (!profile) return null;
 
   const study = profile.parentStudy;
-  const day = data.days[today];
 
   return (
-    <Screen>
-      <Row style={{ paddingTop: spacing.lg, alignItems: 'center' }}>
-        <Text style={{ fontSize: 34 }}>{profile.avatar}</Text>
-        <View style={{ marginLeft: spacing.md, flex: 1 }}>
-          <Text style={s.who}>{profile.name}</Text>
-          <Muted>부모님 학습 기록</Muted>
-        </View>
-        {profile.streak > 0 ? <Chip label={`🔥 ${profile.streak}일 연속`} tone="accent" /> : null}
-      </Row>
-
-      {/* 오늘 */}
-      <Card style={{ marginTop: spacing.md }}>
-        <Row style={{ justifyContent: 'space-between' }}>
-          <H3>오늘</H3>
-          <Chip
-            label={day?.completed ? '목표 달성' : (day?.studied ?? 0) > 0 ? '진행 중' : '아직'}
-            tone={day?.completed ? 'correct' : (day?.studied ?? 0) > 0 ? 'accent' : 'default'}
-          />
-        </Row>
-        <Row style={{ justifyContent: 'space-around', marginTop: spacing.lg }}>
-          <Stat label="푼 개수" value={`${day?.studied ?? 0}/${day?.goal ?? 0}`} />
-          <Stat
-            label="정답률"
-            value={`${pct((day?.correct ?? 0), (day?.correct ?? 0) + (day?.wrong ?? 0))}%`}
-          />
-          <Stat label="시간" value={`${Math.round((day?.seconds ?? 0) / 60)}분`} />
-          <Stat label="최고 연속" value={`${profile.bestStreak}일`} />
-        </Row>
-      </Card>
-
+    <View>
       {/* 최근 7일 */}
       <Card style={{ marginTop: spacing.md }}>
         <Row style={{ justifyContent: 'space-between' }}>
           <H3>최근 7일</H3>
-          <Muted>{weekly.completedCount}일 달성</Muted>
+          <Muted>
+            {weekly.completedCount}일 달성 · 최고 {profile.bestStreak}일 연속
+          </Muted>
         </Row>
         <Row style={{ marginTop: spacing.lg, justifyContent: 'space-between', alignItems: 'flex-end' }}>
           {weekly.days.map((d) => (
@@ -129,8 +103,8 @@ export default function ParentRecord() {
         <H3>무엇을 얼마나 익혔나</H3>
         {study.tracks.length === 0 ? (
           <Muted style={{ marginTop: spacing.sm }}>
-            아직 공부할 것을 안 골랐어요. 이 화면 아래 ‘무엇을 얼마나 공부할까요’ 에서
-            정하시면 오늘치가 만들어집니다.
+            아직 공부할 것을 안 골랐어요. ⚙️ 설정 → 내 공부 설정 에서 정하시면 오늘치가
+            만들어집니다.
           </Muted>
         ) : (
           TRACK_ORDER.filter((t) => study.tracks.includes(t)).map((t) => {
@@ -164,7 +138,7 @@ export default function ParentRecord() {
         )}
       </Card>
 
-      {/* 최근 2주 */}
+      {/* 이번 달 */}
       <Card style={{ marginTop: spacing.md }}>
         <H3>🗓️ {calendar.label}</H3>
         <Muted style={{ marginTop: spacing.sm }}>
@@ -186,6 +160,12 @@ export default function ParentRecord() {
             />
           ))}
         </Row>
+        <Button
+          title="🗓️ 달력으로 보기"
+          variant="secondary"
+          onPress={() => router.push('/calendar')}
+          style={{ marginTop: spacing.md }}
+        />
       </Card>
 
       {missed.length > 0 ? (
@@ -200,54 +180,11 @@ export default function ParentRecord() {
           ))}
         </Card>
       ) : null}
-
-      <Button
-        title="🗓️ 달력으로 보기"
-        variant="secondary"
-        onPress={() => router.push('/calendar')}
-        style={{ marginTop: spacing.lg }}
-      />
-
-      {/* ---------------- 여기서부터 설정 ---------------- */}
-
-      <View style={s.divider} />
-      <H3>⚙️ 무엇을 얼마나 공부할까요</H3>
-      <ParentStudyPlan />
-
-      <Button
-        title="돌아가기"
-        variant="ghost"
-        onPress={() => router.back()}
-        style={{ marginTop: spacing.xl }}
-      />
-    </Screen>
-  );
-}
-
-function pct(part: number, total: number): number {
-  return total === 0 ? 0 : Math.round((part / total) * 100);
-}
-
-function Stat({ label, value }: { label: string; value: string }) {
-  return (
-    <View style={{ alignItems: 'center' }}>
-      <Text style={s.statValue}>{value}</Text>
-      <Muted style={{ fontSize: 11, marginTop: 2 }}>{label}</Muted>
     </View>
   );
 }
 
 const s = StyleSheet.create({
-  who: { fontSize: font.h2, fontWeight: '800', color: colors.text },
-  statValue: { fontSize: 20, fontWeight: '800', color: colors.text },
   bar: { width: 18, borderRadius: 4 },
   spark: { flex: 1, height: 10, borderRadius: 3 },
-  // 기록과 설정 사이에 선을 하나 긋는다. 스크롤로 이어지면 어디까지가
-  // '본 것'이고 어디부터가 '고치는 것'인지 구분되지 않는다.
-  divider: {
-    marginTop: spacing.xxl,
-    marginBottom: spacing.lg,
-    height: 1,
-    backgroundColor: colors.border,
-  },
 });

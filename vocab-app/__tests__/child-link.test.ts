@@ -118,7 +118,7 @@ describe('저장된 값 다듬기', () => {
   });
 });
 
-describe('아이별 요구권 금액', () => {
+describe('아이별 동기 부여 요청권 금액', () => {
   it('아이가 자기 금액표를 가지면 그것을 쓴다', () => {
     const own = { ...DEFAULT_AWARD_RATES, middleLevel: 5_000 };
     expect(ratesOf({ awards: own }, { middleLevel: 50_000 }).middleLevel).toBe(5_000);

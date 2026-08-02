@@ -312,7 +312,7 @@ export interface DailyRecord {
 export type RewardStatus = 'pending' | 'approved' | 'rejected' | 'fulfilled';
 
 /**
- * 이 요구권을 누가 만들었는지.
+ * 이 동기 부여 요청권을 누가 만들었는지.
  *
  *   child  — 아이가 신청했고 부모가 판단을 기다린다
  *   parent — 부모가 먼저 주기로 하고 바로 만들었다 (승인된 상태로 태어난다)
@@ -323,7 +323,7 @@ export type RewardStatus = 'pending' | 'approved' | 'rejected' | 'fulfilled';
 export type RewardOrigin = 'child' | 'parent';
 
 /**
- * 요구권 신청.
+ * 동기 부여 요청권 신청.
  *
  * 갖고 싶은 것을 적어 보내는 방식이 아니라 **정해진 금액을 요구할 권리**다.
  * 조건과 금액은 src/features/awards.ts 에 있다.
@@ -438,7 +438,7 @@ export interface ProfileSettings {
  * 감출지를 정했다. 그런데 한 기기에 부모와 아이가 함께 있을 수 있고
  * (집에 태블릿 하나), 부모도 자기 공부를 한다. 그래서 사람 단위로 나눈다.
  *
- * 화면이 통째로 갈린다 — 아이는 오늘의 학습·요구권·달력을, 부모는 자기 공부와
+ * 화면이 통째로 갈린다 — 아이는 오늘의 학습·동기 부여 요청권·달력을, 부모는 자기 공부와
  * 아이들 보고서를 본다.
  */
 export type ProfileKind = 'child' | 'parent';
@@ -508,18 +508,18 @@ export interface Profile {
   bestStreak: number;
   /** 마지막으로 목표를 채운 날 (yyyy-mm-dd) */
   lastCompletedDate: string | null;
-  /** 레벨업으로 아직 요구권을 신청하지 않은 레벨들 (영어) */
+  /** 레벨업으로 아직 동기 부여 요청권을 신청하지 않은 레벨들 (영어) */
   pendingLevelUps: LevelId[];
-  /** 레벨업으로 아직 요구권을 신청하지 않은 레벨들 (국어) */
+  /** 레벨업으로 아직 동기 부여 요청권을 신청하지 않은 레벨들 (국어) */
   koPendingLevelUps: LevelId[];
   /** 이미 마스터한 레벨 (영어) */
   clearedLevels: LevelId[];
   /** 이미 마스터한 레벨 (국어) */
   koClearedLevels: LevelId[];
-  /** 개근 요구권을 이미 신청한 달들 (yyyy-mm) */
+  /** 개근 동기 부여 요청권을 이미 신청한 달들 (yyyy-mm) */
   claimedMonths: string[];
   /**
-   * 이 아이만의 요구권 금액표. null 이면 기기 기본값(ParentSettings.awards).
+   * 이 아이만의 동기 부여 요청권 금액표. null 이면 기기 기본값(ParentSettings.awards).
    *
    * 예전에는 금액이 기기에 하나뿐이었다. 그런데 중학생과 고등학생을 같은
    * 금액으로 두면 한쪽은 늘 손해라고 느낀다. 아이마다 사정이 달라서
@@ -616,10 +616,10 @@ export interface ReceivedReport {
 }
 
 /**
- * 요구권 금액표. 부모님 모드에서 정한다.
+ * 동기 부여 요청권 금액표. 부모님 모드에서 정한다.
  *
  * 기본값은 중학 2만 · 고등 3만 · 개근 2만 · 추가 요구 1만이지만, 집집마다
- * 사정이 달라서 화면에서 바꿀 수 있게 해 두었다. 0원으로 두면 그 요구권은
+ * 사정이 달라서 화면에서 바꿀 수 있게 해 두었다. 0원으로 두면 그 동기 부여 요청권은
  * 생기지 않는다 — 돈 대신 다른 약속으로 대신하고 싶을 때 쓴다.
  */
 export interface AwardRates {
@@ -644,7 +644,7 @@ export interface AwardRates {
 export interface ParentSettings {
   /** 4자리 PIN. null이면 아직 설정 안 함. */
   pin: string | null;
-  /** 요구권 금액표 */
+  /** 동기 부여 요청권 금액표 */
   awards: AwardRates;
   /** 매일 리포트 알림 시각 */
   notifyHour: number;

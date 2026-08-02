@@ -20,7 +20,7 @@ const PARENT_AVATAR = '👩‍💼';
  * 아이를 등록할 QR 을 만들 자리도 없어 길이 스스로 막혀 있었다.
  *
  * 이제 아이와 부모는 처음부터 다른 사람이다. 화면도 갈린다 — 아이는 오늘의
- * 학습과 요구권을, 부모는 자기 공부와 아이들 보고서를 본다.
+ * 학습과 동기 부여 요청권을, 부모는 자기 공부와 아이들 보고서를 본다.
  */
 export default function Onboarding() {
   const { addProfile, state } = useApp();
@@ -66,7 +66,7 @@ export default function Onboarding() {
           <View style={{ flex: 1 }}>
             <Text style={s.pickTitle}>아이예요</Text>
             <Text style={s.pickSub}>
-              학년에 맞는 영어·국어 어휘를 하루 조금씩. 레벨을 끝내면 요구권이 생겨요.
+              학년에 맞는 영어·국어 어휘를 하루 조금씩. 레벨을 끝내면 동기 부여 요청권이 생겨요.
             </Text>
           </View>
           <Text style={s.chev}>›</Text>

@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { Button, Card, Chip, H2, H3, Muted, ProgressBar, Row, Screen } from '../src/components/ui';
 import { useApp } from '../src/store/AppProvider';
+import { ParentRecordCards } from '../src/components/ParentRecordCards';
 import { buildParentQueue, TRACK_ORDER } from '../src/srs/parentSession';
 import { dailyTheme } from '../src/data/daily';
 import { buildInfo, buildLabel } from '../src/features/build-info';
@@ -13,10 +14,18 @@ import { colors, font, radius, spacing } from '../src/theme';
 /**
  * 부모님 홈.
  *
- * 아이 홈과 통째로 갈라 둔다. 부모가 여기서 하는 일은 넷이고, 그 넷이
- * 그대로 화면이 된다.
+ * 아이 홈과 통째로 갈라 둔다. 부모가 여기서 하는 일은 셋이다.
  *
- *   공부하기 · 내 학습 기록 · 아이들 보고서와 설정 · 부모 설정
+ *   ① 오늘 공부하기
+ *   ② 내 학습 기록 보기      ← 타일이 아니라 **그대로 펼쳐 둔다**
+ *   ③ 아이들 학습 보고서
+ *
+ * 설정은 맨 위 오른쪽 ⚙️ 하나로 모았다. 예전에는 맨 아래에 '부모 설정'
+ * 타일이 또 있어서 같은 곳으로 가는 문이 둘이었다.
+ *
+ * 기록을 타일 뒤에 두지 않는 이유: 부모가 홈에서 제일 먼저 보고 싶은 것이
+ * 그것이다. 한 번 더 눌러야 보이면 대부분 안 누르고, 안 누르면 자기 진도를
+ * 모른 채 며칠이 지나 그만두게 된다.
  *
  * 예전에는 부모님 모드가 곧 리포트 화면이었다. 부모가 자기 공부를 한다는
  * 생각이 없었기 때문인데, 그러면 부모는 앱을 아이 감시용으로만 열게 된다.
@@ -60,17 +69,21 @@ export default function ParentHome() {
           </View>
         </Pressable>
         {/*
-          부모 폰에는 **부모님 설정 버튼 하나만** 둔다. 아이 홈의 '⚙️ {이름}
-          설정' 과 같은 자리, 같은 모양이다. 화면이 갈렸어도 "맨 위 오른쪽이
-          내 설정"이라는 것은 같아야 한다.
+          설정으로 가는 문은 **이 하나뿐**이다. 맨 아래에 '부모 설정' 타일이
+          또 있었는데, 같은 곳으로 가는 문이 둘이면 서로 다른 것처럼 보인다.
+
+          이름은 그냥 '설정'이다. 누르면 '아이들 폰 설정'과 '내 공부 설정'
+          두 갈래가 나오고, 거기서 고른다. 부모가 만지는 설정은 성격이 완전히
+          둘로 갈리는데(아이 쪽 / 나 자신), 한 화면에 섞으면 아이 금액을
+          고치려다 내 국어 레벨을 만나게 된다.
         */}
         <Pressable
           onPress={() => router.push('/parent-settings')}
           style={s.iconBtn}
           accessibilityRole="button"
-          accessibilityLabel="부모님 설정"
+          accessibilityLabel="설정"
         >
-          <Text style={s.iconBtnText}>⚙️ 부모님 설정</Text>
+          <Text style={s.iconBtnText}>⚙️ 설정</Text>
         </Pressable>
       </Row>
 
@@ -108,7 +121,7 @@ export default function ParentHome() {
             <Button
               title="무엇을 공부할지 정하기"
               variant="parent"
-              onPress={() => router.push('/parent-record')}
+              onPress={() => router.push('/parent-plan')}
               style={{ marginTop: spacing.lg }}
             />
           </>
@@ -156,13 +169,17 @@ export default function ParentHome() {
         )}
       </Card>
 
-      {/* ②③④ 나머지 셋 */}
-      <Tile
-        icon="📈"
-        title="내 학습 기록 및 설정"
-        hint="며칠 연속으로 했는지 · 무엇을 얼마나 익혔는지 · 무엇을 얼마나 공부할지"
-        onPress={() => router.push('/parent-record')}
-      />
+      {/*
+        ② 내 학습 기록. **타일이 아니라 그대로 편다.**
+
+        예전에는 '내 학습 기록 및 설정' 타일 하나였는데, 부모가 홈에서 제일
+        먼저 보고 싶은 것이 바로 이것이다. 한 번 더 눌러야 보이면 대부분 안
+        누른다.
+      */}
+      <H3 style={{ marginTop: spacing.xl }}>📈 내 학습 기록</H3>
+      <ParentRecordCards />
+
+      {/* ③ 아이들 */}
       <Tile
         icon="👧"
         title="아이들 학습 보고서"
@@ -171,14 +188,8 @@ export default function ParentHome() {
             ? '아직 연결된 아이가 없어요. 아이 폰의 QR 을 찍어 주세요'
             : `${childCount}명 · 아이를 누르면 그 아이의 기록과 설정이 나옵니다`
         }
-        badge={pendingRewards > 0 ? `요구권 ${pendingRewards}건` : undefined}
+        badge={pendingRewards > 0 ? `동기 부여 요청권 ${pendingRewards}건` : undefined}
         onPress={() => router.push('/parent-children')}
-      />
-      <Tile
-        icon="⚙️"
-        title="부모 설정"
-        hint="알림 시각 · 아이 기기 연결 · PIN · 백업"
-        onPress={() => router.push('/parent-settings')}
       />
     </Screen>
   );

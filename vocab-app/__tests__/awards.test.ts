@@ -140,7 +140,7 @@ describe('perfectMonths', () => {
 });
 
 describe('availableAwards', () => {
-  it('레벨업 요구권은 학년에 따라 금액이 다르다', () => {
+  it('레벨업 동기 부여 요청권은 학년에 따라 금액이 다르다', () => {
     const middle = availableAwards(
       makeProfile({ pendingLevelUps: ['m2-3' as LevelId] }),
       makeData(),
@@ -157,7 +157,7 @@ describe('availableAwards', () => {
     expect(high[0].amount).toBe(30_000);
   });
 
-  it('개근한 달마다 요구권이 하나씩 생긴다', () => {
+  it('개근한 달마다 동기 부여 요청권이 하나씩 생긴다', () => {
     const days = { ...studiedDays('2026-05', 31), ...studiedDays('2026-06', 30) };
     const awards = availableAwards(makeProfile(), makeData(days), '2026-07-27');
 
@@ -176,8 +176,8 @@ describe('availableAwards', () => {
     expect(awards).toEqual([]);
   });
 
-  it('레벨 시험 하나를 통과하면 요구권이 딱 한 장 생긴다', () => {
-    // 아이 화면의 '🎟️ 요구권 N장 신청하기'가 이 규칙으로 셈된다.
+  it('레벨 시험 하나를 통과하면 동기 부여 요청권이 딱 한 장 생긴다', () => {
+    // 아이 화면의 '🎟️ 동기 부여 요청권 N장 신청하기'가 이 규칙으로 셈된다.
     const one = availableAwards(
       makeProfile({ pendingLevelUps: ['m1-1' as LevelId] }),
       makeData(),
@@ -196,7 +196,7 @@ describe('availableAwards', () => {
     expect(two.every((a) => a.kind === 'levelup')).toBe(true);
   });
 
-  it('한 달 개근하면 요구권이 딱 한 장 생긴다', () => {
+  it('한 달 개근하면 동기 부여 요청권이 딱 한 장 생긴다', () => {
     const one = availableAwards(makeProfile(), makeData(studiedDays('2026-06', 30)), '2026-07-27');
     expect(one).toHaveLength(1);
     expect(one[0].kind).toBe('perfectMonth');
@@ -227,7 +227,7 @@ describe('perfectMonthProgress', () => {
 });
 
 describe('부모님이 정하는 금액표', () => {
-  it('금액을 바꾸면 요구권 금액도 따라 바뀐다', () => {
+  it('금액을 바꾸면 동기 부여 요청권 금액도 따라 바뀐다', () => {
     const rates = { middleLevel: 5_000, highLevel: 50_000, perfectMonth: 0, bonus: 20_000 };
     expect(levelUpAmount('m2-3', rates)).toBe(5_000);
     expect(levelUpAmount('h1-1', rates)).toBe(50_000);
@@ -252,7 +252,7 @@ describe('부모님이 정하는 금액표', () => {
     expect(r.bonus).toBe(BONUS_AWARD);
   });
 
-  it('0원으로 꺼 둔 요구권은 생기지 않는다', () => {
+  it('0원으로 꺼 둔 동기 부여 요청권은 생기지 않는다', () => {
     // 돈 대신 다른 약속으로 대신하고 싶은 집을 위한 것.
     const profile = makeProfile({ pendingLevelUps: ['m1-1'] });
     const data = makeData(studiedDays('2026-06', 30));
@@ -265,7 +265,7 @@ describe('부모님이 정하는 금액표', () => {
     });
     expect(off).toEqual([]);
 
-    // 개근만 켜 두면 개근 요구권만 생긴다.
+    // 개근만 켜 두면 개근 동기 부여 요청권만 생긴다.
     const onlyMonth = availableAwards(profile, data, '2026-07-01', {
       middleLevel: 0,
       highLevel: 0,
@@ -278,7 +278,7 @@ describe('부모님이 정하는 금액표', () => {
 });
 
 /* ------------------------------------------------------------------ */
-/* 요구권 기록 만들기                                                   */
+/* 동기 부여 요청권 기록 만들기                                                   */
 /* ------------------------------------------------------------------ */
 
 const LEVELUP: Award = {
@@ -444,7 +444,7 @@ describe('claimAward', () => {
     expect(after.claimedMonths).toEqual(['2026-06']);
   });
 
-  test('같은 요구권을 두 번 써도 두 번 적히지 않는다', () => {
+  test('같은 동기 부여 요청권을 두 번 써도 두 번 적히지 않는다', () => {
     const once = claimAward(makeProfile(), MONTH);
     const twice = claimAward(once, MONTH);
     expect(twice.claimedMonths).toEqual(['2026-06']);

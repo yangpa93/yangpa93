@@ -19,13 +19,13 @@ import { LEVEL_LABEL, LEVEL_SHORT } from '../src/types';
 import { colors, radius, spacing } from '../src/theme';
 
 /**
- * 레벨업 축하 + 요구권 신청.
+ * 레벨업 축하 + 동기 부여 요청권 신청.
  *
  * 두 단계다.
  *  1) 레벨업 조건을 채웠으면 축하하고 시험으로 보낸다.
- *  2) 통과한 뒤에는 얻은 요구권을 부모님께 신청한다.
+ *  2) 통과한 뒤에는 얻은 동기 부여 요청권을 부모님께 신청한다.
  *
- * 갖고 싶은 것을 적어 보내는 방식이 아니라 **금액이 정해진 요구권**이다.
+ * 갖고 싶은 것을 적어 보내는 방식이 아니라 **금액이 정해진 동기 부여 요청권**이다.
  * 조건과 금액이 미리 정해져 있어서 아이는 얼마가 걸려 있는지 알고 공부하고,
  * 부모는 매번 협상하지 않아도 된다.
  */
@@ -149,7 +149,7 @@ export default function LevelUp() {
     );
   }
 
-  // 2단계: 얻은 요구권을 부모님께 신청
+  // 2단계: 얻은 동기 부여 요청권을 부모님께 신청
   if (canRequest && !sent) {
     const award: Award = awards[0];
     const bonusAmount = rates.bonus;
@@ -187,7 +187,7 @@ export default function LevelUp() {
         <View style={{ paddingTop: spacing.xl }}>
           <Text style={{ fontSize: 52 }}>{isLevelUp ? '🏆' : '🎟️'}</Text>
           <H1 style={{ marginTop: spacing.md }}>
-            {isLevelUp ? '시험에 통과했어요!' : '요구권을 얻었어요!'}
+            {isLevelUp ? '시험에 통과했어요!' : '동기 부여 요청권을 얻었어요!'}
           </H1>
           <Muted style={{ marginTop: spacing.sm }}>{award.reason}</Muted>
         </View>
@@ -221,20 +221,20 @@ export default function LevelUp() {
           />
           <Text style={s.amount}>{formatWon(total)}</Text>
           <Muted>
-            {bonus > 0 ? `기본 ${formatWon(award.amount)} + 더 요구 ${formatWon(bonus)}` : '요구권'}
+            {bonus > 0 ? `기본 ${formatWon(award.amount)} + 더 요구 ${formatWon(bonus)}` : '동기 부여 요청권'}
           </Muted>
         </Card>
 
         {awards.length > 1 ? (
           <Muted style={{ marginTop: spacing.md, textAlign: 'center' }}>
-            신청할 수 있는 요구권이 {awards.length}장 있어요. 하나씩 보내면 돼요.
+            신청할 수 있는 동기 부여 요청권이 {awards.length}장 있어요. 하나씩 보내면 돼요.
           </Muted>
         ) : null}
 
         {/*
           '정말 잘했어요' 추가 요구.
           얼마든 부르는 방식이 아니라 부모님이 정한 한 칸만 올릴 수 있다.
-          매번 금액을 흥정하지 않게 하려는 요구권의 취지를 지키면서도,
+          매번 금액을 흥정하지 않게 하려는 동기 부여 요청권의 취지를 지키면서도,
           아이가 스스로 잘했다고 말할 자리를 만들어 주는 것.
         */}
         {bonusAmount > 0 ? (
@@ -306,7 +306,7 @@ export default function LevelUp() {
             requestReward(award, shownNote, bonus, shownBonusReason);
             setSent(true);
             await notifyNow(
-              isLevelUp ? '🏆 시험에 통과했어요!' : '🎟️ 요구권 신청이 도착했어요',
+              isLevelUp ? '🏆 시험에 통과했어요!' : '🎟️ 동기 부여 요청권 신청이 도착했어요',
               `${profile.name} · ${shownNote.trim() || award.reason} — ${formatWon(total)}` +
                 (bonus > 0 ? ` (기본 ${formatWon(award.amount)} + 더 요구 ${formatWon(bonus)})` : ''),
             ).catch(() => {});
@@ -333,10 +333,10 @@ export default function LevelUp() {
         </Body>
         {sent && awards.length > 1 ? (
           <Button
-            title="다음 요구권도 신청하기"
+            title="다음 동기 부여 요청권도 신청하기"
             variant="secondary"
             onPress={() => {
-              // null 로 되돌려야 다음 요구권에 맞는 추천 문장이 다시 채워진다.
+              // null 로 되돌려야 다음 동기 부여 요청권에 맞는 추천 문장이 다시 채워진다.
               setNote(null);
               setBonusReason(null);
               setAskBonus(null);

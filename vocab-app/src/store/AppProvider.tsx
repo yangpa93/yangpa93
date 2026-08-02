@@ -91,13 +91,13 @@ interface Ctx {
   recordExam(result: ExamResult): void;
 
   /**
-   * 요구권 하나를 부모님께 신청한다.
+   * 동기 부여 요청권 하나를 부모님께 신청한다.
    *
    * `bonus`는 아이가 "이번엔 정말 잘했어요"라며 얹은 금액(원). 0이면 안 얹은 것.
    */
   requestReward(award: Award, note: string, bonus?: number, bonusReason?: string): void;
   /**
-   * 부모님이 아이에게 요구권을 먼저 준다.
+   * 부모님이 아이에게 동기 부여 요청권을 먼저 준다.
    *
    * 아이가 신청하기를 기다리지 않고 부모가 바로 주는 길. 아이가 신청하는
    * 길(requestReward)은 그대로 둔다 — 스스로 "이만큼 했어요"라고 말하는
@@ -500,7 +500,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
               ...p,
               koLevel: next,
               koClearedLevels: [...(p.koClearedLevels ?? []), active.koLevel],
-              // 끝낸 레벨마다 요구권이 하나 생긴다. 국어는 1만원.
+              // 끝낸 레벨마다 동기 부여 요청권이 하나 생긴다. 국어는 1만원.
               koPendingLevelUps: [...(p.koPendingLevelUps ?? []), active.koLevel],
             }
           : p,
@@ -562,7 +562,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   );
 
   /**
-   * 요구권 기록을 하나 남기고, 그 요구권을 원장에서 지운다.
+   * 동기 부여 요청권 기록을 하나 남기고, 그 동기 부여 요청권을 원장에서 지운다.
    *
    * 아이 신청과 부모 지급이 같은 길을 타야 기록의 모양이 어긋나지 않는다.
    * 실제 판단은 전부 features/awards.ts 의 순수 함수들이 한다.

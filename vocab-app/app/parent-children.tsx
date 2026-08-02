@@ -88,7 +88,7 @@ export default function ParentChildren() {
             }}
           >
             <Row style={{ justifyContent: 'space-between' }}>
-              <H3>🎁 새 요구권 신청 {pending.length}건</H3>
+              <H3>🎁 새 동기 부여 요청권 신청 {pending.length}건</H3>
               <Text style={{ color: '#B45309', fontWeight: '800' }}>확인 →</Text>
             </Row>
           </Card>
@@ -97,7 +97,7 @@ export default function ParentChildren() {
 
       <Muted style={{ marginTop: spacing.md }}>
         아이를 누르면 그 아이의 학습 기록과 설정이 나옵니다. 하루 분량 · 과목 ·
-        요구권 금액을 아이마다 다르게 정할 수 있어요.
+        동기 부여 요청권 금액을 아이마다 다르게 정할 수 있어요.
       </Muted>
 
       {childProfiles.map((p) => {

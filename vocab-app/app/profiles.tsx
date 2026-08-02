@@ -35,7 +35,7 @@ export default function Profiles() {
   async function pick(id: string) {
     await selectProfile(id);
     // 사람마다 화면이 다르다. 부모를 아이 홈으로 보내면 자기 것이 아닌
-    // 오늘의 학습과 요구권이 뜬다.
+    // 오늘의 학습과 동기 부여 요청권이 뜬다.
     const picked = state.profiles.find((p) => p.id === id);
     router.replace(picked?.kind === 'parent' ? '/parent-home' : '/home');
   }

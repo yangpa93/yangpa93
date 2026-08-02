@@ -253,7 +253,7 @@ export default function ParentBackup() {
       <Card style={{ marginTop: spacing.md }}>
         <H3>내보내기</H3>
         <Muted style={{ marginTop: spacing.xs }}>
-          이 폰에 있는 {childCount}명의 학습 기록·오답·달력·요구권을 파일 한 장으로 묶어요.
+          이 폰에 있는 {childCount}명의 학습 기록·오답·달력·동기 부여 요청권을 파일 한 장으로 묶어요.
           {'\n'}부모님 PIN 은 담지 않아요. 파일이 돌아다닐 수 있으니까요.
         </Muted>
         <Button title="백업 파일 내보내기" onPress={exportBackup} style={{ marginTop: spacing.md }} />

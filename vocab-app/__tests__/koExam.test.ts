@@ -147,8 +147,8 @@ describe('koExamWeakWords', () => {
   });
 });
 
-describe('국어 레벨업 요구권', () => {
-  it('국어 레벨을 끝내면 1만원 요구권이 생긴다', () => {
+describe('국어 레벨업 동기 부여 요청권', () => {
+  it('국어 레벨을 끝내면 1만원 동기 부여 요청권이 생긴다', () => {
     const p = profile({ koPendingLevelUps: ['m1-1'] });
     const awards = availableAwards(p, emptyData, '2026-07-30');
     const ko = awards.filter((a) => a.kind === 'koLevelup');
@@ -157,7 +157,7 @@ describe('국어 레벨업 요구권', () => {
     expect(ko[0].earnedFrom).toBe('m1-1');
   });
 
-  it('영어와 국어 요구권이 따로 생긴다', () => {
+  it('영어와 국어 동기 부여 요청권이 따로 생긴다', () => {
     const p = profile({ pendingLevelUps: ['m1-1'], koPendingLevelUps: ['m1-1'] });
     const awards = availableAwards(p, emptyData, '2026-07-30');
     expect(awards.filter((a) => a.kind === 'levelup')).toHaveLength(1);
@@ -168,7 +168,7 @@ describe('국어 레벨업 요구권', () => {
     expect(en.amount).not.toBe(ko.amount);
   });
 
-  it('한 번 쓴 국어 요구권은 다시 안 생긴다', () => {
+  it('한 번 쓴 국어 동기 부여 요청권은 다시 안 생긴다', () => {
     const p = profile({ koPendingLevelUps: ['m1-1', 'm1-2'] });
     const award = availableAwards(p, emptyData, '2026-07-30').find((a) => a.kind === 'koLevelup')!;
     const after = claimAward(p, award);
@@ -177,7 +177,7 @@ describe('국어 레벨업 요구권', () => {
     expect(after.pendingLevelUps).toEqual(p.pendingLevelUps);
   });
 
-  it('국어 보상을 0원으로 꺼 두면 요구권이 안 생긴다', () => {
+  it('국어 보상을 0원으로 꺼 두면 동기 부여 요청권이 안 생긴다', () => {
     const p = profile({ koPendingLevelUps: ['m1-1'] });
     const awards = availableAwards(p, emptyData, '2026-07-30', { koreanLevel: 0 });
     expect(awards.filter((a) => a.kind === 'koLevelup')).toHaveLength(0);

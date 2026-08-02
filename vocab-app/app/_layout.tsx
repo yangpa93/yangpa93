@@ -48,8 +48,13 @@ export default function RootLayout() {
             <Stack.Screen name="exam" options={{ headerShown: false, gestureEnabled: false }} />
             <Stack.Screen name="parent" options={{ title: '부모님 모드' }} />
             <Stack.Screen name="parent-home" options={{ headerShown: false }} />
-            {/* 무엇을 공부할지 정하는 화면은 없앴다. 기록과 같은 화면에 있다. */}
-            <Stack.Screen name="parent-record" options={{ title: '내 학습 기록 및 설정' }} />
+            {/*
+              학습 기록 화면(parent-record)은 없앴다. 부모 홈에 그대로 펼쳐 둔다.
+              설정은 parent-settings 가 두 갈래로 나누는 자리이고, 실제 내용은
+              parent-child-devices(아이 쪽)와 parent-plan(내 공부)에 있다.
+            */}
+            <Stack.Screen name="parent-plan" options={{ title: '내 공부 설정' }} />
+            <Stack.Screen name="parent-child-devices" options={{ title: '아이들 폰 설정' }} />
             <Stack.Screen name="parent-children" options={{ title: '아이들 학습 보고서' }} />
             <Stack.Screen name="child-report" options={{ title: '아이 보고서와 설정' }} />
             <Stack.Screen name="parent-dashboard" options={{ title: '학습 리포트' }} />

@@ -386,7 +386,7 @@ export default function Home() {
           {!perfect.alive
             ? '이번 달은 빠진 날이 있어요. 다음 달에 다시 도전해요!'
             : rates.perfectMonth > 0
-              ? `한 달을 하루도 빠짐없이 하면 ${formatWon(rates.perfectMonth)} 요구권이 생겨요. ${perfect.total - perfect.elapsed}일 남았어요!`
+              ? `한 달을 하루도 빠짐없이 하면 ${formatWon(rates.perfectMonth)} 동기 부여 요청권이 생겨요. ${perfect.total - perfect.elapsed}일 남았어요!`
               : `이번 달 개근까지 ${perfect.total - perfect.elapsed}일 남았어요!`}
         </Muted>
       </Card>
@@ -394,7 +394,7 @@ export default function Home() {
       {/* 보상 결과 알림 */}
       {decided.length > 0 ? (
         <Card style={{ marginTop: spacing.md }}>
-          <H3>🎟️ 요구권 소식</H3>
+          <H3>🎟️ 동기 부여 요청권 소식</H3>
           {decided.slice(0, 3).map((r) => (
             <View key={r.id} style={{ marginTop: spacing.md }}>
               <Row style={{ justifyContent: 'space-between' }}>
@@ -422,15 +422,15 @@ export default function Home() {
       ) : null}
 
       {/*
-        요구권 자리는 **늘 보여준다.**
+        동기 부여 요청권 자리는 **늘 보여준다.**
 
         예전에는 받을 것이 하나도 없으면 이 자리가 통째로 사라졌다. 그러면
-        아이는 요구권이라는 것이 있는 줄도 모른 채 공부한다. 보상은 받을 때가
+        아이는 동기 부여 요청권이라는 것이 있는 줄도 모른 채 공부한다. 보상은 받을 때가
         아니라 **바라볼 때** 힘이 된다. 0장이어도 어떻게 하면 한 장이 생기는지,
         얼마인지를 적어 둔다.
       */}
       <Card style={{ marginTop: spacing.md }}>
-        <H3>🎟️ 내 요구권</H3>
+        <H3>🎟️ 내 동기 부여 요청권</H3>
 
         {awards.length > 0 ? (
           <>
@@ -438,7 +438,7 @@ export default function Home() {
               {awards.length}장이 생겼어요. 신청하면 부모님이 확인하세요.
             </Muted>
             <Button
-              title={`🎟️ 요구권 ${awards.length}장 신청하기 (${formatWon(
+              title={`🎟️ 동기 부여 요청권 ${awards.length}장 신청하기 (${formatWon(
                 awards.reduce((n, a) => n + a.amount, 0),
               )})`}
               variant="secondary"
@@ -449,7 +449,7 @@ export default function Home() {
         ) : (
           <>
             <Muted style={{ marginTop: spacing.sm }}>
-              아직 받을 요구권이 없어요. 이렇게 하면 한 장씩 생겨요.
+              아직 받을 동기 부여 요청권이 없어요. 이렇게 하면 한 장씩 생겨요.
             </Muted>
             <View style={{ marginTop: spacing.md, gap: spacing.sm }}>
               <Row style={{ justifyContent: 'space-between' }}>

@@ -307,7 +307,7 @@ export default function ParentDashboard() {
 }
 
 /**
- * 아이에게 요구권을 먼저 주는 카드.
+ * 아이에게 동기 부여 요청권을 먼저 주는 카드.
  *
  * 지금 줄 수 있는 것이 없으면 버튼이 꺼진다. 조건을 채우지도 않았는데
  * 줄 수 있게 하면 "레벨을 끝내면 얼마"라는 규칙 자체가 무너진다.
@@ -349,8 +349,8 @@ function GrantCard({
       <H3>🎟️ 보상하기</H3>
       <Muted style={{ marginTop: spacing.xs }}>
         {awards.length > 0
-          ? `${profile.name}에게 지금 줄 수 있는 요구권이 ${awards.length}장 있습니다. 아이가 신청하기를 기다리지 않고 먼저 줄 수 있어요.`
-          : `${profile.name}에게 지금 줄 수 있는 요구권이 없습니다. 레벨 시험에 통과하거나 한 달을 개근하면 생깁니다.`}
+          ? `${profile.name}에게 지금 줄 수 있는 동기 부여 요청권이 ${awards.length}장 있습니다. 아이가 신청하기를 기다리지 않고 먼저 줄 수 있어요.`
+          : `${profile.name}에게 지금 줄 수 있는 동기 부여 요청권이 없습니다. 레벨 시험에 통과하거나 한 달을 개근하면 생깁니다.`}
       </Muted>
 
       {pendingHere.length > 0 ? (

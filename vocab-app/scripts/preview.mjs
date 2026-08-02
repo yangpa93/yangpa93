@@ -34,11 +34,36 @@ import { spawnSync } from 'node:child_process';
 
 const fast = process.argv.includes('--fast');
 const PORT = process.env.PORT ?? '8088';
-const npx = process.platform === 'win32' ? 'npx.cmd' : 'npx';
+
+/**
+ * expo 를 부를 때 npx 를 거치지 않는다.
+ *
+ * 윈도우에서 `npx` 는 `npx.cmd` 라는 배치 파일이고, 노드는 보안 때문에
+ * (CVE-2024-27980) `shell: true` 없이는 배치 파일을 못 띄운다. 그때 spawnSync 는
+ * 예외 대신 `error` 만 담아 조용히 돌아오고 `status` 는 null 이라, 아무 것도
+ * 안 찍힌 채 "실패했습니다" 한 줄만 남는다 — 무엇이 잘못됐는지 알 길이 없다.
+ *
+ * `shell: true` 로 여는 길도 있지만, 여기 있는 CLI 들은 전부 그냥 노드
+ * 스크립트다. 노드로 직접 부르면 셸도 배치 파일도 끼어들지 않아 윈도우·맥·
+ * 리눅스가 똑같이 돈다.
+ */
+const EXPO_CLI = 'node_modules/expo/bin/cli';
 
 if (!fast || !existsSync('dist/index.html')) {
+  if (!existsSync(EXPO_CLI)) {
+    console.error('✖ expo 가 아직 안 깔려 있습니다. 먼저 npm install 을 한 번 돌려 주세요.');
+    process.exit(1);
+  }
   console.log('웹으로 굽는 중… (처음에는 1~2분 걸립니다)\n');
-  const r = spawnSync(npx, ['expo', 'export', '--platform', 'web'], { stdio: 'inherit' });
+  const r = spawnSync(process.execPath, [EXPO_CLI, 'export', '--platform', 'web'], {
+    stdio: 'inherit',
+  });
+  // 못 띄운 것과 띄웠는데 실패한 것은 다르다. 앞의 경우는 위에 아무 것도 안 찍힌다.
+  if (r.error) {
+    console.error(`\n✖ expo 를 띄우지 못했습니다: ${r.error.message}`);
+    console.error('  npm install 을 한 번 돌린 뒤 다시 불러 보세요.');
+    process.exit(1);
+  }
   if (r.status !== 0) {
     console.error('\n✖ 굽기에 실패했습니다. 위 오류를 보고 고친 뒤 다시 부르세요.');
     process.exit(r.status ?? 1);

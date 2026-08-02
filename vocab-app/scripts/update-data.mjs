@@ -64,11 +64,21 @@ run('아직 비어 있는 자리', ['scripts/missing.mjs']);
 
 /* 4. 검사 */
 console.log('\n── 데이터 검사 ───────────────────────────────────────────');
+/*
+ * jest 도 npx 를 거치지 않고 노드로 직접 부른다. 윈도우에서 `npx` 는 배치
+ * 파일이고, 노드는 `shell: true` 없이 배치 파일을 못 띄운다(CVE-2024-27980).
+ * 그러면 아무 것도 안 찍힌 채 실패만 남아 원인을 못 찾는다.
+ */
 const jest = spawnSync(
-  process.platform === 'win32' ? 'npx.cmd' : 'npx',
-  ['jest', '__tests__/data.test.ts', '__tests__/idioms.test.ts'],
+  process.execPath,
+  ['node_modules/jest/bin/jest.js', '__tests__/data.test.ts', '__tests__/idioms.test.ts'],
   { stdio: 'inherit' },
 );
+if (jest.error) {
+  console.error(`\n✖ 검사를 띄우지 못했습니다: ${jest.error.message}`);
+  console.error('  npm install 을 한 번 돌린 뒤 다시 불러 보세요.');
+  process.exit(1);
+}
 if (jest.status !== 0) {
   console.error('\n✖ 데이터 검사에서 걸렸습니다. 위에 적힌 항목을 고치고 다시 부르세요.');
   process.exit(jest.status ?? 1);

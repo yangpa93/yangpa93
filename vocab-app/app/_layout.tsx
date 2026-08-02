@@ -67,6 +67,8 @@ export default function RootLayout() {
             <Stack.Screen name="parent-settings" options={{ title: '설정' }} />
             <Stack.Screen name="parent-link" options={{ title: '부모님 폰 연결' }} />
             <Stack.Screen name="scan" options={{ headerShown: false }} />
+            {/* 부모가 아이 코드를 적는 자리. 부모 폰에는 이 칸이 아예 없었다. */}
+            <Stack.Screen name="link-child-code" options={{ title: '코드로 아이 연결하기' }} />
             <Stack.Screen name="backup" options={{ title: '기록 백업' }} />
             <Stack.Screen name="link" options={{ title: '연결하기' }} />
             <Stack.Screen name="whats-new" options={{ title: '이번 판에서 바뀐 것' }} />

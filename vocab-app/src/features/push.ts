@@ -41,6 +41,8 @@ export {
   isValidPushToken,
   parseLinkUrl,
   parseChildLinkUrl,
+  parseScanned,
+  scannedError,
   parseLinkBack,
   toShortCode,
   fromShortCode,
@@ -56,6 +58,7 @@ export {
 } from './pairing';
 export type {
   ChildLink,
+  Scanned,
   HelloPayload,
   LinkBackPayload,
   NudgePayload,

@@ -13,6 +13,9 @@ import {
   parseChildLinkUrl,
   parseLinkBack,
   parseLinkUrl,
+  parseScanned,
+  scannedError,
+  toShortCode,
 } from '../src/features/pairing';
 import { normalizeParentStudy, normalizeKind } from '../src/store/storage';
 import { ratesOf } from '../src/features/awards';
@@ -157,5 +160,79 @@ describe('아이별 동기 부여 요청권 금액', () => {
 
   it('둘 다 없으면 기본 금액표', () => {
     expect(ratesOf(null, null)).toEqual(DEFAULT_AWARD_RATES);
+  });
+});
+
+describe('옛 판이 만든 QR 도 읽는다', () => {
+  /*
+   * 두 폰의 판이 같으리라는 보장이 없다. 아이 폰에 지난달 APK 가 깔려 있으면
+   * 그 폰이 띄우는 QR 은 옛 주소로 만들어진다. 못 읽으면 부모가 아무리 찍어도
+   * 아무 일이 안 일어나고, 그 상태로는 무엇이 잘못됐는지 알 방법이 없다.
+   */
+  it('gomtangvoca 주소를 읽는다', () => {
+    const got = parseChildLinkUrl(`gomtangvoca://child?token=${encodeURIComponent(CHILD)}&name=%EC%84%9C%EC%A4%80`);
+    expect(got?.token).toBe(CHILD);
+    expect(got?.name).toBe('서준');
+  });
+
+  it('맨 처음 주소(urivocab)도 읽는다', () => {
+    const got = parseChildLinkUrl(`urivocab://child?token=${encodeURIComponent(CHILD)}&name=%EC%84%9C%EC%A4%80`);
+    expect(got?.token).toBe(CHILD);
+  });
+
+  it('부모 QR 도 옛 주소를 읽는다', () => {
+    expect(parseLinkUrl(`urivocab://link?token=${encodeURIComponent(PARENT)}&label=%EC%97%84%EB%A7%88`)?.token)
+      .toBe(PARENT);
+  });
+});
+
+describe('parseScanned — 찍은 것 하나를 가린다', () => {
+  it('아이 QR 을 아이로 가린다', () => {
+    const got = parseScanned(buildChildLinkUrl(CHILD, '서준'));
+    expect(got).toEqual({ kind: 'child', token: CHILD, name: '서준' });
+  });
+
+  it('부모 QR 을 부모로 가린다', () => {
+    const got = parseScanned(buildLinkUrl(PARENT, '엄마 폰'));
+    expect(got).toEqual({ kind: 'parent', token: PARENT, label: '엄마 폰' });
+  });
+
+  it('주소만 있으면 누구인지 모른다고 한다', () => {
+    // 이름이 없으니 목록에 '아이' 만 늘어난다. 이름을 받는 자리로 보내야 한다.
+    expect(parseScanned(CHILD)).toEqual({ kind: 'token', token: CHILD });
+  });
+
+  it('짧은 코드를 QR 로 만든 것도 받는다', () => {
+    expect(parseScanned(toShortCode(CHILD))).toEqual({ kind: 'token', token: CHILD });
+  });
+
+  it('아이 QR 을 부모 QR 로 잘못 읽지 않는다', () => {
+    // 길(://child · ://link)까지 봐야 한다. 스킴만 보면 아이를 부모로 등록한다.
+    expect(parseScanned(buildChildLinkUrl(CHILD, '서준'))?.kind).toBe('child');
+    expect(parseScanned(buildLinkUrl(PARENT, '엄마 폰'))?.kind).toBe('parent');
+  });
+
+  it('우리 것이 아니면 null', () => {
+    expect(parseScanned('https://www.google.com')).toBeNull();
+    expect(parseScanned('과자 봉지에 붙은 아무 QR')).toBeNull();
+    expect(parseScanned('')).toBeNull();
+  });
+});
+
+describe('scannedError — 조용히 넘기지 않는다', () => {
+  it('무엇을 읽었는지 함께 적는다', () => {
+    /*
+     * "QR 이 아니에요" 한 줄만 두면 카메라가 읽기는 한 것인지조차 알 수 없다.
+     * 읽은 것을 보여 줘야 폰을 더 가까이 댈지 다른 QR 을 띄울지 정할 수 있다.
+     */
+    const got = scannedError('https://www.google.com');
+    expect(got).toContain('https://www.google.com');
+    expect(got).toContain('내 QR 띄우기');
+  });
+
+  it('긴 것은 잘라서 보여 준다', () => {
+    const got = scannedError('x'.repeat(200));
+    expect(got).toContain('…');
+    expect(got.length).toBeLessThan(200);
   });
 });

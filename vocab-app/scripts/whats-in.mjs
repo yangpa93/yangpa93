@@ -92,7 +92,7 @@ console.log('');
 const MARKS = [
   ['첫 화면에서 아이/부모 고르기', 'app/onboarding.tsx', '부모예요'],
   ['아이가 QR 을 띄운다', 'src/components/ConnectParentCard.tsx', 'buildChildLinkUrl'],
-  ['부모가 아이 QR 을 찍는다', 'app/scan.tsx', 'parseChildLinkUrl'],
+  ['부모가 아이 QR 을 찍는다', 'app/scan.tsx', 'parseScanned'],
   ['연결 안 함을 부모 PIN 으로 승인', 'app/parent.tsx', 'linkWaived'],
   ['부모 홈 세 갈래', 'app/parent-home.tsx', '아이들 학습 보고서'],
   ['부모가 무엇을 공부할지 고르기', 'src/components/ParentStudyPlan.tsx', 'PARENT_NEW_PER_DAY'],
@@ -124,6 +124,9 @@ const MARKS = [
   ['폰에 깔고 소리 맞추는 법', '폰에 깔고 소리 맞추는 법.md', '무시하고 설치'],
   ['부모 설정에도 목소리 고르기', 'app/parent-sound.tsx', 'SoundCard'],
   ['설정 목록에 지금 목소리 적기', 'src/lib/voice.ts', 'soundSummary'],
+  ['부모 폰에서 코드로 아이 연결', 'app/link-child-code.tsx', 'rememberChild'],
+  ['안 읽히는 QR 을 말해 준다', 'src/features/pairing.ts', 'scannedError'],
+  ['옛 판이 만든 QR 도 읽기', 'src/features/pairing.ts', 'OLD_LINK_SCHEMES'],
 ];
 
 /* 판 번호도 같이 적는다. "몇 판을 받았나"가 제일 먼저 궁금한 것이다. */

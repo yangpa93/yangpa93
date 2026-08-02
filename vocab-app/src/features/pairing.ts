@@ -168,14 +168,17 @@ export function parseLinkBack(data: unknown): LinkBackPayload | null {
 }
 
 /**
- * 이름을 바꾸기 전에 쓰던 스킴. **읽을 때만 받는다.**
+ * 이름을 바꾸기 전에 쓰던 스킴들. **읽을 때만 받는다.**
  *
- * 앱 이름을 gomtangivoca 로 통일하면서 `gomtangvoca` → `gomtangivoca` 로
- * 바뀌었다(i 하나). 그런데 QR 은 종이에 인쇄되기도 하고 카톡 대화에 남기도
- * 해서, 어제 만든 것이 오늘 갑자기 "우리 것이 아니다"가 되면 안 된다.
- * 새로 만드는 것은 늘 새 스킴이고, 읽을 때만 옛것을 함께 받는다.
+ * 앱 주소는 `urivocab` → `gomtangvoca` → `gomtangivoca` 로 두 번 바뀌었다.
+ * 그런데 **두 폰의 판이 같으리라는 보장이 없다.** 아이 폰에 지난달 APK 가
+ * 깔려 있으면 그 폰이 띄우는 QR 은 옛 주소로 만들어진다. 부모 폰이 그것을
+ * "우리 것이 아니다" 하고 조용히 넘기면, 찍어도 찍어도 아무 일이 안 일어난다.
+ * 무엇이 잘못됐는지 알 길이 없는 가장 나쁜 모양이다.
+ *
+ * 그래서 **옛 주소를 전부 읽는다.** 새로 만드는 것은 늘 지금 주소다.
  */
-const OLD_LINK_SCHEME = 'gomtangvoca';
+const OLD_LINK_SCHEMES = ['gomtangvoca', 'urivocab'];
 
 /**
  * 우리 딥링크에서 물음표 뒤를 읽는다.
@@ -187,7 +190,7 @@ function queryOf(url: string, path: string): Map<string, string> | null {
   const raw = url.trim();
   const mine =
     raw.startsWith(`${LINK_SCHEME}://${path}?`) ||
-    raw.startsWith(`${OLD_LINK_SCHEME}://${path}?`);
+    OLD_LINK_SCHEMES.some((s) => raw.startsWith(`${s}://${path}?`));
   if (!mine) return null;
 
   const params = new Map<string, string>();
@@ -201,6 +204,67 @@ function queryOf(url: string, path: string): Map<string, string> | null {
     }
   }
   return params;
+}
+
+/* ------------------------------------------------------------------ */
+/* 찍은 것 하나를 가린다                                                  */
+/* ------------------------------------------------------------------ */
+
+/**
+ * 카메라가 읽어 온 문자열이 무엇인지.
+ *
+ * `token` 은 주소만 있고 **누구인지 모르는** 경우다. 짧은 코드나 토큰을
+ * 그대로 QR 로 만든 것이 여기 걸린다.
+ */
+export type Scanned =
+  | { kind: 'child'; token: string; name: string }
+  | { kind: 'parent'; token: string; label: string }
+  | { kind: 'token'; token: string };
+
+/**
+ * 찍은 문자열 하나를 가린다. 우리 것이 아니면 null.
+ *
+ * ── 왜 한 자리로 모았나 ──────────────────────────────────────
+ *
+ * 예전에는 화면(scan.tsx)에서 `parseChildLinkUrl` 과 `parseLinkUrl` 을 차례로
+ * 부르고, 둘 다 null 이면 **조용히 넘겼다.** 아무 QR 이나 찍어 볼 수 있으니
+ * 시끄럽지 않게 한다는 뜻이었는데, 대가가 컸다 — 제대로 된 QR 을 찍었는데
+ * 안 될 때에도 화면이 똑같이 아무 말이 없다. 그러면 몇 번을 더 찍어 보다가
+ * 앱이 고장 났다고 여긴다. 실제로 그런 말을 들었다.
+ *
+ * 이제 가리는 일은 여기서 다 하고, 화면은 **무엇이 나왔는지 말할 수 있게**
+ * 된다. 순수 함수라 기기 없이 확인한다.
+ *
+ * 주소만 있는 QR(`token`)도 받는다. 우리가 만드는 QR 은 아니지만, 부모가
+ * 아이 폰의 짧은 코드를 다른 방법으로 QR 로 만들어 오는 일이 있고, 읽을 수
+ * 있는 것을 굳이 막을 이유가 없다.
+ */
+export function parseScanned(text: string): Scanned | null {
+  const child = parseChildLinkUrl(text);
+  if (child) return { kind: 'child', token: child.token, name: child.name };
+
+  const parent = parseLinkUrl(text);
+  if (parent) return { kind: 'parent', token: parent.token, label: parent.label };
+
+  const bare = fromShortCode(text);
+  if (bare) return { kind: 'token', token: bare };
+
+  return null;
+}
+
+/**
+ * 우리 것이 아닌 QR 을 찍었을 때 화면에 적을 말.
+ *
+ * 읽어 온 것을 앞부분만 함께 보여 준다. "QR 이 아니에요" 한 줄만 두면 카메라가
+ * 읽기는 한 것인지조차 알 수 없어서, 폰을 더 가까이 대야 하는지 다른 QR 을
+ * 띄워야 하는지 판단할 수가 없다.
+ */
+export function scannedError(text: string): string {
+  const shown = text.trim().slice(0, 40);
+  return (
+    `이 QR 은 곰탱이보카 것이 아니에요.\n읽은 내용 — ${shown}${text.trim().length > 40 ? '…' : ''}` +
+    `\n\n아이 폰에서 ⚙️ 설정 → 부모님과 연결하기 → 📱 내 QR 띄우기 로 띄운 QR 을 찍어 주세요.`
+  );
 }
 
 /* ------------------------------------------------------------------ */

@@ -63,7 +63,7 @@ export default function ParentChildren() {
         <Button
           title="📷 아이 QR 찍기"
           variant="parent"
-          onPress={() => router.push('/scan')}
+          onPress={() => router.push({ pathname: '/scan', params: { as: 'parent' } })}
           style={{ marginTop: spacing.lg }}
         />
         <Button
@@ -186,7 +186,7 @@ export default function ParentChildren() {
       <Button
         title="📷 아이 QR 더 찍기"
         variant="parent"
-        onPress={() => router.push('/scan')}
+        onPress={() => router.push({ pathname: '/scan', params: { as: 'parent' } })}
         style={{ marginTop: spacing.lg }}
       />
     </Screen>

@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { Alert, Platform, Share, StyleSheet, Text, TextInput, View } from 'react-native';
-import { router, useFocusEffect } from 'expo-router';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { Body, Button, Card, Chip, H1, H3, Muted, Row, Screen } from '../src/components/ui';
 import { useApp } from '../src/store/AppProvider';
 import { buildLinkUrl, fetchPushToken, fromShortCode, shortCodeError } from '../src/features/push';
@@ -22,6 +22,7 @@ import { primaryParent } from '../src/features/parentLinks';
 export default function ParentLinkScreen() {
   const {
     state,
+    profile,
     setRole,
     setMyPushToken,
     setReceivesReports,
@@ -33,7 +34,9 @@ export default function ParentLinkScreen() {
 
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
-  const [pasted, setPasted] = useState('');
+  /* 카메라에서 '주소만 있는 QR' 을 읽었으면 그 값을 들고 온다. */
+  const scanned = useLocalSearchParams<{ token?: string }>();
+  const [pasted, setPasted] = useState(scanned.token ?? '');
   const [label, setLabel] = useState('');
   const [sendResult, setSendResult] = useState('');
 
@@ -245,6 +248,64 @@ export default function ParentLinkScreen() {
           title="이 기기를 다시 학습용으로 되돌리기"
           variant="ghost"
           onPress={() => setRole('child')}
+          style={{ marginTop: spacing.lg }}
+        />
+      </Screen>
+    );
+  }
+
+  /* ---------------- 부모 프로필로 들어왔을 때 ---------------- */
+
+  /*
+   * **이 화면은 아이 쪽 화면이다.** 그런데 부모가 여기 닿는 길이 있었다 —
+   * 부모 폰에서 '아이 QR 찍기' → 'QR 말고 코드로 연결하기' 를 누르면 여기로
+   * 왔다. 그러면 부모 폰에 "부모님이 보낸 요청 승인하기" 가 뜬다. 부모에게
+   * 부모와 연결하라는 말이 되니 무엇을 하라는 것인지 알 수가 없다.
+   *
+   * `state.role` 로 갈랐던 것이 화근이었다. 부모님도 이 앱으로 공부하시면
+   * 역할은 'child' 로 남고 프로필만 부모다. 그러면 부모인데 아이 화면을 본다.
+   * 지금 켜져 있는 프로필로 갈라야 맞다.
+   *
+   * 부르는 쪽(scan.tsx · LinkChildCard)도 이제 부모를 여기로 안 보낸다.
+   * 그래도 이 확인은 남긴다 — 길을 하나 막았다고 다른 길이 안 생긴다는 보장은
+   * 없고, 잘못 닿았을 때 **길을 알려 주는 편**이 아무 말 없는 것보다 낫다.
+   */
+  if (profile?.kind === 'parent') {
+    return (
+      <Screen>
+        <View style={{ paddingTop: spacing.lg }}>
+          <Text style={{ fontSize: 44 }}>🔗</Text>
+          <H1 style={{ marginTop: spacing.md }}>여기는 아이 폰에서 쓰는 화면이에요</H1>
+          <Muted style={{ marginTop: spacing.sm }}>
+            이 화면은 아이가 부모님 폰을 등록하는 자리입니다. 부모님 폰에서 아이를 등록하시려면
+            아래로 가세요.
+          </Muted>
+        </View>
+
+        <Card style={{ marginTop: spacing.lg, borderColor: colors.parent }}>
+          <H3>아이를 등록하려면</H3>
+          <Muted style={{ marginTop: spacing.xs }}>
+            아이 폰에서 ⚙️ 설정 → 부모님과 연결하기 → 📱 내 QR 띄우기 를 누르게 하고, 이 폰으로
+            그 QR 을 찍으세요.
+          </Muted>
+          <Button
+            title="📷 아이 QR 찍기"
+            variant="parent"
+            onPress={() => router.replace({ pathname: '/scan', params: { as: 'parent' } })}
+            style={{ marginTop: spacing.md }}
+          />
+          <Button
+            title="📵 카메라가 안 되면 — 코드로 연결하기"
+            variant="ghost"
+            onPress={() => router.replace('/link-child-code')}
+            style={{ marginTop: spacing.sm }}
+          />
+        </Card>
+
+        <Button
+          title="아이 목록 보기"
+          variant="secondary"
+          onPress={() => router.replace('/parent-children')}
           style={{ marginTop: spacing.lg }}
         />
       </Screen>

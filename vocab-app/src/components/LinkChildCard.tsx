@@ -136,9 +136,20 @@ export function LinkChildCard() {
         <Button
           title="📷 아이 QR 찍기"
           variant="parent"
-          onPress={() => router.push('/scan')}
+          onPress={() => router.push({ pathname: '/scan', params: { as: 'parent' } })}
           disabled={full}
           style={{ marginTop: spacing.md }}
+        />
+        {/*
+          카메라가 안 될 때. 아이 QR 아래에는 늘 짧은 코드가 같이 떠 있었는데,
+          **부모 폰에는 그 코드를 적어 넣을 칸이 없었다.** 반만 뚫린 길이었다.
+        */}
+        <Button
+          title="📵 카메라가 안 되면 — 코드로 연결하기"
+          variant="ghost"
+          onPress={() => router.push('/link-child-code')}
+          disabled={full}
+          style={{ marginTop: spacing.sm }}
         />
       </View>
 

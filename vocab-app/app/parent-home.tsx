@@ -16,9 +16,8 @@ import {
 import { useApp } from '../src/store/AppProvider';
 import { ParentRecordCards } from '../src/components/ParentRecordCards';
 import { buildParentQueue, TRACK_ORDER } from '../src/srs/parentSession';
-import { dailyTheme } from '../src/data/daily';
 import { buildInfo, buildLabel } from '../src/features/build-info';
-import { LEVEL_SHORT, PARENT_TRACK_SHORT as TRACK_SHORT } from '../src/types';
+import { PARENT_TRACK_SHORT as TRACK_SHORT } from '../src/types';
 import { todayKey } from '../src/lib/date';
 import { colors, font, radius, spacing } from '../src/theme';
 
@@ -138,41 +137,37 @@ export default function ParentHome() {
             </View>
 
             {/*
-              무엇을 공부하는지 **한 줄에 하나씩** 적는다.
+              **하루 분량이 먼저, 갈래 이름만 그 아래.**
 
-              예전에는 `국어 · 중1-1` 처럼 갈래와 레벨을 가운뎃점으로 붙여
-              칩 하나에 담았다. 그러면 '국어'와 '중1-1'이 한 덩어리로 보여,
-              레벨이 갈래 이름의 일부인지 따로 고른 것인지 알 수 없다.
-              갈래는 저마다 켜고 끌 수 있는 것이라 각자 한 줄을 갖는 편이 맞다.
+              이 카드는 여러 번 고쳤다. 처음에는 `국어 · 중1-1` 처럼 갈래와
+              레벨을 가운뎃점으로 붙여 칩 하나에 담았고, 다음에는 갈래마다 한
+              줄씩 두고 오른쪽에 레벨·주제를 적었다. 둘 다 같은 말을 들었다 —
+              **오른쪽에 붙은 것이 무엇의 무엇인지 모르겠다.**
 
-              **국어에는 레벨을 안 적는다.** 국어 레벨 이름이 영어와 똑같아서
-              (중1-1 … 고3-4) `국어  중1-1` 이라고 적으면 그 중1-1 이 영어
-              것인지 국어 것인지 읽는 사람이 가릴 수가 없다. 실제로 '국어와
-              하루에가 바뀐 것 같다'는 말을 들었다. 레벨이 뜻을 갖는 것은
-              **아이들과 같은 영어 단어** 한 갈래뿐이다 — 아이가 지금 보는
-              그 레벨을 맞춰 두는 것이라 숫자가 곧 의미가 된다.
-              국어 레벨은 ⚙️ 설정 → 내 공부 설정 에서 그대로 고른다.
+              국어 레벨 이름이 영어와 글자까지 똑같은 것(중1-1 … 고3-4)이
+              결정적이었다. `국어  중1-1` 을 보고 그 중1-1 이 영어 것인지
+              국어 것인지 가릴 방법이 없다.
+
+              그래서 홈에서는 레벨도 주제도 안 적는다. 여기서 알아야 하는
+              것은 두 가지뿐이다.
+
+                오늘 몇 개를 하나       → 하루에 10개
+                어느 갈래를 도는가      → 일상 문장 · 영어 단어 · 국어
+
+              레벨과 주제는 고르는 자리(⚙️ 설정 → 내 공부 설정)와 진도를 보는
+              자리('무엇을 얼마나 익혔나')에 그대로 있다. 거기서는 갈래 이름이
+              길게 다 적혀 있어 무엇의 레벨인지 헷갈리지 않는다.
             */}
-            <View style={{ marginTop: spacing.md, gap: spacing.sm }}>
-              {TRACK_ORDER.filter((t) => study.tracks.includes(t)).map((t) => {
-                const where =
-                  t === 'daily'
-                    ? dailyTheme(study.dailyTheme).label
-                    : t === 'enWord'
-                      ? LEVEL_SHORT[profile.level]
-                      : null;
-                return (
-                  <Row key={t} style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Body style={{ fontWeight: '700' }}>{TRACK_SHORT[t]}</Body>
-                    {where ? <Chip label={where} tone="primary" /> : null}
-                  </Row>
-                );
-              })}
-              <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                <Body style={{ fontWeight: '700' }}>하루에</Body>
-                <Chip label={`${study.newPerDay}개`} tone="accent" />
-              </Row>
-            </View>
+            <Row style={{ marginTop: spacing.md, alignItems: 'center', gap: spacing.sm }}>
+              <Body style={{ fontWeight: '700' }}>하루에</Body>
+              <Chip label={`${study.newPerDay}개`} tone="accent" />
+            </Row>
+
+            <Row style={{ marginTop: spacing.sm, gap: spacing.sm, flexWrap: 'wrap' }}>
+              {TRACK_ORDER.filter((t) => study.tracks.includes(t)).map((t) => (
+                <Chip key={t} label={TRACK_SHORT[t]} tone="primary" />
+              ))}
+            </Row>
 
             {planned === 0 ? (
               <Muted style={{ marginTop: spacing.md, color: colors.correct }}>

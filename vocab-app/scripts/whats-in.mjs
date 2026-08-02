@@ -110,6 +110,9 @@ const MARKS = [
   ['설정이 두 갈래로', 'app/parent-settings.tsx', '아이들 폰 설정'],
   ['내 공부 설정 따로', 'app/parent-plan.tsx', 'ParentStudyPlan'],
   ['말을 동기 부여 요청권으로 통일', 'app/home.tsx', '내 동기 부여 요청권'],
+  ['오늘의 공부를 한 줄에 하나씩', 'app/parent-home.tsx', 'TRACK_SHORT'],
+  ['공부 안 고르면 보고서만', 'app/parent-home.tsx', '아이들 학습 보고서만'],
+  ['아이는 4명까지', 'src/features/children.ts', 'MAX_CHILDREN = 4'],
 ];
 
 /* 판 번호도 같이 적는다. "몇 판을 받았나"가 제일 먼저 궁금한 것이다. */

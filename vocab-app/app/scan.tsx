@@ -33,6 +33,7 @@ import {
   sendHelloToParent,
   sendLinkBackToChild,
 } from '../src/features/push';
+import { childLimitMessage } from '../src/features/children';
 import { colors, font, radius, spacing } from '../src/theme';
 
 export default function Scan() {
@@ -76,7 +77,21 @@ export default function Scan() {
 
       if (child) {
         /* 부모가 아이 QR 을 찍은 경우 */
-        rememberChild(child.name, child.token);
+        if (!rememberChild(child.name, child.token)) {
+          /*
+           * 자리가 없다. **조용히 넘기지 않는다.**
+           *
+           * 부모는 QR 을 찍었고 화면은 아무 말이 없는데 아이 목록에는 안
+           * 생긴다. 그러면 몇 번을 더 찍어 보다가 앱이 고장 났다고 여긴다.
+           *
+           * handled 를 되돌려 다시 찍을 수 있게 둔다 — 아이 하나를 지우고
+           * 오면 그 자리에서 바로 이어진다.
+           */
+          setError(childLimitMessage());
+          handled.current = false;
+          setBusy(false);
+          return;
+        }
         // QR 을 찍은 것 자체가 "나에게 보내 달라"는 뜻이다.
         setReceivesReports(true);
         if (mine) {

@@ -1,13 +1,24 @@
 import { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
-import { Button, Card, Chip, H2, H3, Muted, ProgressBar, Row, Screen } from '../src/components/ui';
+import {
+  Body,
+  Button,
+  Card,
+  Chip,
+  H2,
+  H3,
+  Muted,
+  ProgressBar,
+  Row,
+  Screen,
+} from '../src/components/ui';
 import { useApp } from '../src/store/AppProvider';
 import { ParentRecordCards } from '../src/components/ParentRecordCards';
 import { buildParentQueue, TRACK_ORDER } from '../src/srs/parentSession';
 import { dailyTheme } from '../src/data/daily';
 import { buildInfo, buildLabel } from '../src/features/build-info';
-import { LEVEL_SHORT, PARENT_TRACK_LABEL } from '../src/types';
+import { LEVEL_SHORT, PARENT_TRACK_SHORT as TRACK_SHORT } from '../src/types';
 import { todayKey } from '../src/lib/date';
 import { colors, font, radius, spacing } from '../src/theme';
 
@@ -98,51 +109,63 @@ export default function ParentHome() {
         </Pressable>
       </Row>
 
-      {/* ① 공부하기 */}
-      <Card style={{ marginTop: spacing.lg }}>
-        <Row style={{ justifyContent: 'space-between' }}>
-          <H2>오늘의 공부</H2>
-          <Text style={s.count}>
-            {done}
-            <Text style={s.countTotal}> / {goal}</Text>
-          </Text>
-        </Row>
+      {/*
+        ① 공부하기. **아무것도 안 골랐으면 이 카드를 아예 안 띄운다.**
 
-        <View style={{ marginTop: spacing.md }}>
-          <ProgressBar value={goal === 0 ? 0 : done / goal} />
-        </View>
+        예전에는 "아직 무엇을 공부할지 안 골랐어요" 라는 빈 카드와 진도 막대
+        0/0 이 떠 있었다. 그런데 부모가 자기 공부를 안 하기로 한 것은 잘못이
+        아니라 하나의 선택이다. 안 하기로 한 사람에게 매일 빈 카드를 보이면
+        못 한 일이 남아 있는 것처럼 보이고, 정작 보러 온 아이들 보고서는
+        그 아래로 밀린다.
 
-        {study.tracks.length === 0 ? (
-          <>
-            <Muted style={{ marginTop: spacing.md }}>
-              아직 무엇을 공부할지 안 골랐어요. 일상 문장 · 아이들과 같은 영어 단어 ·
-              국어 어휘 중에서 고르면 오늘치가 만들어집니다.
-            </Muted>
-            <Button
-              title="무엇을 공부할지 정하기"
-              variant="parent"
-              onPress={() => router.push('/parent-plan')}
-              style={{ marginTop: spacing.lg }}
-            />
-          </>
-        ) : (
-          <>
-            <Row style={{ marginTop: spacing.md, gap: spacing.sm, flexWrap: 'wrap' }}>
-              {TRACK_ORDER.filter((t) => study.tracks.includes(t)).map((t) => (
-                <Chip
-                  key={t}
-                  label={
-                    t === 'daily'
-                      ? `일상 문장 · ${dailyTheme(study.dailyTheme).label}`
-                      : t === 'enWord'
-                        ? `영어 단어 · ${LEVEL_SHORT[profile.level]}`
-                        : `국어 · ${LEVEL_SHORT[profile.koLevel]}`
-                  }
-                  tone="primary"
-                />
-              ))}
-              <Chip label={`하루 ${study.newPerDay}개`} tone="accent" />
+        그래서 안 고른 부모의 홈에는 **아이들 학습 보고서만** 남는다. 나중에
+        마음이 바뀌면 ⚙️ 설정 → 내 공부 설정 에서 켜면 된다 — 그 길은 카드
+        아래 한 줄로만 적어 둔다.
+      */}
+      {study.tracks.length === 0 ? null : (
+        <>
+          <Card style={{ marginTop: spacing.lg }}>
+            <Row style={{ justifyContent: 'space-between' }}>
+              <H2>오늘의 공부</H2>
+              <Text style={s.count}>
+                {done}
+                <Text style={s.countTotal}> / {goal}</Text>
+              </Text>
             </Row>
+
+            <View style={{ marginTop: spacing.md }}>
+              <ProgressBar value={goal === 0 ? 0 : done / goal} />
+            </View>
+
+            {/*
+              무엇을 공부하는지 **한 줄에 하나씩** 적는다.
+
+              예전에는 `국어 · 중1-1` 처럼 갈래와 레벨을 가운뎃점으로 붙여
+              칩 하나에 담았다. 그러면 '국어'와 '중1-1'이 한 덩어리로 보여,
+              레벨이 갈래 이름의 일부인지 따로 고른 것인지 알 수 없다.
+              갈래는 저마다 켜고 끌 수 있는 것이라 각자 한 줄을 갖는 편이 맞다.
+            */}
+            <View style={{ marginTop: spacing.md, gap: spacing.sm }}>
+              {TRACK_ORDER.filter((t) => study.tracks.includes(t)).map((t) => (
+                <Row key={t} style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Body style={{ fontWeight: '700' }}>{TRACK_SHORT[t]}</Body>
+                  <Chip
+                    label={
+                      t === 'daily'
+                        ? dailyTheme(study.dailyTheme).label
+                        : t === 'enWord'
+                          ? LEVEL_SHORT[profile.level]
+                          : LEVEL_SHORT[profile.koLevel]
+                    }
+                    tone="primary"
+                  />
+                </Row>
+              ))}
+              <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                <Body style={{ fontWeight: '700' }}>하루에</Body>
+                <Chip label={`${study.newPerDay}개`} tone="accent" />
+              </Row>
+            </View>
 
             {planned === 0 ? (
               <Muted style={{ marginTop: spacing.md, color: colors.correct }}>
@@ -157,27 +180,19 @@ export default function ParentHome() {
               disabled={planned === 0}
               style={{ marginTop: spacing.lg }}
             />
-            {/*
-              여기 '무엇을 공부할지 바꾸기' 라는 흐린 버튼이 따로 있었다.
-              바로 아래 '내 학습 기록' 타일과 무엇이 다른지 알 수 없다는 말을
-              들어서 없앴다. 부모가 자기 공부에 대해 하는 일은 **보는 것과
-              고치는 것 둘뿐**이라 한 화면에 있으면 되고, 그 화면으로 가는
-              문은 바로 아래 타일 하나면 충분하다. 같은 곳으로 가는 버튼을
-              두 개 두면 서로 다른 것처럼 보여 오히려 더 헷갈린다.
-            */}
-          </>
-        )}
-      </Card>
+          </Card>
 
-      {/*
-        ② 내 학습 기록. **타일이 아니라 그대로 편다.**
+          {/*
+            ② 내 학습 기록. **타일이 아니라 그대로 편다.**
 
-        예전에는 '내 학습 기록 및 설정' 타일 하나였는데, 부모가 홈에서 제일
-        먼저 보고 싶은 것이 바로 이것이다. 한 번 더 눌러야 보이면 대부분 안
-        누른다.
-      */}
-      <H3 style={{ marginTop: spacing.xl }}>📈 내 학습 기록</H3>
-      <ParentRecordCards />
+            부모가 홈에서 제일 먼저 보고 싶은 것이 이것이다. 한 번 더 눌러야
+            보이면 대부분 안 누른다. 공부를 안 하기로 한 부모에게는 기록도
+            뜻이 없으므로 공부 카드와 함께 사라진다.
+          */}
+          <H3 style={{ marginTop: spacing.xl }}>📈 내 학습 기록</H3>
+          <ParentRecordCards />
+        </>
+      )}
 
       {/* ③ 아이들 */}
       <Tile
@@ -191,6 +206,17 @@ export default function ParentHome() {
         badge={pendingRewards > 0 ? `동기 부여 요청권 ${pendingRewards}건` : undefined}
         onPress={() => router.push('/parent-children')}
       />
+
+      {/*
+        공부를 안 고른 부모에게 남기는 한 줄. 카드가 아니라 한 줄인 이유는
+        위에 적었다 — 안 하기로 한 것은 잘못이 아니라서 매일 권하지 않는다.
+        다만 길이 아예 없으면 마음이 바뀌었을 때 찾지 못한다.
+      */}
+      {study.tracks.length === 0 ? (
+        <Muted style={{ marginTop: spacing.xl, textAlign: 'center' }}>
+          부모님도 공부하고 싶으시면 ⚙️ 설정 → 내 공부 설정 에서 켜실 수 있어요.
+        </Muted>
+      ) : null}
     </Screen>
   );
 }

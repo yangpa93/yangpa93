@@ -23,9 +23,10 @@
 import { useState } from 'react';
 import { Platform, Share, StyleSheet, Text, TextInput, View } from 'react-native';
 import { router } from 'expo-router';
-import { Body, Button, Card, H3, Muted } from './ui';
+import { Body, Button, Card, Chip, H3, Muted, Row } from './ui';
 import { useApp } from '../store/AppProvider';
 import { APP_NAME } from '../features/app-name';
+import { MAX_CHILDREN, childLimitMessage, childNames } from '../features/children';
 import { buildLinkUrl, fetchPushToken, toShortCode } from '../features/push';
 import { QrCode } from './QrCode';
 import { colors, font, radius, spacing } from '../theme';
@@ -38,8 +39,13 @@ export function LinkChildCard() {
   /** ②를 펼쳤는지. 늘 띄워 두면 아이가 부모 폰을 집어 마음대로 연결할 수 있다. */
   const [showingCode, setShowingCode] = useState(false);
 
-  const childCount = state.profiles.filter((p) => p.kind === 'child').length;
-  const knownCount = (state.knownChildren ?? []).length;
+  /*
+   * 아이는 이 폰 안의 프로필과 QR 로 이어진 아이 양쪽에서 온다. 이름으로
+   * 합쳐 세야 실제 수가 맞는다 — 프로필도 만들어 주고 연결도 한 아이를 둘로
+   * 세면 아이 둘인 집이 넷으로 잡힌다.
+   */
+  const names = childNames(state.profiles, state.knownChildren ?? []);
+  const full = names.length >= MAX_CHILDREN;
 
   /** 이 폰의 주소를 만든다. QR 을 띄우는 것과 링크를 보내는 것이 함께 쓴다. */
   async function ensureToken(): Promise<string | null> {
@@ -90,12 +96,34 @@ export function LinkChildCard() {
 
   return (
     <Card style={{ marginTop: spacing.md, borderColor: colors.parent }}>
-      <H3>🔗 아이 기기와 연결하기</H3>
+      <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+        <H3>🔗 아이 기기와 연결하기</H3>
+        <Chip
+          label={`${names.length} / ${MAX_CHILDREN}명`}
+          tone={full ? 'accent' : 'default'}
+        />
+      </Row>
       <Muted style={{ marginTop: spacing.xs }}>
         연결하면 아이가 공부를 마칠 때마다 이 폰으로 결과가 옵니다. 이 폰의 학습 화면은
         그대로 남아요. 아래 두 가지 중 <Text style={s.strong}>편한 쪽 하나만</Text> 하시면
         됩니다.
       </Muted>
+
+      {names.length > 0 ? (
+        <Muted style={{ marginTop: spacing.sm }}>지금 연결된 아이 — {names.join(' · ')}</Muted>
+      ) : null}
+
+      {/*
+        꽉 찼으면 두 버튼을 잠그고 왜 안 되는지 여기서 말해 준다. 버튼만 살려
+        두면 눌러서 QR 을 찍고 나서야 안 된다는 것을 알게 되는데, 그때는
+        아이를 이미 불러다 세워 둔 뒤다.
+      */}
+      {full ? (
+        <View style={s.fullBox}>
+          <Text style={s.fullTitle}>자리가 다 찼어요</Text>
+          <Muted style={{ marginTop: spacing.xs }}>{childLimitMessage()}</Muted>
+        </View>
+      ) : null}
 
       {/* ── ① 아이 QR 을 내가 찍는다 ── */}
       <View style={s.way}>
@@ -109,6 +137,7 @@ export function LinkChildCard() {
           title="📷 아이 QR 찍기"
           variant="parent"
           onPress={() => router.push('/scan')}
+          disabled={full}
           style={{ marginTop: spacing.md }}
         />
       </View>
@@ -135,6 +164,7 @@ export function LinkChildCard() {
           title={showingCode ? 'QR 코드 숨기기' : '📱 내 QR 띄우기'}
           variant="parent"
           loading={busy}
+          disabled={full}
           onPress={() => (showingCode ? setShowingCode(false) : void showCode())}
           style={{ marginTop: spacing.md }}
         />
@@ -142,6 +172,7 @@ export function LinkChildCard() {
           title="카톡·메일로 링크 보내기"
           variant="ghost"
           loading={busy}
+          disabled={full}
           onPress={invite}
           style={{ marginTop: spacing.sm }}
         />
@@ -164,7 +195,7 @@ export function LinkChildCard() {
 
       {error ? <Body style={{ color: colors.wrong, marginTop: spacing.md }}>{error}</Body> : null}
 
-      {childCount + knownCount > 0 ? (
+      {names.length > 0 ? (
         <Button
           title="아이별 설정 보기"
           variant="secondary"
@@ -187,6 +218,15 @@ export function LinkChildCard() {
 
 const s = StyleSheet.create({
   strong: { fontWeight: '800', color: colors.text },
+  fullBox: {
+    marginTop: spacing.md,
+    padding: spacing.md,
+    borderRadius: radius.md,
+    backgroundColor: colors.accentSoft,
+    borderWidth: 1,
+    borderColor: colors.accent,
+  },
+  fullTitle: { fontSize: font.body, fontWeight: '800', color: '#B45309' },
   /*
    * 두 갈래를 상자로 갈라 둔다. 줄만 띄우면 스크롤 중에 어디까지가 1번이고
    * 어디부터가 2번인지 흐려져서, 합치기 전과 똑같이 헷갈린다.

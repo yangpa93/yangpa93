@@ -456,6 +456,19 @@ export const PARENT_TRACK_LABEL: Record<ParentTrack, string> = {
 };
 
 /**
+ * 좁은 자리에 쓰는 짧은 이름.
+ *
+ * 홈의 '오늘의 공부' 처럼 이름과 레벨을 나란히 놓는 자리에서는 위의 긴 이름이
+ * 두 줄로 접힌다. 접히면 옆에 붙은 레벨이 어느 줄에 걸린 것인지 흐려져서,
+ * 무엇이 켜져 있는지 한눈에 안 들어온다.
+ */
+export const PARENT_TRACK_SHORT: Record<ParentTrack, string> = {
+  daily: '일상 문장',
+  enWord: '영어 단어',
+  ko: '국어',
+};
+
+/**
  * 부모가 무엇을 어떻게 공부할지.
  *
  * 아이 설정(`ProfileSettings`)과 따로 두는 이유: 아이는 학년이 정해져 있어

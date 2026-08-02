@@ -4,6 +4,7 @@ import { router } from 'expo-router';
 import { Body, Button, Card, H1, H3, Muted, Row, Screen } from '../src/components/ui';
 import { useApp } from '../src/store/AppProvider';
 import { LevelId, ProfileKind } from '../src/types';
+import { canAcceptChild, childLimitMessage } from '../src/features/children';
 import { LevelPicker } from '../src/components/LevelPicker';
 import { AvatarPicker, DEFAULT_AVATAR } from '../src/components/AvatarPicker';
 import { colors, font, radius, spacing } from '../src/theme';
@@ -32,9 +33,23 @@ export default function Onboarding() {
 
   const first = state.profiles.length === 0;
 
+  /*
+   * 아이는 4명까지다. 부모 프로필은 안 막는다 — 엄마와 아빠가 각자 프로필을
+   * 갖는 집이 있고, 부모 수를 막을 이유는 없다.
+   *
+   * 여기서 이름을 미리 넣어 물어보는 이유: 같은 이름을 다시 만드는 것이면
+   * (아이 프로필을 지웠다 다시 만드는 경우) 자리 계산에 걸리지 않아야 한다.
+   */
+  const childFull = !canAcceptChild(state.profiles, state.knownChildren ?? [], name.trim() || '새 아이');
+
   async function submit() {
     const trimmed = name.trim();
     if (!trimmed || !kind || saving) return;
+    // 아이가 꽉 찼으면 만들지 않는다. 버튼도 잠겨 있지만 두 번 막아 둔다 —
+    // 만들어 놓고 나서 "왜 목록에 안 보이지"가 되는 것이 제일 나쁘다.
+    if (kind === 'child' && !canAcceptChild(state.profiles, state.knownChildren ?? [], trimmed)) {
+      return;
+    }
     setSaving(true);
     await addProfile(trimmed, avatar, level, kind);
     router.replace(kind === 'parent' ? '/parent-home' : '/home');
@@ -160,11 +175,18 @@ export default function Onboarding() {
         )}
       </Card>
 
+      {!isParent && childFull ? (
+        <Card style={{ marginTop: spacing.lg, borderColor: colors.accent }}>
+          <H3>자리가 다 찼어요</H3>
+          <Muted style={{ marginTop: spacing.sm }}>{childLimitMessage()}</Muted>
+        </Card>
+      ) : null}
+
       <Button
         title="시작하기"
         variant={isParent ? 'parent' : 'primary'}
         onPress={submit}
-        disabled={name.trim().length === 0}
+        disabled={name.trim().length === 0 || (!isParent && childFull)}
         loading={saving}
         style={{ marginTop: spacing.xl }}
       />

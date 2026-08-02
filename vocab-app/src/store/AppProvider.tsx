@@ -35,6 +35,7 @@ import {
 } from '../types';
 import { ALL_ENTRIES, entriesOf } from '../data';
 import { Award, buildRewardRequest, claimAward, ratesOf } from '../features/awards';
+import { MAX_CHILDREN, canAcceptChild } from '../features/children';
 import { plannedWordCount } from '../srs/session';
 import { parentPlannedCount } from '../srs/parentSession';
 import { buildDailyReport, buildWeeklySummary } from '../features/report';
@@ -137,8 +138,11 @@ interface Ctx {
   setReceivesReports(on: boolean): void;
   /** 부모 기기가 받은 리포트를 쌓는다. 같은 아이·같은 날짜는 최신 것으로 덮는다. */
   addReceivedReport(report: Omit<ReceivedReport, 'id' | 'receivedAt'>): void;
-  /** 알림을 보낼 수 있는 아이 기기를 기억한다. 같은 이름이면 주소를 갱신한다. */
-  rememberChild(name: string, token: string): void;
+  /**
+   * 알림을 보낼 수 있는 아이 기기를 기억한다. 같은 이름이면 주소를 갱신한다.
+   * 아이가 이미 MAX_CHILDREN 명이면 **받지 않고 false** 를 돌려준다.
+   */
+  rememberChild(name: string, token: string): boolean;
   /** 지금 리포트를 부모 기기로 보낸다. 결과를 돌려준다. */
   pushReportNow(profileId?: string): Promise<SendResult>;
 }
@@ -649,16 +653,25 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     [persistState],
   );
 
+  /**
+   * QR 로 이어진 아이를 기억한다. **자리가 없으면 false 를 돌려준다.**
+   *
+   * 조용히 무시하지 않는 이유: 부모는 QR 을 찍었고 화면은 아무 말이 없는데
+   * 아이 목록에는 안 생긴다. 그러면 몇 번을 더 찍어 보다가 앱이 고장 났다고
+   * 여긴다. 못 받았으면 못 받았다고 말해 줘야 한다.
+   */
   const rememberChild = useCallback(
-    (name: string, token: string) => {
+    (name: string, token: string): boolean => {
       const { state } = ref.current;
+      if (!canAcceptChild(state.profiles, state.knownChildren ?? [], name)) return false;
       const rest = (state.knownChildren ?? []).filter((c) => c.name !== name);
       persistState({
         ...state,
         // 같은 이름이 이미 있으면 주소를 갱신한다. 앱을 다시 깔면 주소가
         // 바뀌는데, 옛 주소로 보내면 조용히 사라진다.
-        knownChildren: [{ name, token, lastSeen: Date.now() }, ...rest].slice(0, 10),
+        knownChildren: [{ name, token, lastSeen: Date.now() }, ...rest].slice(0, MAX_CHILDREN),
       });
+      return true;
     },
     [persistState],
   );

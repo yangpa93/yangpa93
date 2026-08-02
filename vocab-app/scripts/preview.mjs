@@ -287,7 +287,7 @@ const settings = (o={}) => ({ newPerDay:10, reviewPerDay:10, rounds:3,
 const base = (o={}) => ({ koLevel:'m1-1', settings:settings(), createdAt:1, streak:0, bestStreak:0,
   lastCompletedDate:null, pendingLevelUps:[], koPendingLevelUps:[], clearedLevels:[], koClearedLevels:[],
   claimedMonths:[], awards:null, linkWaived:false,
-  parentStudy:{ tracks:['daily'], dailyTheme:'w', newPerDay:5 }, ...o });
+  parentStudy:{ tracks:['daily'], dailyTheme:'w', perTrack:{ daily:5, enWord:5, ko:5 } }, ...o });
 
 const kids = [
   base({ id:A, name:'서준', kind:'child', avatar:'🦊', level:'m1-1', streak:3, bestStreak:5 }),
@@ -302,7 +302,8 @@ const kids = [
  */
 const parent = base({ id:PARENT, name:'엄마', kind:'parent', avatar:'👩‍💼', level:'m1-1',
   streak:4, bestStreak:7,
-  parentStudy:{ tracks:['daily','enWord','ko'], dailyTheme:'w', newPerDay:10 } });
+  parentStudy:{ tracks:['daily','enWord','ko'], dailyTheme:'w',
+    perTrack:{ daily:10, enWord:5, ko:5 } } });
 
 function root(profiles, activeId, extra={}) {
   return { version:6, profiles, activeProfileId:activeId,
@@ -431,7 +432,7 @@ function seed(which) {
     put(root([parent, ...kids], PARENT, { receivesReports:true }),
         { [PARENT]: history(6), [A]: history(12), [B]: history(4) });
   } else if (which === 'parentFresh') {
-    const p = { ...parent, parentStudy:{ tracks:[], dailyTheme:'w', newPerDay:5 } };
+    const p = { ...parent, parentStudy:{ tracks:[], dailyTheme:'w', perTrack:{ daily:5, enWord:5, ko:5 } } };
     put(root([p], PARENT), { [PARENT]: empty });
   }
 }

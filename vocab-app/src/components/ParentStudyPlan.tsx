@@ -7,22 +7,24 @@
  * 바뀔 수 있고 고르는 내용 자체는 그대로라, 화면에서 떼어 두면 옮길 때마다
  * 통째로 베끼지 않아도 된다.
  *
- * 세 갈래를 켜고 끄고, 켠 것마다 어디를 볼지 고른다. 하루 분량은 5개 아니면
- * 10개다 — 어른의 저녁에 낼 수 있는 시간이 그 언저리이고, 고를 것이 많으면
- * 고르다가 안 한다.
+ * 세 갈래를 켜고 끄고, 켠 것마다 **어디를 볼지와 하루 몇 개를 볼지**를 고른다.
+ * 개수는 5개 아니면 10개다 — 어른의 저녁에 낼 수 있는 시간이 그 언저리이고,
+ * 고를 것이 많으면 고르다가 안 한다.
  *
- * 갈래를 여러 개 켜면 하루 분량을 **나눠 갖는다**. 셋을 켜고 10개씩 내면
- * 하루 30개가 되어 아무도 못 한다. 지금 어떻게 나뉘는지를 화면에 그대로
- * 적어 둔다 — 골라 놓고 왜 5개만 나오는지 몰라 헤매지 않도록.
+ * **개수는 갈래마다 따로다.** 예전에는 카드 밖에 '하루에 몇 개'가 하나 있었고
+ * 그 숫자를 켠 갈래끼리 나눠 가졌다(셋이면 4/3/3). 그런데 홈에 '하루에 10개'
+ * 라고만 적히니 그것이 일상 문장 10개인지 셋을 합쳐 10개인지 알 수가 없었다.
+ * 숫자 하나가 자기 뜻을 스스로 말하지 못하면 그 숫자는 없는 편이 낫다.
+ * 지금은 갈래 카드 안에서 고르고, 고른 숫자가 곧 그 갈래의 개수다.
  */
 
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { Body, Card, H3, Muted, Row } from './ui';
+import { Body, Card, Muted, Row } from './ui';
 import { useApp } from '../store/AppProvider';
 import { LevelPicker } from './LevelPicker';
 import { DAILY_THEME_LIST } from '../data/daily';
 import { KO_ENTRIES } from '../data/korean/levels';
-import { splitPerTrack } from '../srs/parentSession';
+import { perTrackCount } from '../srs/parentSession';
 import {
   LEVEL_SHORT,
   LevelId,
@@ -38,7 +40,7 @@ export function ParentStudyPlan() {
   if (!profile) return null;
 
   const study = profile.parentStudy;
-  const per = splitPerTrack(study);
+  const per = perTrackCount(study);
 
   function toggle(track: ParentTrack) {
     if (!profile) return;
@@ -48,35 +50,32 @@ export function ParentStudyPlan() {
     });
   }
 
+  /**
+   * 그 갈래의 하루 개수를 바꾼다.
+   *
+   * 안 켠 갈래의 값도 그대로 남겨 둔다. 껐다 다시 켰을 때 예전에 고른 값이
+   * 살아 있어야 "다시 처음부터 고르라"는 느낌이 안 든다.
+   */
+  function setCount(track: ParentTrack, n: number) {
+    if (!profile) return;
+    updateParentStudy(profile.id, { perTrack: { ...study.perTrack, [track]: n } });
+  }
+
   const koCount = KO_ENTRIES.filter((e) => e.level === profile.koLevel).length;
 
   return (
     <View>
       <Muted style={{ marginTop: spacing.sm }}>
-        공부할 것을 고르세요. 여러 개를 켜면 하루 분량을 나눠 갖습니다. 문제 내는 방식과
+        공부할 것을 고르세요. 갈래마다 하루 몇 개를 볼지 따로 정합니다. 문제 내는 방식과
         복습 간격은 아이들과 똑같아요.
       </Muted>
 
-      {/* 하루 분량 */}
-      <Card style={{ marginTop: spacing.md }}>
-        <H3>하루에 몇 개</H3>
-        <Muted style={{ marginTop: spacing.xs }}>
-          새로 만날 개수입니다. 복습은 여기에 얹히니 실제로 푸는 것은 이보다 많아요.
-        </Muted>
-        <Row style={{ gap: spacing.sm, marginTop: spacing.md }}>
-          {PARENT_NEW_PER_DAY.map((n) => (
-            <Pressable
-              key={n}
-              onPress={() => updateParentStudy(profile.id, { newPerDay: n })}
-              style={[s.chip, study.newPerDay === n && s.chipOn]}
-              accessibilityRole="radio"
-              accessibilityState={{ selected: study.newPerDay === n }}
-            >
-              <Text style={[s.chipText, study.newPerDay === n && s.chipTextOn]}>{n}개</Text>
-            </Pressable>
-          ))}
-        </Row>
-      </Card>
+      {/*
+        예전에는 여기 '하루에 몇 개' 카드가 하나 있었고, 그 숫자를 켠 갈래끼리
+        나눠 가졌다(셋이면 4/3/3). 그런데 홈에 '하루에 10개'라고만 적히니
+        그것이 일상 문장 10개인지 셋을 합쳐 10개인지 알 수가 없었다.
+        지금은 갈래마다 카드 안에서 고른다 — 고른 숫자가 그 갈래의 개수다.
+      */}
 
       {/* ① 일상 생활 문장 */}
       <TrackCard
@@ -84,6 +83,7 @@ export function ParentStudyPlan() {
         on={study.tracks.includes('daily')}
         count={per.daily}
         onToggle={() => toggle('daily')}
+        onCount={(n) => setCount('daily', n)}
         hint="회의·메일·가벼운 대화에 그대로 쓰는 문장 80개. 주제를 골라 도세요."
       >
         <Row style={{ gap: spacing.sm, marginTop: spacing.md, flexWrap: 'wrap' }}>
@@ -113,6 +113,7 @@ export function ParentStudyPlan() {
         on={study.tracks.includes('enWord')}
         count={per.enWord}
         onToggle={() => toggle('enWord')}
+        onCount={(n) => setCount('enWord', n)}
         hint="아이가 지금 보고 있는 그 단어들입니다. 같은 것을 알면 저녁에 물어볼 말이 생겨요."
       >
         <View style={{ marginTop: spacing.md }}>
@@ -130,6 +131,7 @@ export function ParentStudyPlan() {
         on={study.tracks.includes('ko')}
         count={per.ko}
         onToggle={() => toggle('ko')}
+        onCount={(n) => setCount('ko', n)}
         hint="사자성어 · 개념어 · 고전 · 수능 어휘. 아이와 같은 자료를 같은 방식으로 봅니다."
       >
         <View style={{ marginTop: spacing.md }}>
@@ -166,6 +168,7 @@ function TrackCard({
   count,
   hint,
   onToggle,
+  onCount,
   children,
 }: {
   track: ParentTrack;
@@ -174,6 +177,7 @@ function TrackCard({
   count: number;
   hint: string;
   onToggle: () => void;
+  onCount: (n: number) => void;
   children: React.ReactNode;
 }) {
   return (
@@ -192,7 +196,27 @@ function TrackCard({
 
       {on ? (
         <>
-          <Muted style={{ marginTop: spacing.md }}>오늘 이 갈래에서 새로 {count}개를 만납니다.</Muted>
+          {/*
+            개수를 이 카드 안에 둔다. 갈래 밖에 하나만 두면 그 숫자가 어느
+            갈래의 것인지 알 수 없다 — 그것 때문에 이 구조로 바꿨다.
+          */}
+          <Text style={[s.countLabel, { marginTop: spacing.lg }]}>하루에 몇 개</Text>
+          <Muted style={{ marginTop: 2 }}>
+            새로 만날 개수입니다. 복습은 여기에 얹히니 실제로 푸는 것은 이보다 많아요.
+          </Muted>
+          <Row style={{ gap: spacing.sm, marginTop: spacing.sm }}>
+            {PARENT_NEW_PER_DAY.map((n) => (
+              <Pressable
+                key={n}
+                onPress={() => onCount(n)}
+                style={[s.chip, count === n && s.chipOn]}
+                accessibilityRole="radio"
+                accessibilityState={{ selected: count === n }}
+              >
+                <Text style={[s.chipText, count === n && s.chipTextOn]}>{n}개</Text>
+              </Pressable>
+            ))}
+          </Row>
           {children}
         </>
       ) : null}
@@ -204,6 +228,7 @@ const s = StyleSheet.create({
   cardOn: { borderColor: colors.parent, borderWidth: 2 },
   trackTitle: { fontSize: font.h3, fontWeight: '800', color: colors.text },
   trackHint: { fontSize: font.small, color: colors.subtext, marginTop: 3, lineHeight: 19 },
+  countLabel: { fontSize: font.body, fontWeight: '700', color: colors.text },
   check: {
     width: 30,
     height: 30,

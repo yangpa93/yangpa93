@@ -48,7 +48,7 @@ function makeProfile(over: Partial<Profile> = {}): Profile {
     claimedMonths: [],
     awards: null,
     linkWaived: false,
-    parentStudy: { tracks: ['daily'], dailyTheme: 'w', newPerDay: 5 },
+    parentStudy: { tracks: ['daily'], dailyTheme: 'w', perTrack: { daily: 5, enWord: 5, ko: 5 } },
     ...over,
   };
 }

@@ -9,6 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   AppState,
   AwardRates,
+  DEFAULT_PARENT_PER_DAY,
   LevelId,
   ParentStudy,
   ParentTrack,
@@ -34,8 +35,11 @@ const DATA_KEY = (profileId: string) => `urivocab:data:v1:${profileId}`;
  *         아이가 1만원 더 요구할 수 있게(RewardRequest.bonus)
  *  5 → 6  프로필에 아이/부모 갈래를 두고(Profile.kind) 부모도 공부하게,
  *         동기 부여 요청권 금액을 아이마다 따로 둘 수 있게(Profile.awards)
+ *  6 → 7  부모의 하루 분량을 전체 합계 하나(newPerDay)에서 갈래별
+ *         (ParentStudy.perTrack)로. '하루에 10개'가 일상 문장 10개인지
+ *         셋을 합쳐 10개인지 화면만 보고는 알 수 없었다.
  */
-export const STATE_VERSION = 6;
+export const STATE_VERSION = 7;
 
 /** 하루에 새로 만날 단어 수 기본값. 10개면 3,286개를 약 1년에 돈다. */
 export const DEFAULT_NEW_PER_DAY = 10;
@@ -75,7 +79,40 @@ export function emptyState(): AppState {
  */
 /** 부모가 아무것도 안 고른 상태. 학습 정하기 화면에서 채운다. */
 export function emptyParentStudy(): ParentStudy {
-  return { tracks: ['daily'], dailyTheme: DEFAULT_DAILY_THEME, newPerDay: 5 };
+  return {
+    tracks: ['daily'],
+    dailyTheme: DEFAULT_DAILY_THEME,
+    perTrack: { daily: DEFAULT_PARENT_PER_DAY, enWord: DEFAULT_PARENT_PER_DAY, ko: DEFAULT_PARENT_PER_DAY },
+  };
+}
+
+/** 고를 수 있는 값(5·10) 중 하나로 맞춘다. 그 밖의 값은 가까운 쪽으로. */
+export function snapPerDay(n: unknown): number {
+  const v = typeof n === 'number' && Number.isFinite(n) ? n : DEFAULT_PARENT_PER_DAY;
+  // 5 와 10 의 한가운데(7.5)를 기준으로 가른다.
+  return v >= 7.5 ? 10 : DEFAULT_PARENT_PER_DAY;
+}
+
+/**
+ * 예전 저장본의 `newPerDay`(전체 합계)를 갈래별 값으로 옮긴다.
+ *
+ * 예전에는 합계를 켠 갈래끼리 나눠 가졌다 — 셋을 켜고 10이면 4/3/3 이었다.
+ * 그래서 **그때 실제로 돌던 개수**를 갈래마다 계산한 뒤 고를 수 있는 값
+ * (5·10)으로 맞춘다. 합계를 그대로 각 갈래에 넣으면(10 → 10·10·10) 하루
+ * 분량이 세 배가 되어, 앱을 새로 받은 다음 날 갑자기 못 끝내게 된다.
+ *
+ * 4/3/3 은 셋 다 5가 된다. 조금 늘지만 줄어드는 것보다 낫다 — 줄면 어제까지
+ * 하던 것이 오늘 갑자기 안 나온다.
+ */
+export function perTrackFromLegacy(
+  tracks: ParentTrack[],
+  legacyTotal: unknown,
+): Record<ParentTrack, number> {
+  const total = typeof legacyTotal === 'number' && Number.isFinite(legacyTotal) ? legacyTotal : 5;
+  const on = tracks.length;
+  const each = on > 0 ? total / on : total;
+  const v = snapPerDay(each);
+  return { daily: v, enWord: v, ko: v };
 }
 
 /**
@@ -94,12 +131,30 @@ export function normalizeParentStudy(v: unknown): ParentStudy {
 
   const known = DAILY_THEME_LIST.some((t) => t.id === raw.dailyTheme);
 
+  /*
+   * 갈래별 개수. 없으면 예전 저장본이므로 `newPerDay`(전체 합계)에서 옮긴다.
+   *
+   * 저장 포맷을 버전으로 갈라 처리하지 않는 이유: 이 함수는 불러올 때마다
+   * 무조건 지나가므로, 여기서 모양을 맞춰 두면 예전 판에서 온 것이든 깨진
+   * 것이든 한 자리에서 온전해진다. STATE_VERSION 은 "언제 무엇이 바뀌었나"를
+   * 남기는 표시로만 쓴다.
+   */
+  const legacy = (raw as { newPerDay?: unknown }).newPerDay;
+  const perTrack =
+    raw.perTrack && typeof raw.perTrack === 'object'
+      ? {
+          daily: snapPerDay((raw.perTrack as Record<string, unknown>).daily),
+          enWord: snapPerDay((raw.perTrack as Record<string, unknown>).enWord),
+          ko: snapPerDay((raw.perTrack as Record<string, unknown>).ko),
+        }
+      : perTrackFromLegacy(tracks, legacy);
+
   return {
     // 하나도 안 켜져 있으면 그대로 둔다. '공부할 것을 고르세요'가 맞는 화면이고,
     // 임의로 켜 주면 부모가 고르지 않은 것을 공부하게 된다.
     tracks,
     dailyTheme: known ? raw.dailyTheme! : base.dailyTheme,
-    newPerDay: raw.newPerDay === 10 ? 10 : 5,
+    perTrack,
   };
 }
 

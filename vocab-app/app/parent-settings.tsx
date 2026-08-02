@@ -3,8 +3,8 @@ import { router } from 'expo-router';
 import { Chip, Muted, Row, Screen } from '../src/components/ui';
 import { useApp } from '../src/store/AppProvider';
 import { buildInfo, buildLabel } from '../src/features/build-info';
-import { PARENT_TRACK_LABEL } from '../src/types';
-import { TRACK_ORDER } from '../src/srs/parentSession';
+import { PARENT_TRACK_SHORT } from '../src/types';
+import { perTrackCount, TRACK_ORDER } from '../src/srs/parentSession';
 import { colors, font, radius, spacing } from '../src/theme';
 
 /**
@@ -34,11 +34,14 @@ export default function ParentSettings() {
   const remoteNames = (state.knownChildren ?? []).map((c) => c.name);
   const childCount = new Set([...childProfiles.map((p) => p.name), ...remoteNames]).size;
 
-  // 지금 무엇을 공부하기로 해 두었는지 한 줄로. 눌러 보지 않아도 알 수 있게.
-  const tracks = profile
-    ? TRACK_ORDER.filter((t) => profile.parentStudy.tracks.includes(t)).map(
-        (t) => PARENT_TRACK_LABEL[t],
-      )
+  /*
+   * 지금 무엇을 하루 몇 개씩 하기로 해 두었는지 한 줄로. 눌러 보지 않아도
+   * 알 수 있게 한다. 개수를 갈래마다 붙이는 이유는 홈 카드와 같다 —
+   * 숫자 하나만 떼어 두면 그것이 어느 갈래의 것인지 알 수 없다.
+   */
+  const per = profile ? perTrackCount(profile.parentStudy) : null;
+  const tracks = per
+    ? TRACK_ORDER.filter((t) => per[t] > 0).map((t) => `${PARENT_TRACK_SHORT[t]} ${per[t]}개`)
     : [];
 
   return (
@@ -64,7 +67,7 @@ export default function ParentSettings() {
         hint={
           tracks.length === 0
             ? '아직 아무것도 안 골랐어요. 무엇을 하루 몇 개씩 볼지 정합니다'
-            : `${tracks.join(' · ')} · 하루 ${profile?.parentStudy.newPerDay ?? 0}개`
+            : tracks.join(' · ')
         }
         onPress={() => router.push('/parent-plan')}
       />

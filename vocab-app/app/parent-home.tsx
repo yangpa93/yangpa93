@@ -1,21 +1,10 @@
 import { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
-import {
-  Body,
-  Button,
-  Card,
-  Chip,
-  H2,
-  H3,
-  Muted,
-  ProgressBar,
-  Row,
-  Screen,
-} from '../src/components/ui';
+import { Button, Card, Chip, H2, H3, Muted, ProgressBar, Row, Screen } from '../src/components/ui';
 import { useApp } from '../src/store/AppProvider';
 import { ParentRecordCards } from '../src/components/ParentRecordCards';
-import { buildParentQueue, TRACK_ORDER } from '../src/srs/parentSession';
+import { buildParentQueue, perTrackCount, TRACK_ORDER } from '../src/srs/parentSession';
 import { buildInfo, buildLabel } from '../src/features/build-info';
 import { PARENT_TRACK_SHORT as TRACK_SHORT } from '../src/types';
 import { todayKey } from '../src/lib/date';
@@ -60,6 +49,8 @@ export default function ParentHome() {
   const goal = day?.goal ?? planned;
   const finished = day?.completed ?? false;
   const build = buildInfo();
+  // 갈래마다 오늘 몇 개인지. 안 켠 갈래는 0 이라 화면에서 걸러진다.
+  const per = perTrackCount(study);
 
   // 아이들은 두 곳에서 온다 — 이 폰에 있는 아이 프로필과, QR 로 연결해
   // 리포트를 보내 오는 다른 폰의 아이들. 둘을 합쳐서 세야 실제 수가 맞는다.
@@ -137,35 +128,26 @@ export default function ParentHome() {
             </View>
 
             {/*
-              **하루 분량이 먼저, 갈래 이름만 그 아래.**
+              **갈래마다 개수를 붙여 한 칩에 담는다.**
 
-              이 카드는 여러 번 고쳤다. 처음에는 `국어 · 중1-1` 처럼 갈래와
-              레벨을 가운뎃점으로 붙여 칩 하나에 담았고, 다음에는 갈래마다 한
-              줄씩 두고 오른쪽에 레벨·주제를 적었다. 둘 다 같은 말을 들었다 —
-              **오른쪽에 붙은 것이 무엇의 무엇인지 모르겠다.**
+              이 카드는 여러 번 고쳤다. `국어 · 중1-1` 처럼 갈래와 레벨을
+              붙였다가, 갈래마다 한 줄씩 두고 오른쪽에 레벨을 적었다가,
+              레벨을 빼고 '하루에 10개' 한 줄과 갈래 이름만 남겼다.
 
-              국어 레벨 이름이 영어와 글자까지 똑같은 것(중1-1 … 고3-4)이
-              결정적이었다. `국어  중1-1` 을 보고 그 중1-1 이 영어 것인지
-              국어 것인지 가릴 방법이 없다.
+              마지막 것도 물음을 받았다 — "하루에 10개가 일상 문장 10개인가?"
+              아니었다. 그때는 셋이 나눠 갖는 합계였고(4/3/3), 화면만 보고는
+              가릴 방법이 없었다. 그래서 설정 자체를 갈래별로 바꿨다
+              (ParentStudy.perTrack). 이제 숫자가 자기 뜻을 스스로 말한다.
 
-              그래서 홈에서는 레벨도 주제도 안 적는다. 여기서 알아야 하는
-              것은 두 가지뿐이다.
+                [일상 문장 5개] [영어 단어 5개] [국어 5개]
 
-                오늘 몇 개를 하나       → 하루에 10개
-                어느 갈래를 도는가      → 일상 문장 · 영어 단어 · 국어
-
-              레벨과 주제는 고르는 자리(⚙️ 설정 → 내 공부 설정)와 진도를 보는
-              자리('무엇을 얼마나 익혔나')에 그대로 있다. 거기서는 갈래 이름이
-              길게 다 적혀 있어 무엇의 레벨인지 헷갈리지 않는다.
+              레벨과 주제는 여기 안 적는다. 고르는 자리(⚙️ 설정 → 내 공부 설정)와
+              진도를 보는 자리('무엇을 얼마나 익혔나')에 그대로 있고, 거기서는
+              갈래 이름이 길게 다 적혀 있어 무엇의 레벨인지 헷갈리지 않는다.
             */}
-            <Row style={{ marginTop: spacing.md, alignItems: 'center', gap: spacing.sm }}>
-              <Body style={{ fontWeight: '700' }}>하루에</Body>
-              <Chip label={`${study.newPerDay}개`} tone="accent" />
-            </Row>
-
-            <Row style={{ marginTop: spacing.sm, gap: spacing.sm, flexWrap: 'wrap' }}>
-              {TRACK_ORDER.filter((t) => study.tracks.includes(t)).map((t) => (
-                <Chip key={t} label={TRACK_SHORT[t]} tone="primary" />
+            <Row style={{ marginTop: spacing.md, gap: spacing.sm, flexWrap: 'wrap' }}>
+              {TRACK_ORDER.filter((t) => per[t] > 0).map((t) => (
+                <Chip key={t} label={`${TRACK_SHORT[t]} ${per[t]}개`} tone="primary" />
               ))}
             </Row>
 

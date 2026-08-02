@@ -12,7 +12,8 @@ import {
   parentPlannedCount,
   parentTrackProgress,
   reviewCapOf,
-  splitPerTrack,
+  perTrackCount,
+  parentDailyTotal,
   TRACK_ORDER,
 } from '../src/srs/parentSession';
 import { DAILY_THEME_LIST } from '../src/data/daily';
@@ -53,7 +54,7 @@ function profile(study: Partial<ParentStudy> = {}, over: Partial<Profile> = {}):
     parentStudy: {
       tracks: ['daily'],
       dailyTheme: DAILY_THEME_LIST[0].id,
-      newPerDay: 5,
+      perTrack: { daily: 5, enWord: 5, ko: 5 },
       ...study,
     },
     ...over,
@@ -62,43 +63,83 @@ function profile(study: Partial<ParentStudy> = {}, over: Partial<Profile> = {}):
 
 const noCards: Record<string, CardState> = {};
 
-describe('splitPerTrack', () => {
-  it('하나만 켜면 다 가져간다', () => {
-    const got = splitPerTrack(profile({ tracks: ['daily'], newPerDay: 10 }).parentStudy);
+describe('perTrackCount', () => {
+  it('켠 갈래는 고른 값 그대로, 안 켠 것은 0', () => {
+    /*
+     * 여기가 이번 판에서 뜻이 통째로 바뀐 자리다. 예전에는 전체 합계 하나를
+     * 켠 갈래끼리 나눠 가졌고(셋이면 4/3/3), 그래서 '하루에 10개'가 일상
+     * 문장 10개인지 셋을 합쳐 10개인지 화면만 보고는 알 수 없었다.
+     * 지금은 고른 숫자가 곧 그 갈래의 개수다.
+     */
+    const got = perTrackCount(
+      profile({ tracks: ['daily'], perTrack: { daily: 10, enWord: 5, ko: 5 } }).parentStudy,
+    );
     expect(got).toEqual({ daily: 10, enWord: 0, ko: 0 });
   });
 
-  it('셋을 켜면 나눠 갖는다. 나머지는 앞 갈래부터', () => {
-    const got = splitPerTrack(
-      profile({ tracks: ['daily', 'enWord', 'ko'], newPerDay: 10 }).parentStudy,
+  it('셋을 켜면 셋 다 자기 값을 가져간다 — 나누지 않는다', () => {
+    const got = perTrackCount(
+      profile({
+        tracks: ['daily', 'enWord', 'ko'],
+        perTrack: { daily: 10, enWord: 5, ko: 5 },
+      }).parentStudy,
     );
-    // 10을 셋으로 나누면 4·3·3. 합은 그대로 10이라야 한다.
-    expect(got.daily + got.enWord + got.ko).toBe(10);
-    expect(got.daily).toBe(4);
-    expect(got.enWord).toBe(3);
-    expect(got.ko).toBe(3);
+    expect(got).toEqual({ daily: 10, enWord: 5, ko: 5 });
+    // 합계는 20이다. 예전이라면 10을 셋이 나눠 4/3/3 이었다.
+    expect(got.daily + got.enWord + got.ko).toBe(20);
   });
 
   it('하나도 안 켜면 아무 갈래도 몫이 없다', () => {
-    expect(splitPerTrack(profile({ tracks: [] }).parentStudy)).toEqual({
+    expect(perTrackCount(profile({ tracks: [] }).parentStudy)).toEqual({
       daily: 0,
       enWord: 0,
       ko: 0,
     });
   });
 
-  it('갈래가 하루 분량보다 많아도 합이 넘치지 않는다', () => {
-    const got = splitPerTrack(
-      profile({ tracks: ['daily', 'enWord', 'ko'], newPerDay: 5 }).parentStudy,
+  it('안 켠 갈래의 저장값은 무시한다', () => {
+    // 껐다 다시 켰을 때 예전에 고른 값이 살아 있게 하려고 지우지 않는다.
+    // 그래서 세는 쪽에서 걸러야 한다.
+    const got = perTrackCount(
+      profile({ tracks: ['ko'], perTrack: { daily: 10, enWord: 10, ko: 5 } }).parentStudy,
     );
-    expect(got.daily + got.enWord + got.ko).toBe(5);
+    expect(got).toEqual({ daily: 0, enWord: 0, ko: 5 });
+  });
+
+  it('저장값이 깨져 있어도 0으로 떨어진다', () => {
+    const got = perTrackCount(
+      profile({ tracks: ['daily'], perTrack: { daily: NaN, enWord: 5, ko: 5 } }).parentStudy,
+    );
+    expect(got.daily).toBe(0);
+  });
+});
+
+describe('parentDailyTotal', () => {
+  it('켠 갈래의 개수를 다 더한다', () => {
+    const total = parentDailyTotal(
+      profile({
+        tracks: ['daily', 'ko'],
+        perTrack: { daily: 10, enWord: 10, ko: 5 },
+      }).parentStudy,
+    );
+    // enWord 는 안 켰으므로 빠진다.
+    expect(total).toBe(15);
   });
 });
 
 describe('reviewCapOf', () => {
-  it('복습 상한은 새로 배우는 개수와 같다', () => {
-    expect(reviewCapOf(profile({ newPerDay: 5 }).parentStudy)).toBe(5);
-    expect(reviewCapOf(profile({ newPerDay: 10 }).parentStudy)).toBe(10);
+  it('복습 상한은 그 갈래의 새 개수와 같다', () => {
+    const p = profile({
+      tracks: ['daily', 'ko'],
+      perTrack: { daily: 10, enWord: 10, ko: 5 },
+    }).parentStudy;
+    expect(reviewCapOf(p, 'daily')).toBe(10);
+    expect(reviewCapOf(p, 'ko')).toBe(5);
+  });
+
+  it('안 켠 갈래는 복습도 없다', () => {
+    const p = profile({ tracks: ['daily'], perTrack: { daily: 5, enWord: 10, ko: 10 } }).parentStudy;
+    expect(reviewCapOf(p, 'enWord')).toBe(0);
   });
 });
 
@@ -109,7 +150,7 @@ describe('buildParentQueue', () => {
 
   it('켠 갈래의 문항만 나온다', () => {
     const q = buildParentQueue({
-      profile: profile({ tracks: ['daily'], newPerDay: 5 }),
+      profile: profile({ tracks: ['daily'], perTrack: { daily: 5, enWord: 5, ko: 5 } }),
       cards: noCards,
       rand: fixedRand,
     });
@@ -123,7 +164,7 @@ describe('buildParentQueue', () => {
   it('일상 문장은 고른 주제 안에서만 나온다', () => {
     const theme = DAILY_THEME_LIST[2];
     const q = buildParentQueue({
-      profile: profile({ tracks: ['daily'], dailyTheme: theme.id, newPerDay: 5 }),
+      profile: profile({ tracks: ['daily'], dailyTheme: theme.id, perTrack: { daily: 5, enWord: 5, ko: 5 } }),
       cards: noCards,
       rand: fixedRand,
     });
@@ -133,7 +174,7 @@ describe('buildParentQueue', () => {
 
   it('하루 분량만큼만 새로 만난다', () => {
     const count = parentPlannedCount({
-      profile: profile({ tracks: ['daily'], newPerDay: 5 }),
+      profile: profile({ tracks: ['daily'], perTrack: { daily: 5, enWord: 5, ko: 5 } }),
       cards: noCards,
       rand: fixedRand,
     });
@@ -142,7 +183,7 @@ describe('buildParentQueue', () => {
 
   it('갈래를 섞지 않고 화면 순서대로 이어 붙인다', () => {
     const q = buildParentQueue({
-      profile: profile({ tracks: ['daily', 'enWord', 'ko'], newPerDay: 9 }),
+      profile: profile({ tracks: ['daily', 'enWord', 'ko'], perTrack: { daily: 9, enWord: 9, ko: 9 } }),
       cards: noCards,
       rand: fixedRand,
     });
@@ -159,13 +200,13 @@ describe('buildParentQueue', () => {
 
   it('라운드 수만큼 되풀이해 만난다', () => {
     const one = buildParentQueue({
-      profile: profile({ tracks: ['daily'], newPerDay: 5 }),
+      profile: profile({ tracks: ['daily'], perTrack: { daily: 5, enWord: 5, ko: 5 } }),
       cards: noCards,
       rounds: 1,
       rand: fixedRand,
     });
     const three = buildParentQueue({
-      profile: profile({ tracks: ['daily'], newPerDay: 5 }),
+      profile: profile({ tracks: ['daily'], perTrack: { daily: 5, enWord: 5, ko: 5 } }),
       cards: noCards,
       rounds: 3,
       rand: fixedRand,
@@ -176,7 +217,7 @@ describe('buildParentQueue', () => {
   it('모든 문항이 문장을 갖고 있다', () => {
     // "모든 문제는 문장으로 낸다". 예문이 없으면 뜻만 묻는 문제가 된다.
     const q = buildParentQueue({
-      profile: profile({ tracks: ['daily', 'enWord'], newPerDay: 10 }),
+      profile: profile({ tracks: ['daily', 'enWord'], perTrack: { daily: 10, enWord: 10, ko: 10 } }),
       cards: noCards,
       rand: fixedRand,
     });

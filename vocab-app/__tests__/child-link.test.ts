@@ -97,14 +97,40 @@ describe('저장된 값 다듬기', () => {
   });
 
   it('없는 주제를 골라 두었으면 기본 주제로 되돌린다', () => {
-    const got = normalizeParentStudy({ tracks: ['daily'], dailyTheme: '없는주제', newPerDay: 10 });
+    const got = normalizeParentStudy({
+      tracks: ['daily'],
+      dailyTheme: '없는주제',
+      perTrack: { daily: 10, enWord: 5, ko: 5 },
+    });
     expect(got.dailyTheme).not.toBe('없는주제');
-    expect(got.newPerDay).toBe(10);
+    expect(got.perTrack.daily).toBe(10);
   });
 
-  it('하루 분량은 5 아니면 10이다', () => {
-    expect(normalizeParentStudy({ newPerDay: 7 }).newPerDay).toBe(5);
-    expect(normalizeParentStudy({ newPerDay: 10 }).newPerDay).toBe(10);
+  it('하루 분량은 갈래마다 5 아니면 10이다', () => {
+    const got = normalizeParentStudy({ perTrack: { daily: 7, enWord: 10, ko: 999 } as never });
+    // 7 은 5 쪽에 가깝고, 999 는 10 으로 맞춘다. 저장본이 깨져도 화면에
+    // 고를 수 없는 값이 뜨면 안 된다.
+    expect(got.perTrack.daily).toBe(5);
+    expect(got.perTrack.enWord).toBe(10);
+    expect(got.perTrack.ko).toBe(10);
+  });
+
+  it('예전 저장본(newPerDay 합계)을 갈래별로 옮긴다', () => {
+    /*
+     * 예전에는 합계를 켠 갈래끼리 나눠 가졌다. 셋을 켜고 10이면 4/3/3 이었다.
+     * 그때 실제로 돌던 개수(≈3.3)를 고를 수 있는 값으로 맞추면 5가 된다.
+     * 합계를 그대로 각 갈래에 넣으면(10·10·10) 하루 분량이 세 배가 되어,
+     * 앱을 새로 받은 다음 날 갑자기 못 끝내게 된다.
+     */
+    const three = normalizeParentStudy({
+      tracks: ['daily', 'enWord', 'ko'],
+      newPerDay: 10,
+    } as never);
+    expect(three.perTrack).toEqual({ daily: 5, enWord: 5, ko: 5 });
+
+    // 하나만 켜 두었으면 그 값이 그대로 그 갈래의 개수였다.
+    const one = normalizeParentStudy({ tracks: ['daily'], newPerDay: 10 } as never);
+    expect(one.perTrack.daily).toBe(10);
   });
 
   it('모르는 갈래는 버린다', () => {

@@ -42,36 +42,41 @@ export interface BuildParentQueueArgs {
 }
 
 /**
- * 복습 상한은 새로 배우는 개수와 같게 둔다.
+ * 갈래 하나에 하루 몇 개를 줄지. **켠 갈래만 값이 있고 나머지는 0.**
  *
- * 아이는 새 단어와 복습을 따로 정하지만, 부모에게 칸을 둘로 늘리면 고를 것이
- * 넷이 된다(갈래 · 주제 · 레벨 · 개수 두 가지). 고를 것이 많으면 고르다가
- * 안 한다. 하루 5개면 복습 5개까지, 10개면 10개까지 — 하루 분량이 두 배를
- * 넘지 않아 어른의 저녁 시간에 들어간다.
+ * 예전에는 전체 합계 하나를 켠 갈래끼리 나눠 가졌다(셋이면 4/3/3). 그런데
+ * 화면에 '하루에 10개'라고만 적히니 그것이 일상 문장 10개인지 셋을 합쳐
+ * 10개인지 알 수가 없었다. 지금은 갈래마다 부모가 직접 고른 값이 그대로
+ * 들어간다 — '일상 문장 5개'는 일상 문장 5개다.
+ *
+ * 안 켠 갈래의 저장값은 지우지 않는다. 껐다 다시 켰을 때 예전에 고른 값이
+ * 그대로 살아 있어야 하기 때문이다. 그래서 여기서 0으로 걸러 낸다.
  */
-export function reviewCapOf(study: ParentStudy): number {
-  return study.newPerDay;
+export function perTrackCount(study: ParentStudy): Record<ParentTrack, number> {
+  const out: Record<ParentTrack, number> = { daily: 0, enWord: 0, ko: 0 };
+  for (const t of TRACK_ORDER) {
+    if (!study.tracks.includes(t)) continue;
+    const n = study.perTrack?.[t];
+    out[t] = typeof n === 'number' && Number.isFinite(n) && n > 0 ? Math.round(n) : 0;
+  }
+  return out;
 }
 
 /**
- * 갈래 하나에 하루 몇 개를 줄지.
+ * 그 갈래의 복습 상한. 새로 배우는 개수와 같게 둔다.
  *
- * 켠 갈래끼리 나눠 갖는다. 셋을 다 켰는데 갈래마다 10개씩 내면 하루 30개가
- * 되어 아무도 못 한다. 나머지는 앞 갈래부터 하나씩 준다 — 순서는 부모가
- * 화면에서 본 순서(일상 → 영어 단어 → 국어)와 같다.
+ * 아이는 새 단어와 복습을 따로 정하지만, 부모에게 칸을 둘로 늘리면 고를 것이
+ * 갈래마다 둘이 된다. 고를 것이 많으면 고르다가 안 한다. 5개면 복습 5개까지,
+ * 10개면 10개까지 — 그 갈래의 하루 분량이 두 배를 넘지 않는다.
  */
-export function splitPerTrack(study: ParentStudy): Record<ParentTrack, number> {
-  const out: Record<ParentTrack, number> = { daily: 0, enWord: 0, ko: 0 };
-  const on = TRACK_ORDER.filter((t) => study.tracks.includes(t));
-  if (on.length === 0) return out;
+export function reviewCapOf(study: ParentStudy, track: ParentTrack): number {
+  return perTrackCount(study)[track];
+}
 
-  const base = Math.floor(study.newPerDay / on.length);
-  let left = study.newPerDay - base * on.length;
-  for (const t of on) {
-    out[t] = base + (left > 0 ? 1 : 0);
-    if (left > 0) left--;
-  }
-  return out;
+/** 오늘 새로 만날 개수의 합. 화면에 "모두 몇 개"를 적을 때 쓴다. */
+export function parentDailyTotal(study: ParentStudy): number {
+  const per = perTrackCount(study);
+  return TRACK_ORDER.reduce((n, t) => n + per[t], 0);
 }
 
 /** 화면에 늘어놓는 순서. 큐에 담기는 순서이기도 하다. */
@@ -91,12 +96,14 @@ export function buildParentQueue({
   rand = Math.random,
 }: BuildParentQueueArgs): ParentQueueItem[] {
   const study = profile.parentStudy;
-  const per = splitPerTrack(study);
-  const cap = reviewCapOf(study);
+  const per = perTrackCount(study);
   const out: ParentQueueItem[] = [];
 
   for (const track of TRACK_ORDER) {
-    if (!study.tracks.includes(track) || per[track] <= 0) continue;
+    if (per[track] <= 0) continue;
+    // 복습 상한도 갈래마다 따로다. 일상 문장 5개인데 국어 복습이 10개까지
+    // 딸려 오면 하루 분량이 고른 것과 어긋난다.
+    const cap = per[track];
 
     if (track === 'ko') {
       const picked = buildKoSession({

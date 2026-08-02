@@ -15,6 +15,7 @@ import { Body, Button, Card, H3, Muted, Row } from './ui';
 import { useApp } from '../store/AppProvider';
 import { NUDGE_PRESETS, sendNudgeToChild } from '../features/push';
 import { colors, font, radius, spacing } from '../theme';
+import { primaryParent } from '../features/parentLinks';
 
 export function NudgeCard() {
   const { state } = useApp();
@@ -27,7 +28,7 @@ export function NudgeCard() {
   async function nudge(name: string, token: string) {
     setBusy(name);
     setResult('');
-    const from = state.parentLink?.label ?? '부모님';
+    const from = primaryParent(state.parentLinks)?.label ?? '부모님';
     const res = await sendNudgeToChild(token, { from, message: picked });
     setBusy(null);
     setResult(

@@ -44,6 +44,7 @@ import {
   SUBJECT_LABEL,
 } from '../src/types';
 import { colors, font, radius, spacing } from '../src/theme';
+import { primaryParent } from '../src/features/parentLinks';
 
 const NEW_PER_DAY = [5, 8, 10, 15, 20];
 const REVIEW_PER_DAY = [5, 10, 15, 20, 30];
@@ -152,7 +153,7 @@ export default function ChildReport() {
     const known = (state.knownChildren ?? []).find((c) => c.name === profile.name);
     if (known) {
       void sendSettingsToChild(known.token, {
-        from: state.parentLink?.label ?? '부모님',
+        from: primaryParent(state.parentLinks)?.label ?? '부모님',
         subjects: next,
       }).catch(() => {});
     }

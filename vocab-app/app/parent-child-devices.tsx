@@ -8,6 +8,7 @@ import { FeedbackCard } from '../src/components/FeedbackCard';
 import { AwardRatesEditor } from '../src/components/AwardRatesEditor';
 import { LinkChildCard } from '../src/components/LinkChildCard';
 import { colors, font, radius, spacing } from '../src/theme';
+import { parentLabels } from '../src/features/parentLinks';
 
 /**
  * 아이들 폰 설정.
@@ -100,11 +101,11 @@ export default function ParentChildDevices() {
       </Card>
 
       {/* 아이 폰일 때만 뜻이 있는 스위치 */}
-      {state.parentLink ? (
+      {state.parentLinks.length > 0 ? (
         <Card style={{ marginTop: spacing.md }}>
           <H3>부모님 폰으로 알림 받기</H3>
           <Muted style={{ marginTop: spacing.xs }}>
-            {state.parentLink.label}에 연결돼 있습니다. 학습이 끝나면 바로 전송됩니다.
+            {parentLabels(state.parentLinks)}에 연결돼 있습니다. 학습이 끝나면 바로 전송됩니다.
           </Muted>
           <Row style={{ justifyContent: 'space-between', marginTop: spacing.lg }}>
             <Text style={s.label}>학습 후 자동 전송</Text>

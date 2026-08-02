@@ -310,7 +310,7 @@ function root(profiles, activeId, extra={}) {
     parent:{ pin:'1234', awards:{ middleLevel:20000, highLevel:30000, koreanLevel:10000,
       perfectMonth:20000, bonus:10000 }, notifyHour:22, notifyMinute:0, notifyEnabled:true,
       notifyOnlyWhenMissed:false, pushToParent:true },
-    rewards:[], role:'child', parentLink:null,
+    rewards:[], role:'child', parentLinks:[],
     myPushToken:'ExponentPushToken[Demo1234_-abcdEFGHij]',
     receivesReports:false, receivedReports:[], knownChildren:[], ...extra };
 }
@@ -422,10 +422,18 @@ function seed(which) {
   if (which === 'child') {
     put(root([kids[0]], A), { [A]: history(9) });
   } else if (which === 'childLinked') {
-    put(root([kids[0]], A, { parentLink:{ token:'ExponentPushToken[Parent_-demo9876]',
-      label:'엄마 폰', linkedAt:Date.now(), lastSentDate:null } }), { [A]: history(9) });
+    /*
+     * 부모 폰 **두 대**를 심는다. 아이 폰이 여러 대를 기억하고 주 부모를
+     * 고르는 것을 노트북에서 확인하려면 하나로는 볼 수가 없다.
+     */
+    put(root([kids[0]], A, { parentLinks:[
+      { token:'ExponentPushToken[Parent_-demo9876]', label:'엄마 폰',
+        linkedAt:Date.now(), lastSentDate:null, isPrimary:true },
+      { token:'ExponentPushToken[Parent_-demo5432]', label:'아빠 폰',
+        linkedAt:Date.now(), lastSentDate:null, isPrimary:false },
+    ] }), { [A]: history(9) });
   } else if (which === 'childReview') {
-    put(root([kids[0]], A, { parentLink:null }),
+    put(root([kids[0]], A, { parentLinks:[] }),
         { [A]: reviewCards(['a-couple-of','a-kind-of','a-number-of','a-pair-of','a-piece-of',
                             'after-all','agree-with','all-day-long','all-kinds-of']) });
   } else if (which === 'parent') {

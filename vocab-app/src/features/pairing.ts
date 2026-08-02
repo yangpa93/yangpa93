@@ -396,6 +396,49 @@ export function buildHelloBody(parentToken: string, payload: HelloPayload) {
   };
 }
 
+/**
+ * 아이가 동기 부여 요청권을 신청했을 때 **주 부모에게만** 보내는 알림.
+ *
+ * 리포트는 연결된 폰 전부가 받지만 이것은 하나에만 간다. 엄마와 아빠가
+ * 각각 승인하면 같은 것을 두 번 주게 되기 때문이다. 누가 받을지는 아이가
+ * 자기 ⚙️ 설정에서 고른다.
+ *
+ * 알림 하나로 끝난다 — 부모가 여기서 바로 승인하지는 못한다. 승인은 부모
+ * 폰에 그 아이 프로필이 있어야 하는 일이라, 지금은 "요청이 왔다"는 것만
+ * 알린다. 그것만으로도 부모가 아이에게 말을 걸 수 있고, 몰라서 못 주는
+ * 일은 없어진다.
+ */
+export interface RewardAskPayload {
+  childName: string;
+  /** 화면에 그대로 쓰는 한 줄. 예: '영어 중학교 레벨 하나를 끝냈어요' */
+  reason: string;
+  /** 신청 금액(원) */
+  amount: number;
+}
+
+export function buildRewardAskBody(parentToken: string, payload: RewardAskPayload) {
+  return {
+    to: parentToken,
+    title: '🎟️ 동기 부여 요청권 신청',
+    body: `${payload.childName} — ${payload.reason} (${payload.amount.toLocaleString('ko-KR')}원)`,
+    sound: 'default' as const,
+    priority: 'high' as const,
+    channelId: 'parent-report',
+    data: { kind: 'reward-ask', ...payload },
+  };
+}
+
+/** 받은 푸시에서 요청권 신청을 꺼낸다. 우리 형식이 아니면 null. */
+export function parseRewardAsk(data: unknown): RewardAskPayload | null {
+  if (!data || typeof data !== 'object') return null;
+  const d = data as Record<string, unknown>;
+  if (d.kind !== 'reward-ask') return null;
+  if (typeof d.childName !== 'string' || !d.childName.trim()) return null;
+  if (typeof d.reason !== 'string') return null;
+  if (typeof d.amount !== 'number' || !Number.isFinite(d.amount)) return null;
+  return { childName: d.childName, reason: d.reason, amount: Math.round(d.amount) };
+}
+
 /** 받은 푸시에서 연결 인사를 꺼낸다. 우리 형식이 아니면 null. */
 export function parseHello(data: unknown): HelloPayload | null {
   if (!data || typeof data !== 'object') return null;

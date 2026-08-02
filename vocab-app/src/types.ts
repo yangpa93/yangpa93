@@ -623,6 +623,17 @@ export interface ParentLink {
   linkedAt: number;
   /** 마지막으로 리포트를 보낸 날 (yyyy-mm-dd) */
   lastSentDate: string | null;
+  /**
+   * 주 부모인가. 연결된 폰이 있으면 **정확히 하나**가 true 다.
+   *
+   * 리포트는 연결된 폰 전부가 받지만 **정하는 일**은 한 사람이 해야 한다.
+   * 동기 부여 요청권을 엄마와 아빠가 각각 승인하면 같은 것을 두 번 주게 된다.
+   * 그래서 요청권 알림은 이 폰에만 간다.
+   *
+   * 이 규칙은 features/parentLinks.ts 가 지킨다. 화면에서 지키게 두면
+   * 언젠가 0개나 2개가 된다.
+   */
+  isPrimary: boolean;
 }
 
 /** 부모 기기가 아이 기기에서 받아 쌓아 둔 리포트. */
@@ -691,8 +702,14 @@ export interface AppState {
 
   /** 이 기기의 역할 */
   role: DeviceRole;
-  /** child일 때: 연결된 부모 기기 */
-  parentLink: ParentLink | null;
+  /**
+   * child일 때: 연결된 부모 기기들. 공부가 끝나면 **전부에게** 리포트를 보낸다.
+   *
+   * 예전에는 `parentLink` 하나였다. 엄마가 찍고 나서 아빠가 찍으면 엄마 폰이
+   * 조용히 밀려났고, 엄마 폰에는 아이가 그대로 보이는데 리포트만 안 왔다.
+   * 끊긴 줄도 모르는 연결이 제일 위험하다.
+   */
+  parentLinks: ParentLink[];
   /** 이 기기가 남에게 보여줄 자기 푸시 토큰. 아이 기기도 갖는다(부모가 알림을 보낼 수 있도록). */
   myPushToken: string | null;
   /**

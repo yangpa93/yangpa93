@@ -113,6 +113,9 @@ const MARKS = [
   ['오늘의 공부를 한 줄에 하나씩', 'app/parent-home.tsx', 'TRACK_SHORT'],
   ['공부 안 고르면 보고서만', 'app/parent-home.tsx', '아이들 학습 보고서만'],
   ['아이는 4명까지', 'src/features/children.ts', 'MAX_CHILDREN = 4'],
+  ['부모 폰 여러 대가 리포트 받기', 'src/features/parentLinks.ts', 'MAX_PARENTS'],
+  ['주 부모 고르기', 'src/components/ConnectParentCard.tsx', 'setPrimaryParent'],
+  ['요청권은 주 부모에게만', 'src/store/AppProvider.tsx', 'sendRewardAskToParent'],
 ];
 
 /* 판 번호도 같이 적는다. "몇 판을 받았나"가 제일 먼저 궁금한 것이다. */

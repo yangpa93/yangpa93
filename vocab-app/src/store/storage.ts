@@ -11,6 +11,7 @@ import {
   AwardRates,
   DEFAULT_PARENT_PER_DAY,
   LevelId,
+  ParentLink,
   ParentStudy,
   ParentTrack,
   ProfileData,
@@ -20,6 +21,7 @@ import {
 } from '../types';
 import { awardRates, DEFAULT_AWARD_RATES, levelUpAmount, MIDDLE_LEVEL_AWARD } from '../features/awards';
 import { DAILY_THEME_LIST, DEFAULT_DAILY_THEME } from '../data/daily';
+import { normalizeParentLinks } from '../features/parentLinks';
 import { LEGACY_ID_WORD } from './legacy-ids';
 
 /*
@@ -75,8 +77,10 @@ async function readWithFallback(key: string, oldKey: string): Promise<string | n
  *  6 → 7  부모의 하루 분량을 전체 합계 하나(newPerDay)에서 갈래별
  *         (ParentStudy.perTrack)로. '하루에 10개'가 일상 문장 10개인지
  *         셋을 합쳐 10개인지 화면만 보고는 알 수 없었다.
+ *  7 → 8  아이 폰이 부모 폰을 여러 대 기억하게(parentLink → parentLinks).
+ *         엄마가 찍고 나서 아빠가 찍으면 엄마 폰이 조용히 밀려났다.
  */
-export const STATE_VERSION = 7;
+export const STATE_VERSION = 8;
 
 /** 하루에 새로 만날 단어 수 기본값. 10개면 3,286개를 약 1년에 돈다. */
 export const DEFAULT_NEW_PER_DAY = 10;
@@ -100,7 +104,7 @@ export function emptyState(): AppState {
     },
     rewards: [],
     role: 'child',
-    parentLink: null,
+    parentLinks: [],
     myPushToken: null,
     receivesReports: false,
     receivedReports: [],
@@ -210,6 +214,21 @@ export function normalizeSubjects(v: unknown): Subject[] {
   if (!Array.isArray(v)) return ['en'];
   const picked = all.filter((s) => v.includes(s));
   return picked.length > 0 ? picked : ['en'];
+}
+
+/**
+ * 예전 저장본의 `parentLink`(하나)를 목록으로 옮긴다.
+ *
+ * 그 하나를 주 부모로 삼는다 — 그때까지 리포트를 받던 폰이 그 폰이다.
+ * 아이에게 "누가 주 부모냐"고 새로 묻지 않는다.
+ */
+function upgradeParentLinks(state: unknown): ParentLink[] {
+  const s = (state ?? {}) as { parentLinks?: unknown; parentLink?: ParentLink | null };
+  if (Array.isArray(s.parentLinks)) return normalizeParentLinks(s.parentLinks);
+  if (s.parentLink && typeof s.parentLink === 'object') {
+    return normalizeParentLinks([{ ...s.parentLink, isPrimary: true }]);
+  }
+  return [];
 }
 
 export function emptyProfileData(): ProfileData {
@@ -414,7 +433,11 @@ function migrate(state: AppState): AppState {
     })),
     rewards: (state.rewards ?? []).map(upgradeReward),
     role: state.role ?? 'child',
-    parentLink: state.parentLink ?? null,
+    /*
+     * 예전 저장본은 `parentLink` 하나였다. 목록으로 옮기고 그 하나를 주 부모로
+     * 삼는다 — 그때까지 리포트를 받던 폰이 그 폰이다.
+     */
+    parentLinks: upgradeParentLinks(state),
     myPushToken: state.myPushToken ?? null,
     // 예전 판에는 이 값이 없다. 부모 전용 기기였다면 받고 있었던 것이므로
     // 역할로 미루어 채운다.

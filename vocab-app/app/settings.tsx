@@ -54,7 +54,7 @@ export default function ChildSettings() {
     profile.settings;
   // 두 과목을 다 켠 아이에게만 순서를 묻는다. 하나뿐이면 고를 것이 없다.
   const bothSubjects = subjects.includes('en') && subjects.includes('ko');
-  const linkedParent = state.parentLink;
+  const linkedParent = state.parentLinks.length > 0;
   const build = buildInfo();
 
   // 오늘 몇 문제를 풀게 되는지. 개수만 보면 감이 안 와서 시간까지 적는다.

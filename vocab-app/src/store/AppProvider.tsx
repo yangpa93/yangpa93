@@ -36,10 +36,21 @@ import {
 import { ALL_ENTRIES, entriesOf } from '../data';
 import { Award, buildRewardRequest, claimAward, ratesOf } from '../features/awards';
 import { MAX_CHILDREN, canAcceptChild } from '../features/children';
+import {
+  addParentLink,
+  primaryParent,
+  removeParentLink,
+  setPrimaryParent as setPrimary,
+} from '../features/parentLinks';
 import { plannedWordCount } from '../srs/session';
 import { parentPlannedCount } from '../srs/parentSession';
 import { buildDailyReport, buildWeeklySummary } from '../features/report';
-import { SendResult, sendReportToParent, toPayload } from '../features/push';
+import {
+  SendResult,
+  sendReportToParent,
+  sendRewardAskToParent,
+  toPayload,
+} from '../features/push';
 import {
   DEFAULT_NEW_PER_DAY,
   DEFAULT_REVIEW_PER_DAY,
@@ -132,8 +143,12 @@ interface Ctx {
   /* 기기 역할과 페어링 */
   setRole(role: DeviceRole): void;
   setMyPushToken(token: string | null): void;
+  /** 부모 기기를 목록에 더한다. 이미 있으면 이름만 새로 고친다. */
   linkParent(link: ParentLink): void;
-  unlinkParent(): void;
+  /** 주소를 주면 그 폰만, 안 주면 전부 끊는다. */
+  unlinkParent(token?: string): void;
+  /** 주 부모를 정한다. 동기 부여 요청권 알림이 이 폰으로 간다. */
+  setPrimaryParent(token: string): void;
   /** 이 기기가 아이들 리포트를 받을지 켜고 끈다. */
   setReceivesReports(on: boolean): void;
   /** 부모 기기가 받은 리포트를 쌓는다. 같은 아이·같은 날짜는 최신 것으로 덮는다. */
@@ -453,23 +468,34 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       // 부모 모드의 '마지막 전송' 표시로만 드러난다.
       // 부모 자신의 공부는 보내지 않는다. 리포트는 "아이가 오늘 했는가"를
       // 알리는 것인데, 부모가 자기 폰으로 자기 기록을 받아 봐야 소용이 없다.
-      const link = ref.current.state.parentLink;
-      if (link && state.parent.pushToParent && active.kind === 'child') {
+      const links = ref.current.state.parentLinks;
+      if (links.length > 0 && state.parent.pushToParent && active.kind === 'child') {
         const report = buildDailyReport(updated, nextData, ALL_ENTRIES, today);
         // 아이 기기 주소를 같이 싣는다. 부모가 "공부하자"고 되보내려면 필요하다.
-        void sendReportToParent(
-          link.token,
-          toPayload(report, buildWeeklySummary(nextData, today), ref.current.state.myPushToken),
-        )
-          .then((res) => {
-            if (res.ok) {
+        const payload = toPayload(
+          report,
+          buildWeeklySummary(nextData, today),
+          ref.current.state.myPushToken,
+        );
+        /*
+         * **연결된 폰 전부에게 보낸다.** 한쪽이 실패해도 다른 쪽은 간다 —
+         * 엄마 폰이 꺼져 있다고 아빠 폰까지 못 받을 이유가 없다.
+         * 보낸 표시(lastSentDate)도 성공한 폰에만 찍는다. 그래야 부모 화면의
+         * '마지막 전송'이 그 폰의 진짜 상태를 말한다.
+         */
+        for (const link of links) {
+          void sendReportToParent(link.token, payload)
+            .then((res) => {
+              if (!res.ok) return;
               persistState({
                 ...ref.current.state,
-                parentLink: { ...ref.current.state.parentLink!, lastSentDate: today },
+                parentLinks: ref.current.state.parentLinks.map((l) =>
+                  l.token === link.token ? { ...l, lastSentDate: today } : l,
+                ),
               });
-            }
-          })
-          .catch(() => {});
+            })
+            .catch(() => {});
+        }
       }
     },
     [persistData, persistState],
@@ -550,6 +576,25 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         bonusReason,
         note,
       });
+
+      /*
+       * **주 부모에게만** 알린다.
+       *
+       * 리포트는 연결된 폰 전부가 받지만 이것은 하나에만 간다. 엄마와 아빠가
+       * 각각 승인하면 같은 것을 두 번 주게 된다. 누가 받을지는 아이가 자기
+       * ⚙️ 설정에서 고른다.
+       *
+       * 실패해도 신청은 아이 폰에 그대로 남는다. 알림이 못 갔다고 신청을
+       * 무르면 아이는 자기가 뭘 잘못했는지 모른 채 다시 눌러야 한다.
+       */
+      const primary = primaryParent(state.parentLinks);
+      if (primary && active.kind === 'child') {
+        void sendRewardAskToParent(primary.token, {
+          childName: active.name,
+          reason: award.reason,
+          amount: award.amount + Math.max(0, bonus),
+        }).catch(() => {});
+      }
     },
     // addReward 는 persistState 만 붙잡는다.
     [persistState],
@@ -676,13 +721,40 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     [persistState],
   );
 
+  /**
+   * 부모 폰 하나를 목록에 넣는다. **덮어쓰지 않는다.**
+   *
+   * 예전에는 여기서 통째로 바꿔치웠다. 그래서 아빠가 아이 QR 을 찍는 순간
+   * 엄마 폰이 조용히 밀려났다. 자리가 꽉 찼으면 안 넣고 그대로 둔다 —
+   * 규칙은 features/parentLinks.ts 가 지킨다.
+   */
   const linkParent = useCallback(
-    (link: ParentLink) => persistState({ ...ref.current.state, parentLink: link }),
+    (link: ParentLink) =>
+      persistState({
+        ...ref.current.state,
+        parentLinks: addParentLink(ref.current.state.parentLinks, link),
+      }),
     [persistState],
   );
 
+  /** 주소를 주면 그 폰만, 안 주면 전부 끊는다. */
   const unlinkParent = useCallback(
-    () => persistState({ ...ref.current.state, parentLink: null }),
+    (token?: string) =>
+      persistState({
+        ...ref.current.state,
+        parentLinks:
+          token == null ? [] : removeParentLink(ref.current.state.parentLinks, token),
+      }),
+    [persistState],
+  );
+
+  /** 주 부모를 바꾼다. 동기 부여 요청권 알림이 이 폰으로 간다. */
+  const setPrimaryParent = useCallback(
+    (token: string) =>
+      persistState({
+        ...ref.current.state,
+        parentLinks: setPrimary(ref.current.state.parentLinks, token),
+      }),
     [persistState],
   );
 
@@ -716,8 +788,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
    */
   const pushReportNow = useCallback(async (profileId?: string): Promise<SendResult> => {
     const { state, data } = ref.current;
-    const link = state.parentLink;
-    if (!link) return { ok: false, error: '연결된 부모님 기기가 없습니다.' };
+    const links = state.parentLinks;
+    if (links.length === 0) return { ok: false, error: '연결된 부모님 기기가 없습니다.' };
 
     const target = profileId ?? state.activeProfileId;
     const p = state.profiles.find((x) => x.id === target);
@@ -727,18 +799,25 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const today = todayKey();
     const report = buildDailyReport(p, pdata, ALL_ENTRIES, today);
 
-    const result = await sendReportToParent(
-      link.token,
-      toPayload(report, buildWeeklySummary(pdata, today), state.myPushToken),
-    );
+    const payload = toPayload(report, buildWeeklySummary(pdata, today), state.myPushToken);
 
-    if (result.ok) {
+    /*
+     * 연결된 폰 전부에 보내고, 하나라도 성공하면 성공으로 본다. 셋 중 하나가
+     * 꺼져 있다고 "보내지 못했습니다"가 뜨면 아이는 자기가 뭘 잘못한 줄 안다.
+     */
+    const results = await Promise.all(links.map((l) => sendReportToParent(l.token, payload)));
+    const sent = links.filter((_, i) => results[i].ok).map((l) => l.token);
+
+    if (sent.length > 0) {
       persistState({
         ...ref.current.state,
-        parentLink: { ...link, lastSentDate: today },
+        parentLinks: ref.current.state.parentLinks.map((l) =>
+          sent.includes(l.token) ? { ...l, lastSentDate: today } : l,
+        ),
       });
+      return { ok: true };
     }
-    return result;
+    return results[0] ?? { ok: false, error: '보내지 못했습니다.' };
   }, [persistState]);
 
   const value: Ctx = {
@@ -769,6 +848,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     rememberChild,
     linkParent,
     unlinkParent,
+    setPrimaryParent,
     addReceivedReport,
     pushReportNow,
   };

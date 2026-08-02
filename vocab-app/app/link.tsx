@@ -39,7 +39,7 @@ export default function LinkScreen() {
    * 주소가 없어도 되고, 부모가 부르는 것만 나중으로 미뤄진다.
    */
   async function confirm() {
-    linkParent({ token, label, linkedAt: Date.now(), lastSentDate: null });
+    linkParent({ token, label, linkedAt: Date.now(), lastSentDate: null, isPrimary: false });
     if (state.role !== 'child') setRole('child');
     setDone(true);
 

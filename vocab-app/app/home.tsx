@@ -301,7 +301,7 @@ export default function Home() {
         부모님이 안 쓰기로 한 집에서는(linkWaived) 뜨지 않는다 — 못 한 일이
         남아 있는 것처럼 보이면 안 된다.
       */}
-      {!state.parentLink && !profile.linkWaived ? (
+      {state.parentLinks.length === 0 && !profile.linkWaived ? (
         <Pressable onPress={() => router.push('/settings')} accessibilityRole="button">
           <Card style={{ marginTop: spacing.md, borderColor: colors.parent }}>
             <Row style={{ justifyContent: 'space-between' }}>

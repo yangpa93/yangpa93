@@ -171,7 +171,9 @@ describe('buildBackup', () => {
     // 죽은 토큰으로 계속 실패한다.
     const state = makeState({
       role: 'parent',
-      parentLink: { token: 'ExponentPushToken[x]', label: '엄마 폰', linkedAt: 1, lastSentDate: null },
+      parentLinks: [
+        { token: 'ExponentPushToken[x]', label: '엄마 폰', linkedAt: 1, lastSentDate: null, isPrimary: true },
+      ],
       myPushToken: 'ExponentPushToken[me]',
       receivedReports: [
         { id: 'x', childName: '서준', date: '2026-07-27', headline: 'h', detail: 'd', completed: true, receivedAt: 1 },
@@ -180,7 +182,7 @@ describe('buildBackup', () => {
     const b = buildBackup(state, { p1: makeData() }, '1.0.0', NOW);
 
     expect(b.state.role).toBe('child');
-    expect(b.state.parentLink).toBeNull();
+    expect(b.state.parentLinks).toEqual([]);
     expect(b.state.myPushToken).toBeNull();
     expect(b.state.receivedReports).toEqual([]);
   });
@@ -294,12 +296,18 @@ describe('restoreReplace — 통째로 되돌리기', () => {
 
   it('지금 기기의 역할과 부모 폰 연결은 지킨다', () => {
     // 새 폰에서 되돌리는 상황이다. 연결은 그 폰에서 이미 해 둔 것이 맞다.
-    const link = { token: 'ExponentPushToken[now]', label: '엄마 폰', linkedAt: 2, lastSentDate: null };
-    const current = makeState({ role: 'parent', parentLink: link, myPushToken: 'me' });
+    const link = {
+      token: 'ExponentPushToken[now]',
+      label: '엄마 폰',
+      linkedAt: 2,
+      lastSentDate: null,
+      isPrimary: true,
+    };
+    const current = makeState({ role: 'parent', parentLinks: [link], myPushToken: 'me' });
     const r = restoreReplace(backup, current);
 
     expect(r.state.role).toBe('parent');
-    expect(r.state.parentLink).toEqual(link);
+    expect(r.state.parentLinks).toEqual([link]);
     expect(r.state.myPushToken).toBe('me');
   });
 

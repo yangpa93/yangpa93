@@ -13,6 +13,8 @@ import {
   parseSettings,
   pushFailureReason,
   toPayload,
+  buildRewardAskBody,
+  parseRewardAsk,
 } from '../src/features/pairing';
 import { buildDailyReport } from '../src/features/report';
 import { ALL_ENTRIES, entriesOf } from '../src/data';
@@ -335,5 +337,40 @@ describe('과목 설정 다듬기', () => {
   it('제대로 된 값은 그대로 둔다', () => {
     expect(normalizeSubjects(['ko'])).toEqual(['ko']);
     expect(normalizeSubjects(['en', 'ko'])).toEqual(['en', 'ko']);
+  });
+});
+
+describe('동기 부여 요청권 신청 알림', () => {
+  it('주 부모에게 보낼 몸통을 만든다', () => {
+    const body = buildRewardAskBody('ExponentPushToken[mom]', {
+      childName: '서준',
+      reason: '영어 중학교 레벨 하나를 끝냈어요',
+      amount: 20000,
+    });
+    expect(body.to).toBe('ExponentPushToken[mom]');
+    expect(body.body).toContain('서준');
+    expect(body.body).toContain('20,000원');
+    expect(body.data.kind).toBe('reward-ask');
+  });
+
+  it('받은 알림에서 다시 읽어 낸다', () => {
+    const body = buildRewardAskBody('ExponentPushToken[mom]', {
+      childName: '지호',
+      reason: '한 달 개근',
+      amount: 20000,
+    });
+    expect(parseRewardAsk(body.data)).toEqual({
+      childName: '지호',
+      reason: '한 달 개근',
+      amount: 20000,
+    });
+  });
+
+  it('우리 것이 아니면 null', () => {
+    // 다른 알림을 요청권으로 잘못 읽으면 부모 화면에 엉뚱한 금액이 뜬다.
+    expect(parseRewardAsk({ kind: 'hello', childName: '서준' })).toBeNull();
+    expect(parseRewardAsk({ kind: 'reward-ask', childName: '', reason: 'x', amount: 1 })).toBeNull();
+    expect(parseRewardAsk({ kind: 'reward-ask', childName: '서준', reason: 'x' })).toBeNull();
+    expect(parseRewardAsk(null)).toBeNull();
   });
 });

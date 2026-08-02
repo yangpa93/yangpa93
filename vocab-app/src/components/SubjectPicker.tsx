@@ -20,6 +20,7 @@ import { useApp } from '../store/AppProvider';
 import { sendSettingsToChild } from '../features/push';
 import { Subject } from '../types';
 import { colors, font, radius, spacing } from '../theme';
+import { primaryParent } from '../features/parentLinks';
 
 /** 보낼 수 있는 조합. 낱개로 켜고 끄면 '둘 다 끔'을 만들 수 있다. */
 const PRESETS: { label: string; subjects: Subject[] }[] = [
@@ -42,7 +43,7 @@ export function SubjectPicker() {
     setBusy(name);
     setResult('');
     const res = await sendSettingsToChild(token, {
-      from: state.parentLink?.label ?? '부모님',
+      from: primaryParent(state.parentLinks)?.label ?? '부모님',
       subjects,
     });
     setBusy(null);

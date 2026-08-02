@@ -15,7 +15,7 @@
  */
 
 import { useState } from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { Body, Button, Card, Chip, H3, Muted, Row } from './ui';
 import { useApp } from '../store/AppProvider';
@@ -24,29 +24,62 @@ import { QrCode } from './QrCode';
 import { colors, font, radius, spacing } from '../theme';
 
 export function ConnectParentCard() {
-  const { state, profile, setMyPushToken } = useApp();
+  const { state, profile, setMyPushToken, setPrimaryParent } = useApp();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [showing, setShowing] = useState(false);
 
   if (!profile) return null;
 
-  const link = state.parentLink;
+  const links = state.parentLinks;
 
   /* ---------------- 이미 연결됨 ---------------- */
 
-  if (link) {
+  if (links.length > 0) {
     return (
       <Card style={{ marginTop: spacing.md }}>
         <Row style={{ justifyContent: 'space-between' }}>
           <H3>👨‍👩‍👧 부모님과 연결됨</H3>
-          <Chip label={link.label} tone="correct" />
+          <Chip label={`${links.length}대`} tone="correct" />
         </Row>
         <Muted style={{ marginTop: spacing.xs }}>
-          공부를 마치면 오늘 기록이 자동으로 갑니다. 가는 것 — {profile.name} · 날짜 ·
-          오늘 푼 개수 · 정답률 · 오늘 틀린 단어 · 지금 레벨 진도. 그 밖에는 아무것도
-          보내지 않아요.
+          공부를 마치면 오늘 기록이 연결된 폰 전부에 자동으로 갑니다. 가는 것 —{' '}
+          {profile.name} · 날짜 · 오늘 푼 개수 · 정답률 · 오늘 틀린 단어 · 지금 레벨 진도.
+          그 밖에는 아무것도 보내지 않아요.
         </Muted>
+
+        {/*
+          누구누구에게 가는지 이름으로 적는다. '연결됨' 한 줄만 두면 아이도
+          부모도 몇 대에 가고 있는지 알 수 없다.
+
+          주 부모는 여기서 바꾼다. **아이가 고르게 두는 이유**: 요청권을
+          신청하는 쪽이 아이라서, 자기가 누구에게 말하는지는 알아야 한다.
+          잘못 골라도 리포트는 어차피 전부에게 가므로 잃는 것이 없다.
+        */}
+        <View style={{ marginTop: spacing.md, gap: spacing.sm }}>
+          {links.map((l) => (
+            <Pressable
+              key={l.token}
+              onPress={() => setPrimaryParent(l.token)}
+              accessibilityRole="radio"
+              accessibilityState={{ selected: l.isPrimary }}
+              style={[s.who, l.isPrimary && s.whoOn]}
+            >
+              <View style={{ flex: 1 }}>
+                <Text style={s.whoName}>{l.label}</Text>
+                <Text style={s.whoWhen}>
+                  {l.lastSentDate ? `마지막 전송 ${l.lastSentDate}` : '아직 보낸 적 없어요'}
+                </Text>
+              </View>
+              {l.isPrimary ? <Chip label="🎟️ 요청권 받는 분" tone="accent" /> : null}
+            </Pressable>
+          ))}
+        </View>
+
+        <Muted style={{ marginTop: spacing.sm }}>
+          동기 부여 요청권은 한 분에게만 갑니다. 눌러서 바꿀 수 있어요.
+        </Muted>
+
         <Button
           title="연결 상태 보기"
           variant="secondary"
@@ -146,6 +179,19 @@ export function ConnectParentCard() {
 }
 
 const s = StyleSheet.create({
+  who: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    padding: spacing.md,
+    borderRadius: radius.md,
+    backgroundColor: colors.bg,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  whoOn: { borderColor: colors.accent, borderWidth: 2 },
+  whoName: { fontSize: font.body, fontWeight: '800', color: colors.text },
+  whoWhen: { fontSize: font.tiny, color: colors.subtext, marginTop: 2 },
   steps: { marginTop: spacing.md, gap: spacing.xs },
   step: { fontSize: font.small, color: colors.subtext, lineHeight: 20 },
   codeBox: {

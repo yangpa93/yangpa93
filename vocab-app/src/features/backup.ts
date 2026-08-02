@@ -78,7 +78,7 @@ export function buildBackup(
       // 기기에 매인 것들은 백업에 넣지 않는다. 새 기기에서 그대로 되살리면
       // 남의 폰으로 리포트를 쏘거나, 죽은 토큰으로 계속 실패한다.
       role: 'child',
-      parentLink: null,
+      parentLinks: [],
       myPushToken: null,
       receivedReports: [],
     },
@@ -204,7 +204,7 @@ export function restoreReplace(backup: BackupFile, current: AppState): RestoreRe
       pin: current.parent.pin,
     },
     role: current.role,
-    parentLink: current.parentLink,
+    parentLinks: current.parentLinks,
     myPushToken: current.myPushToken,
     receivedReports: current.receivedReports,
   };

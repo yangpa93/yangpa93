@@ -110,6 +110,8 @@ export default function Scan() {
         label: parent!.label,
         linkedAt: Date.now(),
         lastSentDate: null,
+        // 첫 폰이면 addParentLink 가 주 부모로 만든다. 둘째부터는 아이가 고른다.
+        isPrimary: false,
       });
       /*
        * 이 기기의 주소를 부모님께 알려 둔다.

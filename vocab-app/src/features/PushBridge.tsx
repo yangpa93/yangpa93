@@ -99,8 +99,9 @@ export function PushBridge() {
        *
        * 알림을 **누르지 않아도** 받아 둔다. 아이가 알림을 지나쳐 버리면
        * 연결이 반만 된 채로 남고, 그러면 리포트가 영영 안 간다.
-       * 이미 다른 폰에 연결돼 있으면 나중 것으로 덮는다 — 방금 찍은 쪽이
-       * 지금 부모가 쓰는 폰이다.
+       * **이미 다른 폰에 연결돼 있어도 덮지 않는다.** 엄마 폰과 아빠 폰이
+       * 나란히 남고 리포트는 둘 다 받는다. 예전에는 나중 것이 앞의 것을
+       * 밀어냈고, 밀려난 폰에는 아무 표시도 안 났다.
        */
       const back = parseLinkBack(data);
       if (back) {
@@ -109,6 +110,7 @@ export function PushBridge() {
           label: back.parentLabel,
           linkedAt: Date.now(),
           lastSentDate: null,
+          isPrimary: false,
         });
         return;
       }

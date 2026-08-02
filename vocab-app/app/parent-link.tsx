@@ -7,6 +7,7 @@ import { buildLinkUrl, fetchPushToken, fromShortCode, shortCodeError } from '../
 import { formatKo } from '../src/lib/date';
 import { colors, radius, spacing } from '../src/theme';
 import { APP_NAME } from '../src/features/build-info';
+import { primaryParent } from '../src/features/parentLinks';
 
 /**
  * 부모님 폰과 아이 기기를 연결하는 화면.
@@ -155,6 +156,7 @@ export default function ParentLinkScreen() {
       label: label.trim() || '부모님 폰',
       linkedAt: Date.now(),
       lastSentDate: null,
+      isPrimary: false,
     });
     setPasted('');
   }
@@ -251,7 +253,7 @@ export default function ParentLinkScreen() {
 
   /* ---------------- 아이 기기 ---------------- */
 
-  const link = state.parentLink;
+  const link = primaryParent(state.parentLinks);
 
   return (
     <Screen>
@@ -297,7 +299,7 @@ export default function ParentLinkScreen() {
             title="연결 끊기"
             variant="ghost"
             onPress={() => {
-              unlinkParent();
+              unlinkParent(link.token);
               setSendResult('');
             }}
             style={{ marginTop: spacing.sm }}

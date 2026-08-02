@@ -20,6 +20,8 @@ import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 import {
   buildHelloBody,
+  buildRewardAskBody,
+  RewardAskPayload,
   buildLinkBackBody,
   buildNudgeBody,
   buildPushBody,
@@ -115,6 +117,19 @@ export async function sendReportToParent(
   payload: PushPayload,
 ): Promise<SendResult> {
   return sendPush(buildPushBody(parentToken, payload));
+}
+
+/**
+ * 아이가 동기 부여 요청권을 신청했다고 **주 부모에게만** 알린다.
+ *
+ * 실패해도 신청 자체는 아이 폰에 남는다. 알림이 못 갔다고 신청을 무르면
+ * 아이는 자기가 뭘 잘못했는지 모른 채 다시 눌러야 한다.
+ */
+export async function sendRewardAskToParent(
+  parentToken: string,
+  payload: RewardAskPayload,
+): Promise<SendResult> {
+  return sendPush(buildRewardAskBody(parentToken, payload));
 }
 
 /** 아이 기기가 연결하면서 자기 주소를 부모에게 알린다. */

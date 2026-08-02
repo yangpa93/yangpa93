@@ -144,23 +144,30 @@ export default function ParentHome() {
               칩 하나에 담았다. 그러면 '국어'와 '중1-1'이 한 덩어리로 보여,
               레벨이 갈래 이름의 일부인지 따로 고른 것인지 알 수 없다.
               갈래는 저마다 켜고 끌 수 있는 것이라 각자 한 줄을 갖는 편이 맞다.
+
+              **국어에는 레벨을 안 적는다.** 국어 레벨 이름이 영어와 똑같아서
+              (중1-1 … 고3-4) `국어  중1-1` 이라고 적으면 그 중1-1 이 영어
+              것인지 국어 것인지 읽는 사람이 가릴 수가 없다. 실제로 '국어와
+              하루에가 바뀐 것 같다'는 말을 들었다. 레벨이 뜻을 갖는 것은
+              **아이들과 같은 영어 단어** 한 갈래뿐이다 — 아이가 지금 보는
+              그 레벨을 맞춰 두는 것이라 숫자가 곧 의미가 된다.
+              국어 레벨은 ⚙️ 설정 → 내 공부 설정 에서 그대로 고른다.
             */}
             <View style={{ marginTop: spacing.md, gap: spacing.sm }}>
-              {TRACK_ORDER.filter((t) => study.tracks.includes(t)).map((t) => (
-                <Row key={t} style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Body style={{ fontWeight: '700' }}>{TRACK_SHORT[t]}</Body>
-                  <Chip
-                    label={
-                      t === 'daily'
-                        ? dailyTheme(study.dailyTheme).label
-                        : t === 'enWord'
-                          ? LEVEL_SHORT[profile.level]
-                          : LEVEL_SHORT[profile.koLevel]
-                    }
-                    tone="primary"
-                  />
-                </Row>
-              ))}
+              {TRACK_ORDER.filter((t) => study.tracks.includes(t)).map((t) => {
+                const where =
+                  t === 'daily'
+                    ? dailyTheme(study.dailyTheme).label
+                    : t === 'enWord'
+                      ? LEVEL_SHORT[profile.level]
+                      : null;
+                return (
+                  <Row key={t} style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Body style={{ fontWeight: '700' }}>{TRACK_SHORT[t]}</Body>
+                    {where ? <Chip label={where} tone="primary" /> : null}
+                  </Row>
+                );
+              })}
               <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
                 <Body style={{ fontWeight: '700' }}>하루에</Body>
                 <Chip label={`${study.newPerDay}개`} tone="accent" />

@@ -294,8 +294,15 @@ const kids = [
   base({ id:B, name:'지호', kind:'child', avatar:'🐻', level:'m2-2', streak:0, bestStreak:9,
          settings:settings({ subjects:['en','ko'], newPerDay:5 }) }),
 ];
+/*
+ * 부모는 세 갈래를 다 켜 둔다. 예전에는 일상 문장과 국어 둘만 켜 두었는데,
+ * 그러면 '아이들과 같은 영어 단어' 줄이 화면에 안 나와서 그 줄이 레벨을
+ * 제대로 보여주는지 확인할 방법이 없었다. 확인하려고 띄우는 화면이라
+ * 있는 것은 다 보이는 편이 낫다. level 은 아이(서준)와 같은 m1-1 이다.
+ */
 const parent = base({ id:PARENT, name:'엄마', kind:'parent', avatar:'👩‍💼', level:'m1-1',
-  streak:4, bestStreak:7, parentStudy:{ tracks:['daily','ko'], dailyTheme:'w', newPerDay:10 } });
+  streak:4, bestStreak:7,
+  parentStudy:{ tracks:['daily','enWord','ko'], dailyTheme:'w', newPerDay:10 } });
 
 function root(profiles, activeId, extra={}) {
   return { version:6, profiles, activeProfileId:activeId,

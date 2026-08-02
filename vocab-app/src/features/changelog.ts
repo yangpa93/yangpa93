@@ -40,7 +40,7 @@ export interface Release {
  * 실제 설치된 앱에서 읽어 오는데(build-info.ts), 그 값과 여기 목록이 어긋나면
  * "0.10.0 을 쓰는데 0.9.0 의 변경 내역이 보이는" 일이 생긴다.
  */
-export const APP_VERSION = '0.12.0';
+export const APP_VERSION = '0.12.1';
 
 /**
  * 새 판이 맨 앞. 화면도 이 순서 그대로 보여준다.
@@ -49,6 +49,15 @@ export const APP_VERSION = '0.12.0';
  * 가리는 데 충분하고, 목록이 길면 아무도 안 읽는다.
  */
 export const RELEASES: Release[] = [
+  {
+    version: '0.12.1',
+    date: '2026-08-02',
+    title: '국어 옆 레벨을 뺐습니다',
+    items: [
+      '오늘의 공부에서 국어 옆에 레벨을 안 적습니다. 국어 레벨 이름이 영어와 똑같아 어느 쪽 것인지 헷갈렸어요.',
+      '레벨이 적히는 것은 ‘영어 단어’ 한 줄뿐입니다. 아이들과 맞춰 둔 그 레벨이 나옵니다.',
+    ],
+  },
   {
     version: '0.12.0',
     date: '2026-08-02',

@@ -7,6 +7,25 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:261393671092:android:cbc306bef203ef0257c8e1",
+        "android_client_info": {
+          "package_name": "com.yangpa93.gomtangivoca"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAhmEgJgLcGngZKpdz1w8ZCdT933HdtKAw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:261393671092:android:ed72d7a52fe5702857c8e1",
         "android_client_info": {
           "package_name": "com.yangpa93.gomtangvoca"

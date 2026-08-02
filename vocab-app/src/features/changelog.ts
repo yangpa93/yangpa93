@@ -40,7 +40,7 @@ export interface Release {
  * 실제 설치된 앱에서 읽어 오는데(build-info.ts), 그 값과 여기 목록이 어긋나면
  * "0.10.0 을 쓰는데 0.9.0 의 변경 내역이 보이는" 일이 생긴다.
  */
-export const APP_VERSION = '0.13.0';
+export const APP_VERSION = '0.13.1';
 
 /**
  * 새 판이 맨 앞. 화면도 이 순서 그대로 보여준다.
@@ -49,6 +49,16 @@ export const APP_VERSION = '0.13.0';
  * 가리는 데 충분하고, 목록이 길면 아무도 안 읽는다.
  */
 export const RELEASES: Release[] = [
+  {
+    version: '0.13.1',
+    date: '2026-08-02',
+    title: '이름을 gomtangivoca 로 통일했습니다',
+    items: [
+      '개발 도구에 남아 있던 예전 이름(uri-vocab)을 gomtangivoca 로 바꿨습니다. 화면에 보이는 것은 그대로예요.',
+      '공부 기록이 저장되는 자리 이름도 같이 바꿨습니다. 예전 자리에 있던 기록은 처음 켤 때 자동으로 옮겨집니다.',
+      '예전 이름으로 만들어 둔 백업 파일도 그대로 읽힙니다.',
+    ],
+  },
   {
     version: '0.13.0',
     date: '2026-08-02',

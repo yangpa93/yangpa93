@@ -340,9 +340,9 @@ function reviewCards(ids) {
 
 function put(state, data) {
   localStorage.clear();
-  localStorage.setItem('urivocab:root:v1', JSON.stringify(state));
+  localStorage.setItem('gomtangivoca:root:v1', JSON.stringify(state));
   for (const [id, d] of Object.entries(data)) {
-    localStorage.setItem('urivocab:data:v1:'+id, JSON.stringify(d));
+    localStorage.setItem('gomtangivoca:data:v1:'+id, JSON.stringify(d));
   }
   location.href = '/';
 }

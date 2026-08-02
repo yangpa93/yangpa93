@@ -131,11 +131,30 @@ describe('buildBackup', () => {
     const data = { p1: makeData() };
     const b = buildBackup(state, data, '1.0.0', NOW);
 
-    expect(b.app).toBe('urivocab');
+    expect(b.app).toBe('gomtangivoca');
     expect(b.format).toBe(BACKUP_FORMAT);
     expect(b.state.profiles).toHaveLength(1);
     expect(b.data.p1.cards.save).toBeDefined();
     expect(b.state.rewards).toHaveLength(1);
+  });
+
+  it('예전 이름표로 만든 백업도 읽힌다', () => {
+    /*
+     * 앱 이름을 urivocab 에서 gomtangivoca 로 바꿨다. 이름을 바꿨다고 어제
+     * 빼 둔 백업 파일이 "다른 앱 파일"이 되어 버리면, 폰을 바꾼 그날 아이
+     * 기록이 통째로 사라진다. 읽을 때는 둘 다 받아야 한다.
+     */
+    const fresh = buildBackup(makeState(), { p1: makeData() }, '1.0.0', NOW);
+    const old = JSON.stringify({ ...fresh, app: 'urivocab' });
+    const got = readBackup(old);
+    expect(got.ok).toBe(true);
+  });
+
+  it('우리 것이 아닌 파일은 그대로 막는다', () => {
+    // 옛 이름표를 받아 준다고 아무 json 이나 받아서는 안 된다.
+    const fresh = buildBackup(makeState(), { p1: makeData() }, '1.0.0', NOW);
+    const alien = JSON.stringify({ ...fresh, app: '남의앱' });
+    expect(readBackup(alien).ok).toBe(false);
   });
 
   it('부모 PIN은 담지 않는다', () => {

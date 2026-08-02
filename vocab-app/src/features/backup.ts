@@ -24,9 +24,19 @@ import { APP_NAME } from './app-name';
  */
 export const BACKUP_FORMAT = 1;
 
+/**
+ * 백업 파일에 찍는 이름표.
+ *
+ * 앱 이름을 통일하면서 `urivocab` 에서 바뀌었다. **읽을 때는 둘 다 받는다** —
+ * 이름을 바꿨다고 어제 빼 둔 백업 파일이 "다른 앱 파일"이 되어 버리면,
+ * 폰을 바꾼 그날 아이 기록이 통째로 사라진다.
+ */
+export const APP_MARK = 'gomtangivoca';
+export const OLD_APP_MARK = 'urivocab';
+
 export interface BackupFile {
   /** 다른 앱의 json을 잘못 고르는 것을 막는 표시 */
-  app: 'urivocab';
+  app: typeof APP_MARK | typeof OLD_APP_MARK;
   format: number;
   /** 만들 때의 저장 포맷 판. 가져올 때 마이그레이션에 쓴다. */
   stateVersion: number;
@@ -57,7 +67,7 @@ export function buildBackup(
   now: number,
 ): BackupFile {
   return {
-    app: 'urivocab',
+    app: APP_MARK,
     format: BACKUP_FORMAT,
     stateVersion: state.version,
     createdAt: now,
@@ -115,7 +125,8 @@ export function readBackup(text: string, currentFormat: number = BACKUP_FORMAT):
 
   const b = parsed as Partial<BackupFile>;
 
-  if (b.app !== 'urivocab') {
+  // 예전 이름표도 받는다. 이름을 바꾸기 전에 빼 둔 파일이 남아 있다.
+  if (b.app !== APP_MARK && b.app !== OLD_APP_MARK) {
     return { ok: false, reason: `${APP_NAME} 백업 파일이 아니에요. 다른 앱의 파일 같아요.` };
   }
   if (typeof b.format !== 'number') {

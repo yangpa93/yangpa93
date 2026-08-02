@@ -22,8 +22,45 @@ import { awardRates, DEFAULT_AWARD_RATES, levelUpAmount, MIDDLE_LEVEL_AWARD } fr
 import { DAILY_THEME_LIST, DEFAULT_DAILY_THEME } from '../data/daily';
 import { LEGACY_ID_WORD } from './legacy-ids';
 
-const ROOT_KEY = 'urivocab:root:v1';
-const DATA_KEY = (profileId: string) => `urivocab:data:v1:${profileId}`;
+/*
+ * 저장 열쇠. 앱 이름을 `gomtangivoca` 로 통일하면서 같이 바꿨다.
+ *
+ * **예전 열쇠는 지우지 않는다.** 이 이름은 화면에 안 보이는 문자열이지만
+ * 아이의 학습 기록이 그 아래 통째로 들어 있다. 새 이름으로 읽었는데 없으면
+ * 예전 이름을 한 번 더 찾아보고, 있으면 새 이름으로 옮겨 적는다. 옮긴 뒤에도
+ * 예전 것을 지우지 않는 이유는 하나다 — 옛 판으로 되돌아갈 일이 생겨도
+ * 아이 기록이 그대로 남아 있어야 한다. 몇 KB 아끼자고 잃을 것이 아니다.
+ */
+const ROOT_KEY = 'gomtangivoca:root:v1';
+const DATA_KEY = (profileId: string) => `gomtangivoca:data:v1:${profileId}`;
+
+/** 이름을 바꾸기 전에 쓰던 열쇠. 읽기만 한다. */
+const OLD_ROOT_KEY = 'urivocab:root:v1';
+const OLD_DATA_KEY = (profileId: string) => `urivocab:data:v1:${profileId}`;
+
+/**
+ * 새 열쇠로 읽어 보고, 없으면 예전 열쇠에서 옮겨 온다.
+ *
+ * 옮기는 것은 **읽을 때 한 번**이다. 앱이 뜰 때 전부 훑는 방식도 있지만,
+ * 프로필이 몇이든 실제로 읽는 것만 옮기면 되고 실패해도 그 자리에서만
+ * 티가 난다.
+ */
+async function readWithFallback(key: string, oldKey: string): Promise<string | null> {
+  const fresh = await AsyncStorage.getItem(key);
+  if (fresh != null) return fresh;
+
+  const old = await AsyncStorage.getItem(oldKey);
+  if (old == null) return null;
+
+  // 옮겨 적어 둔다. 다음부터는 새 열쇠에서 바로 읽힌다.
+  // 실패해도 이번에 읽은 값은 그대로 쓴다 — 다음번에 다시 시도한다.
+  try {
+    await AsyncStorage.setItem(key, old);
+  } catch {
+    /* noop */
+  }
+  return old;
+}
 
 /**
  * 저장 포맷 판.
@@ -181,7 +218,7 @@ export function emptyProfileData(): ProfileData {
 
 export async function loadState(): Promise<AppState> {
   try {
-    const raw = await AsyncStorage.getItem(ROOT_KEY);
+    const raw = await readWithFallback(ROOT_KEY, OLD_ROOT_KEY);
     if (!raw) return emptyState();
     const parsed = JSON.parse(raw) as AppState;
     return migrate(parsed);
@@ -197,7 +234,7 @@ export async function saveState(state: AppState): Promise<void> {
 
 export async function loadProfileData(profileId: string): Promise<ProfileData> {
   try {
-    const raw = await AsyncStorage.getItem(DATA_KEY(profileId));
+    const raw = await readWithFallback(DATA_KEY(profileId), OLD_DATA_KEY(profileId));
     if (!raw) return emptyProfileData();
     const parsed = JSON.parse(raw) as ProfileData;
     return migrateData({

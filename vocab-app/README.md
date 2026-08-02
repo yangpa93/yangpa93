@@ -794,8 +794,8 @@ scripts/import-csv.mjs  CSV → 데이터 파일 변환
 
 기기 안 AsyncStorage에만 저장됩니다. 밖으로 나가지 않습니다.
 
-- `urivocab:root:v1` — 프로필 목록, 부모 설정, 보상 요청
-- `urivocab:data:v1:<프로필 id>` — 그 아이의 카드·일별 기록·답안 로그
+- `gomtangivoca:root:v1` — 프로필 목록, 부모 설정, 보상 요청
+- `gomtangivoca:data:v1:<프로필 id>` — 그 아이의 카드·일별 기록·답안 로그
 
 아이별로 키를 나눠서, 한 아이가 학습하는 동안 다른 아이 데이터를 건드리지 않습니다.
 

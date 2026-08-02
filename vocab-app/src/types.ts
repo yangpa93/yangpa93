@@ -435,6 +435,14 @@ export interface ProfileSettings {
    * 고를 수 있게 두고 그 고른 값을 여기 적어 둔다.
    */
   voiceId?: string | null;
+  /**
+   * 영어를 읽는 속도. 없으면 보통(0.9).
+   *
+   * 폰 설정에도 '말하는 속도' 가 있지만 우리 앱에는 안 먹는다 — 앱이 읽을
+   * 때마다 속도를 직접 지정해서 시스템 값이 덮이기 때문이다. 그래서 고르는
+   * 자리를 앱 안에 둔다.
+   */
+  speechRate?: number;
   /** 진동 피드백 */
   hapticsEnabled: boolean;
 }

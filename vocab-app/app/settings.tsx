@@ -16,10 +16,11 @@ import {
   prepareVoice,
   speak,
   tapCorrect,
+  setSpeechRate,
   tryVoice,
   setEnglishVoice,
 } from '../src/lib/feedback';
-import { voiceLabel } from '../src/lib/voice';
+import { SPEECH_RATES, voiceLabel } from '../src/lib/voice';
 import { colors, font, radius, spacing } from '../src/theme';
 
 /** 하루에 새로 만날 단어 수. 아이가 고른다. */
@@ -243,6 +244,43 @@ export default function ChildSettings() {
               ‘인터넷 필요’ 라고 적힌 목소리는 와이파이나 데이터가 있어야 소리가 납니다.
               보통 그 목소리가 가장 자연스러워요.
             </Muted>
+          </View>
+        ) : null}
+
+        {/*
+          읽는 속도. **폰 설정이 아니라 여기서 정해야 먹는다.**
+
+          안드로이드 설정에도 '말하는 속도' 가 있지만 우리 앱에는 안 먹는다 —
+          앱이 읽을 때마다 속도를 직접 넘겨서 시스템 값이 덮이기 때문이다.
+          폰 설정의 미리듣기에서는 바뀌는데 앱에서는 그대로라, 됐는 줄 알고
+          넘어가기 딱 좋다. 그래서 같은 자리에 둔다.
+        */}
+        {ttsEnabled ? (
+          <View style={{ marginTop: spacing.lg }}>
+            <Text style={s.label}>읽는 속도</Text>
+            <Muted style={{ marginTop: 2 }}>
+              폰 설정이 아니라 여기서 정합니다. 고르면 바로 들려줘요.
+            </Muted>
+            <Row style={{ gap: spacing.sm, marginTop: spacing.sm }}>
+              {SPEECH_RATES.map((r) => {
+                const on = (profile.settings.speechRate ?? SPEECH_RATES[1].value) === r.value;
+                return (
+                  <Pressable
+                    key={r.label}
+                    onPress={() => {
+                      setSpeechRate(r.value);
+                      updateSettings(profile.id, { speechRate: r.value });
+                      speak('Hello! Nice to meet you.', true);
+                    }}
+                    style={[s.chip, on && s.chipOn]}
+                    accessibilityRole="radio"
+                    accessibilityState={{ selected: on }}
+                  >
+                    <Text style={[s.chipText, on && s.chipTextOn]}>{r.label}</Text>
+                  </Pressable>
+                );
+              })}
+            </Row>
           </View>
         ) : null}
 

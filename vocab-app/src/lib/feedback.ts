@@ -8,7 +8,9 @@ import {
   pickEnglishVoice,
   rankEnglishVoices,
   SENTENCE_RATE,
+  snapRate,
   WORD_RATE,
+  WORD_RATE_SCALE,
   type VoiceLike,
 } from './voice';
 
@@ -112,6 +114,22 @@ let englishChoices: VoiceLike[] = [];
 /** 아이가 골라 둔 목소리. 없으면 자동으로 고른 것을 쓴다. */
 let chosenId: string | null = null;
 
+/**
+ * 아이가 고른 읽는 속도.
+ *
+ * 폰 설정의 '말하는 속도' 는 우리 앱에 안 먹는다 — speak 할 때마다 여기
+ * 값을 직접 넘기기 때문이다. 그래서 고르는 자리를 앱 안에 두었다.
+ */
+let chosenRate: number = SENTENCE_RATE;
+
+export function setSpeechRate(rate: number | null): void {
+  chosenRate = rate == null ? SENTENCE_RATE : snapRate(rate);
+}
+
+export function speechRate(): number {
+  return chosenRate;
+}
+
 export function englishVoiceChoices(): VoiceLike[] {
   return englishChoices;
 }
@@ -187,7 +205,8 @@ export function englishVoiceId(): string | null {
 export function tryVoice(identifier: string, text = 'Hello! Nice to meet you.'): void {
   try {
     Speech.stop();
-    Speech.speak(text, { language: 'en-US', rate: SENTENCE_RATE, voice: identifier });
+    // 지금 고른 속도로 들려준다. 들어 보고 고르는 자리라 실제와 같아야 한다.
+    Speech.speak(text, { language: 'en-US', rate: chosenRate, voice: identifier });
   } catch {
     /* noop */
   }
@@ -207,7 +226,7 @@ export function speak(
   text: string,
   enabled: boolean,
   lang = 'en-US',
-  rate = SENTENCE_RATE,
+  rate?: number,
 ): void {
   if (!enabled || !text) return;
 
@@ -219,7 +238,7 @@ export function speak(
     Speech.stop();
     Speech.speak(text, {
       language: lang,
-      rate,
+      rate: rate ?? chosenRate,
       // 목소리를 못 찾았으면(undefined) 언어만 주고 기기에 맡긴다.
       ...(isEn && voice ? { voice: voice.identifier } : {}),
     });
@@ -230,7 +249,8 @@ export function speak(
 
 /** 낱말 하나를 읽는다. 문장보다 늦춘다 — 앞뒤가 없어 한 번에 알아듣기 어렵다. */
 export function speakWord(text: string, enabled: boolean): void {
-  speak(text, enabled, 'en-US', WORD_RATE);
+  // 고른 속도를 그대로 따라가되 낱말은 한 단계 더 늦춘다.
+  speak(text, enabled, 'en-US', chosenRate * WORD_RATE_SCALE);
 }
 
 export function stopSpeaking(): void {

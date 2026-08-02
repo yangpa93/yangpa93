@@ -63,7 +63,7 @@ import {
   saveProfileData,
   saveState,
 } from './storage';
-import { prepareVoice, setEnglishVoice } from '../lib/feedback';
+import { prepareVoice, setEnglishVoice, setSpeechRate } from '../lib/feedback';
 import { addDays, todayKey } from '../lib/date';
 import { createCard, grade } from '../srs/scheduler';
 import { nextLevel } from '../srs/progress';
@@ -236,8 +236,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
    */
   useEffect(() => {
     const id = profile?.settings.voiceId ?? null;
+    setSpeechRate(profile?.settings.speechRate ?? null);
     void prepareVoice().then(() => setEnglishVoice(id));
-  }, [profile?.id, profile?.settings.voiceId]);
+  }, [profile?.id, profile?.settings.voiceId, profile?.settings.speechRate]);
 
   /* ---------------------------------------------------------------- */
   /* 프로필                                                            */

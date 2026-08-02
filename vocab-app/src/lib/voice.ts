@@ -133,3 +133,34 @@ export function voiceLabel(v: VoiceLike): string {
  */
 export const SENTENCE_RATE = 0.9;
 export const WORD_RATE = 0.75;
+
+/**
+ * 아이가 고를 수 있는 읽는 속도.
+ *
+ * **왜 앱 안에 두는가.** 안드로이드 설정에도 '말하는 속도' 가 있지만 그것은
+ * 우리 앱에 안 먹는다 — 앱이 speak 할 때마다 속도를 직접 지정하고 있어서,
+ * 시스템 값은 그 순간 덮인다(expo-speech 의 setSpeechRate). 폰 설정에서
+ * 슬라이더를 아무리 움직여도 앱에서는 그대로인데, 미리듣기에서는 바뀌니
+ * "됐는 줄 알았는데 안 되는" 가장 나쁜 모양이 된다.
+ *
+ * 그래서 고르는 자리를 앱 안에 둔다. 값은 셋뿐이다 — 슬라이더로 두면 아이가
+ * 0.01 단위를 만지작거리다 알아들을 수 없는 속도에 두고 만다.
+ */
+export const SPEECH_RATES = [
+  { label: '느리게', value: 0.7 },
+  { label: '보통', value: SENTENCE_RATE },
+  { label: '빠르게', value: 1.05 },
+] as const;
+
+/** 낱말은 문장보다 이만큼 더 늦춘다. 앞뒤가 없어 한 번에 알아듣기 어렵다. */
+export const WORD_RATE_SCALE = WORD_RATE / SENTENCE_RATE;
+
+/** 고를 수 있는 값 중 하나로 맞춘다. 저장본이 깨져도 이상한 속도가 안 나오게. */
+export function snapRate(n: unknown): number {
+  if (typeof n !== 'number' || !Number.isFinite(n)) return SENTENCE_RATE;
+  let best = SPEECH_RATES[0].value as number;
+  for (const r of SPEECH_RATES) {
+    if (Math.abs(r.value - n) < Math.abs(best - n)) best = r.value;
+  }
+  return best;
+}

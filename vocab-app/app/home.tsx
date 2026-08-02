@@ -316,17 +316,25 @@ export default function Home() {
         </Pressable>
       ) : null}
 
-      {/* 바로가기 */}
+      {/*
+        바로가기.
+
+        **밑줄 설명을 고쳤다.** 두 화면 다 이제 '오늘' 부터 보여 주는데
+        여기에는 '자주 틀린 단어' · '레벨별 전체 목록' 이라고 옛 설명이 그대로
+        남아 있었다. 그래서 눌러 보지 않으면 오늘 것이 있는 줄을 모른다 —
+        실제로 "아이 단어장에는 오늘 배운 것 버튼이 없다" 는 말을 들었다.
+        화면은 이미 부모와 같은 것을 쓰고 있었고, 안내만 어긋나 있었다.
+      */}
       <Row style={{ marginTop: spacing.md, gap: spacing.md }}>
         <Pressable style={s.tile} onPress={() => router.push('/mistakes')} accessibilityRole="button">
           <Text style={s.tileIcon}>📕</Text>
           <H3>오답 노트</H3>
-          <Muted>자주 틀린 단어</Muted>
+          <Muted>오늘 틀린 것부터</Muted>
         </Pressable>
         <Pressable style={s.tile} onPress={() => router.push('/wordbook')} accessibilityRole="button">
           <Text style={s.tileIcon}>📗</Text>
           <H3>단어장</H3>
-          <Muted>레벨별 전체 목록</Muted>
+          <Muted>오늘 배운 것부터</Muted>
         </Pressable>
       </Row>
 

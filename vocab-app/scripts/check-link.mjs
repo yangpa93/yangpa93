@@ -28,12 +28,26 @@
  * 안 되는데, 그것을 설치 전에 가릴 수 있다.
  */
 
-import { readFileSync, mkdirSync } from 'node:fs';
-import { execFileSync } from 'node:child_process';
+import { readFileSync, mkdirSync, writeFileSync } from 'node:fs';
+import { execFileSync, spawn } from 'node:child_process';
+import { resolve } from 'node:path';
+import { platform } from 'node:os';
 import QRCode from 'qrcode';
 
 const OUT_DIR = 'link-check';
 const OUT_PNG = `${OUT_DIR}/아이-QR-시험지.png`;
+const OUT_HTML = `${OUT_DIR}/QR-시험지.html`;
+
+/*
+ * **어디에 만들어졌는지 반드시 전체 경로로 말한다.**
+ *
+ * 처음에는 `link-check/아이-QR-시험지.png` 라고만 적었는데, 그 줄만 보고는
+ * 파일을 찾을 수가 없다는 말을 들었다. 맞는 말이다 — 어느 폴더를 기준으로 한
+ * 상대 경로인지 화면에 없고, 한글 파일 이름이라 탐색기 검색으로도 잘 안 걸린다.
+ * 만들어 놓고 못 찾으면 안 만든 것과 같다.
+ */
+const ABS_PNG = resolve(OUT_PNG);
+const ABS_HTML = resolve(OUT_HTML);
 
 /* app.json 의 주소를 그대로 쓴다. 여기서 다른 값을 쓰면 확인이 거짓말이 된다. */
 const appJson = JSON.parse(readFileSync('app.json', 'utf8'));
@@ -117,6 +131,47 @@ check(
   `${data.modules.size}칸 · ${url.length}글자 · 버전 ${data.version}`,
 );
 
+/*
+ * 그림만 두지 않고 **설명이 붙은 쪽**을 하나 더 만든다.
+ *
+ * 그림 파일만 열면 QR 하나가 덩그러니 뜨고, 폰에 무엇이 떠야 맞는 것인지
+ * 화면에 없다. 터미널 창과 그림 창을 번갈아 봐야 하는데 그 사이에 잊는다.
+ * 확인에 필요한 것을 한 화면에 다 둔다.
+ */
+const dataUrl = await QRCode.toDataURL(url, { errorCorrectionLevel: 'M', width: 520, margin: 4 });
+writeFileSync(
+  OUT_HTML,
+  `<!doctype html><html lang="ko"><head><meta charset="utf-8">
+<title>곰탱이보카 — QR 시험지</title>
+<style>
+  body { font-family: system-ui, 'Malgun Gothic', sans-serif; background:#F5F6FA; color:#1F2430;
+         margin:0; padding:32px; display:flex; flex-direction:column; align-items:center; }
+  h1 { font-size:22px; margin:0 0 4px; }
+  p  { margin:4px 0; color:#5A6172; font-size:15px; line-height:1.6; }
+  img { display:block; margin:24px 0; background:#fff; border-radius:12px; }
+  code { display:block; background:#fff; border:1px solid #DDE1EA; border-radius:8px;
+         padding:12px 14px; font-size:13px; word-break:break-all; max-width:560px; color:#1F2430; }
+  ol { max-width:560px; font-size:15px; line-height:1.9; color:#1F2430; }
+  .ok { color:#0F766E; font-weight:700; }
+  .no { color:#B91C1C; font-weight:700; }
+</style></head><body>
+<h1>곰탱이보카 — 깔기 전 QR 시험지</h1>
+<p>폰의 <b>기본 카메라 앱</b>으로 아래 QR 을 비춰 보세요. 앱을 안 깔았어도 됩니다.</p>
+<img src="${dataUrl}" width="520" height="520" alt="시험용 QR">
+<p>폰 화면에 이 글자가 뜨면 됩니다 :</p>
+<code>${url}</code>
+<ol>
+  <li><span class="ok">글자가 뜬다</span> → QR 은 멀쩡합니다. 카메라 문제가 아닙니다.</li>
+  <li><span class="no">아무것도 안 뜬다</span> → 폰을 20cm 쯤 띄우고 화면 밝기를 올려 보세요.
+      그래도 안 되면 그 폰 카메라로는 QR 이 안 읽힙니다. 앱에서도 안 될 테니
+      <b>코드로 연결하기</b>를 쓰세요.</li>
+</ol>
+<p>푸시 알림이 가는지는 여기서 못 봅니다. 그건 앱을 깔아야 알 수 있어요.</p>
+</body></html>`,
+  'utf8',
+);
+check('설명이 붙은 시험지도 만들었습니다', true);
+
 console.log('');
 console.log('  ' + '─'.repeat(58));
 if (bad === 0) {
@@ -125,10 +180,18 @@ if (bad === 0) {
   console.log(`  ${bad}개가 어긋납니다. 위 ❌ 를 보고 고친 뒤 다시 부르세요.`);
 }
 console.log('');
+console.log('  ▶ 시험지를 만들어 두었습니다. 여기 있습니다');
+console.log('');
+console.log(`     ${ABS_HTML}`);
+console.log('');
+console.log('     (그림만 필요하시면)');
+console.log(`     ${ABS_PNG}`);
+console.log('');
 console.log('  ▶ 이렇게 확인하세요');
 console.log('');
-console.log(`     1. 이 그림 파일을 여세요 —  ${OUT_PNG}`);
-console.log('     2. 폰의 **기본 카메라 앱**을 켜고 노트북 화면의 QR 을 비추세요');
+console.log('     1. 위 주소의 시험지가 브라우저에 저절로 열립니다');
+console.log('        (안 열리면 주소를 그대로 복사해 브라우저 주소창에 붙여넣으세요)');
+console.log('     2. 폰의 기본 카메라 앱을 켜고 노트북 화면의 QR 을 비추세요');
 console.log('     3. 폰 화면에 이렇게 뜨면 됩니다 :');
 console.log('');
 console.log(`        ${url}`);
@@ -138,6 +201,32 @@ console.log('     · 아무것도 안 뜨면 → 폰을 20cm 쯤 띄우고 화�
 console.log('       그래도 안 되면 그 폰 카메라로는 QR 이 안 읽힙니다 —');
 console.log('       앱에서도 안 될 테니 코드로 연결하는 길을 쓰세요.');
 console.log('');
+
+/*
+ * 저절로 열어 준다.
+ *
+ * 경로를 적어 주는 것만으로는 모자랐다 — 탐색기를 켜고 폴더를 따라 들어가는
+ * 동안 무엇을 확인하려 했는지 흐려진다. 열리면 바로 폰을 들면 된다.
+ *
+ * 못 열어도 그냥 넘어간다. 위에 경로를 적어 두었으니 길이 막히지는 않는다.
+ * (원격 접속이나 서버에서는 열 창 자체가 없다.)
+ */
+function openIt(file) {
+  const os = platform();
+  try {
+    if (os === 'win32') {
+      // start 는 셸 내장이라 cmd 를 거쳐야 한다. 첫 따옴표는 창 제목 자리다.
+      spawn('cmd', ['/c', 'start', '', file], { detached: true, stdio: 'ignore' }).unref();
+    } else if (os === 'darwin') {
+      spawn('open', [file], { detached: true, stdio: 'ignore' }).unref();
+    } else {
+      spawn('xdg-open', [file], { detached: true, stdio: 'ignore' }).unref();
+    }
+  } catch {
+    // 창이 없는 곳이다. 경로는 이미 적어 두었다.
+  }
+}
+if (!process.env.NO_OPEN) openIt(ABS_HTML);
 console.log('  ▶ 여기서 확인 못 하는 것');
 console.log('');
 console.log('     푸시 주소를 받고 보내는 일은 FCM 이 있어야 해서 폰이 필요합니다.');

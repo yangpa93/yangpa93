@@ -262,8 +262,25 @@ await go(page, '/settings');
 ok('아이 설정에 소리가 있다', await has(page, '소리로 읽어주기'));
 ok('아이 설정에 읽는 속도가 있다', await has(page, '읽는 속도'));
 
+/*
+ * 아이 화면도 부모와 **같은 단어장**을 쓴다. 그런데 아이 홈 타일의 밑줄이
+ * '레벨별 전체 목록' 이라고 옛 설명을 그대로 달고 있어서, 눌러 보지 않으면
+ * 오늘 것이 있는 줄을 몰랐다. 타일 글자까지 함께 본다.
+ */
+await go(page, '/home');
+ok('아이 홈 타일이 오늘 배운 것부터라고 말한다', await has(page, '오늘 배운 것부터'));
+ok('아이 홈 오답 노트도 오늘부터', await has(page, '오늘 틀린 것부터'));
+
 await go(page, '/wordbook');
-ok('아이 단어장도 오늘부터다', await has(page, '오늘 배운 것'));
+ok('아이 단어장에 오늘 배운 것 칸이 있다', await has(page, '오늘 배운 것'));
+ok('아이 단어장에 전체 목록 칸이 있다', await has(page, '전체 목록'));
+
+await page.getByText('전체 목록', { exact: false }).first().click();
+await page.waitForTimeout(1200);
+ok('아이도 전체 목록으로 넘어간다', await hasField(page, '단어나 뜻으로 검색'));
+
+await go(page, '/mistakes');
+ok('아이 오답 노트도 오늘 틀린 것이 맨 위', await has(page, '오늘 틀린 것'));
 
 /* ================================================================= */
 

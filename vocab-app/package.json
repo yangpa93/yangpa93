@@ -50,6 +50,8 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
+    "preview": "node scripts/preview.mjs",
+    "whats-in": "node scripts/whats-in.mjs",
     "test": "jest",
     "typecheck": "tsc --noEmit",
     "data:validate": "jest __tests__/data.test.ts",

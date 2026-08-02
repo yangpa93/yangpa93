@@ -4,7 +4,13 @@ import * as Speech from 'expo-speech';
 import * as Haptics from 'expo-haptics';
 import { createAudioPlayer, setAudioModeAsync, type AudioPlayer } from 'expo-audio';
 import { Platform } from 'react-native';
-import { pickEnglishVoice, SENTENCE_RATE, WORD_RATE, type VoiceLike } from './voice';
+import {
+  pickEnglishVoice,
+  rankEnglishVoices,
+  SENTENCE_RATE,
+  WORD_RATE,
+  type VoiceLike,
+} from './voice';
 
 /* ---------- 맞았을 때 딩동댕, 틀렸을 때 땡 ---------- */
 
@@ -95,6 +101,42 @@ let englishVoice: VoiceLike | null | undefined;
  *
  * 앱이 뜰 때 부른다. 문제를 풀 때마다 훑으면 첫 소리가 늦게 나온다.
  */
+/**
+ * 기기에 깔린 영어 목소리 전부. 좋은 것부터.
+ *
+ * ⚙️ 설정에서 아이가 직접 골라 들어 보게 하려고 들고 있는다. 자동으로 고른
+ * 것이 늘 제일 나은 것은 아니고, 무엇보다 **들어 봐야 아는 일**이다.
+ */
+let englishChoices: VoiceLike[] = [];
+
+/** 아이가 골라 둔 목소리. 없으면 자동으로 고른 것을 쓴다. */
+let chosenId: string | null = null;
+
+export function englishVoiceChoices(): VoiceLike[] {
+  return englishChoices;
+}
+
+/**
+ * 아이가 고른 목소리를 적용한다. null 이면 자동으로 되돌린다.
+ *
+ * 이름을 `use` 로 시작하지 않는다 — 훅이 아니라 그냥 함수인데, 그렇게 지으면
+ * 리액트 규칙 검사가 훅으로 오해해서 부를 수 있는 자리를 잘못 제한한다.
+ *
+ * 모르는 identifier 면 무시한다 — 폰을 바꾸거나 음성을 지우면 저장해 둔
+ * 값이 그 기기에 없을 수 있는데, 그때 조용히 안 읽히면 고장으로 보인다.
+ */
+export function setEnglishVoice(identifier: string | null): void {
+  chosenId = identifier && englishChoices.some((v) => v.identifier === identifier)
+    ? identifier
+    : null;
+}
+
+/** 지금 실제로 읽는 목소리. */
+function currentVoice(): VoiceLike | null | undefined {
+  if (chosenId) return englishChoices.find((v) => v.identifier === chosenId) ?? englishVoice;
+  return englishVoice;
+}
+
 export async function prepareVoice(): Promise<void> {
   if (englishVoice !== undefined) return;
   try {
@@ -107,6 +149,7 @@ export async function prepareVoice(): Promise<void> {
      * 조용해진다. 비어 있으면 아직 모르는 것으로 두고 다음에 다시 묻는다.
      */
     if (!voices || voices.length === 0) return;
+    englishChoices = rankEnglishVoices(voices);
     englishVoice = pickEnglishVoice(voices);
   } catch {
     // 목록을 못 받는 기기가 있다. 그때는 언어만 지정해 읽어 본다(예전 방식).
@@ -127,7 +170,27 @@ export function englishVoiceStatus(): 'ready' | 'missing' | 'unknown' {
 
 /** 지금 고른 목소리 이름. 설정 화면에 무엇으로 읽는지 보여준다. */
 export function englishVoiceName(): string | null {
-  return englishVoice?.name ?? null;
+  return currentVoice()?.name ?? null;
+}
+
+/** 지금 읽는 목소리의 identifier. 설정 화면에서 어느 줄이 켜졌는지 표시하는 데 쓴다. */
+export function englishVoiceId(): string | null {
+  return currentVoice()?.identifier ?? null;
+}
+
+/**
+ * 목소리 하나를 그 자리에서 들려준다. 설정 화면의 '들어보기'.
+ *
+ * 고르기 **전에** 들어 볼 수 있어야 한다. 골라 놓고 공부를 시작해 봐야
+ * 아는 것이라면 아무도 안 바꾼다.
+ */
+export function tryVoice(identifier: string, text = 'Hello! Nice to meet you.'): void {
+  try {
+    Speech.stop();
+    Speech.speak(text, { language: 'en-US', rate: SENTENCE_RATE, voice: identifier });
+  } catch {
+    /* noop */
+  }
 }
 
 /**
@@ -149,7 +212,8 @@ export function speak(
   if (!enabled || !text) return;
 
   const isEn = lang.toLowerCase().startsWith('en');
-  if (isEn && englishVoice === null) return;
+  const voice = currentVoice();
+  if (isEn && voice === null) return;
 
   try {
     Speech.stop();
@@ -157,7 +221,7 @@ export function speak(
       language: lang,
       rate,
       // 목소리를 못 찾았으면(undefined) 언어만 주고 기기에 맡긴다.
-      ...(isEn && englishVoice ? { voice: englishVoice.identifier } : {}),
+      ...(isEn && voice ? { voice: voice.identifier } : {}),
     });
   } catch {
     // 기기에 TTS 엔진이 없을 수 있다. 조용히 넘어간다.

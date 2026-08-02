@@ -63,6 +63,7 @@ import {
   saveProfileData,
   saveState,
 } from './storage';
+import { prepareVoice, setEnglishVoice } from '../lib/feedback';
 import { addDays, todayKey } from '../lib/date';
 import { createCard, grade } from '../srs/scheduler';
 import { nextLevel } from '../srs/progress';
@@ -225,6 +226,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     () => store.state.profiles.find((p) => p.id === store.state.activeProfileId) ?? null,
     [store.state.profiles, store.state.activeProfileId],
   );
+
+  /*
+   * 아이가 골라 둔 영어 목소리를 소리 쪽에 알려 준다.
+   *
+   * feedback.ts 는 화면을 모르는 모듈이라 프로필을 직접 읽을 수 없다. 프로필이
+   * 바뀔 때마다(다른 아이로 바꾸거나 설정에서 고르거나) 여기서 한 번 넘겨 준다.
+   * 안 넘기면 골라 놓고 앱을 껐다 켰을 때 예전 목소리로 되돌아간다.
+   */
+  useEffect(() => {
+    const id = profile?.settings.voiceId ?? null;
+    void prepareVoice().then(() => setEnglishVoice(id));
+  }, [profile?.id, profile?.settings.voiceId]);
 
   /* ---------------------------------------------------------------- */
   /* 프로필                                                            */

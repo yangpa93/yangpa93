@@ -427,6 +427,14 @@ export interface ProfileSettings {
   showTranslation: boolean;
   /** 소리 읽어주기 */
   ttsEnabled: boolean;
+  /**
+   * 영어를 읽어 줄 목소리의 identifier. 없으면 앱이 알아서 고른다.
+   *
+   * 기기마다 깔린 음성이 달라서 자동으로 고른 것이 늘 제일 자연스럽지는
+   * 않다. 무엇보다 **들어 봐야 아는 일**이라, ⚙️ 설정에서 하나씩 들어 보고
+   * 고를 수 있게 두고 그 고른 값을 여기 적어 둔다.
+   */
+  voiceId?: string | null;
   /** 진동 피드백 */
   hapticsEnabled: boolean;
 }

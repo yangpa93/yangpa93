@@ -9,12 +9,17 @@ import { FeedbackCard } from '../src/components/FeedbackCard';
 import { ConnectParentCard } from '../src/components/ConnectParentCard';
 import { APP_NAME, buildInfo, buildLabel } from '../src/features/build-info';
 import {
+  englishVoiceChoices,
+  englishVoiceId,
   englishVoiceName,
   englishVoiceStatus,
   prepareVoice,
   speak,
   tapCorrect,
+  tryVoice,
+  setEnglishVoice,
 } from '../src/lib/feedback';
+import { voiceLabel } from '../src/lib/voice';
 import { colors, font, radius, spacing } from '../src/theme';
 
 /** 하루에 새로 만날 단어 수. 아이가 고른다. */
@@ -36,12 +41,18 @@ export default function ChildSettings() {
    * 화면에 반영한다.
    */
   const [voice, setVoice] = useState(englishVoiceStatus());
+  /** 목록과 지금 고른 것. 바꾸면 화면이 따라와야 해서 state 로 들고 있는다. */
+  const [choices, setChoices] = useState(englishVoiceChoices());
+  const [pickedId, setPickedId] = useState(englishVoiceId());
   const voiceName = englishVoiceName() ?? '';
 
   useEffect(() => {
     let cancelled = false;
     void prepareVoice().then(() => {
-      if (!cancelled) setVoice(englishVoiceStatus());
+      if (cancelled) return;
+      setVoice(englishVoiceStatus());
+      setChoices(englishVoiceChoices());
+      setPickedId(englishVoiceId());
     });
     return () => {
       cancelled = true;
@@ -176,6 +187,61 @@ export default function ChildSettings() {
               <Text style={{ fontWeight: '700' }}> English</Text>
               {'\n\n'}
               받은 뒤 앱을 껐다 켜면 바로 읽어 줍니다.
+            </Muted>
+          </View>
+        ) : null}
+
+        {/*
+          목소리를 직접 고른다.
+          
+          **왜 필요한가.** 노트북에서는 발음이 자연스러웠는데 폰에서는 어색하다는
+          말을 들었다. 기기마다 깔린 음성이 다르고, 앱이 자동으로 고른 것이 늘
+          제일 나은 것은 아니다. 무엇보다 **들어 봐야 아는 일**이라, 하나씩
+          들어 보고 고르게 둔다. 고르기 전에 들어 볼 수 있어야 한다 — 골라
+          놓고 공부를 시작해 봐야 아는 것이라면 아무도 안 바꾼다.
+        */}
+        {ttsEnabled && choices.length > 1 ? (
+          <View style={{ marginTop: spacing.lg }}>
+            <Text style={s.label}>어떤 목소리로 읽을까요</Text>
+            <Muted style={{ marginTop: 2 }}>
+              들어 보고 마음에 드는 것을 고르세요. 위에 있는 것이 보통 더 자연스러워요.
+            </Muted>
+            <View style={{ marginTop: spacing.sm, gap: spacing.sm }}>
+              {choices.slice(0, 8).map((v) => {
+                const on = v.identifier === pickedId;
+                return (
+                  <Row key={v.identifier} style={{ gap: spacing.sm, alignItems: 'center' }}>
+                    <Pressable
+                      onPress={() => {
+                        setEnglishVoice(v.identifier);
+                        updateSettings(profile.id, { voiceId: v.identifier });
+                        setPickedId(englishVoiceId());
+                        tryVoice(v.identifier);
+                      }}
+                      accessibilityRole="radio"
+                      accessibilityState={{ selected: on }}
+                      style={[s.voiceRow, on && s.voiceRowOn]}
+                    >
+                      <Text style={s.voiceName} numberOfLines={1}>
+                        {v.name}
+                      </Text>
+                      <Text style={s.voiceHint}>{voiceLabel(v)}</Text>
+                    </Pressable>
+                    <Pressable
+                      onPress={() => tryVoice(v.identifier)}
+                      accessibilityRole="button"
+                      accessibilityLabel={`${v.name} 들어보기`}
+                      style={s.tryBtn}
+                    >
+                      <Text style={s.tryBtnText}>🔊</Text>
+                    </Pressable>
+                  </Row>
+                );
+              })}
+            </View>
+            <Muted style={{ marginTop: spacing.sm }}>
+              ‘인터넷 필요’ 라고 적힌 목소리는 와이파이나 데이터가 있어야 소리가 납니다.
+              보통 그 목소리가 가장 자연스러워요.
             </Muted>
           </View>
         ) : null}
@@ -331,6 +397,25 @@ const s = StyleSheet.create({
     borderColor: colors.accent,
   },
   voiceWarnTitle: { fontSize: font.body, fontWeight: '800', color: '#B45309' },
+  voiceRow: {
+    flex: 1,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.md,
+    backgroundColor: colors.bg,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  voiceRowOn: { borderColor: colors.primary, borderWidth: 2, backgroundColor: colors.primarySoft },
+  voiceName: { fontSize: font.small, fontWeight: '700', color: colors.text },
+  voiceHint: { fontSize: font.tiny, color: colors.subtext, marginTop: 2 },
+  tryBtn: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.md,
+    backgroundColor: colors.primarySoft,
+  },
+  tryBtnText: { fontSize: 18 },
   estimate: {
     marginTop: spacing.md,
     padding: spacing.md,

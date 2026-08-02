@@ -116,6 +116,9 @@ const MARKS = [
   ['부모 폰 여러 대가 리포트 받기', 'src/features/parentLinks.ts', 'MAX_PARENTS'],
   ['주 부모 고르기', 'src/components/ConnectParentCard.tsx', 'setPrimaryParent'],
   ['요청권은 주 부모에게만', 'src/store/AppProvider.tsx', 'sendRewardAskToParent'],
+  ['백업을 폴더에 저장', 'app/backup.tsx', 'pickDirectoryAsync'],
+  ['영어 목소리 골라 듣기', 'app/settings.tsx', 'tryVoice'],
+  ['자연스러운 목소리 먼저', 'src/lib/voice.ts', 'rankEnglishVoices'],
 ];
 
 /* 판 번호도 같이 적는다. "몇 판을 받았나"가 제일 먼저 궁금한 것이다. */

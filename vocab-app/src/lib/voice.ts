@@ -34,39 +34,91 @@ export function isEnglish(v: VoiceLike): boolean {
   return lang === 'en' || lang.startsWith('en-');
 }
 
+/** 인터넷이 있어야 소리가 나는 목소리인지. 안드로이드 구글 음성이 이렇게 나뉜다. */
+export function isNetworkVoice(v: VoiceLike): boolean {
+  return /network/i.test(`${v.identifier ?? ''} ${v.name ?? ''}`);
+}
+
+/** 기기에 받아 둔 고품질 음성인지. */
+export function isEnhanced(v: VoiceLike): boolean {
+  return (v.quality ?? '') === 'Enhanced';
+}
+
 /**
- * 영어 목소리 하나를 고른다. 없으면 null.
+ * 영어 목소리를 **좋은 것부터** 줄 세운다.
  *
- * 고르는 순서에 이유가 있다.
+ * ── 왜 순서를 바꿨는가 ───────────────────────────────────────
  *
- *  1. **미국 영어를 먼저.** 우리 예문과 아이들이 학교에서 듣는 것이 미국
- *     영어다. 영국 영어로 읽으면 같은 낱말이 다르게 들려 아이가 헷갈린다.
- *  2. **고품질(Enhanced)을 먼저.** 기기에 따로 받아 둔 음성이라 훨씬 자연스럽다.
- *  3. 그다음은 이름 순. 어느 것을 골라도 상관없을 때 **기기마다 다른 것이
- *     걸리지 않게** 못박아 둔다 — 같은 문장이 폰마다 다르게 들리면
- *     "발음이 이상하다"는 말이 어디서 나온 것인지 가릴 수가 없다.
+ * 처음에는 이름에 'network' 가 든 목소리를 **뒤로 미뤘다.** 인터넷이 있어야
+ * 소리가 나서 지하철에서 조용해지는 것이 걱정이었다.
  *
- * 이름에 'network' 가 든 것은 뒤로 미룬다. 인터넷이 있어야 소리가 나서,
- * 지하철에서 앱을 켜면 조용해진다.
+ * 그런데 폰에서 발음이 어색하다는 말을 들었다. 노트북(윈도우)에서는 자연스러웠
+ * 는데 폰만 그랬다. 이유가 바로 그 규칙이었다 — 안드로이드에서 자연스러운
+ * 것은 구글의 `-network` 음성이고, 기기에 기본으로 깔린 `-local` 은 낱말을
+ * 이어 붙인 듯한 소리가 난다. 자연스러운 쪽을 일부러 피하고 있었던 것이다.
+ *
+ * 그래서 **자연스러움을 먼저** 본다. 발음을 배우는 앱에서 소리가 어색하면
+ * 그 소리는 없는 것만 못하다. 인터넷이 없을 때를 걱정하기보다, 화면에서
+ * 목소리를 직접 고를 수 있게 하고 어느 것이 인터넷을 쓰는지 적어 두는 편이
+ * 낫다 — 그러면 지하철에서 쓰는 집은 스스로 바꿀 수 있다.
+ *
+ * 점수 매기는 차례:
+ *
+ *  1. **고품질(Enhanced)** — 기기에 따로 받아 둔 음성. 가장 자연스럽다.
+ *  2. **network** — 구글 서버가 읽어 준다. local 보다 확실히 낫다.
+ *  3. **미국 영어** — 우리 예문과 아이들이 학교에서 듣는 것이 미국 영어다.
+ *  4. compact 는 뒤로 — 이름에 그대로 적혀 있는 저용량 음성이다.
+ *  5. 그래도 같으면 identifier 순. 폰마다 다른 것이 걸리면 "발음이 이상하다"가
+ *     어디서 나온 말인지 가릴 수가 없다.
  */
-export function pickEnglishVoice(voices: VoiceLike[]): VoiceLike | null {
+export function rankEnglishVoices(voices: VoiceLike[]): VoiceLike[] {
   const english = (voices ?? []).filter(isEnglish);
-  if (english.length === 0) return null;
 
   const score = (v: VoiceLike): number => {
     const lang = (v.language ?? '').replace('_', '-').toLowerCase();
     let n = 0;
-    if (lang.startsWith('en-us')) n += 8;
-    else if (lang.startsWith('en-gb')) n += 4;
-    if ((v.quality ?? '') === 'Enhanced') n += 2;
-    if (/network/i.test(v.name ?? '')) n -= 1;
+    if (isEnhanced(v)) n += 12;
+    if (isNetworkVoice(v)) n += 8;
+    if (lang.startsWith('en-us')) n += 4;
+    else if (lang.startsWith('en-gb')) n += 2;
+    if (/compact/i.test(`${v.identifier ?? ''} ${v.name ?? ''}`)) n -= 6;
     return n;
   };
 
   return [...english].sort((a, b) => {
     const d = score(b) - score(a);
     return d !== 0 ? d : (a.identifier ?? '').localeCompare(b.identifier ?? '');
-  })[0];
+  });
+}
+
+/** 가장 자연스러운 영어 목소리 하나. 없으면 null. */
+export function pickEnglishVoice(voices: VoiceLike[]): VoiceLike | null {
+  return rankEnglishVoices(voices)[0] ?? null;
+}
+
+/**
+ * 화면에 쓸 이름.
+ *
+ * 안드로이드 목소리 이름은 `en-us-x-tpd-network` 처럼 사람이 읽으라고 만든
+ * 것이 아니다. 그대로 늘어놓으면 무엇을 골라야 할지 알 수 없어서, 아는 만큼
+ * 풀어 적는다. 그래도 모르겠으면 **들어 보고 고르면 된다** — 그래서 목록마다
+ * 들어보기 버튼을 둔다.
+ */
+export function voiceLabel(v: VoiceLike): string {
+  const lang = (v.language ?? '').replace('_', '-').toLowerCase();
+  const where = lang.startsWith('en-us')
+    ? '미국'
+    : lang.startsWith('en-gb')
+      ? '영국'
+      : lang.startsWith('en-au')
+        ? '호주'
+        : lang.startsWith('en-in')
+          ? '인도'
+          : '영어';
+  const marks: string[] = [];
+  if (isEnhanced(v)) marks.push('고품질');
+  if (isNetworkVoice(v)) marks.push('인터넷 필요');
+  return marks.length > 0 ? `${where} · ${marks.join(' · ')}` : where;
 }
 
 /**

@@ -6,7 +6,17 @@
  * 고장인 줄도 모른다. 기기 없이 확인할 수 있어야 하는 자리다.
  */
 
-import { isEnglish, pickEnglishVoice, SENTENCE_RATE, WORD_RATE, VoiceLike } from '../src/lib/voice';
+import {
+  isEnglish,
+  isEnhanced,
+  isNetworkVoice,
+  pickEnglishVoice,
+  rankEnglishVoices,
+  SENTENCE_RATE,
+  voiceLabel,
+  WORD_RATE,
+  VoiceLike,
+} from '../src/lib/voice';
 
 const v = (o: Partial<VoiceLike> & { identifier: string }): VoiceLike => ({
   name: o.identifier,
@@ -63,13 +73,37 @@ describe('pickEnglishVoice', () => {
     expect(got?.identifier).toBe('enh');
   });
 
-  it('인터넷이 있어야 되는 목소리는 뒤로 미룬다', () => {
-    // 지하철에서 앱을 켜면 소리가 안 나는 일을 막는다.
+  it('인터넷을 쓰는 목소리를 **먼저** 고른다', () => {
+    /*
+     * 처음에는 반대였다 — 지하철에서 조용해지는 것이 걱정돼 network 를 뒤로
+     * 미뤘다. 그런데 폰에서 발음이 어색하다는 말을 들었고, 이유가 바로 이
+     * 규칙이었다. 안드로이드에서 자연스러운 것은 구글의 `-network` 음성이고
+     * 기기에 기본으로 깔린 `-local` 은 낱말을 이어 붙인 듯한 소리가 난다.
+     * 발음을 배우는 앱에서 어색한 소리는 없는 것만 못하다.
+     */
     const got = pickEnglishVoice([
-      v({ identifier: 'net', name: 'English (Network)', language: 'en-US' }),
-      v({ identifier: 'local', name: 'English', language: 'en-US' }),
+      v({ identifier: 'en-us-x-sfg-local', name: 'English', language: 'en-US' }),
+      v({ identifier: 'en-us-x-tpd-network', name: 'English', language: 'en-US' }),
     ]);
-    expect(got?.identifier).toBe('local');
+    expect(got?.identifier).toBe('en-us-x-tpd-network');
+  });
+
+  it('고품질이 인터넷보다도 먼저다', () => {
+    // 기기에 받아 둔 고품질 음성이 가장 자연스럽고 인터넷도 안 쓴다.
+    const got = pickEnglishVoice([
+      v({ identifier: 'net', name: 'English network', language: 'en-US' }),
+      v({ identifier: 'enh', name: 'English', language: 'en-US', quality: 'Enhanced' }),
+    ]);
+    expect(got?.identifier).toBe('enh');
+  });
+
+  it('compact 는 뒤로 미룬다', () => {
+    // 이름에 그대로 적혀 있는 저용량 음성이다. 소리가 눌린 듯 들린다.
+    const got = pickEnglishVoice([
+      v({ identifier: 'a-compact', name: 'English compact', language: 'en-US' }),
+      v({ identifier: 'z-plain', name: 'English', language: 'en-US' }),
+    ]);
+    expect(got?.identifier).toBe('z-plain');
   });
 
   it('고를 이유가 같으면 늘 같은 것을 고른다', () => {
@@ -102,5 +136,65 @@ describe('읽는 속도', () => {
   it('알아들을 수 없을 만큼 늦추지는 않는다', () => {
     expect(WORD_RATE).toBeGreaterThanOrEqual(0.5);
     expect(SENTENCE_RATE).toBeLessThanOrEqual(1);
+  });
+});
+
+describe('rankEnglishVoices', () => {
+  it('좋은 것부터 줄 세운다', () => {
+    const got = rankEnglishVoices([
+      v({ identifier: 'compact', name: 'English compact', language: 'en-US' }),
+      v({ identifier: 'plain', name: 'English', language: 'en-US' }),
+      v({ identifier: 'net', name: 'English network', language: 'en-US' }),
+      v({ identifier: 'enh', name: 'English', language: 'en-US', quality: 'Enhanced' }),
+      v({ identifier: 'ko', name: '한국어', language: 'ko-KR' }),
+    ]);
+    // 한국어는 아예 빠지고, 나머지는 고품질 → 인터넷 → 보통 → compact 순.
+    expect(got.map((x) => x.identifier)).toEqual(['enh', 'net', 'plain', 'compact']);
+  });
+
+  it('영어가 없으면 빈 목록', () => {
+    expect(rankEnglishVoices([v({ identifier: 'ko', language: 'ko-KR' })])).toEqual([]);
+  });
+
+  it('맨 앞이 곧 자동으로 고르는 것', () => {
+    // 두 함수가 어긋나면 설정 화면에 켜진 줄과 실제로 읽는 목소리가 달라진다.
+    const list = [
+      v({ identifier: 'b', language: 'en-GB' }),
+      v({ identifier: 'a', language: 'en-US' }),
+    ];
+    expect(pickEnglishVoice(list)?.identifier).toBe(rankEnglishVoices(list)[0].identifier);
+  });
+});
+
+describe('voiceLabel', () => {
+  it('어느 나라 영어인지 적는다', () => {
+    expect(voiceLabel(v({ identifier: 'a', language: 'en-US' }))).toContain('미국');
+    expect(voiceLabel(v({ identifier: 'b', language: 'en-GB' }))).toContain('영국');
+    expect(voiceLabel(v({ identifier: 'c', language: 'en-AU' }))).toContain('호주');
+  });
+
+  it('인터넷이 필요하면 그렇게 적는다', () => {
+    // 지하철에서 왜 조용한지 알 수 있어야 스스로 바꾼다.
+    const label = voiceLabel(v({ identifier: 'x', name: 'English network', language: 'en-US' }));
+    expect(label).toContain('인터넷 필요');
+  });
+
+  it('고품질이면 그렇게 적는다', () => {
+    const label = voiceLabel(v({ identifier: 'x', language: 'en-US', quality: 'Enhanced' }));
+    expect(label).toContain('고품질');
+  });
+});
+
+describe('isNetworkVoice / isEnhanced', () => {
+  it('identifier 에만 적혀 있어도 알아본다', () => {
+    // 안드로이드는 이름은 그냥 'English' 인데 identifier 에 -network 가 붙는다.
+    expect(isNetworkVoice(v({ identifier: 'en-us-x-tpd-network', name: 'English' }))).toBe(true);
+    expect(isNetworkVoice(v({ identifier: 'en-us-x-tpd-local', name: 'English' }))).toBe(false);
+  });
+
+  it('Enhanced 만 고품질로 본다', () => {
+    expect(isEnhanced(v({ identifier: 'a', quality: 'Enhanced' }))).toBe(true);
+    expect(isEnhanced(v({ identifier: 'b', quality: 'Default' }))).toBe(false);
+    expect(isEnhanced(v({ identifier: 'c' }))).toBe(false);
   });
 });

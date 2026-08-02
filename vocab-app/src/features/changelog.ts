@@ -40,7 +40,7 @@ export interface Release {
  * 실제 설치된 앱에서 읽어 오는데(build-info.ts), 그 값과 여기 목록이 어긋나면
  * "0.10.0 을 쓰는데 0.9.0 의 변경 내역이 보이는" 일이 생긴다.
  */
-export const APP_VERSION = '0.19.2';
+export const APP_VERSION = '0.20.0';
 
 /**
  * 새 판이 맨 앞. 화면도 이 순서 그대로 보여준다.
@@ -49,6 +49,17 @@ export const APP_VERSION = '0.19.2';
  * 가리는 데 충분하고, 목록이 길면 아무도 안 읽는다.
  */
 export const RELEASES: Release[] = [
+  {
+    version: '0.20.0',
+    date: '2026-08-02',
+    title: '폰 카메라로 찍어도 연결됩니다',
+    items: [
+      '아이 QR 을 폰 기본 카메라로 찍고 ‘링크 열기’ 를 누르면 Unmatched Route 가 뜨던 것을 고쳤습니다.',
+      '이제 앱이 열리면서 “이 아이를 등록할까요?” 하고 물어봅니다. 바로 등록하지 않아요.',
+      '앱 안 카메라(📷 아이 QR 찍기)로 찍는 길도 그대로입니다.',
+      '깔기 전 시험용 QR 은 열어도 아무것도 등록되지 않습니다.',
+    ],
+  },
   {
     version: '0.19.2',
     date: '2026-08-02',

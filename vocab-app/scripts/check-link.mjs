@@ -64,7 +64,17 @@ const OLD_SCHEMES = ['gomtangvoca', 'urivocab'];
 const SAMPLE_TOKEN = 'ExponentPushToken[AbCdEfGhIjKlMnOpQrStUv]';
 const SAMPLE_NAME = '서준';
 
-const url = `${SCHEME}://child?token=${encodeURIComponent(SAMPLE_TOKEN)}&name=${encodeURIComponent(SAMPLE_NAME)}`;
+/*
+ * `test=1` 을 붙인다.
+ *
+ * 앱을 깐 폰으로 이 QR 을 찍고 '링크 열기' 를 누르면 앱이 열리는데, 표가
+ * 없으면 **있지도 않은 아이가 목록에 등록된다.** 표를 보고 앱은 "시험용이
+ * 잘 읽혔다" 고만 말하고 아무것도 안 한다.
+ *
+ * 덕분에 확인이 한 걸음 더 간다 — 카메라가 읽는지뿐 아니라 **앱까지
+ * 넘어오는 길이 뚫렸는지**까지 뒤탈 없이 볼 수 있다.
+ */
+const url = `${SCHEME}://child?token=${encodeURIComponent(SAMPLE_TOKEN)}&name=${encodeURIComponent(SAMPLE_NAME)}&test=1`;
 
 let bad = 0;
 function check(label, ok, detail = '') {
@@ -168,7 +178,12 @@ writeFileSync(
       그래도 안 되면 그 폰 카메라로는 QR 이 안 읽힙니다. 앱에서도 안 될 테니
       <b>코드로 연결하기</b>를 쓰세요.</li>
 </ol>
-<p>푸시 알림이 가는지는 여기서 못 봅니다. 그건 앱을 깔아야 알 수 있어요.</p>
+<h2 style="font-size:18px;margin:28px 0 4px">앱을 이미 깔았다면 한 걸음 더</h2>
+<p>카메라에 뜬 주소를 눌러 <b>링크 열기</b>를 고르세요. 앱이 열리면서
+<b>“시험용 QR 이 잘 읽혔어요”</b> 라고 나오면 앱까지 오는 길도 뚫린 것입니다.
+시험용이라 <b>아무것도 등록되지 않습니다.</b></p>
+<p>“Unmatched Route” 라고 나오면 <b>0.19.2 이하의 옛 앱</b>입니다. 새로 받으세요.</p>
+<p>푸시 알림이 실제로 가는지는 여기서 못 봅니다. 그건 두 폰을 이어 봐야 알 수 있어요.</p>
 </body></html>`,
   'utf8',
 );

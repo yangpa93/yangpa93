@@ -323,6 +323,27 @@ if (await codeBox.isVisible().catch(() => false)) {
 await go(page, '/parent-child-devices');
 ok('연결 카드에 코드 길이 있다', await has(page, '카메라가 안 되면 — 코드로 연결하기'));
 
+/*
+ * **폰 기본 카메라로 찍고 '링크 열기' 를 누른 길.**
+ *
+ * 이 문이 없어서 실기기에서 `Unmatched Route` 가 났다 — QR 도 카메라도
+ * 멀쩡한데 앱에 받을 자리가 없었다. 브라우저에서는 주소를 그대로 열어 본다.
+ */
+const TOKEN = 'ExponentPushToken%5BAbCdEfGhIjKlMnOpQrStUv%5D';
+await go(page, `/child?token=${TOKEN}&name=%EC%84%9C%EC%A4%80&test=1`);
+ok('시험용 QR 을 열면 앱이 받는다', await has(page, '시험용 QR 이 잘 읽혔어요'));
+ok('시험용은 아무것도 등록하지 않는다', await has(page, '아무것도 등록하지 않았어요'));
+
+await go(page, `/child?token=${TOKEN}&name=%EC%84%9C%EC%A4%80`);
+ok('진짜 아이 QR 을 열면 물어본다', await has(page, '이 아이를 등록할까요'));
+ok('아이 이름이 보인다', await has(page, '서준'));
+
+await go(page, '/child?token=망가진것');
+ok('깨진 QR 은 까닭을 말한다', await has(page, '연결할 수 없어요'));
+
+await go(page, `/link?token=${TOKEN}&label=%EC%97%84%EB%A7%88%20%ED%8F%B0`);
+ok('부모 QR 링크도 그대로 받는다', await has(page, '부모님 폰과 연결할까요'));
+
 /* ================================================================= */
 console.log('');
 console.log('  ⑦ 아이 화면은 그대로인가');

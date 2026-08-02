@@ -71,6 +71,12 @@ export default function RootLayout() {
             <Stack.Screen name="link-child-code" options={{ title: '코드로 아이 연결하기' }} />
             <Stack.Screen name="backup" options={{ title: '기록 백업' }} />
             <Stack.Screen name="link" options={{ title: '연결하기' }} />
+            {/*
+              아이 QR 을 **폰 기본 카메라로** 찍고 '링크 열기' 를 눌렀을 때
+              받는 자리. 이게 없어서 Unmatched Route 가 났다 — QR 도 카메라도
+              멀쩡한데 받을 문이 없었다.
+            */}
+            <Stack.Screen name="child" options={{ title: '아이 연결하기' }} />
             <Stack.Screen name="whats-new" options={{ title: '이번 판에서 바뀐 것' }} />
           </Stack>
         </AppProvider>

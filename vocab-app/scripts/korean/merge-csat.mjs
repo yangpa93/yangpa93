@@ -18,6 +18,15 @@ import { candidates } from '../../korean/csat-candidates.mjs';
 const CACHE = 'korean/stdict.json';
 const EXAMPLES = 'korean/stdict-examples.json';
 const OPENDICT = 'korean/opendict-examples.json';
+/**
+ * 우리말샘 **API** 로 뜻을 짚어 받은 용례.
+ *
+ * 위의 OPENDICT 는 우리말샘 **화면**을 읽은 것이라 뜻이 아니라 글자로 찾는다.
+ * 그래서 동음이의어가 있는 낱말은 아예 안 받아 두었는데, 수능 어휘 62개 중
+ * 53개가 거기 걸려 있었다. API 는 뜻마다 target_code 가 있어 그 뜻의 용례만
+ * 온다. 이쪽을 먼저 쓴다 — 같은 우리말샘이지만 뜻이 확인된 것이다.
+ */
+const OPENDICT_API = 'korean/opendict-api-examples.json';
 const OUT = 'korean/csat-extra.json';
 
 /**
@@ -74,6 +83,13 @@ function main() {
     // 없으면 그냥 넘어간다.
   }
 
+  let opendictApi = {};
+  try {
+    opendictApi = JSON.parse(readFileSync(OPENDICT_API, 'utf8'));
+  } catch {
+    // 없으면 그냥 넘어간다.
+  }
+
   const out = [];
   const dropped = [];
   let noExample = 0;
@@ -95,10 +111,12 @@ function main() {
     const ex = examples[cand.word] ?? { sentences: [], phrases: [] };
     const fromStd = [...ex.sentences, ...ex.phrases];
     const fromOpen = opendict[cand.word] ?? [];
+    const fromOpenApi = opendictApi[cand.word] ?? [];
 
     // 표준국어대사전을 먼저 쓴다. 감수를 거친 자료라 우리말샘보다 앞선다.
     const picked = [
       ...fromStd.map((t) => ({ t, s: '표준국어대사전' })),
+      ...fromOpenApi.map((t) => ({ t, s: '우리말샘' })),
       ...fromOpen.map((t) => ({ t, s: '우리말샘' })),
     ].slice(0, MAX_EXAMPLES);
     if (picked.length === 0) noExample++;

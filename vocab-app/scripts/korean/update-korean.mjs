@@ -11,12 +11,13 @@
  *
  * 순서대로 이렇게 한다.
  *
- *   1. 표준국어대사전 용례 받기   (키 필요)
- *   2. 우리말샘 용례 받기         (키 필요)
- *   3. 위키문헌 원문 받기         (키 없이 됨)
- *   4. 고전 어휘를 원문과 맞추기  (키 없이 됨)
- *   5. 후보와 용례를 합치기       (키 없이 됨)
- *   6. 레벨 파일로 굽기           (키 없이 됨)
+ *   1. 표준국어대사전 용례 받기        (키 필요)
+ *   2. 우리말샘 용례 받기 — 화면       (키 필요)
+ *   3. 우리말샘 용례 받기 — API·뜻 단위 (키 필요)
+ *   4. 위키문헌 원문 받기              (키 없이 됨)
+ *   5. 고전 어휘를 원문과 맞추기       (키 없이 됨)
+ *   6. 후보와 용례를 합치기            (키 없이 됨)
+ *   7. 레벨 파일로 굽기                (키 없이 됨)
  *
  * **키가 없어도 멈추지 않는다.** 1·2를 건너뛰고 나머지를 한다. 이미 받아 둔
  * 용례가 korean/*-examples.json 에 남아 있어서, 자료를 다시 굽는 것만으로도
@@ -52,7 +53,8 @@ const why =
   '   키는 https://stdict.korean.go.kr/openapi/openApiInfo.do 에서 무료로 받습니다.';
 
 run('표준국어대사전 용례', 'scripts/korean/stdict-examples.mjs', { skip: noKey, why });
-run('우리말샘 용례', 'scripts/korean/opendict-examples.mjs', { skip: noKey, why });
+run('우리말샘 용례 (화면)', 'scripts/korean/opendict-examples.mjs', { skip: noKey, why });
+run('우리말샘 용례 (API·뜻 단위)', 'scripts/korean/opendict-api.mjs', { skip: noKey, why });
 run('위키문헌 고전 원문', 'scripts/korean/fetch-classics.mjs');
 run('고전 어휘 원문 맞추기', 'scripts/korean/match-classics.mjs');
 run('후보와 용례 합치기', 'scripts/korean/merge-csat.mjs');
@@ -71,8 +73,10 @@ if (noExample.length === 0) {
   console.log(`    ${noExample.map((c) => c.word).join(', ')}`);
   console.log(
     noKey
-      ? '\n  STDICT_KEY 를 넣고 다시 부르면 사전에서 용례를 받아 채웁니다.'
-      : '\n  키를 넣고 돌렸는데도 남았다면 사전에 용례가 없는 낱말입니다.\n' +
+      ? '\n  STDICT_KEY 를 넣고 다시 부르면 사전에 용례가 있는 것은 채워집니다.'
+      : '\n  키를 넣고 돌렸는데도 남은 것은 사전에 용례가 없는 낱말입니다.\n' +
+          '  표준국어대사전과 우리말샘 둘 다에서 그 뜻으로 확인했습니다.\n' +
+          '  대부분 연역·반어·직유 같은 개념어라 사전이 뜻만 싣고 용례를 안 답니다.\n' +
           '  지어내지 말고 그대로 두세요.',
   );
 }

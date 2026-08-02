@@ -27,6 +27,7 @@ import { buildMonthlyReport } from '../src/features/monthly';
 import { monthOf } from '../src/features/calendar';
 import { MonthlyCard } from '../src/components/MonthlyCard';
 import { LevelPicker } from '../src/components/LevelPicker';
+import { AwardRatesEditor } from '../src/components/AwardRatesEditor';
 import { levelProgress } from '../src/srs/progress';
 import { canTakeKoExam } from '../src/srs/koExam';
 import { Award, availableAwards, formatWon, ratesOf } from '../src/features/awards';
@@ -50,40 +51,6 @@ const ROUNDS = [
   { value: 2, label: '2회 (가볍게)' },
   { value: 3, label: '3회 (표준)' },
   { value: 4, label: '4회 (집중)' },
-];
-
-/** 아이별로 정하는 요구권 금액. 기기 전체 설정에 있던 것을 여기로 옮겼다. */
-const AWARD_FIELDS: { key: keyof AwardRates; label: string; hint: string; options: number[] }[] = [
-  {
-    key: 'middleLevel',
-    label: '중학교 영어 레벨 하나',
-    hint: '중1-1부터 중3-4까지 12개 레벨',
-    options: [0, 5_000, 10_000, 20_000, 30_000, 50_000],
-  },
-  {
-    key: 'highLevel',
-    label: '고등학교 영어 레벨 하나',
-    hint: '고1-1부터 고3-4까지 12개 레벨. 단어가 어려워 보통 더 높게 둡니다.',
-    options: [0, 10_000, 20_000, 30_000, 50_000, 100_000],
-  },
-  {
-    key: 'koreanLevel',
-    label: '국어 레벨 하나',
-    hint: '한 레벨이 60개로 영어(137개)의 절반이 안 됩니다.',
-    options: [0, 5_000, 10_000, 20_000, 30_000],
-  },
-  {
-    key: 'perfectMonth',
-    label: '한 달 개근',
-    hint: '목표를 채웠는지가 아니라 그날 했는지로 봅니다.',
-    options: [0, 5_000, 10_000, 20_000, 30_000, 50_000],
-  },
-  {
-    key: 'bonus',
-    label: '아이가 더 요구할 수 있는 금액',
-    hint: '“이번엔 정말 잘했어요”라며 한 칸 올려 요구할 수 있습니다.',
-    options: [0, 5_000, 10_000, 20_000],
-  },
 ];
 
 /**
@@ -479,36 +446,19 @@ export default function ChildReport() {
         ) : null}
       </Card>
 
-      {/* 요구권 금액 — 아이마다 다르게 */}
+      {/* 동기 부여 요청권 금액 — 아이마다 다르게 */}
       <Card style={{ marginTop: spacing.md }}>
-        <H3>🎟️ {profile.name}의 요구권 금액</H3>
+        <H3>🎟️ {profile.name}의 동기 부여 요청권 금액</H3>
         <Muted style={{ marginTop: spacing.xs }}>
           {usingOwn
             ? '이 아이만의 금액을 쓰고 있습니다.'
             : '지금은 기기 기본 금액을 그대로 씁니다. 아래에서 하나라도 바꾸면 이 아이만의 금액이 됩니다.'}
-          {'\n'}0원으로 두면 그 요구권은 아예 생기지 않습니다.
         </Muted>
 
-        {AWARD_FIELDS.map((f) => (
-          <View key={f.key} style={{ marginTop: spacing.lg }}>
-            <Text style={s.label}>{f.label}</Text>
-            <Muted style={{ marginTop: 2 }}>{f.hint}</Muted>
-            <Row style={{ gap: spacing.sm, marginTop: spacing.sm, flexWrap: 'wrap' }}>
-              {f.options.map((won) => (
-                <Pressable
-                  key={won}
-                  onPress={() => updateProfile(profile.id, { awards: { ...rates, [f.key]: won } })}
-                  style={[s.chip, rates[f.key] === won && s.chipOn]}
-                  accessibilityRole="button"
-                >
-                  <Text style={[s.chipText, rates[f.key] === won && s.chipTextOn]}>
-                    {won === 0 ? '안 함' : formatWon(won)}
-                  </Text>
-                </Pressable>
-              ))}
-            </Row>
-          </View>
-        ))}
+        <AwardRatesEditor
+          rates={rates}
+          onChange={(next) => updateProfile(profile.id, { awards: next })}
+        />
 
         {usingOwn ? (
           <Button

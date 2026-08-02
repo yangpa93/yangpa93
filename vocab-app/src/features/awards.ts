@@ -129,6 +129,29 @@ export function formatWon(amount: number): string {
 }
 
 /**
+ * 부모가 손으로 적은 금액을 읽는다. 못 읽으면 null.
+ *
+ * **왜 숫자만 남기는가.** 금액 칸에 '3만', '30,000', '30000원' 이 다 들어온다.
+ * 셋 다 같은 뜻인데 하나만 받으면 나머지를 적은 부모는 "안 먹힌다"고 여기고
+ * 그냥 기본값으로 둔다. 쉼표와 '원' 은 떼고 숫자만 본다.
+ *
+ * 다만 **'만' 은 안 풀어 준다.** '3만' 을 30,000 으로 읽는 규칙을 넣으면
+ * '3만5천' 같은 것을 어떻게 읽을지가 애매해지고, 잘못 읽으면 돈이 걸린
+ * 자리에서 열 배 틀린 값이 조용히 저장된다. 숫자만 받는 편이 안전하다.
+ *
+ * 상한(1,000만원)은 손이 미끄러져 0 을 더 친 것을 막으려는 것이다.
+ */
+export const MAX_AWARD_INPUT = 10_000_000;
+
+export function parseWon(text: string): number | null {
+  const digits = (text ?? '').replace(/[^0-9]/g, '');
+  if (digits === '') return null;
+  const n = Number(digits);
+  if (!Number.isFinite(n) || n < 0) return null;
+  return Math.min(n, MAX_AWARD_INPUT);
+}
+
+/**
  * 그 달을 하루도 빠짐없이 학습했는지.
  *
  * 목표를 채웠는지가 아니라 **그날 학습을 했는지**로 본다. 목표까지 요구하면

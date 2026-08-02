@@ -27,7 +27,14 @@
  * 무엇이 확인되고 무엇이 안 되는지는 demo.html 화면에도 적어 둔다.
  */
 
-import { createReadStream, existsSync, mkdirSync, statSync, writeFileSync } from 'node:fs';
+import {
+  createReadStream,
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  statSync,
+  writeFileSync,
+} from 'node:fs';
 import { createServer } from 'node:http';
 import { extname, join, normalize } from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -49,15 +56,52 @@ const PORT = process.env.PORT ?? '8088';
  */
 const EXPO_CLI = 'node_modules/expo/bin/cli';
 
+/**
+ * 판이 바뀌었으면 metro 캐시를 비우고 굽는다.
+ *
+ * **왜 이게 필요한가.** 화면에 적히는 판 번호는 app.json 에서 오는데, 그 값은
+ * 빌드할 때 번들 안에 통째로 박힌다. metro 는 그 조각을 캐시에 넣어 두고
+ * 다음 빌드에서 그대로 재사용한다. 그래서 app.json 의 판을 0.9.0 에서
+ * 0.10.0 으로 올리고 다시 구워도 **화면에는 0.9.0 이 그대로 나온다.**
+ *
+ * 실제로 그렇게 당했다. 판을 올려 놓고 미리보기를 띄웠는데 옛 번호가 떠서,
+ * 소스가 안 받아진 줄 알고 한참 엉뚱한 데를 뒤졌다. 판 번호는 "내가 무엇을
+ * 쓰고 있나"를 가리는 유일한 표시인데 그것이 거짓말을 하면 아무것도 못
+ * 가린다.
+ *
+ * 그래서 **판이 바뀐 때만** 캐시를 비운다. 늘 비우면 매번 1~2분이 더 걸리고,
+ * 안 비우면 판을 올린 날 반드시 이 함정을 다시 밟는다. 지난번에 무슨 판으로
+ * 구웠는지는 캐시 옆에 적어 둔다 — 지켜야 할 그 캐시와 같이 사라져야
+ * 앞뒤가 맞기 때문이다.
+ */
+const STAMP = 'node_modules/.cache/gomtangvoca-preview-version';
+
+function versionChanged() {
+  try {
+    const now = JSON.parse(readFileSync('app.json', 'utf8')).expo.version;
+    const before = existsSync(STAMP) ? readFileSync(STAMP, 'utf8').trim() : '';
+    return { changed: before !== now, now, before };
+  } catch {
+    // app.json 을 못 읽으면 판단할 수 없다. 비우는 쪽이 안전하다.
+    return { changed: true, now: '', before: '' };
+  }
+}
+
 if (!fast || !existsSync('dist/index.html')) {
   if (!existsSync(EXPO_CLI)) {
     console.error('✖ expo 가 아직 안 깔려 있습니다. 먼저 npm install 을 한 번 돌려 주세요.');
     process.exit(1);
   }
+
+  const v = versionChanged();
+  if (v.changed && v.before) {
+    console.log(`판이 ${v.before} → ${v.now} 로 바뀌었습니다. 캐시를 비우고 굽습니다.`);
+  }
   console.log('웹으로 굽는 중… (처음에는 1~2분 걸립니다)\n');
-  const r = spawnSync(process.execPath, [EXPO_CLI, 'export', '--platform', 'web'], {
-    stdio: 'inherit',
-  });
+
+  const args = [EXPO_CLI, 'export', '--platform', 'web'];
+  if (v.changed) args.push('--clear');
+  const r = spawnSync(process.execPath, args, { stdio: 'inherit' });
   // 못 띄운 것과 띄웠는데 실패한 것은 다르다. 앞의 경우는 위에 아무 것도 안 찍힌다.
   if (r.error) {
     console.error(`\n✖ expo 를 띄우지 못했습니다: ${r.error.message}`);
@@ -67,6 +111,14 @@ if (!fast || !existsSync('dist/index.html')) {
   if (r.status !== 0) {
     console.error('\n✖ 굽기에 실패했습니다. 위 오류를 보고 고친 뒤 다시 부르세요.');
     process.exit(r.status ?? 1);
+  }
+
+  // 잘 구워졌을 때만 적는다. 실패한 판을 적어 두면 다음에 캐시를 안 비운다.
+  try {
+    mkdirSync('node_modules/.cache', { recursive: true });
+    writeFileSync(STAMP, v.now, 'utf8');
+  } catch {
+    // 못 적어도 다음번에 한 번 더 비울 뿐이라 학습을 막지 않는다.
   }
 } else {
   console.log('이미 구운 것을 씁니다 (--fast).\n');

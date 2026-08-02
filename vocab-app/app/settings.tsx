@@ -263,12 +263,24 @@ export default function ChildSettings() {
         고쳐서 새로 올렸는데 아직 옛 앱을 쓰고 있는 경우가 흔한데,
         그때 이 줄을 읽어 주면 바로 가려진다. 부모님 모드 안에만 있으면
         아이에게 물어볼 때마다 부모를 거쳐야 한다.
-      */}
-      <Muted style={{ marginTop: spacing.lg, textAlign: 'center' }}>
-        {APP_NAME} {buildLabel(build)}
-      </Muted>
 
-      <Muted style={{ marginTop: spacing.sm, textAlign: 'center' }}>
+        눌러서 이번 판에 무엇이 들어 있는지 볼 수 있게 한다.
+      */}
+      <Pressable
+        onPress={() => router.push('/whats-new')}
+        accessibilityRole="button"
+        accessibilityLabel="이번 판에서 바뀐 것 보기"
+        style={{ marginTop: spacing.lg }}
+      >
+        <Muted style={{ textAlign: 'center' }}>
+          {APP_NAME} {buildLabel(build)} ›
+        </Muted>
+        <Muted style={{ textAlign: 'center', marginTop: 2, color: colors.primary }}>
+          이번 판에서 바뀐 것 보기
+        </Muted>
+      </Pressable>
+
+      <Muted style={{ marginTop: spacing.md, textAlign: 'center' }}>
         복습 개수와 학년·레벨은 부모님이 정해요.
       </Muted>
 
@@ -277,6 +289,21 @@ export default function ChildSettings() {
         variant="secondary"
         onPress={() => router.back()}
         style={{ marginTop: spacing.md }}
+      />
+
+      {/*
+        부모님 모드로 들어가는 문. **아이 홈에서 여기로 옮겼다.**
+
+        아이 폰 홈 맨 위에 있던 '👨‍👩‍👧 부모님' 버튼을 없앴는데, 문을 아주
+        막아 버리면 이 폰에 부모 프로필을 만들어 둔 집이 자기 화면으로
+        돌아갈 수 없다. 그래서 눈에 잘 안 띄는 맨 아래에 한 줄로 남긴다.
+        어차피 뒤에 PIN 이 있어 아이가 눌러도 들어가지 못한다.
+      */}
+      <Button
+        title="👨‍👩‍👧 부모님 모드"
+        variant="ghost"
+        onPress={() => router.push('/parent')}
+        style={{ marginTop: spacing.xl }}
       />
     </Screen>
   );

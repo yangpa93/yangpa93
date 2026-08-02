@@ -12,6 +12,7 @@ import Constants from 'expo-constants';
 import * as Updates from 'expo-updates';
 import { Platform } from 'react-native';
 import { APP_NAME } from './app-name';
+import { APP_VERSION } from './changelog';
 
 // 예전부터 여기서 가져다 쓰던 자리가 있어 그대로 내보낸다.
 export { APP_NAME };
@@ -46,7 +47,10 @@ export function buildInfo(): BuildInfo {
   // 빌드 번호는 **실제 설치된 앱**에서 읽는다. eas.json이
   // appVersionSource를 'remote'로 두고 있어서, 번호를 정하는 것은 EAS이고
   // app.json에는 안 적힌다. 여기서 expoConfig를 읽으면 늘 비어 있다.
-  const version = Application.nativeApplicationVersion ?? cfg?.version ?? '0.0.0';
+  // 둘 다 못 읽는 자리(웹 미리보기 등)에서는 소스에 적힌 판을 쓴다. 예전에는
+  // '0.0.0' 을 썼는데, 그러면 업데이트 내역 화면이 "이 판은 목록에 없다"고
+  // 잘못 경고한다. 없는 번호를 지어내느니 소스의 판을 그대로 적는 편이 맞다.
+  const version = Application.nativeApplicationVersion ?? cfg?.version ?? APP_VERSION;
   const build = Application.nativeBuildVersion ?? '';
 
   const channel = Updates.channel ?? '';

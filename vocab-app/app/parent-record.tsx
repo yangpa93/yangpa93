@@ -7,6 +7,7 @@ import { ALL_ENTRIES } from '../src/data';
 import { DAILY_ENTRIES, dailyTheme } from '../src/data/daily';
 import { KO_ENTRIES } from '../src/data/korean/levels';
 import { meaningLine } from '../src/data/entry';
+import { ParentStudyPlan } from '../src/components/ParentStudyPlan';
 import { parentTrackProgress, TRACK_ORDER } from '../src/srs/parentSession';
 import { buildWeeklySummary } from '../src/features/report';
 import { buildMonth, monthOf } from '../src/features/calendar';
@@ -15,13 +16,19 @@ import { lastNDays, todayKey } from '../src/lib/date';
 import { colors, font, spacing } from '../src/theme';
 
 /**
- * 부모님 자신의 학습 기록.
+ * 부모님 자신의 학습 기록과 설정.
  *
  * 아이 리포트와 따로 둔다. 같은 화면에 두면 "내가 얼마나 했나"가 아이들
  * 기록에 묻힌다. 부모도 자기 공부를 이어 가려면 자기 숫자를 봐야 한다.
  *
  * 아이 화면과 달리 레벨 시험도 요구권도 없다. 어른에게 필요한 것은
  * **얼마나 꾸준했는가**와 **무엇을 얼마나 익혔는가** 둘이다.
+ *
+ * **설정도 여기 있다.** 예전에는 `/parent-plan` 이라는 화면이 따로 있었고
+ * 부모 홈에 '무엇을 공부할지 바꾸기' 라는 흐린 버튼으로 걸려 있었는데,
+ * 아래 '내 학습 기록' 타일과 무엇이 다른지 알 수 없다는 말을 들었다.
+ * 기록을 보고 나서 "국어를 빼야겠다"고 생각한 그 자리에서 바로 고칠 수
+ * 있어야 한다. 다른 화면을 찾아 나가면 대부분 그냥 넘어간다.
  */
 export default function ParentRecord() {
   const { profile, data } = useApp();
@@ -122,7 +129,8 @@ export default function ParentRecord() {
         <H3>무엇을 얼마나 익혔나</H3>
         {study.tracks.length === 0 ? (
           <Muted style={{ marginTop: spacing.sm }}>
-            아직 공부할 것을 안 골랐어요. 홈에서 정할 수 있습니다.
+            아직 공부할 것을 안 골랐어요. 이 화면 아래 ‘무엇을 얼마나 공부할까요’ 에서
+            정하시면 오늘치가 만들어집니다.
           </Muted>
         ) : (
           TRACK_ORDER.filter((t) => study.tracks.includes(t)).map((t) => {
@@ -199,11 +207,18 @@ export default function ParentRecord() {
         onPress={() => router.push('/calendar')}
         style={{ marginTop: spacing.lg }}
       />
+
+      {/* ---------------- 여기서부터 설정 ---------------- */}
+
+      <View style={s.divider} />
+      <H3>⚙️ 무엇을 얼마나 공부할까요</H3>
+      <ParentStudyPlan />
+
       <Button
         title="돌아가기"
         variant="ghost"
         onPress={() => router.back()}
-        style={{ marginTop: spacing.sm }}
+        style={{ marginTop: spacing.xl }}
       />
     </Screen>
   );
@@ -227,4 +242,12 @@ const s = StyleSheet.create({
   statValue: { fontSize: 20, fontWeight: '800', color: colors.text },
   bar: { width: 18, borderRadius: 4 },
   spark: { flex: 1, height: 10, borderRadius: 3 },
+  // 기록과 설정 사이에 선을 하나 긋는다. 스크롤로 이어지면 어디까지가
+  // '본 것'이고 어디부터가 '고치는 것'인지 구분되지 않는다.
+  divider: {
+    marginTop: spacing.xxl,
+    marginBottom: spacing.lg,
+    height: 1,
+    backgroundColor: colors.border,
+  },
 });

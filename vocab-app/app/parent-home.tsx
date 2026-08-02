@@ -59,7 +59,30 @@ export default function ParentHome() {
             <Muted>부모님 · 바꾸기</Muted>
           </View>
         </Pressable>
-        <Chip label={`📱 ${buildLabel(build)}`} tone="default" />
+        {/*
+          부모 폰에는 **부모님 설정 버튼 하나만** 둔다. 아이 홈의 '⚙️ {이름}
+          설정' 과 같은 자리, 같은 모양이다. 화면이 갈렸어도 "맨 위 오른쪽이
+          내 설정"이라는 것은 같아야 한다.
+        */}
+        <Pressable
+          onPress={() => router.push('/parent-settings')}
+          style={s.iconBtn}
+          accessibilityRole="button"
+          accessibilityLabel="부모님 설정"
+        >
+          <Text style={s.iconBtnText}>⚙️ 부모님 설정</Text>
+        </Pressable>
+      </Row>
+
+      {/* 판을 누르면 이번 판에 무엇이 들어 있는지 나온다. */}
+      <Row style={{ marginTop: spacing.md }}>
+        <Pressable
+          onPress={() => router.push('/whats-new')}
+          accessibilityRole="button"
+          accessibilityLabel="이번 판에서 바뀐 것 보기"
+        >
+          <Chip label={`📱 ${buildLabel(build)} ›`} tone="default" />
+        </Pressable>
       </Row>
 
       {/* ① 공부하기 */}
@@ -85,7 +108,7 @@ export default function ParentHome() {
             <Button
               title="무엇을 공부할지 정하기"
               variant="parent"
-              onPress={() => router.push('/parent-plan')}
+              onPress={() => router.push('/parent-record')}
               style={{ marginTop: spacing.lg }}
             />
           </>
@@ -121,12 +144,14 @@ export default function ParentHome() {
               disabled={planned === 0}
               style={{ marginTop: spacing.lg }}
             />
-            <Button
-              title="무엇을 공부할지 바꾸기"
-              variant="ghost"
-              onPress={() => router.push('/parent-plan')}
-              style={{ marginTop: spacing.sm }}
-            />
+            {/*
+              여기 '무엇을 공부할지 바꾸기' 라는 흐린 버튼이 따로 있었다.
+              바로 아래 '내 학습 기록' 타일과 무엇이 다른지 알 수 없다는 말을
+              들어서 없앴다. 부모가 자기 공부에 대해 하는 일은 **보는 것과
+              고치는 것 둘뿐**이라 한 화면에 있으면 되고, 그 화면으로 가는
+              문은 바로 아래 타일 하나면 충분하다. 같은 곳으로 가는 버튼을
+              두 개 두면 서로 다른 것처럼 보여 오히려 더 헷갈린다.
+            */}
           </>
         )}
       </Card>
@@ -134,8 +159,8 @@ export default function ParentHome() {
       {/* ②③④ 나머지 셋 */}
       <Tile
         icon="📈"
-        title="내 학습 기록"
-        hint="며칠 연속으로 했는지, 무엇을 얼마나 익혔는지"
+        title="내 학습 기록 및 설정"
+        hint="며칠 연속으로 했는지 · 무엇을 얼마나 익혔는지 · 무엇을 얼마나 공부할지"
         onPress={() => router.push('/parent-record')}
       />
       <Tile
@@ -189,6 +214,13 @@ function Tile({
 
 const s = StyleSheet.create({
   who: { flexDirection: 'row', alignItems: 'center', flex: 1 },
+  iconBtn: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.pill,
+    backgroundColor: colors.parentSoft,
+  },
+  iconBtnText: { fontSize: 13, fontWeight: '700', color: colors.parent },
   count: { fontSize: 26, fontWeight: '800', color: colors.parent },
   countTotal: { fontSize: 16, fontWeight: '600', color: colors.muted },
   tile: {

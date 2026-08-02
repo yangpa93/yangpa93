@@ -139,42 +139,51 @@ export default function Home() {
             <Muted>{LEVEL_LABEL[profile.level]} · 바꾸기</Muted>
           </View>
         </Pressable>
-        <Row style={{ gap: spacing.sm }}>
-          {/*
-            소리·진동·캐릭터는 아이가 직접 바꾸는 것이라 홈에 둔다.
-            부모님 PIN 뒤에 있으면 소리를 끄고 싶을 때마다 부모를 불러야 해서
-            아이가 그냥 참고 쓴다.
-          */}
-          <Pressable
-            onPress={() => router.push('/settings')}
-            style={s.iconBtn}
-            accessibilityRole="button"
-            accessibilityLabel="내 설정"
-          >
-            <Text style={s.iconBtnText}>⚙️ 설정</Text>
-          </Pressable>
-          <Pressable
-            onPress={() => router.push('/parent')}
-            style={s.parentBtn}
-            accessibilityRole="button"
-            accessibilityLabel="부모님 모드"
-          >
-            <Text style={s.parentBtnText}>👨‍👩‍👧 부모님</Text>
-          </Pressable>
-        </Row>
+        {/*
+          **아이 폰에는 부모님 버튼을 안 둔다.**
+
+          예전에는 여기에 '👨‍👩‍👧 부모님' 이 나란히 있었다. 그런데 아이가 쓰는
+          폰은 부모님 모드로 쓸 일이 없다. 쓰지도 않을 버튼이 홈 맨 위에 있으면
+          아이는 그것을 눌러도 되는 것인지 매번 헷갈리고, 잘못 눌렀다가 PIN
+          화면을 만나면 자기가 뭘 잘못했다고 여긴다.
+
+          부모님 모드로 들어가는 길은 ⚙️ 설정 맨 아래로 옮겼다. 아주 없애면
+          이 폰에 부모 프로필을 만들어 둔 집이 자기 화면으로 돌아갈 수 없다.
+
+          남는 버튼 하나에는 **아이 이름을 적는다.** 그냥 '설정'이면 무엇에
+          대한 설정인지 알 수 없고, 아이가 여럿인 집에서는 지금 누구 것을
+          만지는지도 흐려진다.
+        */}
+        <Pressable
+          onPress={() => router.push('/settings')}
+          style={s.iconBtn}
+          accessibilityRole="button"
+          accessibilityLabel={`${profile.name} 설정`}
+        >
+          <Text style={s.iconBtnText}>⚙️ {profile.name} 설정</Text>
+        </Pressable>
       </Row>
 
       {/*
         빌드 칩은 늘 띄운다. 예전에는 베타일 때만 띄웠는데, 판이 올라가도
         "고친 게 안 보여요"는 그대로 생긴다. 그때 이 줄이 없으면 아이가
         어느 앱을 쓰는지 가릴 수가 없다.
+
+        **누르면 이 판에서 무엇이 바뀌었는지 나온다.** 번호만 적혀 있으면
+        그것이 새 것인지 옛 것인지 아이는 알 수 없다.
       */}
       <Row style={{ marginTop: spacing.lg, gap: spacing.sm, flexWrap: 'wrap' }}>
         {profile.streak > 0 ? <Chip label={`🔥 ${profile.streak}일 연속`} tone="accent" /> : null}
         {profile.bestStreak > profile.streak ? (
           <Chip label={`최고 ${profile.bestStreak}일`} tone="default" />
         ) : null}
-        <Chip label={`📱 ${buildLabel(build)}`} tone="default" />
+        <Pressable
+          onPress={() => router.push('/whats-new')}
+          accessibilityRole="button"
+          accessibilityLabel="이번 판에서 바뀐 것 보기"
+        >
+          <Chip label={`📱 ${buildLabel(build)} ›`} tone="default" />
+        </Pressable>
       </Row>
 
       {/* 오늘의 학습 */}
@@ -471,13 +480,6 @@ export default function Home() {
 
 const s = StyleSheet.create({
   who: { flexDirection: 'row', alignItems: 'center', flex: 1 },
-  parentBtn: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: radius.pill,
-    backgroundColor: colors.parentSoft,
-  },
-  parentBtnText: { fontSize: 13, fontWeight: '700', color: colors.parent },
   iconBtn: {
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,

@@ -1,22 +1,11 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { router } from 'expo-router';
-import { Body, Button, Card, H3, Muted, Row, Screen } from '../src/components/ui';
-import { useApp } from '../src/store/AppProvider';
-import { LevelPicker } from '../src/components/LevelPicker';
-import { DAILY_THEME_LIST } from '../src/data/daily';
-import { KO_ENTRIES } from '../src/data/korean/levels';
-import { splitPerTrack, TRACK_ORDER } from '../src/srs/parentSession';
-import {
-  LEVEL_SHORT,
-  LevelId,
-  PARENT_NEW_PER_DAY,
-  PARENT_TRACK_LABEL,
-  ParentTrack,
-} from '../src/types';
-import { colors, font, radius, spacing } from '../src/theme';
-
 /**
- * 부모님이 무엇을 어떻게 공부할지 정하는 화면.
+ * 부모님이 무엇을 어떻게 공부할지 정하는 부분.
+ *
+ * **왜 화면이 아니라 부품인가.** 예전에는 `/parent-plan` 이라는 별도 화면이었고,
+ * 부모 홈에는 '내 학습 기록' 타일과 '무엇을 공부할지 바꾸기' 흐린 버튼이
+ * 따로 있었다. 그런데 둘이 무엇이 다른지 알 수 없다는 말을 들었다. 부모가
+ * 자기 공부에 대해 하는 일은 **보는 것과 고치는 것 둘뿐**이라, 한 화면
+ * (`/parent-record`)에 두는 편이 맞다. 그래서 화면을 부품으로 내렸다.
  *
  * 세 갈래를 켜고 끄고, 켠 것마다 어디를 볼지 고른다. 하루 분량은 5개 아니면
  * 10개다 — 어른의 저녁에 낼 수 있는 시간이 그 언저리이고, 고를 것이 많으면
@@ -26,7 +15,24 @@ import { colors, font, radius, spacing } from '../src/theme';
  * 하루 30개가 되어 아무도 못 한다. 지금 어떻게 나뉘는지를 화면에 그대로
  * 적어 둔다 — 골라 놓고 왜 5개만 나오는지 몰라 헤매지 않도록.
  */
-export default function ParentPlan() {
+
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Body, Card, H3, Muted, Row } from './ui';
+import { useApp } from '../store/AppProvider';
+import { LevelPicker } from './LevelPicker';
+import { DAILY_THEME_LIST } from '../data/daily';
+import { KO_ENTRIES } from '../data/korean/levels';
+import { splitPerTrack } from '../srs/parentSession';
+import {
+  LEVEL_SHORT,
+  LevelId,
+  PARENT_NEW_PER_DAY,
+  PARENT_TRACK_LABEL,
+  ParentTrack,
+} from '../types';
+import { colors, font, radius, spacing } from '../theme';
+
+export function ParentStudyPlan() {
   const { profile, updateParentStudy, updateProfile } = useApp();
 
   if (!profile) return null;
@@ -45,13 +51,11 @@ export default function ParentPlan() {
   const koCount = KO_ENTRIES.filter((e) => e.level === profile.koLevel).length;
 
   return (
-    <Screen>
-      <View style={{ paddingTop: spacing.md }}>
-        <Muted>
-          공부할 것을 고르세요. 여러 개를 켜면 하루 분량을 나눠 갖습니다.
-          문제 내는 방식과 복습 간격은 아이들과 똑같아요.
-        </Muted>
-      </View>
+    <View>
+      <Muted style={{ marginTop: spacing.sm }}>
+        공부할 것을 고르세요. 여러 개를 켜면 하루 분량을 나눠 갖습니다. 문제 내는 방식과
+        복습 간격은 아이들과 똑같아요.
+      </Muted>
 
       {/* 하루 분량 */}
       <Card style={{ marginTop: spacing.md }}>
@@ -146,14 +150,7 @@ export default function ParentPlan() {
           하나도 안 고르면 낼 문제가 없어요.
         </Body>
       ) : null}
-
-      <Button
-        title="다 정했어요"
-        variant="parent"
-        onPress={() => router.back()}
-        style={{ marginTop: spacing.lg }}
-      />
-    </Screen>
+    </View>
   );
 }
 

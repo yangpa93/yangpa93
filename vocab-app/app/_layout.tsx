@@ -48,8 +48,8 @@ export default function RootLayout() {
             <Stack.Screen name="exam" options={{ headerShown: false, gestureEnabled: false }} />
             <Stack.Screen name="parent" options={{ title: '부모님 모드' }} />
             <Stack.Screen name="parent-home" options={{ headerShown: false }} />
-            <Stack.Screen name="parent-plan" options={{ title: '무엇을 공부할까요' }} />
-            <Stack.Screen name="parent-record" options={{ title: '내 학습 기록' }} />
+            {/* 무엇을 공부할지 정하는 화면은 없앴다. 기록과 같은 화면에 있다. */}
+            <Stack.Screen name="parent-record" options={{ title: '내 학습 기록 및 설정' }} />
             <Stack.Screen name="parent-children" options={{ title: '아이들 학습 보고서' }} />
             <Stack.Screen name="child-report" options={{ title: '아이 보고서와 설정' }} />
             <Stack.Screen name="parent-dashboard" options={{ title: '학습 리포트' }} />
@@ -59,6 +59,7 @@ export default function RootLayout() {
             <Stack.Screen name="scan" options={{ headerShown: false }} />
             <Stack.Screen name="backup" options={{ title: '기록 백업' }} />
             <Stack.Screen name="link" options={{ title: '연결하기' }} />
+            <Stack.Screen name="whats-new" options={{ title: '이번 판에서 바뀐 것' }} />
           </Stack>
         </AppProvider>
       </SafeAreaProvider>

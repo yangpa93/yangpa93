@@ -380,13 +380,60 @@ export interface RewardRequest {
 /* 프로필                                                              */
 /* ------------------------------------------------------------------ */
 
-/** 무엇을 공부하는가. */
-export type Subject = 'en' | 'ko';
+/**
+ * 무엇을 공부하는가.
+ *
+ * `daily`(일상 생활 문장)는 나중에 들어왔다. 부모에게만 있던 갈래인데,
+ * **아이도 켤 수 있어야 한다**는 말을 들었다. 맞는 말이다 — 문장 80개는
+ * 어른 것이라기보다 그냥 자주 쓰는 말이고, 아이가 배워서 나쁠 것이 없다.
+ *
+ * 부모 쪽 갈래(`ParentTrack`)와 이름이 다른 것은 뜻이 있다. 부모는 갈래마다
+ * 하루 개수와 주제까지 따로 정하지만(`ParentStudy`), 아이는 켜고 끄기만 한다.
+ * 한 타입으로 묶으면 아이 화면에 쓰지 않는 칸이 잔뜩 생긴다.
+ */
+export type Subject = 'en' | 'ko' | 'daily';
 
+/** 좁은 자리에 쓰는 짧은 이름. */
 export const SUBJECT_LABEL: Record<Subject, string> = {
   en: '영어',
   ko: '국어',
+  daily: '일상 문장',
 };
+
+/**
+ * 고르는 자리에 쓰는 긴 이름.
+ *
+ * 부모 쪽 갈래 이름(`PARENT_TRACK_LABEL`)과 짝을 맞춘다. 같은 것을 고르는데
+ * 부모 폰에는 '국어 어휘 학습하기', 아이 폰에는 '국어' 라고 적혀 있으면
+ * 서로 다른 것을 말하는 줄 안다.
+ */
+export const SUBJECT_LONG: Record<Subject, string> = {
+  en: '영어 단어 학습하기',
+  ko: '국어 어휘 학습하기',
+  daily: '일상 생활 문장 학습하기',
+};
+
+/** 화면에 늘어놓는 순서. 큐에 담기는 순서와 같다. */
+export const SUBJECT_ORDER: Subject[] = ['en', 'ko', 'daily'];
+
+/**
+ * 갈래 하나를 켜거나 끈다. **마지막 하나는 못 끈다** — 그때는 null.
+ *
+ * 하나도 안 켜면 낼 문제가 없어져 학습 화면이 빈 채로 뜬다. 아이 눈에는 앱이
+ * 고장 난 것으로 보인다. 그래서 끄는 것 자체를 막고, 화면은 null 을 받아
+ * **왜 안 되는지 말해 준다.** 조용히 아무 일도 안 일어나면 몇 번 더 눌러 보다
+ * 고장이라고 여긴다.
+ *
+ * 순수 함수로 둔 이유는 이 규칙이 아이 화면과 부모 화면 두 곳에서 쓰이기
+ * 때문이다. 두 곳에 따로 적으면 한쪽만 고치는 날이 온다.
+ */
+export function toggleSubject(subjects: Subject[], one: Subject): Subject[] | null {
+  const on = subjects.includes(one);
+  if (on && subjects.length <= 1) return null;
+  const next = on ? subjects.filter((s) => s !== one) : [...subjects, one];
+  // 저장 순서를 늘 같게 둔다. 화면마다 순서가 달라 보이면 다른 값인 줄 안다.
+  return SUBJECT_ORDER.filter((s) => next.includes(s));
+}
 
 export interface ProfileSettings {
   /**

@@ -9,7 +9,7 @@ import { NewWordsCard } from '../src/components/NewWordsCard';
 import { ALL_ENTRIES, entriesOf } from '../src/data';
 import { KO_ENTRIES } from '../src/data/korean/levels';
 import { canTakeKoExam } from '../src/srs/koExam';
-import { buildSession } from '../src/srs/session';
+import { pickChildToday } from '../src/srs/childSession';
 import { levelProgress } from '../src/srs/progress';
 import { buildDailyReport } from '../src/features/report';
 import { buildMonth, monthOf } from '../src/features/calendar';
@@ -48,16 +48,18 @@ export default function Home() {
     return canTakeKoExam(KO_ENTRIES, data.cards, profile.koLevel);
   }, [profile, data.cards]);
 
-  const session = useMemo(() => {
-    if (!profile) return [];
-    return buildSession({
-      entries: entriesOf(profile.level),
-      cards: data.cards,
-      level: profile.level,
-      newPerDay: profile.settings.newPerDay,
-      reviewPerDay: profile.settings.reviewPerDay,
-    });
-  }, [profile, data.cards]);
+  /**
+   * 오늘 뽑힌 것들. **켠 갈래를 전부 센다.**
+   *
+   * 예전에는 여기서 영어만 따로 한 번 더 뽑아 셌다. 영어만 켠 아이에게는
+   * 우연히 맞았지만, 국어만 켠 아이에게는 '오늘 N개' 가 실제로 풀 것과 아무
+   * 상관이 없었다. 아이가 자기 폰에서 과목을 끌 수 있게 되면서 그 어긋남이
+   * 흔해진다. 세는 규칙을 학습 화면과 같은 곳(srs/childSession.ts)에서 읽는다.
+   */
+  const session = useMemo(
+    () => (profile ? pickChildToday({ profile, cards: data.cards }) : []),
+    [profile, data.cards],
+  );
 
   const calendar = useMemo(() => buildMonth(data.days, monthOf(today), today), [data.days, today]);
 
@@ -73,12 +75,12 @@ export default function Home() {
   );
 
   // 다의어는 문항이 여럿이라 단어 수로 센다.
-  const reviewCount = new Set(session.filter((i) => i.mode === 'review').map((i) => i.entry.id)).size;
-  const newCount = new Set(session.filter((i) => i.mode === 'new').map((i) => i.entry.id)).size;
+  const reviewCount = new Set(session.filter((i) => i.mode === 'review').map((i) => i.entryId)).size;
+  const newCount = new Set(session.filter((i) => i.mode === 'new').map((i) => i.entryId)).size;
 
   const doneToday = day?.studied ?? 0;
   // 오늘 뽑힌 단어 수가 곧 오늘의 목표다.
-  const plannedWords = new Set(session.map((i) => i.entry.id)).size;
+  const plannedWords = new Set(session.map((i) => i.entryId)).size;
   const goal = day?.goal ?? plannedWords;
   const finished = day?.completed ?? false;
 

@@ -13,9 +13,9 @@ import { useApp } from '../src/store/AppProvider';
 import { ALL_ENTRIES, entriesOf } from '../src/data';
 import { senseExposure } from '../src/data/entry';
 import { KO_ENTRIES } from '../src/data/korean/levels';
-import { buildRounds, buildSession, SessionItem } from '../src/srs/session';
-import { buildKoRounds, buildKoSession, KoSessionItem } from '../src/srs/koSession';
+import { SessionItem } from '../src/srs/session';
 import { buildParentQueue } from '../src/srs/parentSession';
+import { buildChildQueue, ChildQueueItem, childPool, isChildKo } from '../src/srs/childSession';
 import { DAILY_ENTRIES, dailyTheme } from '../src/data/daily';
 import { soundCorrect, soundWrong, tapCorrect, tapWrong, stopSpeaking } from '../src/lib/feedback';
 import { GAME_LABEL, STAGE_LABEL } from '../src/types';
@@ -28,23 +28,12 @@ import { colors, font, radius, spacing } from '../src/theme';
  * 끝내고 다시 국어 버튼을 눌러야 하면 두 번째는 잘 안 누른다. 진도 막대도
  * 두 번 0부터 차오르면 끝이 안 보인다.
  *
- * 영어 문항이 앞, 국어 문항이 뒤에 온다. 섞지 않는다 — 머리를 영어와 국어
- * 사이에서 오가게 하면 둘 다 힘들다.
+ * 어느 갈래가 앞에 오는지는 큐를 만드는 쪽이 정한다. 섞지는 않는다 — 머리를
+ * 갈래 사이에서 오가게 하면 다 힘들다.
  */
-type QueueItem =
-  | ({ subject: 'en' } & SessionItem)
-  | ({ subject: 'ko' } & KoSessionItem);
+type QueueItem = ChildQueueItem;
 
-const isKo = (item: QueueItem): item is { subject: 'ko' } & KoSessionItem => item.subject === 'ko';
-
-/**
- * 국어 하루치. 영어의 newPerDay 와 따로 둔다.
- *
- * 국어 어휘는 1,244개뿐이라 영어(3,285개)와 같은 속도로 내면 절반 시점에
- * 동난다. 하루 6개면 24레벨을 도는 데 약 7개월이다.
- */
-const KO_NEW_PER_DAY = 6;
-const KO_REVIEW_PER_DAY = 6;
+const isKo = isChildKo;
 
 /** 한 문제를 푼 뒤 보여줄 상태 */
 interface Feedback {
@@ -62,7 +51,6 @@ export default function Study() {
   // 바뀌는데 그때마다 다시 뽑으면 문제가 뒤섞인다.
   const [queue, setQueue] = useState<QueueItem[]>(() => {
     if (!profile) return [];
-    const { subjects, firstSubject, newPerDay, reviewPerDay, rounds } = profile.settings;
 
     /*
      * 부모는 무엇을 공부할지 스스로 골라 둔다. 문제 유형·라운드·복습 간격은
@@ -71,42 +59,23 @@ export default function Study() {
      * 문항이냐'만 알면 되고, 일상 문장도 영어 문항이다.
      */
     if (profile.kind === 'parent') {
-      return buildParentQueue({ profile, cards: data.cards, rounds }).map((i) =>
+      return buildParentQueue({
+        profile,
+        cards: data.cards,
+        rounds: profile.settings.rounds,
+      }).map((i) =>
         i.track === 'ko'
           ? ({ subject: 'ko', ...i } as QueueItem)
           : ({ subject: 'en', ...i } as QueueItem),
       );
     }
 
-    const en: QueueItem[] = [];
-    if (subjects.includes('en')) {
-      const words = buildSession({
-        entries: entriesOf(profile.level),
-        cards: data.cards,
-        level: profile.level,
-        newPerDay,
-        reviewPerDay,
-      });
-      for (const i of buildRounds(words, rounds)) en.push({ subject: 'en', ...i });
-    }
-
-    const ko: QueueItem[] = [];
-    if (subjects.includes('ko')) {
-      const words = buildKoSession({
-        entries: KO_ENTRIES,
-        cards: data.cards,
-        level: profile.koLevel,
-        // 국어는 하루 6개로 정해 두었다. 영어 개수와 따로 간다 —
-        // 어휘가 1,286개뿐이라 영어와 같은 속도로 내면 금세 동난다.
-        newPerDay: KO_NEW_PER_DAY,
-        reviewPerDay: KO_REVIEW_PER_DAY,
-      });
-      for (const i of buildKoRounds(words, rounds, KO_ENTRIES)) ko.push({ subject: 'ko', ...i });
-    }
-
-    // 아이가 고른 순서대로. 머리가 맑을 때 어려운 쪽을 먼저 하고 싶은
-    // 아이가 있고, 쉬운 쪽으로 몸을 풀고 싶은 아이가 있다.
-    return firstSubject === 'ko' ? [...ko, ...en] : [...en, ...ko];
+    /*
+     * 아이 큐를 만드는 규칙은 srs/childSession.ts 에 있다. 홈이 '오늘 몇 개'
+     * 를 셀 때 같은 것을 봐야 하는데, 예전에는 여기서 만들고 홈에서 따로
+     * 세느라 둘이 어긋났다 — 국어만 켠 아이에게 홈의 숫자가 거짓말을 했다.
+     */
+    return buildChildQueue({ profile, cards: data.cards });
   });
 
   const [index, setIndex] = useState(0);
@@ -126,7 +95,8 @@ export default function Study() {
    */
   const pool = useMemo(() => {
     if (!profile) return [];
-    if (profile.kind !== 'parent') return entriesOf(profile.level);
+    // 아이도 일상 문장을 켤 수 있다. 켠 아이에게는 그 문장들도 보기 후보다.
+    if (profile.kind !== 'parent') return childPool(profile);
     const study = profile.parentStudy;
     return [
       ...(study.tracks.includes('daily') ? dailyTheme(study.dailyTheme).entries : []),

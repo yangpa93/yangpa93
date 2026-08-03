@@ -42,6 +42,8 @@ import {
   ProfileData,
   Subject,
   SUBJECT_LABEL,
+  SUBJECT_ORDER,
+  toggleSubject,
 } from '../src/types';
 import { colors, font, radius, spacing } from '../src/theme';
 import { primaryParent } from '../src/features/parentLinks';
@@ -319,13 +321,23 @@ export default function ChildReport() {
         <Muted style={{ marginTop: spacing.xs }}>
           바꾸면 아이 폰에도 알림으로 전달됩니다. 하나는 켜 두어야 해요.
         </Muted>
-        <Row style={{ gap: spacing.sm, marginTop: spacing.md }}>
-          {(['en', 'ko'] as const).map((sub) => {
+        {/*
+          갈래가 셋이 됐다. 일상 생활 문장은 부모에게만 있던 것인데 아이도
+          켤 수 있게 했다 — 문장 80개는 어른 것이라기보다 그냥 자주 쓰는 말이다.
+
+          마지막 하나를 끄는 것은 toggleSubject 가 막는다. 하나도 안 켜면 낼
+          문제가 없어져 아이 화면이 빈 채로 뜬다.
+        */}
+        <Row style={{ gap: spacing.sm, marginTop: spacing.md, flexWrap: 'wrap' }}>
+          {SUBJECT_ORDER.map((sub) => {
             const on = subjects.includes(sub);
             return (
               <Pressable
                 key={sub}
-                onPress={() => setSubjects(on ? subjects.filter((x) => x !== sub) : [...subjects, sub])}
+                onPress={() => {
+                  const next = toggleSubject(subjects, sub);
+                  if (next) setSubjects(next);
+                }}
                 style={[s.chip, on && s.chipOn]}
                 accessibilityRole="checkbox"
                 accessibilityState={{ checked: on }}

@@ -216,7 +216,8 @@ function normalizeProfileAwards(v: unknown): AwardRates | null {
 }
 
 export function normalizeSubjects(v: unknown): Subject[] {
-  const all: Subject[] = ['en', 'ko'];
+  // 'daily' 는 나중에 들어왔다. 옛 저장본에는 없으니 없는 대로 지나간다.
+  const all: Subject[] = ['en', 'ko', 'daily'];
   if (!Array.isArray(v)) return ['en'];
   const picked = all.filter((s) => v.includes(s));
   return picked.length > 0 ? picked : ['en'];

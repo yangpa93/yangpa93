@@ -52,9 +52,22 @@ export function LinkChildCard() {
 
   return (
     <Card style={{ marginTop: spacing.md, borderColor: colors.parent }}>
+      {/*
+        제목이 '아이 기기와' 까지만 보이고 잘렸다.
+
+        까닭은 옆의 칩이다. 한 줄에 둘을 나란히 놓으면 칩은 제 글자만큼
+        자리를 차지하고 제목이 남은 자리로 밀린다. 제목이 그 자리에 안 들어가면
+        잘린다 — 무엇을 하는 카드인지 알려 주는 유일한 줄이 그렇게 사라졌다.
+
+        제목에 flex 를 주어 남는 자리를 먼저 갖게 하고, 칩은 줄어들지 않게 한다.
+        자리가 정 모자라면 제목이 두 줄로 접힌다. 접히는 것은 괜찮다 — 잘려서
+        못 읽는 것과는 다르다.
+      */}
       <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-        <H3>🔗 아이 기기와 연결하기</H3>
-        <Chip label={`${names.length} / ${MAX_CHILDREN}명`} tone={full ? 'accent' : 'default'} />
+        <H3 style={{ flex: 1, paddingRight: spacing.sm }}>🔗 아이 기기와 연결하기</H3>
+        <View style={{ flexShrink: 0 }}>
+          <Chip label={`${names.length} / ${MAX_CHILDREN}명`} tone={full ? 'accent' : 'default'} />
+        </View>
       </Row>
       <Muted style={{ marginTop: spacing.xs }}>
         연결하면 아이가 공부를 마칠 때마다 이 폰으로 결과가 옵니다. 이 폰의 학습 화면은
@@ -108,10 +121,17 @@ export function LinkChildCard() {
         {/*
           카메라가 안 될 때. **방향을 뒤집는 것으로 풀지 않는다** — 아이 QR
           아래에 짧은 코드가 늘 같이 떠 있으니 그것을 옮겨 적으면 된다.
+
+          ghost 였던 것을 secondary 로 바꾼다. ghost 는 바탕도 테두리도 없어서
+          "이게 버튼인지 그냥 글자인지 알 수가 없다" 는 말을 들었다. 맞는 말이다 —
+          누를 수 있다는 표가 색깔 하나뿐이었다. 카메라가 안 되는 사람에게는
+          이것이 **남은 유일한 길**인데, 그 길이 눌러 볼 것으로 보이지 않으면
+          그 자리에서 막힌다. 위 단추와 색을 갈라 두어 무엇이 먼저인지는
+          그대로 보이게 한다.
         */}
         <Button
           title="📵 카메라가 안 되면 — 코드로 연결하기"
-          variant="ghost"
+          variant="secondary"
           onPress={() => router.push('/link-child-code')}
           disabled={full}
           style={{ marginTop: spacing.sm }}

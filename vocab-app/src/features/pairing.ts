@@ -643,7 +643,7 @@ export function parseSettings(data: unknown): SettingsPayload | null {
   const d = data as Record<string, unknown>;
   if (d.kind !== 'settings') return null;
   if (!Array.isArray(d.subjects)) return null;
-  const all: Subject[] = ['en', 'ko'];
+  const all: Subject[] = ['en', 'ko', 'daily'];
   const subjects = all.filter((x) => (d.subjects as unknown[]).includes(x));
   if (subjects.length === 0) return null;
   return { from: typeof d.from === 'string' ? d.from : '부모님', subjects };

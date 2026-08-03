@@ -46,7 +46,15 @@ export default function RootLayout() {
             <Stack.Screen name="wordbook" options={{ title: '단어장' }} />
             <Stack.Screen name="mistakes" options={{ title: '오답 노트' }} />
             <Stack.Screen name="calendar" options={{ title: '학습 달력' }} />
+            {/*
+              아이 설정도 부모 설정과 같이 세 갈래로 나눴다. settings 는 고르는
+              자리이고, 실제 내용은 settings-me · settings-study · settings-sound
+              에 있다. 아이가 자기 폰에서 국어를 켤 자리가 여태 아예 없었다.
+            */}
             <Stack.Screen name="settings" options={{ title: '내 설정' }} />
+            <Stack.Screen name="settings-me" options={{ title: '설정' }} />
+            <Stack.Screen name="settings-study" options={{ title: '내 공부 설정' }} />
+            <Stack.Screen name="settings-sound" options={{ title: '목소리 설정' }} />
             <Stack.Screen name="levelup" options={{ headerShown: false }} />
             <Stack.Screen name="exam" options={{ headerShown: false, gestureEnabled: false }} />
             <Stack.Screen name="parent" options={{ title: '부모님 모드' }} />

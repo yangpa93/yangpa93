@@ -1,212 +1,114 @@
-import { Pressable, Switch, StyleSheet, Text, View } from 'react-native';
+import { Pressable } from 'react-native';
 import { router } from 'expo-router';
-import { Button, Card, H3, Muted, Row, Screen } from '../src/components/ui';
+import { Button, Muted, Screen, SettingsTile } from '../src/components/ui';
 import { useApp } from '../src/store/AppProvider';
-import { SUBJECT_LABEL } from '../src/types';
-import { AvatarPicker, labelOf } from '../src/components/AvatarPicker';
-import { FeedbackCard } from '../src/components/FeedbackCard';
-import { ConnectParentCard } from '../src/components/ConnectParentCard';
-import { SoundCard } from '../src/components/SoundCard';
+import { SUBJECT_LABEL, SUBJECT_ORDER } from '../src/types';
+import { labelOf } from '../src/components/AvatarPicker';
 import { APP_NAME, buildInfo, buildLabel } from '../src/features/build-info';
-import { tapCorrect } from '../src/lib/feedback';
-import { colors, font, radius, spacing } from '../src/theme';
-
-/** 하루에 새로 만날 단어 수. 아이가 고른다. */
-const NEW_PER_DAY = [5, 8, 10, 12, 15, 20];
+import { soundSummary } from '../src/lib/voice';
+import { englishVoiceName, prepareVoice } from '../src/lib/feedback';
+import { useEffect, useState } from 'react';
+import { colors, spacing } from '../src/theme';
 
 /**
- * 아이가 직접 바꾸는 설정.
+ * ⚙️ 설정 — 세 갈래로 나누는 자리. **부모 설정과 같은 모양이다.**
  *
- * 소리·진동·캐릭터는 아이 취향이고, 잘못 눌러도 학습에 아무 영향이 없다.
- * 이걸 부모님 PIN 뒤에 두면 소리를 끄고 싶을 때마다 부모를 불러야 해서
- * 아이가 그냥 참고 쓴다. 반대로 하루 학습량·복습량·보상 금액·레벨은
- * 진도와 돈이 걸려 있어 부모님 모드에 그대로 둔다.
+ * ── 왜 한 겹을 더 두는가 ─────────────────────────────────────
+ *
+ * 예전에는 이 화면이 곧 설정 내용이었다. 하루 분량 · 무엇부터 풀까 · 소리 ·
+ * 진동 · 캐릭터 · 부모님 연결 · 백업 · 문의 · 판 정보 · 부모님 모드가 한 줄로
+ * 죽 이어져 있었다. 찾으려면 굴려야 하고, 굴리다 보면 무엇을 찾으려 했는지
+ * 잊는다.
+ *
+ * 부모 쪽은 이미 갈래를 나눠 두었다. 아이 쪽만 안 나눠 두면 같은 앱인데 두
+ * 사람이 서로 다른 모양을 쓰게 되고, 부모가 아이에게 길을 알려 줄 수가 없다.
+ * 그래서 같은 부품(SettingsTile)으로 같은 모양을 만든다.
+ *
+ * ── 무엇이 어디로 갔나 ───────────────────────────────────────
+ *
+ *   ⚙️ 설정        내 캐릭터 · 부모님과 연결 · 백업 · 문의
+ *   📚 내 공부 설정  무엇을 공부할지 · 하루 몇 개 · 무엇부터
+ *   🔊 목소리 설정   목소리 · 읽는 속도 · 진동
+ *
+ * **가장 큰 것은 📚 안에 새로 생긴 것이다.** 여태 아이는 자기 폰에서 국어를
+ * 켤 방법이 아예 없었다 — 과목을 고르는 자리가 부모 폰(parent-children)에만
+ * 있었고, 아이 설정 화면은 그 값을 읽기만 했다. 국어를 하고 싶은 아이는
+ * 부모를 불러 부모 폰을 켜게 해야 했던 것이다.
  */
 export default function ChildSettings() {
-  const { state, profile, updateSettings, updateProfile } = useApp();
+  const { profile } = useApp();
+  const build = buildInfo();
+
+  /*
+   * 목소리 이름은 기기 음성 목록을 다 읽어야 나온다. 앱이 뜰 때 한 번 정해지지만
+   * 이 화면에 먼저 닿았을 수 있어 한 번 더 부른다(이미 정해졌으면 그냥 돌아온다).
+   * 부모 설정과 같은 이유로 같은 모양이다.
+   */
+  const [voiceName, setVoiceName] = useState(englishVoiceName() ?? '');
+  useEffect(() => {
+    let cancelled = false;
+    void prepareVoice().then(() => {
+      if (!cancelled) setVoiceName(englishVoiceName() ?? '');
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [profile?.settings.voiceId]);
 
   if (!profile) return null;
 
-  const { hapticsEnabled, newPerDay, reviewPerDay, rounds, subjects, firstSubject } =
-    profile.settings;
-  // 두 과목을 다 켠 아이에게만 순서를 묻는다. 하나뿐이면 고를 것이 없다.
-  const bothSubjects = subjects.includes('en') && subjects.includes('ko');
-  const build = buildInfo();
+  const { subjects, newPerDay, reviewPerDay, rounds } = profile.settings;
 
-  // 오늘 몇 문제를 풀게 되는지. 개수만 보면 감이 안 와서 시간까지 적는다.
+  /*
+   * 지금 무엇을 켜 두었는지 눌러 보지 않아도 알 수 있게 한다. 자리를 만들어
+   * 놓고도 들어가 봐야 알 수 있으면 없는 것과 크게 다르지 않다.
+   */
+  const on = SUBJECT_ORDER.filter((s) => subjects.includes(s)).map((s) => SUBJECT_LABEL[s]);
   const questions = (newPerDay + reviewPerDay) * rounds;
-  const minutes = Math.max(1, Math.round((questions * 10) / 60));
 
   return (
     <Screen>
-      {/*
-        하루 분량을 아이가 고른다.
-        스스로 정한 속도라야 "계획보다 빨리 끝냈다"는 말이 자기 말이 된다.
-        부모가 정해 준 숫자를 앞당긴 것과는 기분이 다르다.
-      */}
-      {/*
-        무엇을 먼저 풀지 아이가 고른다.
+      <Muted style={{ paddingTop: spacing.md }}>무엇을 고치려는지 먼저 고르세요.</Muted>
 
-        머리가 맑을 때 어려운 쪽을 먼저 하고 싶은 아이가 있고, 쉬운 쪽으로
-        몸을 풀고 싶은 아이가 있다. 어느 쪽이 어려운지는 아이마다 달라서
-        어른이 정해 줄 일이 아니다.
-      */}
-      {bothSubjects ? (
-        <Card style={{ marginTop: spacing.md }}>
-          <H3>무엇부터 풀까요</H3>
-          <Muted style={{ marginTop: spacing.xs }}>
-            고른 쪽을 먼저 다 풀고 나머지로 넘어가요.
-          </Muted>
-          <Row style={{ gap: spacing.sm, marginTop: spacing.md }}>
-            {(['en', 'ko'] as const).map((sub) => (
-              <Pressable
-                key={sub}
-                onPress={() => updateSettings(profile.id, { firstSubject: sub })}
-                style={[s.chip, firstSubject === sub && s.chipOn]}
-                accessibilityRole="radio"
-                accessibilityState={{ selected: firstSubject === sub }}
-              >
-                <Text style={[s.chipText, firstSubject === sub && s.chipTextOn]}>
-                  {SUBJECT_LABEL[sub]} 먼저
-                </Text>
-              </Pressable>
-            ))}
-          </Row>
-        </Card>
-      ) : null}
-
-      <Card style={{ marginTop: spacing.md }}>
-        <H3>하루에 새로 배울 단어</H3>
-        <Muted style={{ marginTop: spacing.xs }}>
-          5개부터 20개까지 고를 수 있어요. 많이 고르면 빨리 끝나지만 하루가 길어져요.
-        </Muted>
-        <Row style={{ gap: spacing.sm, marginTop: spacing.md, flexWrap: 'wrap' }}>
-          {NEW_PER_DAY.map((n) => (
-            <Pressable
-              key={n}
-              onPress={() => updateSettings(profile.id, { newPerDay: n })}
-              style={[s.chip, newPerDay === n && s.chipOn]}
-              accessibilityRole="button"
-              accessibilityState={{ selected: newPerDay === n }}
-            >
-              <Text style={[s.chipText, newPerDay === n && s.chipTextOn]}>{n}개</Text>
-            </Pressable>
-          ))}
-        </Row>
-        <View style={s.estimate}>
-          <Muted>
-            새 단어 {newPerDay}개 + 복습 {reviewPerDay}개를 {rounds}번씩 —{' '}
-            <Text style={{ fontWeight: '800', color: colors.text }}>
-              오늘 {questions}문제, 약 {minutes}분
-            </Text>
-          </Muted>
-        </View>
-      </Card>
-
-      {/*
-        소리 묶음은 부품으로 떼어 뒀다(SoundCard). 부모 설정에도 똑같은 것이
-        필요해서다 — 부모도 일상 문장과 영어 단어를 소리로 듣는다. 값은
-        프로필마다 따로 저장되니 화면만 두 곳에 있으면 각자 제 것이 된다.
-      */}
-      <SoundCard
-        title={`${profile.name} 설정`}
-        note="여기 있는 것은 마음대로 바꿔도 괜찮아요. 공부한 기록은 그대로예요."
+      <SettingsTile
+        icon="⚙️"
+        title="설정"
+        hint={`내 캐릭터(${profile.avatar} ${labelOf(profile.avatar)}) · 부모님과 연결하기 · 공부 기록 백업 및 복구 · 앱 담당자에게 문의하기`}
+        onPress={() => router.push('/settings-me')}
       />
 
-      <Card style={{ marginTop: spacing.md }}>
-        <Row style={{ justifyContent: 'space-between' }}>
-          <View style={{ flex: 1, paddingRight: spacing.md }}>
-            <Text style={s.label}>📳 진동 피드백</Text>
-            <Muted style={{ marginTop: 2 }}>맞히거나 틀렸을 때 살짝 떨려요.</Muted>
-          </View>
-          <Switch
-            value={hapticsEnabled}
-            onValueChange={(v) => {
-              updateSettings(profile.id, { hapticsEnabled: v });
-              if (v) tapCorrect(true);
-            }}
-          />
-        </Row>
-      </Card>
+      <SettingsTile
+        icon="📚"
+        title="내 공부 설정"
+        hint={
+          on.length === 0
+            ? '무엇을 공부할지 정합니다'
+            : `${on.join(' · ')} · 하루 ${questions}문제`
+        }
+        onPress={() => router.push('/settings-study')}
+      />
 
-      <Card style={{ marginTop: spacing.md }}>
-        <H3>내 캐릭터</H3>
-        <Muted style={{ marginTop: spacing.xs }}>
-          지금은 {profile.avatar} {labelOf(profile.avatar)}예요. 바꿔도 공부한 기록은 그대로예요.
-        </Muted>
-        <AvatarPicker
-          value={profile.avatar}
-          onChange={(emoji) => updateProfile(profile.id, { avatar: emoji })}
-        />
-      </Card>
+      <SettingsTile
+        icon="🔊"
+        title="목소리 설정"
+        hint={soundSummary({
+          ttsEnabled: profile.settings.ttsEnabled,
+          voiceName,
+          speechRate: profile.settings.speechRate,
+        })}
+        onPress={() => router.push('/settings-sound')}
+      />
 
       {/*
-        부모 폰 연결을 아이 설정에 둔다.
-
-        지금까지는 부모님 PIN 뒤에만 있어서, 아이 폰에서 연결하려면 부모를
-        불러 PIN 을 받아야 했다. 정작 QR 을 띄우는 쪽은 아이 폰이다.
-
-        무엇이 나가는지 아이에게 그대로 적어 둔다. 자기 기록이 어디로 가는지
-        모르는 채 켜지는 것은, 상대가 부모라도 옳지 않다.
-      */}
-      <ConnectParentCard />
-
-      {/*
-        '**QR 말고 코드로 연결하기**' 를 뺐다.
-
-        그건 부모 폰이 만든 코드를 아이가 옮겨 적는 길이었는데, 연결하는
-        방법을 하나로 줄이면서 그 방향을 통째로 없앴다. 아이가 할 일은 위
-        카드에서 QR 을 띄우는 것 하나뿐이다.
-
-        부모 폰 카메라가 안 되는 경우는 부모 쪽에서 푼다 — 아이 QR 아래
-        짧은 코드를 부모가 옮겨 적으면 된다(부모 설정 → 코드로 연결하기).
-        아이 화면에 그 걱정을 얹지 않는다.
-      */}
-
-      {/*
-        백업도 아이 설정에 둔다.
-
-        기록은 이 폰 안에만 있다. 폰을 바꾸거나 앱을 지우면 통째로 사라지는데,
-        그때 부모를 불러 PIN 을 받아야 한다면 대부분 그냥 잃어버린다.
-        아이가 둘이면 각자 자기 폰에서 자기 기록을 빼 두어야 한다.
-
-        되돌리기는 되돌릴 수 없다. 그래서 화면 안에서 **파일에 무엇이 들어
-        있는지 먼저 보여주고** 확인을 한 번 더 받는다. 그 장치는 이미 있다.
-      */}
-      <Card style={{ marginTop: spacing.md }}>
-        <H3>💾 공부 기록 지키기</H3>
-        <Muted style={{ marginTop: spacing.xs }}>
-          공부한 기록은 이 폰 안에만 있어요. 폰을 바꾸거나 앱을 지우면 사라지니,
-          가끔 파일로 빼 두면 안심이에요. 새 폰에서는 그 파일로 되돌릴 수 있어요.
-        </Muted>
-        <Button
-          title="백업 · 되돌리기"
-          variant="secondary"
-          onPress={() => router.push('/backup')}
-          style={{ marginTop: spacing.md }}
-        />
-      </Card>
-
-      {/*
-        이상한 것을 처음 만나는 사람은 아이다. 부모 PIN 뒤에만 두면
-        아이는 부모를 부를 때까지 기다려야 하고, 그 사이에 무엇이 어떻게
-        이상했는지를 잊는다. 대부분은 말하지 않고 넘어간다.
-      */}
-      <FeedbackCard />
-
-      {/*
-        지금 어느 앱을 쓰고 있는지 아이 스스로 말할 수 있어야 한다.
-        고쳐서 새로 올렸는데 아직 옛 앱을 쓰고 있는 경우가 흔한데,
-        그때 이 줄을 읽어 주면 바로 가려진다. 부모님 모드 안에만 있으면
-        아이에게 물어볼 때마다 부모를 거쳐야 한다.
-
-        눌러서 이번 판에 무엇이 들어 있는지 볼 수 있게 한다.
+        지금 어느 앱을 쓰고 있는지 아이 스스로 말할 수 있어야 한다. 고쳐서 새로
+        올렸는데 아직 옛 앱을 쓰고 있는 경우가 흔한데, 그때 이 줄을 읽어 주면
+        바로 가려진다. 부모님 모드 안에만 있으면 물어볼 때마다 부모를 거쳐야 한다.
       */}
       <Pressable
         onPress={() => router.push('/whats-new')}
         accessibilityRole="button"
         accessibilityLabel="이번 판에서 바뀐 것 보기"
-        style={{ marginTop: spacing.lg }}
+        style={{ marginTop: spacing.xl }}
       >
         <Muted style={{ textAlign: 'center' }}>
           {APP_NAME} {buildLabel(build)} ›
@@ -216,24 +118,11 @@ export default function ChildSettings() {
         </Muted>
       </Pressable>
 
-      <Muted style={{ marginTop: spacing.md, textAlign: 'center' }}>
-        복습 개수와 학년·레벨은 부모님이 정해요.
-      </Muted>
-
-      <Button
-        title="돌아가기"
-        variant="secondary"
-        onPress={() => router.back()}
-        style={{ marginTop: spacing.md }}
-      />
-
       {/*
-        부모님 모드로 들어가는 문. **아이 홈에서 여기로 옮겼다.**
-
-        아이 폰 홈 맨 위에 있던 '👨‍👩‍👧 부모님' 버튼을 없앴는데, 문을 아주
-        막아 버리면 이 폰에 부모 프로필을 만들어 둔 집이 자기 화면으로
-        돌아갈 수 없다. 그래서 눈에 잘 안 띄는 맨 아래에 한 줄로 남긴다.
-        어차피 뒤에 PIN 이 있어 아이가 눌러도 들어가지 못한다.
+        부모님 모드로 들어가는 문. 눈에 잘 안 띄는 맨 아래에 한 줄로 남긴다 —
+        아이 폰 홈에 있던 것을 여기로 옮겼고, 뒤에 PIN 이 있어 아이가 눌러도
+        들어가지 못한다. 아주 막아 버리면 이 폰에 부모 프로필을 만들어 둔 집이
+        자기 화면으로 돌아갈 수 없다.
       */}
       <Button
         title="👨‍👩‍👧 부모님 모드"
@@ -244,24 +133,3 @@ export default function ChildSettings() {
     </Screen>
   );
 }
-
-const s = StyleSheet.create({
-  label: { fontSize: font.body, fontWeight: '600', color: colors.text },
-  chip: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: radius.pill,
-    backgroundColor: colors.bg,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  chipOn: { backgroundColor: colors.primary, borderColor: colors.primary },
-  chipText: { fontSize: font.small, fontWeight: '700', color: colors.subtext },
-  chipTextOn: { color: '#fff' },
-  estimate: {
-    marginTop: spacing.md,
-    padding: spacing.md,
-    borderRadius: radius.md,
-    backgroundColor: colors.bg,
-  },
-});

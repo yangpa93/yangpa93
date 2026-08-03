@@ -169,6 +169,43 @@ export function Divider() {
   return <View style={s.divider} />;
 }
 
+/**
+ * ⚙️ 설정 화면에서 갈래 하나를 가리키는 줄.
+ *
+ * ── 왜 부품으로 뺐나 ────────────────────────────────────────
+ *
+ * 부모 설정(parent-settings)에만 있던 것을 아이 설정에서도 쓴다. "부모 설정과
+ * 같은 모양으로" 나눠 달라는 말을 들었는데, 같은 모양을 두 곳에 따로 적어 두면
+ * 한쪽만 고치는 날이 반드시 온다. 그러면 같은 앱 안에서 부모 화면과 아이
+ * 화면이 서로 다르게 생기고, 아이에게 길을 알려 주기가 어려워진다.
+ *
+ * `hint` 에는 **그 안에 무엇이 있는지**를 적는다. 들어가 봐야 아는 자리를
+ * 만들면 한 겹을 더 둔 값을 잃는다 — 고르라고 만든 화면인데 무엇을 고르는지
+ * 모르면 아무 데나 눌러 보게 된다.
+ */
+export function SettingsTile({
+  icon,
+  title,
+  hint,
+  onPress,
+}: {
+  icon: string;
+  title: string;
+  hint: string;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable style={s.tile} onPress={onPress} accessibilityRole="button">
+      <Text style={s.tileIcon}>{icon}</Text>
+      <View style={{ flex: 1 }}>
+        <Text style={s.tileTitle}>{title}</Text>
+        <Text style={s.tileHint}>{hint}</Text>
+      </View>
+      <Text style={s.tileChev}>›</Text>
+    </Pressable>
+  );
+}
+
 export function EmptyState({ icon, title, hint }: { icon: string; title: string; hint?: string }) {
   return (
     <View style={s.empty}>
@@ -257,4 +294,20 @@ const s = StyleSheet.create({
 
   empty: { alignItems: 'center', paddingVertical: spacing.xxl },
   emptyIcon: { fontSize: 44, marginBottom: spacing.md },
+
+  tile: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    marginTop: spacing.md,
+    padding: spacing.lg,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.card,
+  },
+  tileIcon: { fontSize: 26 },
+  tileTitle: { fontSize: font.h3, fontWeight: '800', color: colors.text },
+  tileHint: { fontSize: font.small, color: colors.subtext, marginTop: 3, lineHeight: 19 },
+  tileChev: { fontSize: 24, color: colors.muted },
 });

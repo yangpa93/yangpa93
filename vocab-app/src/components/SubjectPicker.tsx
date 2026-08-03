@@ -22,11 +22,18 @@ import { Subject } from '../types';
 import { colors, font, radius, spacing } from '../theme';
 import { primaryParent } from '../features/parentLinks';
 
-/** 보낼 수 있는 조합. 낱개로 켜고 끄면 '둘 다 끔'을 만들 수 있다. */
+/**
+ * 보낼 수 있는 조합. 낱개로 켜고 끄면 '다 끔'을 만들 수 있다.
+ *
+ * 조합을 다 늘어놓지는 않는다(셋이면 일곱 가지다). 실제로 쓰는 것만 둔다 —
+ * 고를 것이 많으면 고르다가 안 한다. 여기 없는 조합은 아이가 자기 폰에서
+ * ⚙️ 설정 → 📚 내 공부 설정 에서 낱개로 켜면 된다.
+ */
 const PRESETS: { label: string; subjects: Subject[] }[] = [
   { label: '영어만', subjects: ['en'] },
   { label: '국어만', subjects: ['ko'] },
   { label: '영어 · 국어', subjects: ['en', 'ko'] },
+  { label: '영어 · 국어 · 일상 문장', subjects: ['en', 'ko', 'daily'] },
 ];
 
 export function SubjectPicker() {

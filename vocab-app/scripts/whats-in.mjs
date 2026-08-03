@@ -139,6 +139,18 @@ const MARKS = [
   ['없는 화면도 우리 말로', 'app/+not-found.tsx', '이 앱에 없는 화면이에요'],
   ['눌러 보는 시험을 대신', 'scripts/e2e.mjs', '예전에 눈으로만 봤던 것들'],
   ['아이 홈 안내도 오늘부터', 'app/home.tsx', '오늘 배운 것부터'],
+  /*
+   * 아래는 '연결이 안 되던 것' 을 잡으면서 들어온 것들이다. 고친 것보다
+   * **확인하는 길** 이 더 많다 — 확인할 방법이 없어서 못 잡고 있었기 때문이다.
+   */
+  ['푸시 서버에 직접 물어보기', 'scripts/push-test.mjs', 'getReceipts'],
+  ['미리보기에서 가짜 푸시 주소', 'src/features/pairing.ts', 'previewPushToken'],
+  ['연결 전체를 창 두 개로 시험', 'scripts/e2e.mjs', '아이가 띄우고 부모가 받는다'],
+  ['아이를 넣자마자 지우던 것 고침', 'src/store/AppProvider.tsx', 'ref.current = { ...ref.current, state }'],
+  ['연결 코드를 넉 자씩 줄바꿈', 'src/features/pairing.ts', 'toShortCodeLines'],
+  ['아이 설정 세 갈래', 'app/settings.tsx', '내 공부 설정'],
+  ['아이가 국어를 켤 수 있다', 'app/settings-study.tsx', '무엇을 공부할까요'],
+  ['아이도 일상 문장을 켤 수 있다', 'src/srs/childSession.ts', 'DAILY_PER_DAY'],
 ];
 
 /* 판 번호도 같이 적는다. "몇 판을 받았나"가 제일 먼저 궁금한 것이다. */

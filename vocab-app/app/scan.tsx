@@ -216,9 +216,13 @@ export default function Scan() {
           />
         </Card>
 
+        {/*
+          카메라 권한을 안 준 사람에게는 이것이 **남은 유일한 길**이다.
+          ghost 로 두었더니 테두리도 바탕도 없어 눌러 볼 것으로 안 보였다.
+        */}
         <Button
           title="📵 코드로 아이 연결하기"
-          variant="ghost"
+          variant="secondary"
           onPress={() => router.replace('/link-child-code')}
           style={{ marginTop: spacing.md }}
         />
@@ -263,7 +267,7 @@ export default function Scan() {
 
         <Button
           title="📵 코드로 아이 연결하기"
-          variant="ghost"
+          variant="secondary"
           onPress={() => router.replace('/link-child-code')}
           style={{ marginTop: spacing.md }}
         />

@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable } from 'react-native';
 import { router } from 'expo-router';
-import { Chip, Muted, Row, Screen } from '../src/components/ui';
+import { Chip, Muted, Screen, SettingsTile } from '../src/components/ui';
 import { useApp } from '../src/store/AppProvider';
 import { buildInfo, buildLabel } from '../src/features/build-info';
 import { englishVoiceName, prepareVoice } from '../src/lib/feedback';
 import { soundSummary } from '../src/lib/voice';
 import { PARENT_TRACK_SHORT } from '../src/types';
 import { perTrackCount, TRACK_ORDER } from '../src/srs/parentSession';
-import { colors, font, radius, spacing } from '../src/theme';
+import { colors, spacing } from '../src/theme';
 
 /**
  * ⚙️ 설정 — 두 갈래로 나누는 자리.
@@ -69,7 +69,7 @@ export default function ParentSettings() {
         무엇을 고치시려는지 먼저 고르세요.
       </Muted>
 
-      <Tile
+      <SettingsTile
         icon="👧"
         title="아이들 폰 설정"
         hint={
@@ -80,7 +80,7 @@ export default function ParentSettings() {
         onPress={() => router.push('/parent-child-devices')}
       />
 
-      <Tile
+      <SettingsTile
         icon="📚"
         title="내 공부 설정"
         hint={
@@ -104,7 +104,7 @@ export default function ParentSettings() {
         지금 무엇으로 읽는지는 눌러 보지 않아도 여기 적혀 있다. 자리를 만들어
         놓고도 들어가 봐야 알 수 있으면 없는 것과 크게 다르지 않다.
       */}
-      <Tile
+      <SettingsTile
         icon="🔊"
         title="소리와 목소리"
         hint={soundSummary({
@@ -131,45 +131,3 @@ export default function ParentSettings() {
   );
 }
 
-function Tile({
-  icon,
-  title,
-  hint,
-  onPress,
-}: {
-  icon: string;
-  title: string;
-  hint: string;
-  onPress: () => void;
-}) {
-  return (
-    <Pressable style={s.tile} onPress={onPress} accessibilityRole="button">
-      <Text style={s.tileIcon}>{icon}</Text>
-      <View style={{ flex: 1 }}>
-        <Row style={{ gap: spacing.sm, alignItems: 'center' }}>
-          <Text style={s.tileTitle}>{title}</Text>
-        </Row>
-        <Text style={s.tileHint}>{hint}</Text>
-      </View>
-      <Text style={s.chev}>›</Text>
-    </Pressable>
-  );
-}
-
-const s = StyleSheet.create({
-  tile: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    marginTop: spacing.md,
-    padding: spacing.lg,
-    borderRadius: radius.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.card,
-  },
-  tileIcon: { fontSize: 26 },
-  tileTitle: { fontSize: font.h3, fontWeight: '800', color: colors.text },
-  tileHint: { fontSize: font.small, color: colors.subtext, marginTop: 3, lineHeight: 19 },
-  chev: { fontSize: 24, color: colors.muted },
-});

@@ -82,6 +82,55 @@ async function hasField(page, placeholder, timeout = 6000) {
   }
 }
 
+/**
+ * 그 글자가 든 칸이 **잘려 있는지.**
+ *
+ * 눈으로만 보던 것을 기계가 세게 한다. '아이 기기와 연결하기' 가 '아이 기기와'
+ * 까지만 보인 적이 있는데, 글자 자체는 화면에 있으므로 getByText 로는 멀쩡해
+ * 보인다. 담을 자리보다 글자가 넓은지를 봐야 안다.
+ */
+async function isClipped(page, text) {
+  try {
+    return await page
+      .getByText(text, { exact: false })
+      .first()
+      .evaluate((el) => el.scrollWidth > el.clientWidth + 1);
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * 그 글자가 든 단추가 **눌러 볼 것으로 보이는지.**
+ *
+ * '카메라가 안 되면 — 코드로 연결하기' 가 버튼인지 그냥 글자인지 알 수 없다는
+ * 말을 들었다. 바탕도 테두리도 없었기 때문이다. 색깔 하나로 눌러 볼 것임을
+ * 알리는 것은 무리다 — 특히 그것이 남은 유일한 길일 때는.
+ *
+ * 글자를 담은 칸에서 두 겹까지만 올라가며 바탕색을 본다. 더 올라가면 카드
+ * 바탕이 잡혀서 무엇을 봐도 통과한다.
+ */
+async function looksPressable(page, text) {
+  try {
+    return await page
+      .getByText(text, { exact: false })
+      .first()
+      .evaluate((el) => {
+        let n = el;
+        for (let i = 0; i < 3 && n; i++, n = n.parentElement) {
+          const st = getComputedStyle(n);
+          const bg = st.backgroundColor;
+          const painted = bg && bg !== 'transparent' && !/rgba\(0,\s*0,\s*0,\s*0\)/.test(bg);
+          const bordered = parseFloat(st.borderTopWidth || '0') > 0;
+          if (painted || bordered) return true;
+        }
+        return false;
+      });
+  } catch {
+    return false;
+  }
+}
+
 async function go(page, path) {
   await page.goto(`${BASE}${path}`);
   // 앱이 저장소를 읽고 첫 화면을 그릴 때까지.
@@ -342,6 +391,23 @@ if (await codeBox.isVisible().catch(() => false)) {
 await go(page, '/parent-child-devices');
 ok('연결 카드에 코드 길이 있다', await has(page, '카메라가 안 되면 — 코드로 연결하기'));
 ok('아이 QR 찍기가 있다', await has(page, '아이 QR 찍기'));
+
+/*
+ * **눈으로만 보던 두 가지를 기계가 센다.**
+ *
+ * 하나는 제목이 잘리던 것('아이 기기와' 까지만 보였다). 글자 자체는 화면에
+ * 있으니 글자로 찾는 것만으로는 못 잡는다 — 담을 자리보다 넓은지를 봐야 한다.
+ *
+ * 다른 하나는 '코드로 연결하기' 가 버튼인지 글자인지 알 수 없던 것. 카메라가
+ * 안 되는 사람에게는 그것이 남은 유일한 길인데, 눌러 볼 것으로 안 보이면
+ * 거기서 막힌다.
+ */
+ok('연결하기 제목이 안 잘린다', !(await isClipped(page, '아이 기기와 연결하기')));
+ok(
+  '코드로 연결하기가 눌러 볼 것으로 보인다',
+  await looksPressable(page, '카메라가 안 되면 — 코드로 연결하기'),
+  '바탕도 테두리도 없다',
+);
 /*
  * 없앤 것을 이름으로 짚는다. '내 QR 띄우기' 라는 글자만 보고 판단하면 안 된다 —
  * 그건 **아이 폰에서 눌러야 할 것**을 알려 주는 안내문에도 나오는 말이라,
@@ -407,13 +473,58 @@ ok('아이에게 승인하기 칸은 없어졌다', !(await has(page, '부모님
 ok('아이 쪽 코드 칸도 없어졌다', !(await hasField(page, '연결 코드 또는 주소', 1500)));
 ok('대신 내 QR 을 띄우라고 한다', await has(page, '내 QR 을 부모님이 찍는'));
 
-await go(page, '/settings');
-ok('아이 설정에 내 QR 띄우기가 있다', await has(page, '내 QR 띄우기'));
-ok('아이 설정에 코드로 연결하기는 없다', !(await has(page, 'QR 말고 코드로 연결하기', 1500)));
+/* ================================================================= */
+console.log('');
+console.log('  ⑦-3 아이 설정 — 세 갈래로 나뉘었는가');
+/*
+ * 부모 설정과 같은 모양으로 나눴다. 나누는 일에는 늘 같은 위험이 따른다 —
+ * 옮기다 흘리는 것. 그래서 **어디로 갔는지**와 **원래 자리에 안 남았는지**를
+ * 짝으로 센다. 없앤 것은 되살아나도 눈에 안 띄어서, 세는 줄이 없으면 아무도
+ * 모른다.
+ */
+/* ================================================================= */
 
 await go(page, '/settings');
-ok('아이 설정에 소리가 있다', await has(page, '소리로 읽어주기'));
-ok('아이 설정에 읽는 속도가 있다', await has(page, '읽는 속도'));
+ok('⚙️ 설정 갈래가 있다', await has(page, '내 캐릭터'));
+ok('📚 내 공부 설정 갈래가 있다', await has(page, '내 공부 설정'));
+ok('🔊 목소리 설정 갈래가 있다', await has(page, '목소리 설정'));
+
+/* 고르는 화면에 내용이 그대로 남아 있으면 나눈 값이 없다. */
+ok('고르는 화면에 하루 분량이 안 남아 있다', !(await has(page, '하루에 새로 배울', 1500)));
+ok('고르는 화면에 진동 스위치가 안 남아 있다', !(await has(page, '진동 피드백', 1500)));
+ok('고르는 화면에 QR 이 안 남아 있다', !(await has(page, '내 QR 띄우기', 1500)));
+ok('고르는 화면에 백업 단추가 안 남아 있다', !(await has(page, '백업 · 되돌리기', 1500)));
+
+/*
+ * **아이가 자기 폰에서 국어를 켤 수 있는가.**
+ *
+ * 여태 없던 자리다. 과목을 고르는 곳이 부모 폰에만 있어서, 국어를 하고 싶은
+ * 아이는 부모를 불러 부모 폰을 켜게 해야 했다.
+ */
+await go(page, '/settings-study');
+ok('아이가 영어를 켤 수 있다', await has(page, '영어 단어 학습하기'));
+ok('아이가 국어를 켤 수 있다', await has(page, '국어 어휘 학습하기'));
+ok('아이가 일상 문장을 켤 수 있다', await has(page, '일상 생활 문장 학습하기'));
+ok('하루 분량이 여기로 왔다', await has(page, '하루에 새로 배울 영어 단어'));
+ok('오늘 몇 문제인지 적혀 있다', await has(page, '오늘은 이만큼이에요'));
+
+/* 실제로 켜지는지. 글자만 있고 안 눌리면 없는 것과 같다. */
+await page.getByText('국어 어휘 학습하기', { exact: false }).first().click();
+await page.waitForTimeout(1200);
+await go(page, '/settings');
+ok('국어를 켜면 고르는 화면에도 국어라고 뜬다', await has(page, '국어'));
+
+await go(page, '/settings-me');
+ok('내 캐릭터 설정이 있다', await has(page, '내 캐릭터 설정'));
+ok('부모님과 연결하기가 여기로 왔다', await has(page, '내 QR 띄우기'));
+ok('백업 및 복구가 여기로 왔다', await has(page, '공부 기록 백업 및 복구'));
+ok('문의하기가 여기로 왔다', await has(page, '이상한 점 알려주기'));
+ok('아이 설정에 코드로 연결하기는 없다', !(await has(page, 'QR 말고 코드로 연결하기', 1500)));
+
+await go(page, '/settings-sound');
+ok('소리로 읽어주기가 여기로 왔다', await has(page, '소리로 읽어주기'));
+ok('읽는 속도가 여기로 왔다', await has(page, '읽는 속도'));
+ok('진동 피드백이 여기로 왔다', await has(page, '진동 피드백'));
 
 /*
  * 아이 화면도 부모와 **같은 단어장**을 쓴다. 그런데 아이 홈 타일의 밑줄이
@@ -516,7 +627,7 @@ parentPage.on('pageerror', (e) => pageErrors.push(e.message));
 /* ── 아이 창 : 내 QR 띄우기 ─────────────────────────────── */
 
 await seed(childPage, '부모님과 아직 연결 안 됨');
-await go(childPage, '/settings');
+await go(childPage, '/settings-me');
 await childPage.getByText('내 QR 띄우기', { exact: false }).first().click();
 await childPage.waitForTimeout(1800);
 

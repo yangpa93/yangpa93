@@ -136,7 +136,7 @@ const MARKS = [
   ['어휘 판 올리는 한 줄', 'scripts/bump-data.mjs', 'bump-data'],
   ['만든 QR 을 도로 읽어 확인', 'scripts/check-link.mjs', 'jsQR'],
   ['폰 카메라로 찍은 아이 QR 받기', 'app/child.tsx', '이 아이를 등록할까요'],
-  ['눌러 보는 시험을 대신', 'scripts/e2e.mjs', '실제로 눌러 보는 시험'],
+  ['눌러 보는 시험을 대신', 'scripts/e2e.mjs', '예전에 눈으로만 봤던 것들'],
   ['아이 홈 안내도 오늘부터', 'app/home.tsx', '오늘 배운 것부터'],
 ];
 

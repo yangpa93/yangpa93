@@ -18,6 +18,7 @@
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
+import { ensureNotificationChannels } from './notifications';
 import {
   buildHelloBody,
   buildRewardAskBody,
@@ -264,7 +265,7 @@ export async function scheduleMissingReportAlert(args: {
 
   const perm = await Notifications.getPermissionsAsync();
   if (!perm.granted) return;
-  await ensureChannel();
+  await ensureNotificationChannels();
 
   const now = args.now ?? new Date();
   const target = new Date(now);
@@ -294,11 +295,9 @@ export async function cancelMissingReportAlert(): Promise<void> {
   await Notifications.cancelScheduledNotificationAsync(MISSING_ID).catch(() => {});
 }
 
-async function ensureChannel() {
-  if (Platform.OS !== 'android') return;
-  await Notifications.setNotificationChannelAsync('parent-report', {
-    name: '학습 리포트',
-    importance: Notifications.AndroidImportance.HIGH,
-    vibrationPattern: [0, 200],
-  });
-}
+/*
+ * 알림 통로를 여기서 따로 만들던 것을 없앴다. notifications.ts 한 곳에서
+ * 앱이 뜰 때 다 만든다 — 두 곳이 같은 통로를 다른 중요도로 만들고 있었고,
+ * 안드로이드는 먼저 만든 쪽만 받아들여서 어느 쪽이 이길지가 그날 무엇을
+ * 먼저 눌렀느냐로 갈렸다.
+ */

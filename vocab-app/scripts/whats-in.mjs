@@ -151,6 +151,8 @@ const MARKS = [
   ['아이 설정 세 갈래', 'app/settings.tsx', '내 공부 설정'],
   ['아이가 국어를 켤 수 있다', 'app/settings-study.tsx', '무엇을 공부할까요'],
   ['아이도 일상 문장을 켤 수 있다', 'src/srs/childSession.ts', 'DAILY_PER_DAY'],
+  ['알림 통로를 앱 켤 때 다 만들기', 'app/_layout.tsx', 'ensureNotificationChannels'],
+  ['판 정보가 눌리는 것으로 보이기', 'src/components/VersionButton.tsx', '판 정보 보기'],
 ];
 
 /* 판 번호도 같이 적는다. "몇 판을 받았나"가 제일 먼저 궁금한 것이다. */

@@ -7,6 +7,7 @@ import { AppProvider } from '../src/store/AppProvider';
 import { PushBridge } from '../src/features/PushBridge';
 import { OpenFileBridge } from '../src/features/OpenFileBridge';
 import { prepareSounds, prepareVoice } from '../src/lib/feedback';
+import { ensureNotificationChannels } from '../src/features/notifications';
 import { colors } from '../src/theme';
 
 export default function RootLayout() {
@@ -18,6 +19,18 @@ export default function RootLayout() {
   useEffect(() => {
     void prepareSounds();
     void prepareVoice();
+    /*
+     * 알림 통로도 여기서 만든다. **앱이 뜰 때마다 무조건.**
+     *
+     * 안드로이드는 없는 통로로 온 알림을 조용히 버린다 — 오류도 안 나고
+     * 보내는 쪽 영수증은 성공이라, 밖에서는 알 방법이 없다. 실제로 그것
+     * 때문에 "전송에 성공했다는데 폰에는 안 뜬다" 를 겪었다.
+     *
+     * 예전에는 필요한 자리에서 그때그때 만들었는데, 부모가 아이에게 보내는
+     * 통로(child-nudge)는 **아무 데서도 안 만들어지고 있었다.** 늦게 만들어
+     * 얻는 것이 없고 놓치면 알림이 통째로 사라지므로, 맨 앞에서 다 만든다.
+     */
+    void ensureNotificationChannels();
   }, []);
 
   return (

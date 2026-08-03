@@ -14,7 +14,7 @@ import { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { VocabEntry } from '../types';
 import { clozeSentence, Exposure, primaryMeaning } from '../data/entry';
-import { buildChoices, meaningKeys } from '../srs/session';
+import { buildChoices, expressionKeys } from '../srs/session';
 import { speak } from '../lib/feedback';
 import { Ask, ChoiceButton, Choices, DontKnow, QuestionBox, StemText } from './quiz-ui';
 import { colors, font, radius, spacing } from '../theme';
@@ -119,22 +119,36 @@ function ChoiceCloze({
   const [revealed, setRevealed] = useState(false);
 
   const choices = useMemo(() => {
-    const answer = { key: entry.id, label: cloze.answer, meaning: exp.sense.meaning };
+    const answer = {
+      key: entry.id,
+      label: cloze.answer,
+      meaning: exp.sense.meaning,
+      // 빈칸의 원래 낱말도 함께 담는다. cloze.answer 는 문장에 맞춰 모양이
+      // 바뀐 것이라(-s, -ed) 표제어와 다를 수 있다.
+      syn: [...exp.sense.synonyms, entry.word],
+    };
     // 오답도 같은 문장에 넣었을 때 말이 안 되는 것으로 고른다.
     // 같은 품사끼리 섞으면 난이도가 올라간다.
     const samePos = pool.filter((e) => e.id !== entry.id && e.pos === entry.pos);
     const others = (samePos.length >= 5 ? samePos : pool.filter((e) => e.id !== entry.id)).map(
-      (e) => ({ key: e.id, label: e.word, meaning: primaryMeaning(e) }),
+      (e) => ({
+        key: e.id,
+        label: e.word,
+        meaning: primaryMeaning(e),
+        // 뜻을 하나만 보지 않는다. 다른 뜻으로 이 문장에 들어맞을 수도 있다.
+        syn: e.senses.flatMap((s) => s.synonyms),
+      }),
     );
-    // 뜻이 같은 단어는 빈칸에 넣어도 말이 된다. 그런 것을 오답이라고
-    // 내면 아이는 맞게 읽고도 틀렸다는 말을 듣는다.
-    return buildChoices(
-      answer,
-      others,
-      (c) => c.label,
-      4,
-      Math.random,
-      (c) => [c.label.toLowerCase(), ...meaningKeys(c.meaning)],
+    /*
+     * 빈칸에 넣어도 말이 되는 것은 오답이 될 수 없다. 그런 것을 오답이라고
+     * 내면 아이는 맞게 읽고도 틀렸다는 말을 듣는다.
+     *
+     * 뜻만 보지 않고 **바꿔 쓸 표현 목록까지** 본다. 뜻을 다르게 적어 둔 짝은
+     * 뜻만으로는 안 걸린다 — `a lot of`(많은) 와 `a number of`(다수의, 여러)
+     * 가 그랬다. 둘 다 `many` 를 갖고 있어 실제로는 바꿔 쓸 수 있다.
+     */
+    return buildChoices(answer, others, (c) => c.label, 4, Math.random, (c) =>
+      expressionKeys({ word: c.label, meaning: c.meaning, synonyms: c.syn }),
     ).map((c) => ({
       ...c,
       correct: c.key === entry.id,

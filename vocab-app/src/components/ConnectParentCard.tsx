@@ -183,20 +183,66 @@ export function ConnectParentCard() {
           */}
           <View style={s.codeFallback}>
             <Muted style={{ fontSize: 11 }}>카메라가 안 되면 이 코드를 불러 주세요</Muted>
-            <Muted style={{ fontSize: 11, marginTop: 2 }}>
-              한 줄에 넉 자씩이에요. 대문자와 소문자를 구별해 주세요.
+            {/*
+              **"빈칸도 넣어야 하나" 를 없애는 것이 이 줄의 전부다.**
+
+              실제로 이 말을 들었다 — "코드도 4칸 4칸 이렇게 있어야 되는데
+              빈칸도 구분해서 넣어야 하는 건지 헷갈립니다". 넣어야 하나 말아야
+              하나를 고민하는 순간 이미 틀릴 준비가 된 것이다. 되돌리는 쪽은
+              공백을 다 걷어내니 어느 쪽이든 되는데, 그 사실을 모르면 소용이
+              없다. 되는 것을 말해 주는 것이 규칙을 하나 더 만드는 것보다 낫다.
+            */}
+            <Muted style={{ fontSize: 11, marginTop: 2, textAlign: 'center' }}>
+              네모 안의 글자만 1번부터 차례대로 적으면 돼요.{'\n'}
+              띄어쓰기는 신경 쓰지 않아도 되고, 대문자와 소문자만 맞춰 주세요.{'\n'}
+              <Text style={s.mark}>-</Text> 와 <Text style={s.mark}>_</Text> 도 코드의 글자예요.
+              빠뜨리지 마세요.
             </Muted>
             <View style={s.codeLines}>
               {toShortCodeLines(state.myPushToken).map((chunk, i) => (
                 <View key={i} style={s.codeLine}>
                   <Text style={s.codeNo}>{i + 1}</Text>
                   {/*
-                    노트북 확인(e2e)에서 이 줄들을 모아 부모 창에 옮겨 적는다.
-                    글자로 찾으면 코드가 매번 달라서 잡을 수가 없다.
+                    **네모로 감싼다.** 예전에는 한 줄에 빈칸으로 끊어 적었는데,
+                    푸시 토큰은 base64url 이라 `-` 와 `_` 를 글자로 쓴다. 그래서
+                    실제로 이런 것이 떴다 —
+
+                        WLDv RDLX NikW -PbJ kPm1 vYF
+
+                    넷째 토막이 하이픈으로 시작한다. 빈칸 바로 뒤에 하이픈이
+                    오면 그것이 글자인지 끊는 표시인지 사람은 가릴 수 없다.
+
+                    네모 안에 넣으면 그 물음이 통째로 사라진다. 테두리가 끊는
+                    자리를 맡으므로 안에 보이는 것은 전부 코드의 글자다.
+
+                    testID 는 노트북 확인(e2e)에서 이 토막들을 모아 부모 창에
+                    옮겨 적으려는 것이다. 코드가 매번 달라 글자로는 못 찾는다.
                   */}
-                  <Text style={s.code} selectable testID="link-code-chunk">
-                    {chunk}
-                  </Text>
+                  <View style={s.codeBoxOne}>
+                    <Text style={s.code} selectable testID="link-code-chunk">
+                      {/*
+                        **`-` 와 `_` 만 색을 달리 칠한다.**
+
+                        네모로 감쌌더니 새 함정이 하나 남았다 — 토막 끝에 하이픈이
+                        오면(`iew-`) 그것이 "다음 줄로 이어진다" 는 표시로 읽힌다.
+                        책에서 줄 끝에 하이픈을 넣는 그 규칙 때문이다. 그러면
+                        옮겨 적는 사람이 하이픈을 빼 버린다.
+
+                        색을 칠하면 그 물음이 끝난다. 글자로 보이는 것과 다른
+                        색이면 "이건 장식이 아니라 내용" 이라는 뜻이 된다.
+                        위 안내줄에도 같은 색으로 한 번 더 짚어 둔다.
+                      */}
+                      {chunk.split('').map((ch, j) =>
+                        ch === '-' || ch === '_' ? (
+                          <Text key={j} style={s.mark}>
+                            {ch}
+                          </Text>
+                        ) : (
+                          ch
+                        ),
+                      )}
+                    </Text>
+                  </View>
                 </View>
               ))}
             </View>
@@ -270,8 +316,31 @@ const s = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 20,
   },
-  codeLines: { marginTop: spacing.sm, gap: 2 },
+  /*
+   * `-` 와 `_` 만 다른 색으로. 이 둘은 코드의 글자인데 장식으로 읽히기 쉽다 —
+   * 토막 끝에 오면 줄이 이어진다는 표시로, 토막 앞에 오면 목록의 줄표로.
+   * 색이 다르면 그 물음이 생기지 않는다.
+   */
+  mark: { color: '#B45309', fontWeight: '800' },
+  codeLines: { marginTop: spacing.md, gap: spacing.xs },
   codeLine: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  /*
+   * 토막 하나를 담는 네모.
+   *
+   * 끊는 자리를 **테두리가 맡는다.** 그래야 안에 보이는 것이 전부 코드의
+   * 글자가 된다 — 빈칸으로 끊으면 그 빈칸이 글자인지 아닌지를 사람이 판단해야
+   * 하는데, 코드에 `-` 와 `_` 가 들어 있어서 판단할 수가 없다.
+   */
+  codeBoxOne: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: '#fff',
+    minWidth: 118,
+    alignItems: 'center',
+  },
   /* 몇 번째 줄인지. 어디까지 불렀는지 놓치지 않게 하는 것이 전부다. */
   codeNo: {
     width: 20,

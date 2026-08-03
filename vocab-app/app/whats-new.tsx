@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { Body, Button, Card, Chip, H2, H3, Muted, Row, Screen } from '../src/components/ui';
-import { APP_VERSION, RELEASES, releaseOf } from '../src/features/changelog';
+import { APP_VERSION, RELEASES, releaseOf, SHOW_RELEASE_NOTES } from '../src/features/changelog';
 import { APP_NAME, buildInfo, buildLabel } from '../src/features/build-info';
 import { useApp } from '../src/store/AppProvider';
 import { addedLine, DATA_RELEASES, DATA_VERSION, latestDataRelease } from '../src/data/dataVersion';
@@ -125,7 +125,11 @@ export default function WhatsNew() {
       ) : (
         <>
 
-      {outdated ? (
+      {/*
+        목록을 안 보여줄 때는 이 카드도 안 띄운다. "아래 목록에 이 판이
+        없어요" 라고 하는데 아래에 목록이 없으면 무슨 말인지 알 수 없다.
+      */}
+      {outdated && SHOW_RELEASE_NOTES ? (
         <Card style={{ marginTop: spacing.md, borderColor: colors.accent }}>
           <H3>지금 쓰는 판은 {build.version} 입니다</H3>
           <Muted style={{ marginTop: spacing.xs }}>
@@ -136,7 +140,28 @@ export default function WhatsNew() {
         </Card>
       ) : null}
 
-      {RELEASES.map((r) => {
+      {/*
+        정식으로 열기 전에는 바뀐 것을 안 적는다.
+
+        아직 다듬는 중인 것을 판마다 늘어놓으면 읽는 쪽에는 고쳤다 안 고쳤다
+        하는 소리로만 들린다. 대신 **지금 쓰는 판이 무엇인지**는 그대로 보인다 —
+        그게 이 화면의 원래 쓸모이고, "고친 게 안 보여요" 를 가리는 유일한
+        표시다. 목록은 SHOW_RELEASE_NOTES 를 켜면 그때부터 나온다.
+      */}
+      {!SHOW_RELEASE_NOTES ? (
+        <Card style={{ marginTop: spacing.md }}>
+          <H3>지금 쓰는 판은 {build.version} 입니다</H3>
+          <Muted style={{ marginTop: spacing.xs }}>
+            아직 다듬는 중이라 무엇이 바뀌었는지는 여기 적지 않고 있어요.
+            정식으로 열고 나면 판마다 무엇이 좋아졌는지 적어 드릴게요.
+          </Muted>
+          <Muted style={{ marginTop: spacing.sm }}>
+            낱말이 얼마나 늘었는지는 위 📚 낱말 에서 볼 수 있어요.
+          </Muted>
+        </Card>
+      ) : null}
+
+      {(SHOW_RELEASE_NOTES ? RELEASES : []).map((r) => {
         const isMine = r.version === build.version;
         return (
           <Card

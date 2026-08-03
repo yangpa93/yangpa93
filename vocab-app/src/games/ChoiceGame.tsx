@@ -24,7 +24,7 @@ import { GameId, VocabEntry } from '../types';
 import { exposure, Exposure, primaryMeaning } from '../data/entry';
 import { antonymsOf } from '../data/antonyms';
 import type { GameProps } from './ClozeGame';
-import { buildChoices, meaningKeys, shuffle } from '../srs/session';
+import { buildChoices, expressionKeys, meaningKeys, shuffle } from '../srs/session';
 import { Ask, ChoiceButton, Choices, DontKnow, QuestionBox } from './quiz-ui';
 import { speak } from '../lib/feedback';
 import { colors, font, radius, spacing } from '../theme';
@@ -216,17 +216,28 @@ function buildOptions(
     const answerMeaning = answerEntry ? primaryMeaning(answerEntry) : '';
 
     const distractors = others
-      .map((e) => ({ key: e.id, label: e.word, meaning: primaryMeaning(e) }))
+      .map((e) => ({
+        key: e.id,
+        label: e.word,
+        meaning: primaryMeaning(e),
+        syn: e.senses.flatMap((s) => s.synonyms),
+      }))
       .filter((c) => !banned.has(c.label.toLowerCase()));
 
     const picked = buildChoices(
-      { key: entry.id, label: answer, meaning: answerMeaning },
+      {
+        key: entry.id,
+        label: answer,
+        meaning: answerMeaning,
+        syn: answerEntry ? answerEntry.senses.flatMap((s) => s.synonyms) : [],
+      },
       distractors,
       (c) => c.label,
       4,
       Math.random,
-      // 낱말이 겹치는 것은 물론, 반대말과 **뜻이 같은** 단어도 뺀다.
-      (c) => [c.label.toLowerCase(), ...meaningKeys(c.meaning)],
+      // 낱말이 겹치는 것은 물론, 반대말과 **바꿔 쓸 수 있는** 낱말도 뺀다.
+      // 뜻을 다르게 적어 둔 짝은 뜻만 봐서는 안 걸린다(expressionKeys 참고).
+      (c) => expressionKeys({ word: c.label, meaning: c.meaning, synonyms: c.syn }),
     );
     return picked.map((c) => ({ ...c, correct: c.key === entry.id }));
   }
@@ -245,18 +256,27 @@ function buildOptions(
         key: e.id,
         label: otherExp.sense.synonyms[0] ?? e.word,
         meaning: otherExp.sense.meaning,
+        // 그 낱말 자신과 나머지 동의어까지. 이 중 하나라도 정답 쪽과 겹치면
+        // 바꿔 쓸 수 있는 사이라 오답이 될 수 없다.
+        syn: [e.word, ...otherExp.sense.synonyms],
       };
     })
     .filter((c) => !banned.has(c.label.toLowerCase()));
 
-  // 뜻이 겹치는 표현은 바꿔 써도 말이 되므로 오답이 될 수 없다.
+  // 바꿔 쓸 수 있는 표현은 오답이 될 수 없다. 뜻이 겹치는 것뿐 아니라
+  // 동의어 목록이 겹치는 것도 본다(expressionKeys 참고).
   const picked = buildChoices(
-    { key: entry.id, label: answer, meaning: exp.sense.meaning },
+    {
+      key: entry.id,
+      label: answer,
+      meaning: exp.sense.meaning,
+      syn: [entry.word, ...exp.sense.synonyms],
+    },
     distractors,
     (c) => c.label,
     4,
     Math.random,
-    (c) => [c.label.toLowerCase(), ...meaningKeys(c.meaning)],
+    (c) => expressionKeys({ word: c.label, meaning: c.meaning, synonyms: c.syn }),
   );
   return picked.map((c) => ({ ...c, correct: c.key === entry.id }));
 }

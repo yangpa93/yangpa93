@@ -238,6 +238,26 @@ for (const n of notes) console.log(`  ✅ ${n}`);
 for (const w of warnings) console.log(`\n  ⚠️  ${w}`);
 for (const p of problems) console.log(`\n  ❌ ${p}`);
 
+/*
+ * **여기서 못 보는 것을 말해 둔다.**
+ *
+ * 이 점검은 소스만 읽는다. 그런데 실제로 앱을 못 쓰게 만든 것은 소스에 없는
+ * 것이었다 — EAS 에 FCM 열쇠가 안 올라가 있어서, 토큰은 나오는데 전송만
+ * 전부 실패했다. 그 동안 이 화면은 줄곧 "막는 문제 없음" 이라고 말하고 있었다.
+ *
+ * 아무 말도 안 하는 것보다, 무엇을 못 봤는지 말하는 편이 낫다. "다 됐다" 는
+ * 말이 거짓말이 되지 않으려면 그 말의 테두리가 화면에 있어야 한다.
+ */
+console.log('');
+console.log('  ── 이 점검이 못 보는 것 ──────────────────────────────');
+console.log('');
+console.log('  · EAS 에 FCM 열쇠가 올라가 있는지 (소스에 없는 값입니다)');
+console.log('    열쇠가 없으면 QR 은 멀쩡히 뜨는데 알림만 전부 실패합니다.');
+console.log('    폰 주소가 있으시면 이걸로 가리세요 :');
+console.log('        npm run push-test -- "ExponentPushToken[...]"');
+console.log('');
+console.log('  · 화면이 실제로 그렇게 움직이는지 → npm run e2e');
+
 if (problems.length === 0) {
   console.log(
     `\n막는 문제 없음${warnings.length ? ` (경고 ${warnings.length}개)` : ''}. ` +

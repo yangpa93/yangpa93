@@ -257,14 +257,44 @@ function explain(code, message, stage) {
       ],
     },
     InvalidCredentials: {
-      what: 'EAS 에 FCM 열쇠가 아예 없거나 못 쓰는 것입니다.',
-      why: '안드로이드 푸시는 구글 FCM 으로만 갑니다. 열쇠가 없으면 Expo 가 대신 보낼 수 없습니다.',
+      what: 'EAS 에 FCM 열쇠가 아예 없습니다.',
+      why:
+        '안드로이드 푸시는 구글 FCM 으로만 갑니다. Expo 가 우리 대신 구글에\n' +
+        '     넣어 주는데, 그러려면 우리 파이어베이스 프로젝트의 열쇠를 EAS 에\n' +
+        '     올려 두어야 합니다. 그 열쇠가 없습니다.\n\n' +
+        '     토큰은 멀쩡합니다. 주소를 못 찾은 것이 아니라 그 주소로 보낼\n' +
+        '     방법이 없는 것입니다. 그래서 QR 은 만들어지는데 전송만 실패합니다 —\n' +
+        '     지금 증상과 정확히 맞습니다.',
       fix: [
-        'npx eas-cli@latest credentials',
-        '  → Android → Google Service Account Key → 새로 올리기',
+        '① 파이어베이스 콘솔에서 열쇠 파일을 받습니다',
+        '     console.firebase.google.com → 우리 프로젝트',
+        '     → ⚙️ 프로젝트 설정 → 서비스 계정 탭',
+        '     → [새 비공개 키 생성] → .json 파일이 받아집니다',
         '',
-        '열쇠는 파이어베이스 콘솔 → 프로젝트 설정 → 서비스 계정 →',
-        '새 비공개 키 생성 에서 받습니다. 올린 뒤 **APK 를 다시 만드세요.**',
+        '② 같은 프로젝트에서 FCM API 가 켜져 있는지 봅니다',
+        '     프로젝트 설정 → 클라우드 메시징 탭',
+        '     → Firebase Cloud Messaging API (V1) 가 "사용 설정됨" 이라야 합니다',
+        '',
+        '③ 그 .json 을 EAS 에 올립니다',
+        '     npx eas-cli@latest credentials',
+        '     → Android → production',
+        '     → Google Service Account',
+        '     → ...Key for Push Notifications (FCM V1)',
+        '     → Set up a Google Service Account Key → 받은 .json 을 고릅니다',
+        '',
+        '④ 이 명령을 한 번 더 돌려 확인합니다',
+        '     npm run push-test -- "같은 주소"',
+        '',
+        '─ APK 를 다시 안 만드셔도 될 가능성이 높습니다 ─',
+        '',
+        '이 열쇠는 Expo 서버가 쓰는 것이지 앱 안에 들어가는 것이 아닙니다.',
+        '앱 쪽에 필요한 google-services.json 은 이미 들어 있습니다 — 없었으면',
+        '애초에 QR 이 안 떴을 것입니다. ④ 가 ✅ 로 바뀌면 지금 깔린 앱',
+        '그대로 알림이 갑니다.',
+        '',
+        '다만 그것과 별개로, 부모 폰에 아이가 등록되지 않던 버그는 앱 쪽에',
+        '있었고 0.23.0 에서 고쳤습니다. 깔린 앱이 그보다 아래라면 푸시가',
+        '살아난 뒤에도 아이 목록이 비어 보일 수 있습니다.',
       ],
     },
     DeviceNotRegistered:
@@ -324,6 +354,23 @@ function explain(code, message, stage) {
   const k = known[code];
   console.log(`     오류 이름 — ${code ?? '(없음)'}`);
   console.log('');
+
+  /*
+   * 이 자리에서 **아니라고 밝혀진 것**도 적는다.
+   *
+   * 오류 하나를 받으면 그것만 보게 되는데, 그러면 "그럼 패키지 이름 바꾼 건
+   * 괜찮은 건가" 같은 것이 계속 남는다. 남은 걱정은 다음에 또 뒤지게 만든다.
+   */
+  if (code === 'InvalidCredentials' || code === 'MismatchSenderId') {
+    console.log('     이건 아닙니다 — 이번 답으로 걸러진 것');
+    console.log('       · 주소가 죽은 것이 아닙니다. Expo 가 그 주소는 알고 있습니다.');
+    console.log('       · 옮겨 적다 틀린 것도 아닙니다. 같은 이유입니다.');
+    if (code === 'InvalidCredentials') {
+      console.log('       · 패키지 이름을 바꾼 것 때문도 아닙니다. 그거라면');
+      console.log('         MismatchSenderId 가 나옵니다.');
+    }
+    console.log('');
+  }
 
   if (!k) {
     console.log('     처음 보는 오류입니다. 원래 메시지를 그대로 알려 주세요.');

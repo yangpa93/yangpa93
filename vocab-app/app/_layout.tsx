@@ -78,6 +78,12 @@ export default function RootLayout() {
             */}
             <Stack.Screen name="child" options={{ title: '아이 연결하기' }} />
             <Stack.Screen name="whats-new" options={{ title: '이번 판에서 바뀐 것' }} />
+            {/*
+              없는 화면으로 왔을 때. 제목을 안 정하면 머리에 `+not-found` 가
+              그대로 뜬다 — 영어 기본 화면을 우리 말로 바꿔 놓고 제목만 남으면
+              고친 값이 반쯤 사라진다.
+            */}
+            <Stack.Screen name="+not-found" options={{ title: '없는 화면' }} />
           </Stack>
         </AppProvider>
       </SafeAreaProvider>

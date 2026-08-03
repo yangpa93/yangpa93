@@ -40,7 +40,7 @@ export interface Release {
  * 실제 설치된 앱에서 읽어 오는데(build-info.ts), 그 값과 여기 목록이 어긋나면
  * "0.10.0 을 쓰는데 0.9.0 의 변경 내역이 보이는" 일이 생긴다.
  */
-export const APP_VERSION = '0.22.0';
+export const APP_VERSION = '0.22.1';
 
 /**
  * 새 판이 맨 앞. 화면도 이 순서 그대로 보여준다.
@@ -49,6 +49,16 @@ export const APP_VERSION = '0.22.0';
  * 가리는 데 충분하고, 목록이 길면 아무도 안 읽는다.
  */
 export const RELEASES: Release[] = [
+  {
+    version: '0.22.1',
+    date: '2026-08-03',
+    title: '‘Unmatched Route’ 를 우리 말로 바꿨습니다',
+    items: [
+      '영어로 뜨던 “Unmatched Route” 대신 무엇이 잘못됐고 무엇을 하면 되는지 한국어로 알려 줍니다.',
+      '아이 QR 로 들어온 것이면 “QR 은 잘 읽혔어요. 앱이 예전 판이에요” 라고 짚어 줍니다.',
+      '지금 앱 판과 최신 판을 나란히 보여 주니, 새로 받아야 하는지 그 자리에서 알 수 있어요.',
+    ],
+  },
   {
     version: '0.22.0',
     date: '2026-08-03',

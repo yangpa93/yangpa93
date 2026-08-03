@@ -367,6 +367,21 @@ ok('아이 이름이 보인다', await has(page, '서준'));
 await go(page, '/child?token=망가진것');
 ok('깨진 QR 은 까닭을 말한다', await has(page, '연결할 수 없어요'));
 
+/*
+ * 아예 없는 화면으로 갔을 때. expo-router 의 영어 기본 화면(Unmatched Route)
+ * 대신 우리 화면이 나와야 한다 — 그 영어 글자로는 무엇이 잘못됐는지도,
+ * 무엇을 해야 하는지도 알 수 없다.
+ */
+await go(page, '/없는화면');
+ok('없는 화면은 우리 말로 안내한다', await has(page, '이 앱에 없는 화면이에요'));
+ok('Unmatched Route 영어 화면이 아니다', !(await has(page, 'Unmatched Route', 1500)));
+ok('무엇을 하면 되는지 적혀 있다', await has(page, '새 APK 를 받아'));
+
+// 아이 QR 로 왔는데 화면이 없는 경우 — 옛 앱에서 나는 바로 그 상황
+await go(page, `/child-없음?token=${TOKEN}`);
+ok('아이 QR 이면 QR 은 멀쩡하다고 말한다', await has(page, '아이 QR 은 잘 읽혔어요'));
+ok('들어온 주소를 그대로 보여 준다', await has(page, 'token='));
+
 await go(page, `/link?token=${TOKEN}&label=%EC%97%84%EB%A7%88%20%ED%8F%B0`);
 ok('부모 QR 링크도 그대로 받는다', await has(page, '부모님 폰과 연결할까요'));
 

@@ -7,7 +7,7 @@ import { LEVEL_SHORT, RewardRequest } from '../src/types';
 import { colors, radius, spacing } from '../src/theme';
 
 /**
- * 아이가 올린 요구권 신청을 승인·보류한다.
+ * 아이가 올린 동기 부여 요청권 신청을 승인·보류한다.
  *
  * 금액은 아이가 정하는 것이 아니라 조건에 따라 이미 정해져 있다.
  *   중학교 레벨업 2만원 · 고등학교 레벨업 3만원 · 한 달 개근 2만원
@@ -39,7 +39,7 @@ export default function ParentRewards() {
           icon="🎁"
           title="아직 보상 요청이 없어요"
           hint={
-            '레벨 시험에 통과하거나 한 달을 개근하면 요구권이 생깁니다.\n' +
+            '레벨 시험에 통과하거나 한 달을 개근하면 동기 부여 요청권이 생깁니다.\n' +
             `중학교 레벨업 ${formatWon(r.middleLevel)} · 고등학교 레벨업 ${formatWon(r.highLevel)} · ` +
             `한 달 개근 ${formatWon(r.perfectMonth)}\n` +
             '금액은 설정에서 바꿀 수 있습니다.'
@@ -140,6 +140,10 @@ export default function ParentRewards() {
                 <Body style={{ fontWeight: '800' }}>{formatWon(r.amount)}</Body>
                 <Muted style={{ flex: 1 }}>{r.reason}</Muted>
               </Row>
+              {/* 아이가 신청한 것과 부모가 먼저 준 것은 성격이 다르다. */}
+              {r.origin === 'parent' ? (
+                <Muted style={{ marginTop: spacing.xs }}>부모님이 먼저 주셨어요</Muted>
+              ) : null}
               {r.parentNote ? <Muted style={{ marginTop: spacing.xs }}>“{r.parentNote}”</Muted> : null}
               {r.status === 'approved' ? (
                 <Button

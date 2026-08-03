@@ -18,25 +18,66 @@
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
-import { buildPushBody, EXPO_PUSH_ENDPOINT, PushPayload } from './pairing';
+import {
+  buildHelloBody,
+  buildRewardAskBody,
+  RewardAskPayload,
+  buildLinkBackBody,
+  buildNudgeBody,
+  buildPushBody,
+  buildSettingsBody,
+  EXPO_PUSH_ENDPOINT,
+  type NudgePayload,
+  pushFailureReason,
+  type SettingsPayload,
+  PushPayload,
+} from './pairing';
 
 // 순수 로직은 pairing.ts에 있다. 호출부가 한 곳만 보면 되도록 다시 내보낸다.
 export {
   buildLinkUrl,
+  buildChildLinkUrl,
+  buildNudgeBody,
   isValidPushToken,
+  parseLinkUrl,
+  parseChildLinkUrl,
+  parseScanned,
+  scannedError,
+  parseLinkBack,
+  toShortCode,
+  fromShortCode,
+  shortCodeError,
+  NUDGE_PRESETS,
+  parseHello,
+  parseNudge,
+  parseSettings,
+  pushFailureReason,
   LINK_SCHEME,
   parseIncoming,
   toPayload,
 } from './pairing';
-export type { PushPayload } from './pairing';
+export type {
+  ChildLink,
+  Scanned,
+  HelloPayload,
+  LinkBackPayload,
+  NudgePayload,
+  PushPayload,
+  SettingsPayload,
+} from './pairing';
 
 /**
  * 이 기기의 Expo 푸시 토큰을 발급받는다. 부모 기기에서만 쓴다.
  *
- * 실패하면 null. 실패 이유는 대개 셋 중 하나다.
- *  - Expo Go로 실행 중 (실제 빌드가 아님)
- *  - 알림 권한을 거부함
- *  - `eas init`을 하지 않아 프로젝트 ID가 없음
+ * 실패하면 null과 함께 **왜 실패했는지**를 돌려준다. 예전에는 어떤 오류가
+ * 나든 "Expo Go에서는 받을 수 없습니다"라고만 했다. EAS로 제대로 빌드한
+ * 앱에서도 그 말이 나와서, 무엇이 잘못됐는지 알 길이 없었다. 실제로 그렇게
+ * 한나절을 잃었다.
+ *
+ * 안드로이드에서 가장 흔한 원인은 **FCM 설정이 없는 것**이다. 구글이 안드로이드
+ * 푸시를 FCM으로만 받게 해 두어서, 파이어베이스 설정 파일(google-services.json)
+ * 과 EAS에 올린 열쇠가 둘 다 있어야 토큰이 나온다. 그 경우 원래 오류에
+ * 'FCM' 또는 'FirebaseApp' 이 들어 있다.
  */
 export async function fetchPushToken(): Promise<{ token: string | null; reason?: string }> {
   const perm = await Notifications.getPermissionsAsync();
@@ -59,11 +100,7 @@ export async function fetchPushToken(): Promise<{ token: string | null; reason?:
     const res = await Notifications.getExpoPushTokenAsync({ projectId });
     return { token: res.data };
   } catch (e) {
-    return {
-      token: null,
-      reason:
-        'Expo Go에서는 푸시 토큰을 받을 수 없습니다. EAS로 빌드한 앱에서 다시 시도해 주세요.',
-    };
+    return { token: null, reason: pushFailureReason(e, Constants.appOwnership === 'expo') };
   }
 }
 
@@ -82,6 +119,66 @@ export async function sendReportToParent(
   parentToken: string,
   payload: PushPayload,
 ): Promise<SendResult> {
+  return sendPush(buildPushBody(parentToken, payload));
+}
+
+/**
+ * 아이가 동기 부여 요청권을 신청했다고 **주 부모에게만** 알린다.
+ *
+ * 실패해도 신청 자체는 아이 폰에 남는다. 알림이 못 갔다고 신청을 무르면
+ * 아이는 자기가 뭘 잘못했는지 모른 채 다시 눌러야 한다.
+ */
+export async function sendRewardAskToParent(
+  parentToken: string,
+  payload: RewardAskPayload,
+): Promise<SendResult> {
+  return sendPush(buildRewardAskBody(parentToken, payload));
+}
+
+/** 아이 기기가 연결하면서 자기 주소를 부모에게 알린다. */
+export async function sendHelloToParent(
+  parentToken: string,
+  childName: string,
+  childToken: string,
+): Promise<SendResult> {
+  return sendPush(buildHelloBody(parentToken, { childName, childToken }));
+}
+
+/**
+ * 부모가 아이 QR 을 찍은 직후, 자기 주소를 아이에게 되보낸다.
+ *
+ * 이게 없으면 연결이 반만 된다 — 부모는 아이를 알지만 아이는 리포트를
+ * 어디로 보낼지 모른다. 아이 쪽에서 아무것도 누르지 않아도 되도록,
+ * 아이 앱은 알림을 누르지 않아도 이 값을 받아 적용한다.
+ */
+export async function sendLinkBackToChild(
+  childToken: string,
+  parentToken: string,
+  parentLabel: string,
+): Promise<SendResult> {
+  return sendPush(buildLinkBackBody(childToken, { parentToken, parentLabel }));
+}
+
+/**
+ * 부모가 아이 기기로 "공부하자"고 보낸다. 리포트와 반대 방향이다.
+ */
+export async function sendNudgeToChild(
+  childToken: string,
+  payload: NudgePayload,
+): Promise<SendResult> {
+  return sendPush(buildNudgeBody(childToken, payload));
+}
+
+/** 부모가 아이 기기의 공부할 과목을 바꾼다. */
+export async function sendSettingsToChild(
+  childToken: string,
+  payload: SettingsPayload,
+): Promise<SendResult> {
+  return sendPush(buildSettingsBody(childToken, payload));
+}
+
+/** 실제 전송. 보내는 내용만 다르고 오류를 읽는 방법은 같다. */
+async function sendPush(body: unknown): Promise<SendResult> {
   try {
     const res = await fetch(EXPO_PUSH_ENDPOINT, {
       method: 'POST',
@@ -89,7 +186,7 @@ export async function sendReportToParent(
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(buildPushBody(parentToken, payload)),
+      body: JSON.stringify(body),
     });
 
     if (!res.ok) {
@@ -150,7 +247,9 @@ export async function scheduleMissingReportAlert(args: {
     identifier: MISSING_ID,
     content: {
       title: '📭 오늘 학습 리포트가 오지 않았어요',
-      body: '아이가 아직 공부를 시작하지 않았거나 기기가 꺼져 있을 수 있어요.',
+      // 눌렀을 때 할 일을 적어 준다. 알림만 뜨고 끝나면 부모는 손으로
+      // 앱을 열고 부모님 모드를 찾아 들어가야 한다.
+      body: '여기를 눌러 아이에게 공부하자고 알려 줄 수 있어요.',
       data: { kind: 'missing-report' },
     },
     trigger: {

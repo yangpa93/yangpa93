@@ -25,10 +25,12 @@ import { exposure, Exposure, primaryMeaning } from '../data/entry';
 import { antonymsOf } from '../data/antonyms';
 import type { GameProps } from './ClozeGame';
 import { buildChoices, meaningKeys, shuffle } from '../srs/session';
+import { Ask, ChoiceButton, Choices, DontKnow, QuestionBox } from './quiz-ui';
 import { speak } from '../lib/feedback';
 import { colors, font, radius, spacing } from '../theme';
 import { Muted } from '../components/ui';
 import { HighlightedSentence } from '../components/HighlightedSentence';
+import { RevealKo } from './RevealKo';
 
 export type ChoiceGameId = Extract<GameId, 'context' | 'polysemy' | 'synonym' | 'antonym'>;
 
@@ -53,12 +55,17 @@ export function ChoiceGame({
   onAnswer,
 }: GameProps & { game: ChoiceGameId }) {
   const [picked, setPicked] = useState<string | null>(null);
+  /** 아이가 '해석 보기'를 눌렀는지. 한 번 열면 그 문제 동안 계속 보인다. */
+  const [revealed, setRevealed] = useState(false);
 
   const choices = useMemo(
     () => buildOptions(game, entry, exp, pool, learned ?? []),
     // 문항이 바뀔 때만 보기를 다시 뽑는다. 오답을 눌렀다고 보기가 섞이면 안 된다.
     [game, entry.id, exp.senseIndex, exp.exampleIndex, pool, learned],
   );
+
+  /** 해석에 정답이 들어 있는 유형은 열어 줄 수 없다. */
+  const canReveal = game === 'synonym' || game === 'antonym';
 
   function choose(key: string, correct: boolean) {
     if (picked) return;
@@ -68,34 +75,40 @@ export function ChoiceGame({
 
   return (
     <View style={{ flex: 1 }}>
-      <Muted>{PROMPT[game]}</Muted>
+      <Ask>{PROMPT[game]}</Ask>
 
-      <View style={s.stem}>
-        <Stem
-          entry={entry}
-          exp={exp}
-          ttsEnabled={ttsEnabled}
-          // 해석에 정답(한국어 뜻)이 그대로 들어 있는 유형은 미리 보여줄 수 없다.
-          // '바꿔 쓰기'와 '반대말 찾기'는 정답이 영어 표현이라 해석을 봐도
-          // 답이 드러나지 않는다. 오히려 해석이 있어야 반대를 판단할 수 있다.
-          showKo={picked !== null || (showTranslation && (game === 'synonym' || game === 'antonym'))}
-        />
-      </View>
+      <QuestionBox>
+        <Stem entry={entry} exp={exp} ttsEnabled={ttsEnabled} showKo={picked !== null || revealed} />
+      </QuestionBox>
 
-      <View style={{ gap: spacing.sm }}>
-        {choices.map((c) => (
-          <ChoiceButton key={c.key} choice={c} picked={picked} onPress={() => choose(c.key, c.correct)} />
+      {/*
+        '문맥 속 뜻'은 보기가 곧 한국어 뜻이라 해석을 보여주면 답이 그대로
+        드러난다("I have a few questions."의 해석에 '몇 개'가 들어 있다).
+        그래서 이 유형만 버튼을 내주지 않는다.
+
+        '바꿔 쓰기'와 '반대말'은 정답이 영어 표현이라 해석을 봐도 답이
+        드러나지 않는다. 예전에는 이 둘의 해석을 **처음부터 띄우고** 있었는데,
+        그러면 아이가 영어 문장을 읽지 않는다. 빈칸 채우기와 똑같이
+        눌렀을 때만 보여준다.
+      */}
+      {canReveal && showTranslation && !revealed && picked === null ? (
+        <RevealKo onPress={() => setRevealed(true)} />
+      ) : null}
+
+      <Choices>
+        {choices.map((c, i) => (
+          <ChoiceButton
+            key={c.key}
+            index={i}
+            label={c.label}
+            correct={c.correct}
+            picked={picked}
+            self={c.key}
+            onPress={() => choose(c.key, c.correct)}
+          />
         ))}
-
-        <Pressable
-          onPress={() => choose(DONT_KNOW, false)}
-          disabled={picked !== null}
-          accessibilityRole="button"
-          style={[s.dontKnow, picked === DONT_KNOW && s.dontKnowPicked, picked !== null && { opacity: 0.6 }]}
-        >
-          <Text style={s.dontKnowText}>모르겠어요</Text>
-        </Pressable>
-      </View>
+        <DontKnow picked={picked} onPress={() => choose(DONT_KNOW, false)} />
+      </Choices>
     </View>
   );
 }
@@ -125,63 +138,6 @@ function Stem({
   );
 }
 
-function ChoiceButton({
-  choice,
-  picked,
-  onPress,
-}: {
-  choice: Choice;
-  picked: string | null;
-  onPress: () => void;
-}) {
-  const answered = picked !== null;
-  const isPicked = picked === choice.key;
-  // 틀렸을 때는 정답도 같이 밝혀 준다. 뭐가 맞는지 모르고 넘어가면 학습이 안 된다.
-  const revealCorrect = answered && choice.correct;
-
-  const shake = useRef(new Animated.Value(0)).current;
-  useEffect(() => {
-    if (isPicked && !choice.correct) {
-      Animated.sequence([
-        Animated.timing(shake, { toValue: 1, duration: 50, useNativeDriver: true }),
-        Animated.timing(shake, { toValue: -1, duration: 50, useNativeDriver: true }),
-        Animated.timing(shake, { toValue: 0, duration: 50, useNativeDriver: true }),
-      ]).start();
-    }
-  }, [isPicked, choice.correct, shake]);
-
-  return (
-    <Animated.View
-      style={{
-        transform: [{ translateX: shake.interpolate({ inputRange: [-1, 1], outputRange: [-8, 8] }) }],
-      }}
-    >
-      <Pressable
-        onPress={onPress}
-        disabled={answered}
-        accessibilityRole="button"
-        style={({ pressed }) => [
-          s.choice,
-          pressed && !answered && { opacity: 0.85 },
-          revealCorrect && s.choiceCorrect,
-          isPicked && !choice.correct && s.choiceWrong,
-          answered && !isPicked && !choice.correct && { opacity: 0.45 },
-        ]}
-      >
-        <Text
-          style={[
-            s.choiceText,
-            revealCorrect && { color: colors.correct },
-            isPicked && !choice.correct && { color: colors.wrong },
-          ]}
-        >
-          {choice.label}
-        </Text>
-      </Pressable>
-    </Animated.View>
-  );
-}
-
 const PROMPT: Record<ChoiceGameId, string> = {
   context: '색칠한 단어는 여기서 무슨 뜻일까요?',
   polysemy: '이 단어는 뜻이 여러 개예요. 이 문장에서는?',
@@ -189,13 +145,6 @@ const PROMPT: Record<ChoiceGameId, string> = {
   antonym: '색칠한 단어와 뜻이 반대인 것은?',
 };
 
-/**
- * 오답 보기를 뽑을 단어 풀.
- *
- * 이미 배운 단어를 먼저 쓴다. 처음 보는 단어가 보기에 섞이면 뜻을 견주는
- * 대신 "아는 단어"를 찍게 되기 때문이다. 배운 게 아직 얼마 없는 초반에는
- * 보기 4개도 못 채우므로 그 레벨 단어로 메운다.
- */
 function distractorPool(pool: VocabEntry[], learned: VocabEntry[], exclude: string): VocabEntry[] {
   const seen = new Set([exclude]);
   const out: VocabEntry[] = [];

@@ -79,7 +79,8 @@ export type EntryKind = 'word' | 'idiom';
 export type EntrySource =
   | 'curriculum' // 교육부 기본 어휘 목록
   | 'textbook' // 중·고 검정 교과서 공통 출현
-  | 'csat'; // 수능·모평 기출 빈출
+  | 'csat' // 수능·모평 기출 빈출
+  | 'daily'; // 부모님용 일상·업무 문장 (korean/english_365_dataset.json)
 
 export interface Example {
   /** 영어 예문 */
@@ -115,6 +116,86 @@ export interface VocabEntry {
   /** 뜻 목록. 최소 1개. 자주 쓰이는 뜻부터 앞에 둔다. */
   senses: Sense[];
   source: EntrySource;
+}
+
+/* ------------------------------------------------------------------ */
+/* 국어 어휘                                                            */
+/* ------------------------------------------------------------------ */
+
+/**
+ * 국어 어휘의 갈래.
+ *
+ * 갈래마다 성격이 달라서 문제 유형도 달라진다. 사자성어는 한자를 묻고,
+ * 고전은 현대어 풀이를 묻는다. 개념어·수능 어휘는 문장 속 쓰임을 묻는다.
+ */
+export type KoCategory =
+  | 'idiom' // 사자성어
+  | 'concept' // 개념어 (문학·비문학)
+  | 'classic' // 고전 문학 어휘
+  | 'csat'; // 수능 필수 어휘
+
+export const KO_CATEGORY_LABEL: Record<KoCategory, string> = {
+  idiom: '사자성어',
+  concept: '개념어',
+  classic: '고전',
+  csat: '수능 어휘',
+};
+
+/** 갈래 순서. 하루치를 뽑을 때와 화면에 늘어놓을 때 이 순서를 쓴다. */
+export const KO_CATEGORY_ORDER: KoCategory[] = ['idiom', 'concept', 'classic', 'csat'];
+
+export interface KoExample {
+  /** 예문 한 줄, 또는 고전이면 원문 단락 */
+  text: string;
+  /**
+   * 현대어 풀이. 고전 어휘에만 있다.
+   *
+   * 원문만 보여주면 아이가 읽지 못한다. 그렇다고 풀이를 늘 붙여 두면
+   * 원문을 읽으려 하지 않으므로, 영어 예문의 해석과 똑같이 처음에는
+   * 숨겨 두고 '풀이 보기'를 눌러야 나온다.
+   */
+  gloss?: string;
+  /**
+   * 어디서 가져온 문장인지. 예: '정철, 관동별곡'
+   *
+   * **비어 있으면 원전에서 가져온 문장이 아니라는 뜻이다.** 지어낸 예문과
+   * 원문 인용을 화면에서 구별해 보여주려고 둔다. 고전 어휘는 반드시
+   * 채운다 — 출처 없는 옛말 문장은 아이에게 가르칠 수 없다.
+   */
+  source?: string;
+}
+
+/**
+ * 국어 어휘 하나.
+ *
+ * 영어의 `VocabEntry`와 따로 두는 이유: 국어는 다의어를 뜻마다 나누지 않고
+ * (엑셀 원본이 뜻 하나로 정리돼 있다), 대신 한자·갈래·출처가 필요하다.
+ * 한 타입에 다 밀어 넣으면 어느 쪽에도 안 맞는 빈 칸이 잔뜩 생긴다.
+ */
+export interface KoEntry {
+  /** `ko-0001` 형태. 레벨이 바뀌어도 id는 바꾸지 않는다. */
+  id: string;
+  level: LevelId;
+  category: KoCategory;
+  /** 표제어. 사자성어는 음(한글)을 쓴다. */
+  word: string;
+  /** 한자 또는 외래어 원어. 없으면 빈 문자열. */
+  hanja: string;
+  /**
+   * 이 한자를 표준국어대사전에서 확인했는지.
+   *
+   * 사자성어 300개를 사전과 대조했더니 20개가 어긋났고 19개는 사전에
+   * 표제어조차 없었다. 사전에 없는 것은 실재하는 말이지만 한자를 확인할
+   * 길이 없다. **확인 못 한 한자로는 한자 고르기 문제를 내지 않는다** —
+   * 틀릴지도 모르는 답을 정답이라고 채점할 수는 없다.
+   */
+  hanjaVerified: boolean;
+  /** 영역·분류. 예: '인문', '문학', '감정/태도' */
+  field: string;
+  /** 뜻풀이 */
+  meaning: string;
+  /** 예문. 최소 1개. */
+  examples: KoExample[];
 }
 
 /* ------------------------------------------------------------------ */
@@ -170,7 +251,9 @@ export type GameId =
   | 'context' // 문장 속 그 단어가 여기서 무슨 뜻인지
   | 'polysemy' // 다의어: 여러 뜻 중 이 문장에서 쓰인 뜻
   | 'synonym' // 문맥에 맞게 바꿔 쓸 수 있는 표현
-  | 'antonym'; // 문장 속 그 단어와 뜻이 반대인 표현
+  | 'antonym' // 문장 속 그 단어와 뜻이 반대인 표현
+  | 'scramble' // 뒤섞인 낱말을 순서대로 놓아 문장 만들기
+  | 'hanja'; // 사자성어: 뜻을 보고 알맞은 한자 고르기 (국어 전용)
 
 export const GAME_LABEL: Record<GameId, string> = {
   cloze: '빈칸 채우기',
@@ -180,14 +263,27 @@ export const GAME_LABEL: Record<GameId, string> = {
   polysemy: '여러 뜻 구별',
   synonym: '바꿔 쓰기',
   antonym: '반대말 찾기',
+  scramble: '문장 배열',
+  hanja: '한자 고르기',
 };
 
 /** 한 세션에서 단어를 만나는 단계. 라운드가 올라갈수록 어려워진다. */
-export type Stage = 'learn' | 'apply' | 'recall';
+/**
+ * 문항의 단계. 뒤로 갈수록 스스로 꺼내야 한다.
+ *
+ * `build` 는 낱말을 순서대로 놓아 문장을 만드는 단계다. 뜻을 고르는 것과
+ * 철자를 쓰는 것 사이에 있다 — 낱말은 다 주어지지만 어디에 놓을지는
+ * 스스로 정해야 한다.
+ */
+export type Stage = 'learn' | 'apply' | 'build' | 'recall';
+
+/** 쉬운 것부터. 이 순서가 곧 난이도다. */
+export const STAGE_ORDER: Stage[] = ['learn', 'apply', 'build', 'recall'];
 
 export const STAGE_LABEL: Record<Stage, string> = {
   learn: '익히기',
   apply: '활용하기',
+  build: '문장 만들기',
   recall: '떠올리기',
 };
 
@@ -207,6 +303,19 @@ export interface DailyRecord {
   completed: boolean;
   /** 그날 틀린 단어 id (중복 포함 — 두 번 틀리면 두 번 들어간다) */
   wrongEntryIds: string[];
+  /**
+   * 그날 만난 단어 id (중복 없음, 만난 순서).
+   *
+   * **왜 따로 두나.** 단어장에 '오늘 배운 것' 을 보여 주려면 무엇을 만났는지
+   * 알아야 하는데, 지금까지는 개수(studied)만 남기고 무엇이었는지는 버렸다.
+   * 카드(cards)에는 마지막으로 본 날짜만 있어서 "오늘 본 것" 을 되짚을 수가
+   * 없다. 틀린 것은 이미 남기고 있었으니(wrongEntryIds), 맞힌 것도 남긴다.
+   *
+   * **없을 수 있다.** 이 칸이 생기기 전에 저장된 날에는 들어 있지 않다.
+   * 옛 기록을 통째로 고쳐 쓰는 대신 읽는 길목에서 채운다(dayRecord.ts 의
+   * withDefaults) — 되돌리기로 들어오는 남의 백업까지 다 손볼 수는 없다.
+   */
+  studiedEntryIds?: string[];
 }
 
 /* ------------------------------------------------------------------ */
@@ -216,7 +325,18 @@ export interface DailyRecord {
 export type RewardStatus = 'pending' | 'approved' | 'rejected' | 'fulfilled';
 
 /**
- * 요구권 신청.
+ * 이 동기 부여 요청권을 누가 만들었는지.
+ *
+ *   child  — 아이가 신청했고 부모가 판단을 기다린다
+ *   parent — 부모가 먼저 주기로 하고 바로 만들었다 (승인된 상태로 태어난다)
+ *
+ * 나중에 목록에서 둘을 구별해 보여주려면 기록에 남아 있어야 한다.
+ * 아이가 신청한 것과 부모가 먼저 준 것은 성격이 다르다.
+ */
+export type RewardOrigin = 'child' | 'parent';
+
+/**
+ * 동기 부여 요청권 신청.
  *
  * 갖고 싶은 것을 적어 보내는 방식이 아니라 **정해진 금액을 요구할 권리**다.
  * 조건과 금액은 src/features/awards.ts 에 있다.
@@ -252,13 +372,40 @@ export interface RewardRequest {
   decidedAt: number | null;
   /** 부모가 남긴 한마디 */
   parentNote: string;
+  /** 아이가 신청한 것인지, 부모가 먼저 준 것인지 */
+  origin: RewardOrigin;
 }
 
 /* ------------------------------------------------------------------ */
 /* 프로필                                                              */
 /* ------------------------------------------------------------------ */
 
+/** 무엇을 공부하는가. */
+export type Subject = 'en' | 'ko';
+
+export const SUBJECT_LABEL: Record<Subject, string> = {
+  en: '영어',
+  ko: '국어',
+};
+
 export interface ProfileSettings {
+  /**
+   * 공부할 과목. 빈 배열이 되지 않게 지킨다 — 하나도 안 고르면 낼 문제가 없다.
+   *
+   * 부모님 폰에서 정하면 아이 폰으로 자동으로 넘어간다. 아이마다 다르게
+   * 둘 수 있다 — 큰딸은 영어만, 작은딸은 둘 다 같은 식으로.
+   */
+  subjects: Subject[];
+  /**
+   * 영어와 국어 중 무엇을 먼저 풀지.
+   *
+   * 한 과목만 켜 두었으면 아무 뜻이 없다. 둘 다 켠 아이에게만 보인다.
+   *
+   * 순서를 정하게 두는 이유: 머리가 맑을 때 어려운 쪽을 먼저 하고 싶은
+   * 아이가 있고, 쉬운 쪽으로 몸을 풀고 싶은 아이가 있다. 어느 쪽이 어려운지는
+   * 아이마다 다르므로 어른이 정해 줄 일이 아니다.
+   */
+  firstSubject: Subject;
   /**
    * 하루에 새로 만날 단어 수 (5~20).
    *
@@ -293,16 +440,120 @@ export interface ProfileSettings {
   showTranslation: boolean;
   /** 소리 읽어주기 */
   ttsEnabled: boolean;
+  /**
+   * 영어를 읽어 줄 목소리의 identifier. 없으면 앱이 알아서 고른다.
+   *
+   * 기기마다 깔린 음성이 달라서 자동으로 고른 것이 늘 제일 자연스럽지는
+   * 않다. 무엇보다 **들어 봐야 아는 일**이라, ⚙️ 설정에서 하나씩 들어 보고
+   * 고를 수 있게 두고 그 고른 값을 여기 적어 둔다.
+   */
+  voiceId?: string | null;
+  /**
+   * 영어를 읽는 속도. 없으면 보통(0.9).
+   *
+   * 폰 설정에도 '말하는 속도' 가 있지만 우리 앱에는 안 먹는다 — 앱이 읽을
+   * 때마다 속도를 직접 지정해서 시스템 값이 덮이기 때문이다. 그래서 고르는
+   * 자리를 앱 안에 둔다.
+   */
+  speechRate?: number;
   /** 진동 피드백 */
   hapticsEnabled: boolean;
 }
 
+/**
+ * 프로필의 갈래. 이 앱을 쓰는 사람이 아이인지 부모인지.
+ *
+ * `DeviceRole` 과 다르다. 역할은 **기기** 하나에 하나뿐이고 학습 화면을
+ * 감출지를 정했다. 그런데 한 기기에 부모와 아이가 함께 있을 수 있고
+ * (집에 태블릿 하나), 부모도 자기 공부를 한다. 그래서 사람 단위로 나눈다.
+ *
+ * 화면이 통째로 갈린다 — 아이는 오늘의 학습·동기 부여 요청권·달력을, 부모는 자기 공부와
+ * 아이들 보고서를 본다.
+ */
+export type ProfileKind = 'child' | 'parent';
+
+/** 부모가 고를 수 있는 학습 갈래. 여러 개를 함께 켤 수 있다. */
+export type ParentTrack =
+  | 'daily' // 일상·업무 영어 문장 (주제를 고른다)
+  | 'enWord' // 아이들과 똑같은 영어 단어 (레벨을 고른다)
+  | 'ko'; // 아이들과 똑같은 국어 어휘 (레벨을 고른다)
+
+export const PARENT_TRACK_LABEL: Record<ParentTrack, string> = {
+  daily: '일상 생활 문장 학습하기',
+  enWord: '아이들과 같은 영어 단어 학습하기',
+  ko: '국어 어휘 학습하기',
+};
+
+/**
+ * 좁은 자리에 쓰는 짧은 이름.
+ *
+ * 홈의 '오늘의 공부' 처럼 이름과 레벨을 나란히 놓는 자리에서는 위의 긴 이름이
+ * 두 줄로 접힌다. 접히면 옆에 붙은 레벨이 어느 줄에 걸린 것인지 흐려져서,
+ * 무엇이 켜져 있는지 한눈에 안 들어온다.
+ */
+export const PARENT_TRACK_SHORT: Record<ParentTrack, string> = {
+  daily: '일상 문장',
+  enWord: '영어 단어',
+  ko: '국어',
+};
+
+/**
+ * 부모가 무엇을 어떻게 공부할지.
+ *
+ * 아이 설정(`ProfileSettings`)과 따로 두는 이유: 아이는 학년이 정해져 있어
+ * 레벨 하나만 있으면 되지만, 부모는 세 갈래를 골라 켜고 각각 어디를 볼지
+ * 따로 정한다. 한 벌에 밀어 넣으면 아이 화면에도 쓰지 않는 칸이 잔뜩 생긴다.
+ *
+ * 영어 레벨과 국어 레벨은 `Profile.level` · `Profile.koLevel` 을 그대로 쓴다.
+ * 아이와 같은 자료를 같은 방식으로 도는 것이라 따로 둘 이유가 없다.
+ */
+export interface ParentStudy {
+  /** 켜 둔 갈래. 비면 공부할 것이 없다. */
+  tracks: ParentTrack[];
+  /** 일상 문장의 주제 id. src/data/daily 의 주제 중 하나. */
+  dailyTheme: string;
+  /**
+   * **갈래마다** 하루에 새로 만날 개수. 갈래별로 5 또는 10.
+   *
+   * 예전에는 `newPerDay` 하나로 전체 합계를 정하고 켠 갈래끼리 나눠 갖게
+   * 했다. 그런데 화면에 '하루에 10개'라고만 적히니 그것이 일상 문장 10개인지
+   * 셋을 합쳐 10개인지 알 수가 없었다. 실제로 그 질문을 받았고, 답은 후자였다
+   * (셋을 켜면 4/3/3으로 갈렸다). 숫자 하나가 자기 뜻을 스스로 말하지 못하면
+   * 그 숫자는 없는 편이 낫다.
+   *
+   * 그래서 갈래마다 따로 정한다. '일상 문장 5개'는 일상 문장 5개다. 고를 것이
+   * 갈래당 둘뿐이라 늘어난 부담도 크지 않고, 무엇보다 자기가 고른 숫자가 그대로
+   * 나온다.
+   *
+   * 안 켠 갈래의 값은 무시한다 — 껐다 켜도 예전에 고른 값이 그대로 살아 있게
+   * 하려고 지우지 않는다.
+   */
+  perTrack: Record<ParentTrack, number>;
+}
+
+/** 부모가 갈래마다 고를 수 있는 하루 분량. */
+export const PARENT_NEW_PER_DAY = [5, 10] as const;
+
+/** 아무것도 안 고른 갈래의 기본값. 둘 중 작은 쪽에서 시작한다. */
+export const DEFAULT_PARENT_PER_DAY = 5;
+
 export interface Profile {
   id: string;
   name: string;
+  /** 아이인지 부모인지 */
+  kind: ProfileKind;
   /** 이모지 아바타 */
   avatar: string;
+  /** 영어 레벨 */
   level: LevelId;
+  /**
+   * 국어 레벨. 영어와 따로 올라간다.
+   *
+   * 레벨 이름(m1-1 … h3-4)은 영어와 같은 24개를 쓰지만 진도는 별개다.
+   * 국어는 1,406단어를 하루 6개씩 약 8개월, 영어는 3,285단어를 하루
+   * 10개씩 약 11개월이라 국어가 먼저 끝난다. 보상도 따로 받는다.
+   */
+  koLevel: LevelId;
   settings: ProfileSettings;
   createdAt: number;
   /** 현재 연속 학습 일수 */
@@ -311,12 +562,35 @@ export interface Profile {
   bestStreak: number;
   /** 마지막으로 목표를 채운 날 (yyyy-mm-dd) */
   lastCompletedDate: string | null;
-  /** 레벨업으로 아직 요구권을 신청하지 않은 레벨들 */
+  /** 레벨업으로 아직 동기 부여 요청권을 신청하지 않은 레벨들 (영어) */
   pendingLevelUps: LevelId[];
-  /** 이미 마스터한 레벨 */
+  /** 레벨업으로 아직 동기 부여 요청권을 신청하지 않은 레벨들 (국어) */
+  koPendingLevelUps: LevelId[];
+  /** 이미 마스터한 레벨 (영어) */
   clearedLevels: LevelId[];
-  /** 개근 요구권을 이미 신청한 달들 (yyyy-mm) */
+  /** 이미 마스터한 레벨 (국어) */
+  koClearedLevels: LevelId[];
+  /** 개근 동기 부여 요청권을 이미 신청한 달들 (yyyy-mm) */
   claimedMonths: string[];
+  /**
+   * 이 아이만의 동기 부여 요청권 금액표. null 이면 기기 기본값(ParentSettings.awards).
+   *
+   * 예전에는 금액이 기기에 하나뿐이었다. 그런데 중학생과 고등학생을 같은
+   * 금액으로 두면 한쪽은 늘 손해라고 느낀다. 아이마다 사정이 달라서
+   * 아이별 보고서 화면에서 따로 정할 수 있게 했다. 안 정했으면 기기 기본값을
+   * 그대로 쓴다 — 아이가 하나뿐인 집에서 같은 값을 두 번 정하게 하지 않는다.
+   */
+  awards: AwardRates | null;
+  /**
+   * 부모님 폰과 연결하지 않기로 정했는지 (아이 프로필).
+   *
+   * 부모님이 이 앱을 안 쓰는 집도 있다. 그런 아이에게 '부모와 연결하기'를
+   * 계속 띄우면 못 한 일이 남아 있는 것처럼 보인다. 다만 아이가 스스로 끄면
+   * 감시를 피하는 길이 되므로, **부모가 PIN 을 눌러 승인**해야 꺼진다.
+   */
+  linkWaived: boolean;
+  /** 부모 프로필의 학습 설정. 아이 프로필에서는 쓰지 않는다. */
+  parentStudy: ParentStudy;
 }
 
 /**
@@ -360,6 +634,16 @@ export interface ProfileData {
 export type DeviceRole = 'child' | 'parent';
 
 /** 아이 기기가 들고 있는 '부모님 폰' 정보. */
+/** 부모가 알림을 보낼 수 있는 아이 기기 하나. */
+export interface KnownChild {
+  /** 아이 이름. 같은 이름이 둘이면 나중 것이 앞의 것을 덮는다. */
+  name: string;
+  /** 그 기기의 푸시 주소 */
+  token: string;
+  /** 마지막으로 소식을 들은 때 (epoch ms) */
+  lastSeen: number;
+}
+
 export interface ParentLink {
   /** 부모 기기의 Expo 푸시 토큰 */
   token: string;
@@ -368,6 +652,17 @@ export interface ParentLink {
   linkedAt: number;
   /** 마지막으로 리포트를 보낸 날 (yyyy-mm-dd) */
   lastSentDate: string | null;
+  /**
+   * 주 부모인가. 연결된 폰이 있으면 **정확히 하나**가 true 다.
+   *
+   * 리포트는 연결된 폰 전부가 받지만 **정하는 일**은 한 사람이 해야 한다.
+   * 동기 부여 요청권을 엄마와 아빠가 각각 승인하면 같은 것을 두 번 주게 된다.
+   * 그래서 요청권 알림은 이 폰에만 간다.
+   *
+   * 이 규칙은 features/parentLinks.ts 가 지킨다. 화면에서 지키게 두면
+   * 언젠가 0개나 2개가 된다.
+   */
+  isPrimary: boolean;
 }
 
 /** 부모 기기가 아이 기기에서 받아 쌓아 둔 리포트. */
@@ -386,13 +681,15 @@ export interface ReceivedReport {
 }
 
 /**
- * 요구권 금액표. 부모님 모드에서 정한다.
+ * 동기 부여 요청권 금액표. 부모님 모드에서 정한다.
  *
  * 기본값은 중학 2만 · 고등 3만 · 개근 2만 · 추가 요구 1만이지만, 집집마다
- * 사정이 달라서 화면에서 바꿀 수 있게 해 두었다. 0원으로 두면 그 요구권은
+ * 사정이 달라서 화면에서 바꿀 수 있게 해 두었다. 0원으로 두면 그 동기 부여 요청권은
  * 생기지 않는다 — 돈 대신 다른 약속으로 대신하고 싶을 때 쓴다.
  */
 export interface AwardRates {
+  /** 국어 레벨 하나를 끝냈을 때 */
+  koreanLevel: number;
   /** 중학교 레벨 하나를 끝냈을 때 */
   middleLevel: number;
   /** 고등학교 레벨 하나를 끝냈을 때 */
@@ -412,7 +709,7 @@ export interface AwardRates {
 export interface ParentSettings {
   /** 4자리 PIN. null이면 아직 설정 안 함. */
   pin: string | null;
-  /** 요구권 금액표 */
+  /** 동기 부여 요청권 금액표 */
   awards: AwardRates;
   /** 매일 리포트 알림 시각 */
   notifyHour: number;
@@ -434,10 +731,44 @@ export interface AppState {
 
   /** 이 기기의 역할 */
   role: DeviceRole;
-  /** child일 때: 연결된 부모 기기 */
-  parentLink: ParentLink | null;
-  /** parent일 때: 이 기기가 남에게 보여줄 자기 푸시 토큰 */
+  /**
+   * child일 때: 연결된 부모 기기들. 공부가 끝나면 **전부에게** 리포트를 보낸다.
+   *
+   * 예전에는 `parentLink` 하나였다. 엄마가 찍고 나서 아빠가 찍으면 엄마 폰이
+   * 조용히 밀려났고, 엄마 폰에는 아이가 그대로 보이는데 리포트만 안 왔다.
+   * 끊긴 줄도 모르는 연결이 제일 위험하다.
+   */
+  parentLinks: ParentLink[];
+  /** 이 기기가 남에게 보여줄 자기 푸시 토큰. 아이 기기도 갖는다(부모가 알림을 보낼 수 있도록). */
   myPushToken: string | null;
-  /** parent일 때: 받아 둔 리포트 (최신순) */
+  /**
+   * 이 기기가 아이들 리포트를 받는가.
+   *
+   * 주소를 가졌는지로 판단하면 안 된다. 아이 기기도 자기 주소를 갖는다 —
+   * 부모가 "공부하자"고 보낼 수 있어야 하기 때문이다. 받는 것은 사람이
+   * 켠 것이므로 따로 적어 둔다.
+   */
+  receivesReports: boolean;
+  /** 받아 둔 리포트 (최신순) */
   receivedReports: ReceivedReport[];
+  /**
+   * 알림을 보낼 수 있는 아이 기기들.
+   *
+   * 아이 기기가 부모와 연결할 때 자기 주소를 한 번 보내 온다. 그것을 여기
+   * 모아 두어야 부모가 "공부하자"고 되보낼 수 있다. 리포트가 오기를
+   * 기다릴 수는 없다 — 리포트가 안 왔을 때 부르고 싶은 것이기 때문이다.
+   */
+  knownChildren: KnownChild[];
+  /**
+   * 이 폰이 마지막으로 본 어휘 판.
+   *
+   * **왜 저장하나.** 낱말은 무선 업데이트로 조용히 들어온다 — 화면이 하나도
+   * 안 바뀌므로, 말해 주지 않으면 늘어난 줄을 아무도 모른다. 마지막에 본
+   * 판을 적어 두어야 "그 뒤로 몇 개가 왔는지" 를 셀 수 있다.
+   *
+   * **없을 수 있다.** 이 칸이 생기기 전에 저장된 상태에는 없다. 그때는
+   * 0개로 본다 — 이미 다 갖고 있는 사람에게 "3,690개가 추가됐다" 고 하면
+   * 거짓말이다. migrate 가 지금 판을 적어 넣어 그 자리를 메운다.
+   */
+  seenDataVersion?: string | null;
 }

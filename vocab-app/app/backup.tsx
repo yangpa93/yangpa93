@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, StyleSheet, Text, View } from 'react-native';
-import { File, Paths } from 'expo-file-system';
+import { useLocalSearchParams } from 'expo-router';
+import { Directory, File, Paths } from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import Constants from 'expo-constants';
 import { Body, Button, Card, H3, Muted, Row, Screen } from '../src/components/ui';
@@ -15,6 +16,7 @@ import {
   restoreReplace,
   serializeBackup,
 } from '../src/features/backup';
+import { fileNameFromUrl } from '../src/features/openedFile';
 import { LEVEL_SHORT, LevelId } from '../src/types';
 import { colors, radius, spacing } from '../src/theme';
 
@@ -34,40 +36,93 @@ export default function ParentBackup() {
   const [busy, setBusy] = useState<string | null>(null);
   /** 고른 파일. 아직 되돌리지는 않은 상태 */
   const [picked, setPicked] = useState<BackupFile | null>(null);
+  /** 방금 저장한 파일 이름. 화면에 남겨 둔다 — 어디에 뒀는지 잊기 쉽다. */
+  const [saved, setSaved] = useState<string | null>(null);
+  /** 다른 앱이 넘긴 파일 주소. '다른 앱으로 열기' 로 들어오면 채워진다. */
+  const { src } = useLocalSearchParams<{ src?: string }>();
 
   const appVersion = Constants.expoConfig?.version ?? '1.0.0';
   const childCount = state.profiles.length;
 
   /* ---------------- 내보내기 ---------------- */
 
-  async function exportBackup() {
+  /** 백업 한 덩어리를 만들어 캐시 파일로 써 둔다. 두 길이 함께 쓴다. */
+  async function makeFile(): Promise<{ file: File; name: string; text: string } | null> {
     if (childCount === 0) {
       Alert.alert('내보낼 것이 없어요', '아이 프로필을 먼저 만들어 주세요.');
-      return;
+      return null;
     }
+    const data = await readAllProfileData();
+    const backup = buildBackup(state, data, appVersion, Date.now());
+    const name = backupFileName(backup.createdAt);
+    const text = serializeBackup(backup);
+
+    const file = new File(Paths.cache, name);
+    if (file.exists) file.delete();
+    file.create();
+    file.write(text);
+    return { file, name, text };
+  }
+
+  /**
+   * **폴더를 골라 그 자리에 저장한다.** 이게 기본 길이다.
+   *
+   * 예전에는 공유 창만 띄웠다. 그런데 카톡으로 보냈더니 "파일을 열 수 있는
+   * 앱이 없다"며 받는 쪽에서 내려받지 못했다. 카톡은 모르는 형식의 파일을
+   * 막는다 — 우리 백업은 json 이라 거기 걸린다.
+   *
+   * 남에게 보내는 것이 아니라 **내 폰 어딘가에 두는 것**이 백업의 목적이다.
+   * 그러면 다른 앱을 거칠 이유가 없다. 폴더를 고르게 하고 거기에 바로 쓴다.
+   * 안드로이드는 '다운로드' 를, 아이폰은 '파일' 앱의 아무 곳이나 고르면 된다.
+   */
+  async function saveToFolder() {
+    setBusy('저장할 곳을 고르는 중');
+    try {
+      const made = await makeFile();
+      if (!made) return;
+
+      const dir = await Directory.pickDirectoryAsync();
+      const target = new File(dir, made.name);
+      if (target.exists) target.delete();
+      target.create();
+      target.write(made.text);
+
+      setSaved(made.name);
+      Alert.alert(
+        '저장했어요',
+        `${made.name}\n\n고르신 폴더에 들어 있습니다. 폰을 바꾸면 이 파일로 되돌릴 수 있어요.`,
+      );
+    } catch (e) {
+      /*
+       * 폴더 고르기를 취소하면 여기로 온다. 취소는 잘못이 아니므로 조용히
+       * 넘어간다 — 취소할 때마다 오류 창이 뜨면 다시는 안 누른다.
+       */
+      const msg = String(e);
+      if (/cancel/i.test(msg)) return;
+      Alert.alert('저장하지 못했어요', `${msg}\n\n아래 '다른 앱으로 보내기' 로도 빼실 수 있어요.`);
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  /** 예전 길. 카톡·메일·드라이브로 보낸다. 카톡은 json 을 막을 수 있다. */
+  async function shareBackup() {
     setBusy('내보내는 중');
     try {
-      const data = await readAllProfileData();
-      const backup = buildBackup(state, data, appVersion, Date.now());
-      const name = backupFileName(backup.createdAt);
-
-      // 캐시에 쓴다. 공유하고 나면 시스템이 알아서 정리한다.
-      const file = new File(Paths.cache, name);
-      if (file.exists) file.delete();
-      file.create();
-      file.write(serializeBackup(backup));
+      const made = await makeFile();
+      if (!made) return;
 
       if (!(await Sharing.isAvailableAsync())) {
         Alert.alert(
           '공유를 쓸 수 없어요',
-          `백업 파일은 만들었어요.\n${file.uri}\n\n파일 앱에서 찾아 옮겨 주세요.`,
+          `백업 파일은 만들었어요.\n${made.file.uri}\n\n파일 앱에서 찾아 옮겨 주세요.`,
         );
         return;
       }
 
-      await Sharing.shareAsync(file.uri, {
+      await Sharing.shareAsync(made.file.uri, {
         mimeType: 'application/json',
-        dialogTitle: '학습 기록 백업 저장하기',
+        dialogTitle: '학습 기록 백업 보내기',
         UTI: 'public.json',
       });
     } catch (e) {
@@ -76,6 +131,38 @@ export default function ParentBackup() {
       setBusy(null);
     }
   }
+
+  /* ---------------- 다른 앱이 넘긴 파일 ---------------- */
+
+  /**
+   * 카톡 등에서 **다른 앱으로 열기 → 곰탱이보카** 로 넘어온 파일을 읽는다.
+   *
+   * 카톡은 json 내려받기를 막는다. 그래서 대화방 안에 갇힌 백업을 꺼내는
+   * 길이 이것뿐인 경우가 있다. 파일을 고르는 것과 똑같이 **먼저 보여주고**
+   * 되돌릴지는 그다음에 정하게 한다 — 넘겨받았다고 바로 덮어쓰면 되돌릴 수
+   * 없는 일이 한 번의 오조작으로 일어난다.
+   */
+  const openFromUrl = useCallback(async (uri: string) => {
+    setBusy('파일을 읽는 중');
+    try {
+      const text = await new File(uri).text();
+      const parsed = readBackup(text);
+      if (!parsed.ok) {
+        const name = fileNameFromUrl(uri);
+        Alert.alert('읽을 수 없는 파일이에요', `${name ? name + '\n\n' : ''}${parsed.reason}`);
+        return;
+      }
+      setPicked(parsed.backup);
+    } catch (e) {
+      Alert.alert('파일을 열지 못했어요', String(e));
+    } finally {
+      setBusy(null);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof src === 'string' && src) void openFromUrl(src);
+  }, [src, openFromUrl]);
 
   /* ---------------- 파일 고르기 ---------------- */
 
@@ -245,37 +332,78 @@ export default function ParentBackup() {
           이 앱은 서버가 없어서 학습 기록이 <Text style={{ fontWeight: '800' }}>이 기기 안에만</Text>{' '}
           있습니다. 폰을 바꾸거나 앱을 지우면 그동안의 기록이 모두 사라집니다.
           {'\n\n'}
-          한 달에 한 번쯤 내보내서 카카오톡으로 자기에게 보내 두거나 드라이브에 올려 두세요.
-          파일 한 장이면 새 폰에서 그대로 되살아납니다.
+          한 달에 한 번쯤 폰의 '다운로드' 같은 폴더에 저장해 두세요.
+          파일 한 장이면 새 폰에서 그대로 되살아나요.
         </Body>
       </Card>
 
       <Card style={{ marginTop: spacing.md }}>
         <H3>내보내기</H3>
         <Muted style={{ marginTop: spacing.xs }}>
-          아이 {childCount}명의 학습 기록·오답·달력·요구권을 파일 한 장으로 묶습니다.
-          {'\n'}부모 PIN은 담지 않습니다. 파일이 돌아다니다 아이가 열어 볼 수 있으니까요.
+          이 폰에 있는 {childCount}명의 학습 기록·오답·달력·동기 부여 요청권을 파일 한 장으로 묶어요.
+          {'\n'}부모님 PIN 은 담지 않아요. 파일이 돌아다닐 수 있으니까요.
         </Muted>
-        <Button title="백업 파일 내보내기" variant="parent" onPress={exportBackup} style={{ marginTop: spacing.md }} />
+        <Button title="💾 파일로 저장하기" onPress={saveToFolder} style={{ marginTop: spacing.md }} />
+        <Muted style={{ marginTop: spacing.sm }}>
+          저장할 폴더를 고르는 창이 뜹니다. 안드로이드는 ‘다운로드’, 아이폰은 ‘파일’ 앱의
+          아무 곳이나 고르시면 돼요.
+        </Muted>
+
+        {saved ? (
+          <View style={s.savedBox}>
+            <Body style={{ fontWeight: '800' }}>저장했어요</Body>
+            <Muted style={{ marginTop: 2 }}>{saved}</Muted>
+          </View>
+        ) : null}
+
+        {/*
+          카톡으로 보내는 길은 남겨 두되 아래로 내린다.
+
+          카톡은 모르는 형식의 파일을 막는다. 실제로 백업을 카톡으로 보냈더니
+          받는 쪽에서 "파일을 열 수 있는 앱이 없다"며 내려받지 못했다. 그런데
+          드라이브나 메일로 보내는 것은 잘 되므로 길 자체를 없애지는 않는다.
+        */}
+        <Button
+          title="다른 앱으로 보내기 (드라이브·메일)"
+          variant="ghost"
+          onPress={shareBackup}
+          style={{ marginTop: spacing.md }}
+        />
+        <Muted style={{ marginTop: spacing.xs }}>
+          카카오톡으로는 받는 쪽에서 못 열 수 있어요. 위의 ‘파일로 저장하기’ 를 권합니다.
+        </Muted>
       </Card>
 
       <Card style={{ marginTop: spacing.md }}>
         <H3>가져오기</H3>
         <Muted style={{ marginTop: spacing.xs }}>
-          백업 파일을 고르면 무엇이 들어 있는지 먼저 보여드립니다. 그걸 보고 되돌릴지
-          정하시면 됩니다.
+          백업 파일을 고르면 무엇이 들어 있는지 먼저 보여줘요. 그걸 보고 되돌릴지
+          정하면 돼요.
         </Muted>
         <Button title="백업 파일 고르기" variant="secondary" onPress={pickBackup} style={{ marginTop: spacing.md }} />
+        <Muted style={{ marginTop: spacing.sm }}>
+          카카오톡에 있는 백업은 받는 쪽에서 내려받기가 막힙니다. 그때는 그 파일을 길게 눌러
+          <Text style={{ fontWeight: '800' }}> 다른 앱으로 열기 → 곰탱이보카</Text> 를 고르시면
+          이 화면으로 바로 들어옵니다.
+        </Muted>
       </Card>
 
       <Muted style={{ marginTop: spacing.lg, textAlign: 'center' }}>
-        되돌린 뒤에는 부모 PIN과 부모님 폰 연결을 다시 정해 주세요.
+        되돌린 뒤에는 부모님 PIN 과 부모님 폰 연결을 다시 정해 주세요.
       </Muted>
     </Screen>
   );
 }
 
 const s = StyleSheet.create({
+  savedBox: {
+    marginTop: spacing.md,
+    padding: spacing.md,
+    borderRadius: radius.md,
+    backgroundColor: colors.bg,
+    borderWidth: 1,
+    borderColor: colors.correct,
+  },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: spacing.xxl },
   label: { fontSize: 16, fontWeight: '700', color: colors.text },
   child: {

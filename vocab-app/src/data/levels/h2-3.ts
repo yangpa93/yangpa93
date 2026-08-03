@@ -1,5 +1,5 @@
 /**
- * 고등학교 2학년 레벨 3 — 수록 137 / 계획 137개.
+ * 고등학교 2학년 레벨 3 — 수록 154 / 계획 137개.
  *
  * 난이도 층: 고급(고등)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -31,17 +31,17 @@ export const H2_3 = defineLevel('h2-3', [
     ]},
   ]},
   { w: 'despair', p: 'n.', s: [
-    { m: '절망', syn: ['hopelessness'], ex: [
+    { m: '절망', syn: [], ex: [
       ['Despair filled his heart.', '절망이 그의 마음을 채웠다.'],
       ['Do not give in to despair.', '절망에 굴복하지 마라.'],
       ['Despair turned into hope.', '절망이 희망으로 바뀌었다.'],
     ]},
   ]},
   { w: 'destine', p: 'v.', s: [
-    { m: '운명 짓다, 예정하다', syn: ['fate'], ex: [
+    { m: '운명 짓다, 예정하다', syn: [], ex: [
       ['He was destined to lead.', '그는 이끌 운명이었다.'],
       ['The trip was destined to fail.', '그 여행은 실패할 운명이었다.'],
-      ['She destined the money for school.', '그녀는 그 돈을 학비로 정해 두었다.'],
+      ['They were destined never to meet again.', '그들은 다시는 만나지 못할 운명이었다.'],
     ]},
   ]},
   { w: 'destiny', p: 'n.', s: [
@@ -52,10 +52,10 @@ export const H2_3 = defineLevel('h2-3', [
     ]},
   ]},
   { w: 'destruct', p: 'v.', s: [
-    { m: '파괴하다', syn: ['destroy'], ex: [
-      ['The device will destruct itself.', '그 장치는 자체 파괴될 것이다.'],
+    { m: '파괴하다 (드물게 쓰는 말)', syn: ['destroy'], ex: [
+      ['The rocket can destruct on command from the ground.', '그 로켓은 지상의 명령으로 파괴될 수 있다.'],
       ['War destructs whole cities.', '전쟁은 도시 전체를 파괴한다.'],
-      ['Hate destructs from within.', '증오는 안에서부터 파괴한다.'],
+      ['Hate destructs a person from within.', '증오는 사람을 안에서부터 파괴한다.'],
     ]},
   ]},
   { w: 'detach', p: 'v.', s: [
@@ -108,14 +108,14 @@ export const H2_3 = defineLevel('h2-3', [
     ]},
   ]},
   { w: 'diabetes', p: 'n.', s: [
-    { m: '당뇨병', syn: ['sugar disease'], ex: [
+    { m: '당뇨병', syn: [], ex: [
       ['He has diabetes.', '그는 당뇨병이 있다.'],
       ['Diabetes needs careful diet.', '당뇨병은 식단 관리가 필요하다.'],
       ['Exercise helps prevent diabetes.', '운동은 당뇨병 예방에 도움이 된다.'],
     ]},
   ]},
   { w: 'dictate', p: 'v.', s: [
-    { m: '받아쓰게 하다, 지시하다', syn: ['command'], ex: [
+    { m: '받아쓰게 하다, 지시하다', syn: [], ex: [
       ['She dictated a letter.', '그녀는 편지를 받아쓰게 했다.'],
       ['Do not dictate my choices.', '내 선택을 좌우하려 들지 마라.'],
       ['The rule dictates what we wear.', '그 규칙이 우리 복장을 정한다.'],
@@ -129,14 +129,14 @@ export const H2_3 = defineLevel('h2-3', [
     ]},
   ]},
   { w: 'dignity', p: 'n.', s: [
-    { m: '존엄, 품위', syn: ['honor'], ex: [
+    { m: '존엄, 품위', syn: [], ex: [
       ['Treat everyone with dignity.', '모두를 존엄하게 대해라.'],
       ['She kept her dignity.', '그녀는 품위를 지켰다.'],
       ['Dignity cannot be bought.', '존엄은 살 수 없다.'],
     ]},
   ]},
   { w: 'dimension', p: 'n.', s: [
-    { m: '차원, 크기', syn: ['measurement'], ex: [
+    { m: '차원, 크기', syn: [], ex: [
       ['Measure the dimensions of the box.', '상자의 크기를 재라.'],
       ['The problem has another dimension.', '그 문제에는 다른 차원이 있다.'],
       ['Space has three dimensions.', '공간은 3차원이다.'],
@@ -157,14 +157,14 @@ export const H2_3 = defineLevel('h2-3', [
     ]},
   ]},
   { w: 'dip', p: 'v.', s: [
-    { m: '담그다', syn: ['dunk'], ex: [
+    { m: '담그다', syn: [], ex: [
       ['Dip the bread in the soup.', '빵을 국에 적셔라.'],
       ['She dipped her toe in the water.', '그녀는 물에 발끝을 담갔다.'],
-      ['Prices dipped last month.', '지난달 물가가 살짝 내렸다.'],
+      ['He dipped the brush in the paint.', '그는 붓을 페인트에 담갔다.'],
     ]},
   ]},
   { w: 'diplomat', p: 'n.', s: [
-    { m: '외교관', syn: ['envoy'], ex: [
+    { m: '외교관', syn: [], ex: [
       ['He works as a diplomat.', '그는 외교관으로 일한다.'],
       ['A diplomat must be patient.', '외교관은 인내심이 있어야 한다.'],
       ['The diplomat met the president.', '그 외교관이 대통령을 만났다.'],
@@ -192,10 +192,10 @@ export const H2_3 = defineLevel('h2-3', [
     ]},
   ]},
   { w: 'dismiss', p: 'v.', s: [
-    { m: '해고하다, 묵살하다', syn: ['reject'], ex: [
+    { m: '해고하다, 묵살하다', syn: [], ex: [
       ['He dismissed the idea quickly.', '그는 그 생각을 빠르게 묵살했다.'],
       ['The company dismissed two workers.', '그 회사는 직원 두 명을 해고했다.'],
-      ['Class was dismissed early.', '수업이 일찍 끝났다.'],
+      ['She dismissed my worries with a smile.', '그녀는 웃으며 내 걱정을 묵살했다.'],
     ]},
   ]},
   { w: 'disperse', p: 'v.', s: [
@@ -241,7 +241,7 @@ export const H2_3 = defineLevel('h2-3', [
     ]},
   ]},
   { w: 'distract', p: 'v.', s: [
-    { m: '주의를 흩뜨리다', syn: ['divert'], ex: [
+    { m: '주의를 흩뜨리다', syn: [], ex: [
       ['Noise distracts me while I study.', '공부할 때 소음이 나를 산만하게 한다.'],
       ['Do not distract the driver.', '운전자의 주의를 흩뜨리지 마라.'],
       ['Her phone distracted her.', '휴대폰이 그녀의 주의를 빼앗았다.'],
@@ -276,7 +276,7 @@ export const H2_3 = defineLevel('h2-3', [
     ]},
   ]},
   { w: 'domain', p: 'n.', s: [
-    { m: '영역, 범위', syn: ['field'], ex: [
+    { m: '영역, 범위', syn: [], ex: [
       ['That is outside my domain.', '그것은 내 영역 밖이다.'],
       ['She is expert in this domain.', '그녀는 이 분야의 전문가다.'],
       ['The domain of science is wide.', '과학의 영역은 넓다.'],
@@ -290,7 +290,7 @@ export const H2_3 = defineLevel('h2-3', [
     ]},
   ]},
   { w: 'dose', p: 'n.', s: [
-    { m: '복용량', syn: ['amount'], ex: [
+    { m: '복용량', syn: [], ex: [
       ['Take one dose each morning.', '매일 아침 한 번 복용해라.'],
       ['A large dose is dangerous.', '많은 양은 위험하다.'],
       ['The doctor set the dose.', '의사가 복용량을 정했다.'],
@@ -304,7 +304,7 @@ export const H2_3 = defineLevel('h2-3', [
     ]},
   ]},
   { w: 'draft', p: 'n.', s: [
-    { m: '초안, 원고', syn: ['rough copy'], ex: [
+    { m: '초안, 원고', syn: [], ex: [
       ['This is only a draft.', '이것은 초안일 뿐이다.'],
       ['She wrote three drafts.', '그녀는 초안을 세 번 썼다.'],
       ['The draft needs more work.', '그 초안은 손을 더 봐야 한다.'],
@@ -325,16 +325,16 @@ export const H2_3 = defineLevel('h2-3', [
     ]},
   ]},
   { w: 'drill', p: 'n.', s: [
-    { m: '드릴, 훈련', syn: ['practice'], ex: [
+    { m: '드릴, 훈련', syn: [], ex: [
       ['We had a fire drill today.', '오늘 소방 훈련이 있었다.'],
       ['He used a drill to make a hole.', '그는 드릴로 구멍을 뚫었다.'],
       ['Daily drill builds skill.', '매일의 훈련이 실력을 만든다.'],
     ]},
   ]},
   { w: 'drown', p: 'v.', s: [
-    { m: '익사하다', syn: ['sink'], ex: [
+    { m: '익사하다', syn: [], ex: [
       ['Do not swim alone; you might drown.', '혼자 수영하지 마라, 익사할 수 있다.'],
-      ['The plant drowned in too much water.', '그 식물은 물이 너무 많아 죽었다.'],
+      ['Two sailors drowned in the storm.', '선원 두 명이 폭풍에 익사했다.'],
       ['He nearly drowned in the river.', '그는 강에서 익사할 뻔했다.'],
     ]},
   ]},
@@ -346,16 +346,16 @@ export const H2_3 = defineLevel('h2-3', [
     ]},
   ]},
   { w: 'dull', p: 'adj.', s: [
-    { m: '지루한, 무딘', syn: ['boring'], ex: [
+    { m: '지루한, 무딘, 흐릿한', syn: [], ex: [
       ['The lecture was dull.', '그 강의는 지루했다.'],
       ['The knife is dull.', '그 칼은 무디다.'],
       ['A dull sky hung over us.', '흐릿한 하늘이 우리 위에 걸려 있었다.'],
     ]},
   ]},
   { w: 'dwell', p: 'v.', s: [
-    { m: '살다, 머물다', syn: ['reside'], ex: [
+    { m: '살다, 머물다', syn: [], ex: [
       ['They dwell in a small village.', '그들은 작은 마을에 산다.'],
-      ['Do not dwell on the past.', '과거에 매달리지 마라.'],
+      ['Few people dwell on this island now.', '지금 이 섬에 사는 사람은 거의 없다.'],
       ['Birds dwell in these trees.', '새들이 이 나무에 산다.'],
     ]},
   ]},
@@ -374,7 +374,7 @@ export const H2_3 = defineLevel('h2-3', [
     ]},
   ]},
   { w: 'efficient', p: 'adj.', s: [
-    { m: '효율적인', syn: ['effective', 'productive'], ex: [
+    { m: '효율적인', syn: [], ex: [
       ['This engine is more efficient.', '이 엔진이 더 효율적이다.'],
       ['She is an efficient worker.', '그녀는 효율적으로 일하는 사람이다.'],
       ['We need a more efficient system.', '우리는 더 효율적인 체계가 필요하다.'],
@@ -385,13 +385,13 @@ export const H2_3 = defineLevel('h2-3', [
       ['They made an elaborate plan.', '그들은 정교한 계획을 세웠다.'],
       ['The costume was very elaborate.', '그 의상은 매우 공들여 만든 것이었다.'],
     ]},
-    { m: '자세히 설명하다', syn: ['expand on', 'explain further'], ex: [
+    { m: '자세히 설명하다', syn: ['expand on'], ex: [
       ['Could you elaborate on that point?', '그 점을 자세히 설명해 주시겠어요?'],
       ['He refused to elaborate.', '그는 더 설명하기를 거부했다.'],
     ]},
   ]},
   { w: 'electronic', p: 'adj.', s: [
-    { m: '전자의', syn: ['digital'], ex: [
+    { m: '전자의', syn: [], ex: [
       ['This is an electronic device.', '이것은 전자 기기다.'],
       ['Electronic mail is fast.', '전자 우편은 빠르다.'],
       ['She fixed the electronic part.', '그녀는 전자 부품을 고쳤다.'],
@@ -419,14 +419,14 @@ export const H2_3 = defineLevel('h2-3', [
     ]},
   ]},
   { w: 'elite', p: 'n.', s: [
-    { m: '엘리트, 정예', syn: ['upper class'], ex: [
+    { m: '엘리트, 정예', syn: [], ex: [
       ['Only the elite could enter.', '엘리트만 들어갈 수 있었다.'],
       ['She joined an elite team.', '그녀는 정예 팀에 들어갔다.'],
       ['The elite hold much power.', '엘리트가 많은 권력을 쥐고 있다.'],
     ]},
   ]},
   { w: 'embassy', p: 'n.', s: [
-    { m: '대사관', syn: ['legation'], ex: [
+    { m: '대사관', syn: [], ex: [
       ['He works at the embassy.', '그는 대사관에서 일한다.'],
       ['The embassy is closed today.', '대사관은 오늘 닫혀 있다.'],
       ['She visited the embassy for a visa.', '그녀는 비자 때문에 대사관에 갔다.'],
@@ -461,21 +461,21 @@ export const H2_3 = defineLevel('h2-3', [
     ]},
   ]},
   { w: 'emphasis', p: 'n.', s: [
-    { m: '강조', syn: ['stress'], ex: [
+    { m: '강조', syn: [], ex: [
       ['She put emphasis on practice.', '그녀는 연습을 강조했다.'],
       ['The emphasis is on safety.', '강조점은 안전에 있다.'],
-      ['His emphasis changed the meaning.', '그의 강세가 뜻을 바꿨다.'],
+      ['There is too much emphasis on grades.', '성적을 지나치게 강조한다.'],
     ]},
   ]},
   { w: 'empirical', p: 'adj.', s: [
-    { m: '경험적인, 실증적인', syn: ['observed', 'evidence-based'], ex: [
+    { m: '경험적인, 실증적인', syn: [], ex: [
       ['We need empirical evidence.', '우리는 실증적 증거가 필요하다.'],
       ['The claim lacks empirical support.', '그 주장은 실증적 근거가 부족하다.'],
       ['Empirical studies confirmed the theory.', '실증 연구가 그 이론을 확인했다.'],
     ]},
   ]},
   { w: 'enact', p: 'v.', s: [
-    { m: '제정하다, 시행하다', syn: ['pass', 'put into law'], ex: [
+    { m: '제정하다, 시행하다', syn: ['pass'], ex: [
       ['The government enacted a new law.', '정부가 새 법을 제정했다.'],
       ['The rule was enacted last year.', '그 규정은 작년에 시행되었다.'],
       ['They enacted reforms step by step.', '그들은 개혁을 단계적으로 시행했다.'],
@@ -548,28 +548,28 @@ export const H2_3 = defineLevel('h2-3', [
     ]},
   ]},
   { w: 'entry', p: 'n.', s: [
-    { m: '입장, 항목', syn: ['entrance'], ex: [
+    { m: '입장, 입구, 항목', syn: ['entrance'], ex: [
       ['Entry is free today.', '오늘 입장은 무료다.'],
       ['Write one entry per line.', '한 줄에 한 항목씩 써라.'],
       ['The entry is on the left.', '입구는 왼쪽에 있다.'],
     ]},
   ]},
   { w: 'environ', p: 'v.', s: [
-    { m: '둘러싸다', syn: ['surround'], ex: [
+    { m: '둘러싸다 (드물게 쓰는 말)', syn: ['surround'], ex: [
       ['Trees environ the small house.', '나무들이 작은 집을 둘러싸고 있다.'],
       ['Mountains environ the valley.', '산들이 그 계곡을 둘러싼다.'],
       ['Walls environ the old town.', '성벽이 옛 도시를 둘러싸고 있다.'],
     ]},
   ]},
   { w: 'envy', p: 'v.', s: [
-    { m: '부러워하다', syn: ['covet'], ex: [
+    { m: '부러워하다', syn: [], ex: [
       ['I envy her courage.', '나는 그녀의 용기가 부럽다.'],
       ['Do not envy other people.', '남을 부러워하지 마라.'],
       ['He envied his brother\'s talent.', '그는 형의 재능을 부러워했다.'],
     ]},
   ]},
   { w: 'equip', p: 'v.', s: [
-    { m: '갖추게 하다, 장비하다', syn: ['furnish'], ex: [
+    { m: '갖추게 하다, 장비하다', syn: [], ex: [
       ['The school equipped every room.', '학교가 모든 방에 장비를 갖췄다.'],
       ['Education equips us for life.', '교육은 우리를 삶에 대비시킨다.'],
       ['They equipped the team well.', '그들은 팀에 장비를 잘 갖춰 주었다.'],
@@ -583,7 +583,7 @@ export const H2_3 = defineLevel('h2-3', [
     ]},
   ]},
   { w: 'erase', p: 'v.', s: [
-    { m: '지우다', syn: ['rub out'], ex: [
+    { m: '지우다', syn: [], ex: [
       ['Erase the wrong answer.', '틀린 답을 지워라.'],
       ['She erased the board.', '그녀는 칠판을 지웠다.'],
       ['Time erases many memories.', '시간은 많은 기억을 지운다.'],
@@ -597,10 +597,10 @@ export const H2_3 = defineLevel('h2-3', [
     ]},
   ]},
   { w: 'err', p: 'v.', s: [
-    { m: '실수하다', syn: ['make a mistake'], ex: [
+    { m: '실수하다', syn: [], ex: [
       ['To err is human.', '실수하는 것은 인간적이다.'],
       ['He erred in his judgment.', '그는 판단을 그르쳤다.'],
-      ['She erred on the safe side.', '그녀는 안전한 쪽을 택했다.'],
+      ['Anyone can err under pressure.', '누구나 압박 속에서는 실수할 수 있다.'],
     ]},
   ]},
   { w: 'essence', p: 'n.', s: [
@@ -618,21 +618,21 @@ export const H2_3 = defineLevel('h2-3', [
     ]},
   ]},
   { w: 'ethic', p: 'n.', s: [
-    { m: '윤리, 도덕', syn: ['moral rule'], ex: [
+    { m: '윤리, 도덕', syn: [], ex: [
       ['Work ethic matters most.', '직업 윤리가 가장 중요하다.'],
       ['Every job has its own ethic.', '직업마다 고유한 윤리가 있다.'],
       ['She has a strong ethic.', '그녀는 확고한 윤리 의식이 있다.'],
     ]},
   ]},
   { w: 'ethnic', p: 'adj.', s: [
-    { m: '민족의', syn: ['racial'], ex: [
+    { m: '민족의', syn: [], ex: [
       ['The city has many ethnic groups.', '그 도시에는 여러 민족 집단이 있다.'],
       ['She wore ethnic clothing.', '그녀는 민족 의상을 입었다.'],
       ['Ethnic food is popular here.', '여기서는 민족 음식이 인기다.'],
     ]},
   ]},
   { w: 'evacuate', p: 'v.', s: [
-    { m: '대피시키다', syn: ['clear out'], ex: [
+    { m: '대피시키다', syn: [], ex: [
       ['They evacuated the building.', '그들은 건물에서 대피시켰다.'],
       ['Everyone evacuated safely.', '모두가 안전하게 대피했다.'],
       ['Police evacuated the area.', '경찰이 그 지역을 소개했다.'],
@@ -646,7 +646,7 @@ export const H2_3 = defineLevel('h2-3', [
     ]},
   ]},
   { w: 'evitable', p: 'adj.', s: [
-    { m: '피할 수 있는', syn: ['avoidable'], ex: [
+    { m: '피할 수 있는 (드물게 쓰는 말)', syn: ['avoidable'], ex: [
       ['The accident was evitable.', '그 사고는 피할 수 있었다.'],
       ['Few problems are truly evitable.', '정말로 피할 수 있는 문제는 적다.'],
       ['An evitable delay upset us.', '피할 수 있었던 지연이 우리를 화나게 했다.'],
@@ -688,7 +688,7 @@ export const H2_3 = defineLevel('h2-3', [
     ]},
   ]},
   { w: 'excel', p: 'v.', s: [
-    { m: '뛰어나다', syn: ['surpass'], ex: [
+    { m: '뛰어나다', syn: [], ex: [
       ['She excels at math.', '그녀는 수학에 뛰어나다.'],
       ['He excelled in every subject.', '그는 모든 과목에서 뛰어났다.'],
       ['They excel under pressure.', '그들은 압박 속에서 두각을 나타낸다.'],
@@ -730,7 +730,7 @@ export const H2_3 = defineLevel('h2-3', [
     ]},
   ]},
   { w: 'exotic', p: 'adj.', s: [
-    { m: '이국적인', syn: ['foreign'], ex: [
+    { m: '이국적인', syn: [], ex: [
       ['She likes exotic food.', '그녀는 이국적인 음식을 좋아한다.'],
       ['The bird looks exotic.', '그 새는 이국적으로 보인다.'],
       ['They visited an exotic island.', '그들은 이국적인 섬을 방문했다.'],
@@ -775,7 +775,7 @@ export const H2_3 = defineLevel('h2-3', [
     ]},
   ]},
   { w: 'export', p: 'v.', s: [
-    { m: '수출하다', syn: ['ship out'], ex: [
+    { m: '수출하다', syn: [], ex: [
       ['The country exports rice.', '그 나라는 쌀을 수출한다.'],
       ['They export to many nations.', '그들은 여러 나라에 수출한다.'],
       ['We exported more this year.', '우리는 올해 더 많이 수출했다.'],
@@ -796,7 +796,7 @@ export const H2_3 = defineLevel('h2-3', [
     ]},
   ]},
   { w: 'extinct', p: 'adj.', s: [
-    { m: '멸종한', syn: ['died out'], ex: [
+    { m: '멸종한', syn: [], ex: [
       ['The animal is now extinct.', '그 동물은 지금 멸종했다.'],
       ['Many species became extinct.', '많은 종이 멸종했다.'],
       ['An extinct bird once lived here.', '멸종한 새가 한때 여기 살았다.'],
@@ -817,10 +817,10 @@ export const H2_3 = defineLevel('h2-3', [
     ]},
   ]},
   { w: 'eyebrow', p: 'n.', s: [
-    { m: '눈썹', syn: ['brow'], ex: [
+    { m: '눈썹', syn: [], ex: [
       ['She raised one eyebrow.', '그녀는 한쪽 눈썹을 치켜올렸다.'],
       ['His eyebrow is thick.', '그의 눈썹은 짙다.'],
-      ['Sweat ran into my eyebrow.', '땀이 눈썹으로 흘렀다.'],
+      ['She has a scar above her left eyebrow.', '그녀는 왼쪽 눈썹 위에 흉터가 있다.'],
     ]},
   ]},
   { w: 'fabric', p: 'n.', s: [
@@ -838,21 +838,21 @@ export const H2_3 = defineLevel('h2-3', [
     ]},
   ]},
   { w: 'facility', p: 'n.', s: [
-    { m: '시설', syn: ['building', 'amenity'], ex: [
+    { m: '시설', syn: [], ex: [
       ['The school has good sports facilities.', '그 학교는 좋은 체육 시설을 갖추고 있다.'],
       ['The facility opens at seven.', '그 시설은 7시에 문을 연다.'],
       ['Medical facilities are limited here.', '이곳은 의료 시설이 부족하다.'],
     ]},
   ]},
   { w: 'faculty', p: 'n.', s: [
-    { m: '교수진, 능력', syn: ['staff'], ex: [
+    { m: '교수진, 능력', syn: [], ex: [
       ['The faculty met this morning.', '교수진이 오늘 아침 모였다.'],
       ['She has a faculty for languages.', '그녀는 언어에 재능이 있다.'],
       ['The faculty approved the plan.', '교수진이 그 계획을 승인했다.'],
     ]},
   ]},
   { w: 'fade', p: 'v.', s: [
-    { m: '바래다, 희미해지다', syn: ['dim'], ex: [
+    { m: '바래다, 희미해지다', syn: [], ex: [
       ['The color faded in the sun.', '색이 햇볕에 바랬다.'],
       ['Her voice faded away.', '그녀의 목소리가 잦아들었다.'],
       ['Memories fade with time.', '기억은 시간이 지나며 희미해진다.'],
@@ -866,7 +866,7 @@ export const H2_3 = defineLevel('h2-3', [
     ]},
   ]},
   { w: 'fame', p: 'n.', s: [
-    { m: '명성', syn: ['renown'], ex: [
+    { m: '명성', syn: [], ex: [
       ['Fame changed his life.', '명성이 그의 삶을 바꿨다.'],
       ['She never sought fame.', '그녀는 명성을 좇지 않았다.'],
       ['Fame does not last long.', '명성은 오래가지 않는다.'],
@@ -901,28 +901,28 @@ export const H2_3 = defineLevel('h2-3', [
     ]},
   ]},
   { w: 'federal', p: 'adj.', s: [
-    { m: '연방의', syn: ['national'], ex: [
+    { m: '연방의', syn: [], ex: [
       ['Federal law applies here.', '연방법이 여기 적용된다.'],
       ['The federal office is closed.', '연방 사무소가 닫혀 있다.'],
       ['They asked for federal help.', '그들은 연방 지원을 요청했다.'],
     ]},
   ]},
   { w: 'ferry', p: 'n.', s: [
-    { m: '여객선, 나룻배', syn: ['boat'], ex: [
+    { m: '여객선, 나룻배', syn: [], ex: [
       ['We took a ferry to the island.', '우리는 섬으로 가는 배를 탔다.'],
       ['The ferry leaves at noon.', '여객선은 정오에 떠난다.'],
       ['A small ferry crosses the river.', '작은 나룻배가 강을 건넌다.'],
     ]},
   ]},
   { w: 'fertile', p: 'adj.', s: [
-    { m: '비옥한', syn: ['productive'], ex: [
+    { m: '비옥한', syn: [], ex: [
       ['The soil here is fertile.', '여기 토양은 비옥하다.'],
       ['Fertile land grows good crops.', '비옥한 땅은 좋은 작물을 낸다.'],
-      ['Her mind is fertile with ideas.', '그녀의 머리는 아이디어가 풍부하다.'],
+      ['She has a fertile imagination.', '그녀는 상상력이 풍부하다.'],
     ]},
   ]},
   { w: 'fiber', p: 'n.', s: [
-    { m: '섬유', syn: ['thread'], ex: [
+    { m: '섬유', syn: [], ex: [
       ['Fruit is rich in fiber.', '과일은 섬유질이 풍부하다.'],
       ['The fiber is strong and thin.', '그 섬유는 강하고 가늘다.'],
       ['Natural fiber breathes well.', '천연 섬유는 통기성이 좋다.'],
@@ -936,21 +936,21 @@ export const H2_3 = defineLevel('h2-3', [
     ]},
   ]},
   { w: 'fiction', p: 'n.', s: [
-    { m: '소설, 허구', syn: ['made-up story'], ex: [
+    { m: '소설, 허구', syn: [], ex: [
       ['She reads fiction every night.', '그녀는 매일 밤 소설을 읽는다.'],
       ['That story is pure fiction.', '그 이야기는 완전한 허구다.'],
       ['Fiction can teach truth.', '소설은 진실을 가르칠 수 있다.'],
     ]},
   ]},
   { w: 'fierce', p: 'adj.', s: [
-    { m: '사나운, 격렬한', syn: ['savage'], ex: [
+    { m: '사나운, 격렬한', syn: [], ex: [
       ['A fierce dog guarded the gate.', '사나운 개가 문을 지켰다.'],
       ['The competition was fierce.', '경쟁이 치열했다.'],
       ['A fierce wind blew all night.', '거센 바람이 밤새 불었다.'],
     ]},
   ]},
   { w: 'filter', p: 'n.', s: [
-    { m: '필터, 여과기', syn: ['strainer'], ex: [
+    { m: '필터, 여과기', syn: [], ex: [
       ['Change the water filter.', '물 필터를 갈아라.'],
       ['The filter removes dust.', '그 필터는 먼지를 걸러 낸다.'],
       ['A coffee filter is thin paper.', '커피 필터는 얇은 종이다.'],
@@ -975,6 +975,125 @@ export const H2_3 = defineLevel('h2-3', [
       ['The flavour of this tea is strong.', '이 차의 풍미는 강하다.'],
       ['She added flavour with herbs.', '그녀는 허브로 풍미를 더했다.'],
       ['Each flavour is different.', '각 맛이 다르다.'],
+    ]},
+  ]},
+  { w: 'take after', p: 'phr.', s: [
+    { m: '~을 닮다', syn: ['resemble'], ex: [
+      ['She takes after her father.', '그녀는 아버지를 닮았다.'],
+      ['He takes after his grandmother in looks.', '그는 외모가 할머니를 닮았다.'],
+      ['The twins take after each other.', '쌍둥이는 서로 닮았다.'],
+    ]},
+  ]},
+  { w: 'take charge of', p: 'phr.', s: [
+    { m: '~을 맡다, 책임지다', syn: [], ex: [
+      ['She took charge of the project.', '그녀는 그 사업을 맡았다.'],
+      ['He took charge of the class.', '그는 그 학급을 맡았다.'],
+      ['Someone must take charge of the money.', '누군가 그 돈을 책임져야 한다.'],
+    ]},
+  ]},
+  { w: 'take down', p: 'phr.', s: [
+    { m: '내리다; 받아 적다', syn: [], ex: [
+      ['They took down the old sign.', '그들은 낡은 간판을 내렸다.'],
+      ['She took down his phone number.', '그녀는 그의 전화번호를 받아 적었다.'],
+      ['He took down the tent in the rain.', '그는 빗속에서 텐트를 걷었다.'],
+    ]},
+  ]},
+  { w: 'take in', p: 'phr.', s: [
+    { m: '받아들이다; 이해하다', syn: [], ex: [
+      ['The country took in many refugees.', '그 나라는 많은 난민을 받아들였다.'],
+      ['It was too much to take in at once.', '한꺼번에 이해하기에는 너무 많았다.'],
+      ['She took in the whole scene.', '그녀는 그 광경 전체를 눈에 담았다.'],
+    ]},
+  ]},
+  { w: 'take on', p: 'phr.', s: [
+    { m: '(일을) 떠맡다; (성질을) 띠다', syn: [], ex: [
+      ['He took on too much work.', '그는 너무 많은 일을 떠맡았다.'],
+      ['The sky took on a purple color.', '하늘이 보랏빛을 띠었다.'],
+      ['She took on the role of leader.', '그녀는 지도자 역할을 맡았다.'],
+    ]},
+  ]},
+  { w: 'take over', p: 'phr.', s: [
+    { m: '인계받다, 넘겨받다', syn: [], ex: [
+      ['She took over the business from her father.', '그녀는 아버지에게서 사업을 물려받았다.'],
+      ['A new manager took over last month.', '지난달에 새 관리자가 인계받았다.'],
+      ['He took over the driving.', '그가 운전을 넘겨받았다.'],
+    ]},
+  ]},
+  { w: 'take pride in', p: 'phr.', s: [
+    { m: '~을 자랑스러워하다', syn: [], ex: [
+      ['They take pride in their work.', '그들은 자기 일을 자랑스러워한다.'],
+      ['She takes pride in her garden.', '그녀는 자기 정원을 자랑스러워한다.'],
+      ['He takes pride in being honest.', '그는 정직한 것을 자랑스러워한다.'],
+    ]},
+  ]},
+  { w: 'take turns', p: 'phr.', s: [
+    { m: '번갈아 하다', syn: [], ex: [
+      ['We take turns washing the dishes.', '우리는 번갈아 설거지를 한다.'],
+      ['They took turns driving.', '그들은 번갈아 운전했다.'],
+      ['The children took turns on the swing.', '아이들은 번갈아 그네를 탔다.'],
+    ]},
+  ]},
+  { w: 'tell apart', p: 'phr.', s: [
+    { m: '구별하다', syn: [], ex: [
+      ['I cannot tell the twins apart.', '나는 그 쌍둥이를 구별하지 못한다.'],
+      ['It is not easy to tell apart the two versions.', '그 두 판을 구별하기는 쉽지 않다.'],
+      ['It is hard to tell them apart.', '그것들을 구별하기가 어렵다.'],
+    ]},
+  ]},
+  { w: 'think over', p: 'phr.', s: [
+    { m: '곰곰이 생각하다, 재고하다', syn: [], ex: [
+      ['Think over my offer.', '내 제안을 곰곰이 생각해 봐.'],
+      ['She thought over the question all night.', '그녀는 밤새 그 질문을 생각했다.'],
+      ['He wants to think it over first.', '그는 먼저 그것을 생각해 보고 싶어 한다.'],
+    ]},
+  ]},
+  { w: 'throw up', p: 'phr.', s: [
+    { m: '토하다', syn: [], ex: [
+      ['He threw up after the ride.', '그는 놀이 기구를 탄 뒤 토했다.'],
+      ['She felt like she would throw up.', '그녀는 토할 것 같았다.'],
+      ['The child threw up in the car.', '그 아이는 차 안에서 토했다.'],
+    ]},
+  ]},
+  { w: 'try out', p: 'phr.', s: [
+    { m: '시험 삼아 해 보다', syn: [], ex: [
+      ['Let\'s try out the new game.', '새 게임을 한번 해 보자.'],
+      ['She tried out three recipes.', '그녀는 조리법 세 가지를 시험해 보았다.'],
+      ['He tried out for the team.', '그는 그 팀에 입단 시험을 봤다.'],
+    ]},
+  ]},
+  { w: 'turn in', p: 'phr.', s: [
+    { m: '제출하다', syn: ['hand in'], ex: [
+      ['Turn in your papers now.', '지금 답안을 제출하세요.'],
+      ['She turned in her report late.', '그녀는 보고서를 늦게 제출했다.'],
+      ['He turned in the lost wallet.', '그는 주운 지갑을 신고했다.'],
+    ]},
+  ]},
+  { w: 'turn out', p: 'phr.', s: [
+    { m: '~로 판명되다; 나타나다', syn: [], ex: [
+      ['It turned out to be a mistake.', '그것은 실수로 판명되었다.'],
+      ['The party turned out well.', '파티는 잘 되었다.'],
+      ['Many people turned out for the event.', '많은 사람이 그 행사에 나왔다.'],
+    ]},
+  ]},
+  { w: 'turn over', p: 'phr.', s: [
+    { m: '뒤집다; 넘기다', syn: [], ex: [
+      ['Turn over the paper and start.', '종이를 뒤집고 시작하세요.'],
+      ['She turned over in her sleep.', '그녀는 자면서 몸을 뒤척였다.'],
+      ['He turned over the keys to the new owner.', '그는 새 주인에게 열쇠를 넘겼다.'],
+    ]},
+  ]},
+  { w: 'turn to', p: 'phr.', s: [
+    { m: '~에 의지하다, ~로 향하다', syn: [], ex: [
+      ['She turned to her sister for advice.', '그녀는 조언을 구하러 언니에게 갔다.'],
+      ['He turned to the next page.', '그는 다음 쪽으로 넘겼다.'],
+      ['They turned to the police for help.', '그들은 도움을 구하러 경찰에 갔다.'],
+    ]},
+  ]},
+  { w: 'use up', p: 'phr.', s: [
+    { m: '다 써 버리다', syn: [], ex: [
+      ['We used up all the paper.', '우리는 종이를 다 써 버렸다.'],
+      ['She used up her savings.', '그녀는 저축을 다 써 버렸다.'],
+      ['The printer used up the ink.', '프린터가 잉크를 다 썼다.'],
     ]},
   ]},
 ], 'csat');

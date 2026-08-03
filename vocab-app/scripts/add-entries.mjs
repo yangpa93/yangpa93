@@ -2,7 +2,8 @@
 /**
  * 뜻·예문 채워 넣기.
  *
- *   node scripts/add-entries.mjs batch.txt
+ *   node scripts/add-entries.mjs batch.txt [batch2.txt …]
+ *   (보통은 `npm run data:update` 가 data/batch-*.txt 를 알아서 다 넣는다)
  *
  * 한 줄에 뜻 하나를 적으면, **배치표(plan.ts)가 정한 레벨 파일**을 찾아
  * 알파벳 자리에 끼워 넣는다. 3천 개를 손으로 옮겨 적을 수 없어서 만든 도구다.
@@ -22,9 +23,9 @@
 
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 
-const path = process.argv[2];
-if (!path) {
-  console.error('사용법: node scripts/add-entries.mjs <배치 파일>');
+const paths = process.argv.slice(2);
+if (paths.length === 0) {
+  console.error('사용법: node scripts/add-entries.mjs <배치 파일> [배치 파일 …]');
   process.exit(1);
 }
 
@@ -73,18 +74,18 @@ const problems = [];
 const byWord = new Map();
 const order = [];
 
-readFileSync(path, 'utf8')
-  .split('\n')
-  .forEach((raw, i) => {
+paths
+  .flatMap((p) => readFileSync(p, 'utf8').split('\n').map((line, i) => [line, `${p}:${i + 1}`]))
+  .forEach(([raw, where]) => {
     const line = raw.trim();
     if (!line || line.startsWith('#')) return;
 
     const [word, pos, meaning, syn, ...exs] = line.split('|').map((c) => c.trim());
-    const no = i + 1;
+    const no = where;
 
     if (!word) return;
     if (!pos || !meaning) {
-      problems.push(`${no}줄 '${word}': 품사나 뜻이 비었습니다.`);
+      problems.push(`${no} '${word}': 품사나 뜻이 비었습니다.`);
       return;
     }
 
@@ -93,13 +94,13 @@ readFileSync(path, 'utf8')
       if (!ex) continue;
       const [en, ko] = ex.split('::').map((c) => (c ?? '').trim());
       if (!en || !ko) {
-        problems.push(`${no}줄 '${word}': 예문의 영어/해석 중 한쪽이 비었습니다.`);
+        problems.push(`${no} '${word}': 예문의 영어/해석 중 한쪽이 비었습니다.`);
         continue;
       }
       examples.push([en, ko]);
     }
     if (examples.length < 2) {
-      problems.push(`${no}줄 '${word}': 뜻 하나에 예문이 2개 이상 있어야 합니다.`);
+      problems.push(`${no} '${word}': 뜻 하나에 예문이 2개 이상 있어야 합니다.`);
     }
 
     if (!byWord.has(word)) {

@@ -17,17 +17,22 @@ import {
 } from '../src/features/backup';
 import { emptyProfileData, emptyState } from '../src/store/storage';
 import { AppState, CardState, DailyRecord, Profile, ProfileData, RewardRequest } from '../src/types';
+import { APP_NAME } from '../src/features/app-name';
 
 function makeProfile(over: Partial<Profile> = {}): Profile {
   return {
     id: 'p1',
     name: '서준',
+    kind: 'child',
     avatar: '🦊',
     level: 'm1-1',
+    koLevel: 'm1-1',
     settings: {
       newPerDay: 10,
       reviewPerDay: 10,
       rounds: 3,
+      subjects: ['en'],
+      firstSubject: 'en',
       showTranslation: true,
       ttsEnabled: true,
       hapticsEnabled: true,
@@ -37,8 +42,13 @@ function makeProfile(over: Partial<Profile> = {}): Profile {
     bestStreak: 5,
     lastCompletedDate: '2026-07-27',
     pendingLevelUps: [],
+    koPendingLevelUps: [],
     clearedLevels: [],
+    koClearedLevels: [],
     claimedMonths: [],
+    awards: null,
+    linkWaived: false,
+    parentStudy: { tracks: ['daily'], dailyTheme: 'w', perTrack: { daily: 5, enWord: 5, ko: 5 } },
     ...over,
   };
 }
@@ -98,6 +108,7 @@ function makeReward(over: Partial<RewardRequest> = {}): RewardRequest {
     createdAt: 100,
     decidedAt: null,
     parentNote: '',
+    origin: 'child',
     ...over,
   };
 }
@@ -120,11 +131,30 @@ describe('buildBackup', () => {
     const data = { p1: makeData() };
     const b = buildBackup(state, data, '1.0.0', NOW);
 
-    expect(b.app).toBe('urivocab');
+    expect(b.app).toBe('gomtangivoca');
     expect(b.format).toBe(BACKUP_FORMAT);
     expect(b.state.profiles).toHaveLength(1);
     expect(b.data.p1.cards.save).toBeDefined();
     expect(b.state.rewards).toHaveLength(1);
+  });
+
+  it('예전 이름표로 만든 백업도 읽힌다', () => {
+    /*
+     * 앱 이름을 urivocab 에서 gomtangivoca 로 바꿨다. 이름을 바꿨다고 어제
+     * 빼 둔 백업 파일이 "다른 앱 파일"이 되어 버리면, 폰을 바꾼 그날 아이
+     * 기록이 통째로 사라진다. 읽을 때는 둘 다 받아야 한다.
+     */
+    const fresh = buildBackup(makeState(), { p1: makeData() }, '1.0.0', NOW);
+    const old = JSON.stringify({ ...fresh, app: 'urivocab' });
+    const got = readBackup(old);
+    expect(got.ok).toBe(true);
+  });
+
+  it('우리 것이 아닌 파일은 그대로 막는다', () => {
+    // 옛 이름표를 받아 준다고 아무 json 이나 받아서는 안 된다.
+    const fresh = buildBackup(makeState(), { p1: makeData() }, '1.0.0', NOW);
+    const alien = JSON.stringify({ ...fresh, app: '남의앱' });
+    expect(readBackup(alien).ok).toBe(false);
   });
 
   it('부모 PIN은 담지 않는다', () => {
@@ -141,7 +171,9 @@ describe('buildBackup', () => {
     // 죽은 토큰으로 계속 실패한다.
     const state = makeState({
       role: 'parent',
-      parentLink: { token: 'ExponentPushToken[x]', label: '엄마 폰', linkedAt: 1, lastSentDate: null },
+      parentLinks: [
+        { token: 'ExponentPushToken[x]', label: '엄마 폰', linkedAt: 1, lastSentDate: null, isPrimary: true },
+      ],
       myPushToken: 'ExponentPushToken[me]',
       receivedReports: [
         { id: 'x', childName: '서준', date: '2026-07-27', headline: 'h', detail: 'd', completed: true, receivedAt: 1 },
@@ -150,17 +182,18 @@ describe('buildBackup', () => {
     const b = buildBackup(state, { p1: makeData() }, '1.0.0', NOW);
 
     expect(b.state.role).toBe('child');
-    expect(b.state.parentLink).toBeNull();
+    expect(b.state.parentLinks).toEqual([]);
     expect(b.state.myPushToken).toBeNull();
     expect(b.state.receivedReports).toEqual([]);
   });
 
   it('보상 금액 설정은 담는다', () => {
     const state = makeState({
-      parent: { ...emptyState().parent, awards: { middleLevel: 5_000, highLevel: 7_000, perfectMonth: 0, bonus: 3_000 } },
+      parent: { ...emptyState().parent, awards: { middleLevel: 5_000, highLevel: 7_000, koreanLevel: 4_000, perfectMonth: 0, bonus: 3_000 } },
     });
     const b = buildBackup(state, { p1: makeData() }, '1.0.0', NOW);
     expect(b.state.parent.awards.middleLevel).toBe(5_000);
+    expect(b.state.parent.awards.koreanLevel).toBe(4_000);
     expect(b.state.parent.awards.perfectMonth).toBe(0);
   });
 });
@@ -191,7 +224,9 @@ describe('readBackup', () => {
     // 엉뚱한 파일을 덮어쓰기로 밀어 넣으면 기록이 통째로 날아간다.
     const r = readBackup(JSON.stringify({ hello: 'world' }));
     expect(r.ok).toBe(false);
-    if (!r.ok) expect(r.reason).toContain('가가_Voca');
+    // 앱 이름은 app.json 하나에서 온다. 여기에 이름을 박아 두면
+    // 이름을 바꿀 때마다 테스트가 깨진다.
+    if (!r.ok) expect(r.reason).toContain(APP_NAME);
   });
 
   it('더 새 판에서 만든 백업은 거절한다', () => {
@@ -261,12 +296,18 @@ describe('restoreReplace — 통째로 되돌리기', () => {
 
   it('지금 기기의 역할과 부모 폰 연결은 지킨다', () => {
     // 새 폰에서 되돌리는 상황이다. 연결은 그 폰에서 이미 해 둔 것이 맞다.
-    const link = { token: 'ExponentPushToken[now]', label: '엄마 폰', linkedAt: 2, lastSentDate: null };
-    const current = makeState({ role: 'parent', parentLink: link, myPushToken: 'me' });
+    const link = {
+      token: 'ExponentPushToken[now]',
+      label: '엄마 폰',
+      linkedAt: 2,
+      lastSentDate: null,
+      isPrimary: true,
+    };
+    const current = makeState({ role: 'parent', parentLinks: [link], myPushToken: 'me' });
     const r = restoreReplace(backup, current);
 
     expect(r.state.role).toBe('parent');
-    expect(r.state.parentLink).toEqual(link);
+    expect(r.state.parentLinks).toEqual([link]);
     expect(r.state.myPushToken).toBe('me');
   });
 

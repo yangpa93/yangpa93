@@ -11,6 +11,11 @@ import * as Application from 'expo-application';
 import Constants from 'expo-constants';
 import * as Updates from 'expo-updates';
 import { Platform } from 'react-native';
+import { APP_NAME } from './app-name';
+import { APP_VERSION } from './changelog';
+
+// 예전부터 여기서 가져다 쓰던 자리가 있어 그대로 내보낸다.
+export { APP_NAME };
 
 export interface BuildInfo {
   /** 앱 판 (0.9.0) */
@@ -42,7 +47,10 @@ export function buildInfo(): BuildInfo {
   // 빌드 번호는 **실제 설치된 앱**에서 읽는다. eas.json이
   // appVersionSource를 'remote'로 두고 있어서, 번호를 정하는 것은 EAS이고
   // app.json에는 안 적힌다. 여기서 expoConfig를 읽으면 늘 비어 있다.
-  const version = Application.nativeApplicationVersion ?? cfg?.version ?? '0.0.0';
+  // 둘 다 못 읽는 자리(웹 미리보기 등)에서는 소스에 적힌 판을 쓴다. 예전에는
+  // '0.0.0' 을 썼는데, 그러면 업데이트 내역 화면이 "이 판은 목록에 없다"고
+  // 잘못 경고한다. 없는 번호를 지어내느니 소스의 판을 그대로 적는 편이 맞다.
+  const version = Application.nativeApplicationVersion ?? cfg?.version ?? APP_VERSION;
   const build = Application.nativeBuildVersion ?? '';
 
   const channel = Updates.channel ?? '';
@@ -65,9 +73,15 @@ export function buildInfo(): BuildInfo {
   };
 }
 
-/** `베타 0.9.0 (12) · android` — 화면 아래에 한 줄로 적는다. */
+/**
+ * `0.9.0 (12) · android` — 화면 아래에 한 줄로 적는다.
+ *
+ * '베타'라고 적지 않는다. 아이가 모르는 말이고, 안다고 해도 "아직 덜 만든 것"
+ * 으로 들려 이상한 것을 말하기 어려워진다. 판과 빌드 번호만 있으면 어느
+ * 앱인지 가리는 데는 충분하다.
+ */
 export function buildLabel(info: BuildInfo = buildInfo()): string {
-  const head = info.isBeta ? `베타 ${info.version}` : `v${info.version}`;
+  const head = info.version;
   const parts = [`${head} (${info.build})`, info.platform];
   // 무선 업데이트로 받은 판이면 그것까지 적어야 같은 빌드 번호끼리도 구별된다.
   if (info.update) parts.push(`업데이트 ${info.update}`);
@@ -83,7 +97,7 @@ export function buildLabel(info: BuildInfo = buildInfo()): string {
 export function feedbackHeader(info: BuildInfo = buildInfo()): string {
   return [
     '── 아래는 지우지 말아 주세요 ──',
-    `앱: 가가_Voca ${buildLabel(info)}`,
+    `앱: ${APP_NAME} ${buildLabel(info)}`,
     `보낸 때: ${new Date().toLocaleString('ko-KR')}`,
   ].join('\n');
 }

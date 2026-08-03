@@ -18,7 +18,8 @@
  * 것을 모아 보여줄 뿐** 자동으로 고치지 않는다. 판단은 사람이 한다.
  */
 
-import { readFileSync, existsSync, readdirSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
+import { readEntries } from './lib/levels.mjs';
 
 const dictPath = process.argv[2];
 if (!dictPath || !existsSync(dictPath)) {
@@ -62,42 +63,7 @@ const ALLOW = new Set([
 
 /* ---------- 레벨 데이터 읽기 ---------- */
 
-const LEVEL_DIR = 'src/data/levels';
-const entries = [];
-
-for (const file of readdirSync(LEVEL_DIR).filter((f) => f.endsWith('.ts')).sort()) {
-  const src = readFileSync(`${LEVEL_DIR}/${file}`, 'utf8');
-  const level = file.replace(/\.ts$/, '');
-
-  let cur = null;
-  let sense = null;
-
-  for (const [i, line] of src.split('\n').entries()) {
-    const w = line.match(/^ {2}\{ w: '((?:[^'\\]|\\.)*)', p: '((?:[^'\\]|\\.)*)'/);
-    if (w) {
-      cur = { level, line: i + 1, word: unq(w[1]), pos: unq(w[2]), senses: [] };
-      entries.push(cur);
-      continue;
-    }
-    const m = line.match(/^ {4}\{ m: '((?:[^'\\]|\\.)*)', syn: \[(.*)\], ex: \[/);
-    if (m && cur) {
-      sense = {
-        line: i + 1,
-        meaning: unq(m[1]),
-        synonyms: [...m[2].matchAll(/'((?:[^'\\]|\\.)*)'/g)].map((x) => unq(x[1])),
-        examples: [],
-      };
-      cur.senses.push(sense);
-      continue;
-    }
-    const ex = line.match(/^ {6}\['((?:[^'\\]|\\.)*)', '((?:[^'\\]|\\.)*)'\],$/);
-    if (ex && sense) sense.examples.push({ line: i + 1, en: unq(ex[1]), ko: unq(ex[2]) });
-  }
-}
-
-function unq(s) {
-  return s.replace(/\\'/g, "'").replace(/\\\\/g, '\\');
-}
+const entries = readEntries();
 
 /* ---------- 우리 어휘 자체도 사전에 더한다 ---------- */
 

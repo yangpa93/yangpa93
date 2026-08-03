@@ -5,7 +5,16 @@
  */
 
 import { ALL_ENTRIES, ENTRIES_BY_LEVEL } from '../src/data';
-import { clozeSentence, exposure, meaningLine, wordForms } from '../src/data/entry';
+import {
+  clozeSentence,
+  exposure,
+  meaningLine,
+  posLabel,
+  iRaNeun,
+  synonymLead,
+  synonymSentence,
+  wordForms,
+} from '../src/data/entry';
 import { ANTONYMS, antonymsOf, hasAntonym } from '../src/data/antonyms';
 import { VARIANTS, variantOf } from '../src/data/spelling';
 import { PLAN, PLAN_COUNT } from '../src/data/plan';
@@ -131,9 +140,16 @@ describe('배치표(plan.ts)', () => {
   });
 
   it('레벨당 계획 단어 수가 시험을 볼 수 있는 범위다', () => {
-    // 계획대로 다 채웠을 때 시험이 길어지지 않아야 한다.
+    /*
+     * 계획대로 다 채웠을 때 시험이 길어지지 않아야 한다.
+     *
+     * 상한을 150에서 160으로 올렸다. 숙어 405개를 24레벨에 나눠 얹으면서
+     * 레벨당 137개가 154개가 됐기 때문이다. 시험 문항 수(다의어는 뜻마다
+     * 한 문항)로는 155~172개라, 원래 잡아 둔 '160문항 안팎 · 30분' 선을
+     * 크게 벗어나지 않는다. 여기서 더 늘리려면 레벨을 쪼개야 한다.
+     */
     for (const level of LEVEL_ORDER) {
-      expect({ level, ok: PLAN_COUNT[level] > 0 && PLAN_COUNT[level] <= 150 }).toEqual({
+      expect({ level, ok: PLAN_COUNT[level] > 0 && PLAN_COUNT[level] <= 160 }).toEqual({
         level,
         ok: true,
       });
@@ -254,6 +270,99 @@ describe('meaningLine', () => {
   it('다의어는 뜻을 모두 이어 붙인다', () => {
     const multi = ALL_ENTRIES.find((e) => e.senses.length >= 2)!;
     expect(meaningLine(multi)).toContain(' ; ');
+  });
+});
+
+describe('posLabel', () => {
+  it('약어를 한국어로 바꾼다', () => {
+    expect(posLabel('n.')).toBe('명사');
+    expect(posLabel('aux.')).toBe('조동사');
+    expect(posLabel('phr.')).toBe('숙어');
+  });
+
+  it('쉼표로 여럿이 오면 가운뎃점으로 잇는다', () => {
+    expect(posLabel('v., adj.')).toBe('동사 · 형용사');
+    expect(posLabel('adj., adv.')).toBe('형용사 · 부사');
+  });
+
+  it('모르는 값은 원래 문자열을 그대로 돌려준다', () => {
+    // 빈칸이 되면 아이 화면에서 품사가 사라진다.
+    expect(posLabel('xyz.')).toBe('xyz.');
+    expect(posLabel('n., xyz.')).toBe('n., xyz.');
+    expect(posLabel('')).toBe('');
+  });
+
+  it('실제로 쓰이는 품사 값이 전부 한국어로 바뀐다', () => {
+    for (const e of ALL_ENTRIES) {
+      expect({ word: e.word, pos: e.pos, label: posLabel(e.pos) }).toEqual({
+        word: e.word,
+        pos: e.pos,
+        label: expect.stringMatching(/^[가-힣]+( · [가-힣]+)*$/),
+      });
+    }
+  });
+});
+
+describe('유의어 문구', () => {
+  it("'=' 대신 어느 뜻일 때 바꿔 쓸 수 있는지 말한다", () => {
+    expect(synonymSentence('단단한', ['firm'])).toBe(
+      '"단단한"이라는 뜻일 때 이렇게 바꿔 쓸 수 있어요 : firm',
+    );
+    expect(synonymSentence('단단한', ['firm', 'hard'])).toBe(
+      '"단단한"이라는 뜻일 때 이렇게 바꿔 쓸 수 있어요 : firm, hard',
+    );
+    expect(synonymSentence('단단한', ['firm'])).not.toContain('=');
+  });
+
+  it('뜻을 직접 불러 준다 — 다의어에서 어느 뜻인지 되짚지 않아도 된다', () => {
+    const multi = ALL_ENTRIES.find(
+      (e) => e.senses.length >= 2 && e.senses.every((s) => s.synonyms.length > 0),
+    );
+    if (!multi) return;
+    for (const sense of multi.senses) {
+      expect(synonymSentence(sense.meaning, sense.synonyms)).toContain(sense.meaning);
+    }
+  });
+
+  it('받침에 맞는 이라는/라는 를 쓴다', () => {
+    // 3,462개 뜻 중 2,018개가 받침이 없다. 한쪽으로 박아 두면 절반 넘게 틀린다.
+    expect(iRaNeun('단단한')).toBe('이라는'); // 한 — 받침 ㄴ
+    expect(iRaNeun('~에 대하여')).toBe('라는'); // 여 — 받침 없음
+    expect(iRaNeun('약, 대략')).toBe('이라는'); // 략 — 받침 ㄱ
+    // 괄호 주석이 뒤에 붙어도 마지막 한글 글자를 본다.
+    expect(iRaNeun('조금, 약간의 (몇 개의)')).toBe('라는');
+    // 한글이 없으면 어느 쪽도 어색하다. 기본값으로 둔다.
+    expect(iRaNeun('???')).toBe('라는');
+  });
+
+  it('모든 뜻에 대해 조사가 자연스럽다', () => {
+    // 화면에 나가는 3,462줄 전부를 훑는다.
+    for (const e of ALL_ENTRIES) {
+      for (const sense of e.senses) {
+        const line = synonymLead(sense.meaning);
+        const hangul = sense.meaning.replace(/[^가-힣]/g, '');
+        if (hangul.length === 0) continue;
+        const 받침 = (hangul.charCodeAt(hangul.length - 1) - 0xac00) % 28 !== 0;
+        expect({ m: sense.meaning, ok: line.includes(받침 ? '"이라는' : '"라는') }).toEqual({
+          m: sense.meaning,
+          ok: true,
+        });
+      }
+    }
+  });
+
+  it('조사를 쓰지 않는다 — 영어 낱말마다 로/으로 가 갈린다', () => {
+    // firm 은 '펌'이라 으로, hard 는 '하드'라 로. 규칙으로 고를 수 없다.
+    for (const syn of [['firm'], ['hard'], ['look'], ['put up']]) {
+      const line = synonymSentence('단단한', syn);
+      expect(line).not.toMatch(/(으로|로) 바꿔/);
+    }
+  });
+
+  it('칩으로 늘어놓는 자리에서는 유의어를 문장에 넣지 않는다', () => {
+    // 단어 카드의 '오늘 배우는 뜻' 칸은 유의어가 칩으로 따로 나온다.
+    expect(synonymLead('단단한')).toBe('"단단한"이라는 뜻일 때 이렇게 바꿔 쓸 수 있어요');
+    expect(synonymLead('단단한')).not.toContain('firm');
   });
 });
 

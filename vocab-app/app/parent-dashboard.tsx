@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Pressable, Share, StyleSheet, Text, View } from 'react-native';
+import { Pressable, Share, StyleSheet, Text, TextInput, View } from 'react-native';
 import { router } from 'expo-router';
 import { Body, Button, Card, Chip, EmptyState, H3, Muted, ProgressBar, Row, Screen } from '../src/components/ui';
 import { useApp } from '../src/store/AppProvider';
@@ -7,9 +7,15 @@ import { ALL_ENTRIES } from '../src/data';
 import { loadProfileData } from '../src/store/storage';
 import { buildDailyReport, buildWeeklySummary, DailyReport, reportText, WeeklySummary } from '../src/features/report';
 import { levelProgress } from '../src/srs/progress';
+import { Award, availableAwards, awardRates, formatWon } from '../src/features/awards';
 import { formatKo, todayKey } from '../src/lib/date';
-import { LEVEL_LABEL, ProfileData } from '../src/types';
+import { LEVEL_LABEL, LEVEL_SHORT, Profile, ProfileData } from '../src/types';
 import { colors, font, radius, spacing } from '../src/theme';
+import { NudgeCard } from '../src/components/NudgeCard';
+import { LinkedChildren } from '../src/components/LinkedChildren';
+import { MonthlyCard } from '../src/components/MonthlyCard';
+import { buildMonthlyReport } from '../src/features/monthly';
+import { monthOf } from '../src/features/calendar';
 
 /** 부모용 대시보드. 아이별 일일 리포트와 주간 요약을 보여준다. */
 export default function ParentDashboard() {
@@ -37,6 +43,14 @@ export default function ParentDashboard() {
   const profile = state.profiles.find((p) => p.id === selectedId) ?? null;
   const pdata = profile ? dataById[profile.id] : undefined;
 
+  const monthly = useMemo(
+    () =>
+      profile && pdata
+        ? buildMonthlyReport(monthOf(today), pdata.days, pdata.cards, pdata.exams, ALL_ENTRIES, today)
+        : null,
+    [profile, pdata, today],
+  );
+
   const report: DailyReport | null = useMemo(
     () => (profile && pdata ? buildDailyReport(profile, pdata, ALL_ENTRIES, today) : null),
     [profile, pdata, today],
@@ -60,10 +74,18 @@ export default function ParentDashboard() {
     return <ReceivedInbox />;
   }
 
+  // 공부도 하고 리포트도 받는 폰이면, 이 기기의 학습 리포트를 먼저 보여주고
+  // 다른 기기가 보내 온 것은 아래에 이어 붙인다. 둘 다 봐야 하기 때문이다.
+  const alsoReceives = state.receivesReports;
+
   if (!profile) {
+    // 이 폰에 학습자가 없어도 아이를 부를 수는 있어야 한다. 부모님이 자기
+    // 프로필을 안 만들었을 뿐이지, 아이 기기는 연결돼 있을 수 있다.
     return (
       <Screen>
-        <Muted style={{ paddingTop: spacing.lg }}>등록된 아이가 없습니다.</Muted>
+        <Muted style={{ paddingTop: spacing.lg }}>이 기기에 등록된 아이가 없습니다.</Muted>
+        {alsoReceives ? <LinkedChildren /> : null}
+        {alsoReceives ? <NudgeCard /> : null}
       </Screen>
     );
   }
@@ -217,6 +239,15 @@ export default function ParentDashboard() {
         </Card>
       ) : null}
 
+      {/*
+        부모가 먼저 주는 길.
+        아이가 신청하기를 기다리지 않아도 된다 — 아이가 신청 화면을 안 보고
+        지나쳤거나, 부모가 먼저 "이건 줘야지" 하고 정할 때가 있다.
+        아이가 신청하는 길은 그대로 둔다. 스스로 "이만큼 했어요"라고 말할
+        자리를 없애지 않으려는 것.
+      */}
+      {pdata ? <GrantCard profile={profile} pdata={pdata} today={today} /> : null}
+
       <Button
         title="리포트 공유하기"
         variant="secondary"
@@ -238,7 +269,158 @@ export default function ParentDashboard() {
         onPress={() => router.push('/parent-settings')}
         style={{ marginTop: spacing.sm }}
       />
+
+      {/*
+        다른 기기에서 온 리포트.
+
+        이 폰이 공부도 하고 리포트도 받는 경우다. 위에는 이 폰에서 공부한
+        기록이, 여기에는 다른 아이 폰이 보내 온 것이 쌓인다.
+      */}
+      {/* 한 달을 놓고 보면 하루 리포트가 안 보여 주는 것이 보인다 —
+          개근했나, 새 단어를 몇 개 익혔나, 레벨이 올라갔나. */}
+      {monthly ? <MonthlyCard report={monthly} name={profile.name} /> : null}
+
+      {alsoReceives ? <LinkedChildren /> : null}
+      {alsoReceives ? <NudgeCard /> : null}
+
+      {alsoReceives ? (
+        <View style={{ marginTop: spacing.xl }}>
+          <H3>📥 다른 기기에서 온 리포트</H3>
+          <Muted style={{ marginTop: spacing.xs }}>
+            {state.receivedReports.length === 0
+              ? '아직 받은 것이 없어요. 아이 기기에서 연결하고 학습을 마치면 여기에 쌓입니다.'
+              : `${state.receivedReports.length}건 보관 중`}
+          </Muted>
+          {state.receivedReports.slice(0, 5).map((r, i) => (
+            <Card key={`${r.date}-${r.childName}-${i}`} style={{ marginTop: spacing.sm }}>
+              <Row style={{ justifyContent: 'space-between' }}>
+                <Body style={{ fontWeight: '800' }}>{r.childName}</Body>
+                <Muted>{formatKo(r.date)}</Muted>
+              </Row>
+              <Muted style={{ marginTop: 2 }}>{r.headline}</Muted>
+            </Card>
+          ))}
+        </View>
+      ) : null}
     </Screen>
+  );
+}
+
+/**
+ * 아이에게 동기 부여 요청권을 먼저 주는 카드.
+ *
+ * 지금 줄 수 있는 것이 없으면 버튼이 꺼진다. 조건을 채우지도 않았는데
+ * 줄 수 있게 하면 "레벨을 끝내면 얼마"라는 규칙 자체가 무너진다.
+ * 무엇이 모자라서 못 주는지는 버튼 아래에 적는다.
+ */
+function GrantCard({
+  profile,
+  pdata,
+  today,
+}: {
+  profile: Profile;
+  pdata: ProfileData;
+  today: string;
+}) {
+  const { state, grantReward } = useApp();
+  const [open, setOpen] = useState(false);
+  const [note, setNote] = useState('');
+
+  const rates = awardRates(state.parent.awards);
+  const awards = useMemo(
+    () => availableAwards(profile, pdata, today, rates),
+    [profile, pdata, today, rates.middleLevel, rates.highLevel, rates.perfectMonth],
+  );
+
+  // 이미 아이가 신청해 둔 것은 여기서 또 주면 두 번 주는 셈이 된다.
+  // availableAwards 가 원장에서 빼 주지만, 부모에게도 그렇다고 알린다.
+  const pendingHere = state.rewards.filter(
+    (r) => r.profileId === profile.id && r.status === 'pending',
+  );
+
+  function give(award: Award) {
+    grantReward(profile.id, award, note.trim());
+    setNote('');
+    setOpen(false);
+  }
+
+  return (
+    <Card style={{ marginTop: spacing.md }}>
+      <H3>🎟️ 보상하기</H3>
+      <Muted style={{ marginTop: spacing.xs }}>
+        {awards.length > 0
+          ? `${profile.name}에게 지금 줄 수 있는 동기 부여 요청권이 ${awards.length}장 있습니다. 아이가 신청하기를 기다리지 않고 먼저 줄 수 있어요.`
+          : `${profile.name}에게 지금 줄 수 있는 동기 부여 요청권이 없습니다. 레벨 시험에 통과하거나 한 달을 개근하면 생깁니다.`}
+      </Muted>
+
+      {pendingHere.length > 0 ? (
+        <Muted style={{ marginTop: spacing.sm }}>
+          아이가 올린 신청 {pendingHere.length}건이 확인을 기다리고 있습니다.
+        </Muted>
+      ) : null}
+
+      {open ? (
+        <View style={{ marginTop: spacing.lg }}>
+          {awards.map((a) => (
+            <View key={`${a.kind}-${a.earnedFrom ?? a.month}`} style={s.grantRow}>
+              <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                <View style={{ flex: 1, paddingRight: spacing.md }}>
+                  <Row style={{ gap: spacing.sm }}>
+                    <Chip
+                      label={
+                        a.kind === 'levelup'
+                          ? `${LEVEL_SHORT[a.earnedFrom!]} 완료`
+                          : `${Number((a.month ?? '').slice(5))}월 개근`
+                      }
+                      tone="accent"
+                    />
+                  </Row>
+                  <Muted style={{ marginTop: spacing.xs }}>{a.reason}</Muted>
+                </View>
+                <Text style={s.grantAmount}>{formatWon(a.amount)}</Text>
+              </Row>
+              <Button
+                title={`${formatWon(a.amount)} 주기`}
+                variant="parent"
+                onPress={() => give(a)}
+                style={{ marginTop: spacing.md }}
+              />
+            </View>
+          ))}
+
+          <TextInput
+            value={note}
+            onChangeText={setNote}
+            placeholder="아이에게 한마디 (선택)"
+            placeholderTextColor={colors.muted}
+            style={s.noteInput}
+            maxLength={100}
+          />
+          <Muted style={{ marginTop: spacing.xs }}>
+            여기 적은 말은 아이 홈 화면에 그대로 보입니다.
+          </Muted>
+
+          <Button
+            title="닫기"
+            variant="ghost"
+            onPress={() => setOpen(false)}
+            style={{ marginTop: spacing.sm }}
+          />
+        </View>
+      ) : (
+        <Button
+          title={
+            awards.length > 0
+              ? `🎟️ 보상하기 (${formatWon(awards.reduce((n, a) => n + a.amount, 0))})`
+              : '🎟️ 보상하기'
+          }
+          variant="parent"
+          onPress={() => setOpen(true)}
+          disabled={awards.length === 0}
+          style={{ marginTop: spacing.lg }}
+        />
+      )}
+    </Card>
   );
 }
 
@@ -266,6 +448,10 @@ function ReceivedInbox() {
 
   return (
     <Screen>
+      {/* 들어와서 가장 먼저 알고 싶은 것은 "오늘 했나"다. */}
+      <LinkedChildren />
+      {/* 그다음이 "안 했으면 부르기". */}
+      <NudgeCard />
       <Card
         style={{
           marginTop: spacing.md,
@@ -356,6 +542,26 @@ const s = StyleSheet.create({
   tabText: { fontSize: font.small, fontWeight: '700', color: colors.subtext },
   tabTextOn: { color: '#fff' },
   statValue: { fontSize: 20, fontWeight: '800', color: colors.text },
+  grantRow: {
+    marginTop: spacing.md,
+    padding: spacing.md,
+    borderRadius: radius.md,
+    backgroundColor: colors.bg,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  grantAmount: { fontSize: 20, fontWeight: '800', color: '#B45309' },
+  noteInput: {
+    marginTop: spacing.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radius.md,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
+    fontSize: 15,
+    color: colors.text,
+    backgroundColor: colors.bg,
+  },
   detail: { fontSize: font.small, color: colors.subtext, lineHeight: 20, marginTop: spacing.sm },
   bar: { width: 18, borderRadius: 4 },
 });

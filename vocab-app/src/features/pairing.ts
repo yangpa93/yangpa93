@@ -7,9 +7,17 @@
  */
 
 import { DailyReport, reportHeadline, reportText, WeeklySummary } from './report';
+import { Subject, SUBJECT_LABEL } from '../types';
+import appJson from '../../app.json';
 
-/** 딥링크 스킴. app.json의 `scheme`과 같아야 한다. */
-export const LINK_SCHEME = 'urivocab';
+/**
+ * 딥링크 스킴.
+ *
+ * `app.json` 의 `scheme` 을 **직접 읽는다.** 두 곳에 따로 적어 두면 한쪽만
+ * 바꿨을 때 링크가 조용히 안 열린다 — 앱은 멀쩡히 뜨고 아무 일도 안 일어나서
+ * 무엇이 잘못됐는지 알기 어렵다. 한 곳만 보게 해서 어긋날 자리를 없앤다.
+ */
+export const LINK_SCHEME: string = appJson.expo.scheme;
 
 export const EXPO_PUSH_ENDPOINT = 'https://exp.host/--/api/v2/push/send';
 
@@ -19,11 +27,339 @@ export interface PushPayload {
   headline: string;
   detail: string;
   completed: boolean;
+  /**
+   * 보낸 아이 기기의 푸시 주소.
+   *
+   * 부모가 "공부하자"고 되보내려면 아이 기기 주소를 알아야 한다. 리포트에
+   * 실어 보내면 부모가 따로 물어볼 일이 없다. 아이 기기가 주소를 못 받은
+   * 경우(권한 거부 등)에는 없을 수 있다.
+   */
+  childToken?: string;
+}
+
+/**
+ * 아이 기기가 연결하면서 자기 주소를 알리는 인사.
+ *
+ * 리포트로 대신할 수는 없다. 부모가 부르고 싶은 때가 바로 리포트가 안 온
+ * 날이기 때문이다. 연결하는 순간에 한 번 보내 둔다.
+ */
+export interface HelloPayload {
+  childName: string;
+  childToken: string;
+}
+
+/** 부모가 아이에게 보내는 알림. 리포트와 반대 방향이다. */
+export interface NudgePayload {
+  /** 보낸 사람 표시. '엄마 폰' 처럼 */
+  from: string;
+  message: string;
 }
 
 /** 페어링용 딥링크. 부모 기기가 만들어 카톡 등으로 아이 기기에 보낸다. */
 export function buildLinkUrl(token: string, label: string): string {
   return `${LINK_SCHEME}://link?token=${encodeURIComponent(token)}&label=${encodeURIComponent(label)}`;
+}
+
+/**
+ * 딥링크에서 토큰과 이름을 꺼낸다.
+ *
+ * 링크를 눌러 들어올 때는 expo-router 가 값을 갈라서 넘겨 주지만, **QR 을
+ * 찍었을 때는 문자열 하나가 통째로 들어온다.** 카메라가 읽어 온 그 문자열을
+ * 여기서 읽는다.
+ *
+ * 우리 링크가 아니면 null 이다. 아이가 아무 QR 이나 찍어 볼 수 있으므로
+ * (과자 봉지, 버스 정류장) 우리 것인지 먼저 가린다.
+ *
+ * **길(`://link`)까지 본다.** 아이가 띄우는 QR 은 `://child` 인데 거기에도
+ * `token` 이 실려 있어서, 스킴만 보면 아이 QR 을 부모 QR 로 읽어 버린다.
+ * 그러면 아이가 다른 아이의 QR 을 찍었을 때 그 아이를 부모로 등록한다.
+ */
+export function parseLinkUrl(url: string): { token: string; label: string } | null {
+  const params = queryOf(url, 'link');
+  if (!params) return null;
+
+  const token = (params.get('token') ?? '').trim();
+  if (!isValidPushToken(token)) return null;
+
+  return { token, label: (params.get('label') ?? '').trim() || '부모님 폰' };
+}
+
+/* ------------------------------------------------------------------ */
+/* 아이가 QR 을 만들고 부모가 찍는 길                                     */
+/* ------------------------------------------------------------------ */
+
+/**
+ * **왜 방향을 뒤집었는가.**
+ *
+ * 지금까지는 부모가 QR 을 띄우고 아이가 찍었다. 그런데 부모님 모드에 들어가
+ * 보면 "이 기기에 등록된 아이가 없습니다"만 뜨고, 아이를 등록하려면 QR 이
+ * 있어야 하는데 그 QR 을 만들 자리가 없었다. 부모 폰에서 시작하는 길이
+ * 스스로 막혀 있었던 것이다.
+ *
+ * 이제는 **아이가 자기 QR 을 만들고 부모가 찍는다.** 순서가 자연스럽다 —
+ * 아이는 자기 이름과 주소를 이미 갖고 있고, 부모는 아이 폰을 들여다보며
+ * 찍기만 하면 된다. 부모 폰에는 그 순간 아이가 등록된다.
+ *
+ * 부모 폰의 주소는 찍은 뒤에 부모가 아이에게 되보낸다(`link-back`).
+ * 아이 주소를 방금 알았으니 보낼 수 있고, 아이는 아무것도 더 하지 않아도
+ * 연결이 마무리된다.
+ */
+export interface ChildLink {
+  token: string;
+  name: string;
+}
+
+/** 아이 기기가 띄우는 QR. 부모 기기가 찍는다. */
+export function buildChildLinkUrl(token: string, name: string): string {
+  return `${LINK_SCHEME}://child?token=${encodeURIComponent(token)}&name=${encodeURIComponent(name)}`;
+}
+
+/**
+ * 아이 QR 을 읽는다. 우리 것이 아니면 null.
+ *
+ * 부모가 아무 QR 이나 찍어 볼 수 있으므로(과자 봉지, 명함) 우리 것인지
+ * 먼저 가린다. 부모 QR(`://link`)과도 구별해야 한다 — 부모 폰에서 부모 QR 을
+ * 찍으면 자기 자신을 아이로 등록하게 된다.
+ */
+export function parseChildLinkUrl(url: string): ChildLink | null {
+  const params = queryOf(url, 'child');
+  if (!params) return null;
+
+  const token = (params.get('token') ?? '').trim();
+  if (!isValidPushToken(token)) return null;
+
+  return { token, name: (params.get('name') ?? '').trim() || '아이' };
+}
+
+/**
+ * 부모가 아이에게 자기 주소를 되보내는 인사.
+ *
+ * 아이 화면에서는 아무 일도 시키지 않는다. 알림을 누르지 않아도 적용된다 —
+ * 아이가 알림을 지나쳐 버리면 연결이 반만 된 채로 남고, 그러면 리포트가
+ * 영영 안 간다.
+ */
+export interface LinkBackPayload {
+  parentToken: string;
+  parentLabel: string;
+}
+
+export function buildLinkBackBody(childToken: string, payload: LinkBackPayload) {
+  return {
+    to: childToken,
+    title: '🔗 부모님 폰과 연결됐어요',
+    body: `${payload.parentLabel}에 오늘 기록이 갑니다.`,
+    sound: 'default' as const,
+    priority: 'high' as const,
+    channelId: 'child-nudge',
+    data: { kind: 'link-back', ...payload },
+  };
+}
+
+export function parseLinkBack(data: unknown): LinkBackPayload | null {
+  if (!data || typeof data !== 'object') return null;
+  const d = data as Record<string, unknown>;
+  if (d.kind !== 'link-back') return null;
+  if (typeof d.parentToken !== 'string' || !isValidPushToken(d.parentToken)) return null;
+  return {
+    parentToken: d.parentToken,
+    parentLabel:
+      typeof d.parentLabel === 'string' && d.parentLabel.trim() ? d.parentLabel.trim() : '부모님 폰',
+  };
+}
+
+/**
+ * 이름을 바꾸기 전에 쓰던 스킴들. **읽을 때만 받는다.**
+ *
+ * 앱 주소는 `urivocab` → `gomtangvoca` → `gomtangivoca` 로 두 번 바뀌었다.
+ * 그런데 **두 폰의 판이 같으리라는 보장이 없다.** 아이 폰에 지난달 APK 가
+ * 깔려 있으면 그 폰이 띄우는 QR 은 옛 주소로 만들어진다. 부모 폰이 그것을
+ * "우리 것이 아니다" 하고 조용히 넘기면, 찍어도 찍어도 아무 일이 안 일어난다.
+ * 무엇이 잘못됐는지 알 길이 없는 가장 나쁜 모양이다.
+ *
+ * 그래서 **옛 주소를 전부 읽는다.** 새로 만드는 것은 늘 지금 주소다.
+ */
+const OLD_LINK_SCHEMES = ['gomtangvoca', 'urivocab'];
+
+/**
+ * 우리 딥링크에서 물음표 뒤를 읽는다.
+ *
+ * URL 클래스는 낯선 스킴의 검색 문자열을 기기마다 다르게 다룬다. 직접 읽는
+ * 편이 어디서나 똑같이 동작한다. 길(`link` / `child`)이 다르면 null 이다.
+ */
+function queryOf(url: string, path: string): Map<string, string> | null {
+  const raw = url.trim();
+  const mine =
+    raw.startsWith(`${LINK_SCHEME}://${path}?`) ||
+    OLD_LINK_SCHEMES.some((s) => raw.startsWith(`${s}://${path}?`));
+  if (!mine) return null;
+
+  const params = new Map<string, string>();
+  for (const pair of raw.slice(raw.indexOf('?') + 1).split('&')) {
+    const eq = pair.indexOf('=');
+    if (eq < 0) continue;
+    try {
+      params.set(decodeURIComponent(pair.slice(0, eq)), decodeURIComponent(pair.slice(eq + 1)));
+    } catch {
+      // 망가진 링크. 그 값만 건너뛴다.
+    }
+  }
+  return params;
+}
+
+/* ------------------------------------------------------------------ */
+/* 찍은 것 하나를 가린다                                                  */
+/* ------------------------------------------------------------------ */
+
+/**
+ * 카메라가 읽어 온 문자열이 무엇인지.
+ *
+ * `token` 은 주소만 있고 **누구인지 모르는** 경우다. 짧은 코드나 토큰을
+ * 그대로 QR 로 만든 것이 여기 걸린다.
+ */
+export type Scanned =
+  | { kind: 'child'; token: string; name: string }
+  | { kind: 'parent'; token: string; label: string }
+  | { kind: 'token'; token: string };
+
+/**
+ * 찍은 문자열 하나를 가린다. 우리 것이 아니면 null.
+ *
+ * ── 왜 한 자리로 모았나 ──────────────────────────────────────
+ *
+ * 예전에는 화면(scan.tsx)에서 `parseChildLinkUrl` 과 `parseLinkUrl` 을 차례로
+ * 부르고, 둘 다 null 이면 **조용히 넘겼다.** 아무 QR 이나 찍어 볼 수 있으니
+ * 시끄럽지 않게 한다는 뜻이었는데, 대가가 컸다 — 제대로 된 QR 을 찍었는데
+ * 안 될 때에도 화면이 똑같이 아무 말이 없다. 그러면 몇 번을 더 찍어 보다가
+ * 앱이 고장 났다고 여긴다. 실제로 그런 말을 들었다.
+ *
+ * 이제 가리는 일은 여기서 다 하고, 화면은 **무엇이 나왔는지 말할 수 있게**
+ * 된다. 순수 함수라 기기 없이 확인한다.
+ *
+ * 주소만 있는 QR(`token`)도 받는다. 우리가 만드는 QR 은 아니지만, 부모가
+ * 아이 폰의 짧은 코드를 다른 방법으로 QR 로 만들어 오는 일이 있고, 읽을 수
+ * 있는 것을 굳이 막을 이유가 없다.
+ */
+export function parseScanned(text: string): Scanned | null {
+  const child = parseChildLinkUrl(text);
+  if (child) return { kind: 'child', token: child.token, name: child.name };
+
+  const parent = parseLinkUrl(text);
+  if (parent) return { kind: 'parent', token: parent.token, label: parent.label };
+
+  const bare = fromShortCode(text);
+  if (bare) return { kind: 'token', token: bare };
+
+  return null;
+}
+
+/**
+ * 우리 것이 아닌 QR 을 찍었을 때 화면에 적을 말.
+ *
+ * 읽어 온 것을 앞부분만 함께 보여 준다. "QR 이 아니에요" 한 줄만 두면 카메라가
+ * 읽기는 한 것인지조차 알 수 없어서, 폰을 더 가까이 대야 하는지 다른 QR 을
+ * 띄워야 하는지 판단할 수가 없다.
+ */
+export function scannedError(text: string): string {
+  const shown = text.trim().slice(0, 40);
+  return (
+    `이 QR 은 곰탱이보카 것이 아니에요.\n읽은 내용 — ${shown}${text.trim().length > 40 ? '…' : ''}` +
+    `\n\n아이 폰에서 ⚙️ 설정 → 부모님과 연결하기 → 📱 내 QR 띄우기 로 띄운 QR 을 찍어 주세요.`
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* 연결 코드 — 아무것도 안 깔린 기기를 위한 길                            */
+/* ------------------------------------------------------------------ */
+
+/**
+ * 부모 폰 화면에 띄우는 짧은 코드.
+ *
+ * **왜 필요한가.** 지금까지는 부모가 링크를 만들어 카카오톡으로 보내야
+ * 했다. 그런데 아이에게 새 태블릿을 사 주고 이 앱만 깔았다면 그 기기에는
+ * 카톡도 메일도 없다. 링크를 보낼 곳이 없어 연결 자체가 막힌다.
+ *
+ * 그래서 부모 폰 화면에 코드를 띄우고 아이가 보고 입력하게 한다. 인터넷도
+ * 다른 앱도 필요 없고, 두 기기가 나란히 있기만 하면 된다.
+ *
+ * 푸시 토큰은 `ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]` 형태다. 껍데기는
+ * 늘 같으니 안쪽만 보여 주고, 넉 자씩 끊어 눈이 자리를 잃지 않게 한다.
+ * 끝에 검사 문자 하나를 붙여, 한 글자만 잘못 쳐도 그 자리에서 알려 준다.
+ * 안 그러면 '보내기'를 눌러 실패할 때까지 무엇이 틀렸는지 알 수 없다.
+ *
+ * **끊는 자리는 공백으로 표시한다.** 처음에는 하이픈을 썼는데, 푸시 토큰은
+ * base64url 이라 `-` 와 `_` 를 글자로 쓴다. 하이픈으로 끊으면 토큰이 원래
+ * 갖고 있던 하이픈과 구별되지 않아, 되돌릴 때 그 글자까지 지워 버린다.
+ */
+export function toShortCode(token: string): string {
+  const inner = innerOf(token);
+  if (!inner) return '';
+  const body = inner + checksumChar(inner);
+  return (body.match(/.{1,4}/g) ?? []).join(' ');
+}
+
+/**
+ * 아이가 입력한 코드를 다시 토큰으로 되돌린다.
+ *
+ * 코드가 아니라 토큰을 통째로 붙여넣었으면 그대로 쓴다 — 카톡으로 받은
+ * 아이는 그 길을 그대로 쓰면 되고, 어느 쪽으로 왔는지 아이가 구별할 이유가
+ * 없다.
+ *
+ * 되돌리지 못하면 null 이다. 무엇이 잘못됐는지는 `shortCodeError` 가 말해 준다.
+ */
+export function fromShortCode(code: string): string | null {
+  const raw = code.trim();
+  if (raw === '') return null;
+
+  // 토큰을 통째로 넣은 경우
+  if (/^Expo(nent)?PushToken\[[^\]]+\]$/.test(raw)) return raw;
+
+  // 사람이 읽기 좋으라고 넣은 공백만 걷어낸다. 하이픈은 토큰의 글자다.
+  const body = raw.replace(/\s/g, '');
+  if (body.length < 2) return null;
+
+  const inner = body.slice(0, -1);
+  const check = body.slice(-1);
+  if (checksumChar(inner) !== check) return null;
+
+  return `ExponentPushToken[${inner}]`;
+}
+
+/** 코드가 왜 안 되는지 한 줄로. 화면에 그대로 쓴다. */
+export function shortCodeError(code: string): string {
+  const raw = code.trim();
+  if (raw === '') return '';
+  if (fromShortCode(raw)) return '';
+
+  const body = raw.replace(/\s/g, '');
+  if (!/^[A-Za-z0-9_\-[\]]+$/.test(body)) {
+    return '코드에 없는 글자가 있어요. 숫자와 영문자만 들어갑니다.';
+  }
+  if (body.length < 10) return '코드가 짧아요. 끝까지 다 입력했는지 확인해 주세요.';
+  // 길이는 맞는데 검사 문자가 안 맞으면 어딘가 한 글자를 잘못 쳤다는 뜻이다.
+  return '코드가 맞지 않아요. 대문자와 소문자를 구별해서 다시 확인해 주세요.';
+}
+
+/** `ExponentPushToken[...]` 의 안쪽. 껍데기가 없으면 통째로 본다. */
+function innerOf(token: string): string {
+  const m = token.trim().match(/^Expo(?:nent)?PushToken\[([^\]]+)\]$/);
+  if (m) return m[1];
+  return /^[A-Za-z0-9_-]{20,}$/.test(token.trim()) ? token.trim() : '';
+}
+
+/**
+ * 검사 문자 하나.
+ *
+ * 오타를 잡으려는 것이지 위조를 막으려는 것이 아니다. 글자 값을 자리마다
+ * 다른 무게로 더해, 한 글자가 바뀌거나 두 글자가 자리를 바꿔도 값이 달라지게
+ * 한다. 단순히 더하기만 하면 자리를 바꾼 오타를 못 잡는다.
+ */
+function checksumChar(inner: string): string {
+  const ALPHABET = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  let sum = 0;
+  for (let i = 0; i < inner.length; i++) {
+    sum = (sum + inner.charCodeAt(i) * (i + 1)) % ALPHABET.length;
+  }
+  return ALPHABET[sum];
 }
 
 /**
@@ -40,13 +376,18 @@ export function isValidPushToken(token: string): boolean {
 }
 
 /** 리포트를 전송용 페이로드로 만든다. */
-export function toPayload(report: DailyReport, weekly?: WeeklySummary): PushPayload {
+export function toPayload(
+  report: DailyReport,
+  weekly?: WeeklySummary,
+  childToken?: string | null,
+): PushPayload {
   return {
     childName: report.profileName,
     date: report.date,
     headline: reportHeadline(report),
     detail: reportText(report, weekly),
     completed: report.completed,
+    ...(childToken ? { childToken } : {}),
   };
 }
 
@@ -59,6 +400,7 @@ export function parseIncoming(data: unknown): PushPayload | null {
   return {
     childName: d.childName,
     date: d.date,
+    ...(typeof d.childToken === 'string' ? { childToken: d.childToken } : {}),
     headline: typeof d.headline === 'string' ? d.headline : '',
     detail: typeof d.detail === 'string' ? d.detail : '',
     completed: d.completed === true,
@@ -77,4 +419,187 @@ export function buildPushBody(token: string, payload: PushPayload) {
     // 부모 앱이 화면에 쌓아 두려고 원본을 같이 싣는다.
     data: { kind: 'daily-report', ...payload },
   };
+}
+
+/**
+ * 부모 → 아이 알림.
+ *
+ * 리포트가 안 왔을 때 부모가 부를 수 있어야 한다. 문자를 따로 보내는 것보다
+ * 앱 알림이 낫다 — 누르면 바로 공부 화면으로 들어간다.
+ */
+export function buildNudgeBody(token: string, payload: NudgePayload) {
+  return {
+    to: token,
+    title: `📚 ${payload.from}`,
+    body: payload.message,
+    sound: 'default' as const,
+    priority: 'high' as const,
+    channelId: 'child-nudge',
+    data: { kind: 'nudge', ...payload },
+  };
+}
+
+/** 받은 푸시에서 부모의 알림을 꺼낸다. 우리 형식이 아니면 null. */
+export function parseNudge(data: unknown): NudgePayload | null {
+  if (!data || typeof data !== 'object') return null;
+  const d = data as Record<string, unknown>;
+  if (d.kind !== 'nudge') return null;
+  if (typeof d.message !== 'string' || d.message.length === 0) return null;
+  return { from: typeof d.from === 'string' ? d.from : '부모님', message: d.message };
+}
+
+export function buildHelloBody(parentToken: string, payload: HelloPayload) {
+  return {
+    to: parentToken,
+    title: '🔗 연결됐어요',
+    body: `${payload.childName}의 기기가 연결됐어요.`,
+    sound: 'default' as const,
+    priority: 'normal' as const,
+    channelId: 'parent-report',
+    data: { kind: 'hello', ...payload },
+  };
+}
+
+/**
+ * 아이가 동기 부여 요청권을 신청했을 때 **주 부모에게만** 보내는 알림.
+ *
+ * 리포트는 연결된 폰 전부가 받지만 이것은 하나에만 간다. 엄마와 아빠가
+ * 각각 승인하면 같은 것을 두 번 주게 되기 때문이다. 누가 받을지는 아이가
+ * 자기 ⚙️ 설정에서 고른다.
+ *
+ * 알림 하나로 끝난다 — 부모가 여기서 바로 승인하지는 못한다. 승인은 부모
+ * 폰에 그 아이 프로필이 있어야 하는 일이라, 지금은 "요청이 왔다"는 것만
+ * 알린다. 그것만으로도 부모가 아이에게 말을 걸 수 있고, 몰라서 못 주는
+ * 일은 없어진다.
+ */
+export interface RewardAskPayload {
+  childName: string;
+  /** 화면에 그대로 쓰는 한 줄. 예: '영어 중학교 레벨 하나를 끝냈어요' */
+  reason: string;
+  /** 신청 금액(원) */
+  amount: number;
+}
+
+export function buildRewardAskBody(parentToken: string, payload: RewardAskPayload) {
+  return {
+    to: parentToken,
+    title: '🎟️ 동기 부여 요청권 신청',
+    body: `${payload.childName} — ${payload.reason} (${payload.amount.toLocaleString('ko-KR')}원)`,
+    sound: 'default' as const,
+    priority: 'high' as const,
+    channelId: 'parent-report',
+    data: { kind: 'reward-ask', ...payload },
+  };
+}
+
+/** 받은 푸시에서 요청권 신청을 꺼낸다. 우리 형식이 아니면 null. */
+export function parseRewardAsk(data: unknown): RewardAskPayload | null {
+  if (!data || typeof data !== 'object') return null;
+  const d = data as Record<string, unknown>;
+  if (d.kind !== 'reward-ask') return null;
+  if (typeof d.childName !== 'string' || !d.childName.trim()) return null;
+  if (typeof d.reason !== 'string') return null;
+  if (typeof d.amount !== 'number' || !Number.isFinite(d.amount)) return null;
+  return { childName: d.childName, reason: d.reason, amount: Math.round(d.amount) };
+}
+
+/** 받은 푸시에서 연결 인사를 꺼낸다. 우리 형식이 아니면 null. */
+export function parseHello(data: unknown): HelloPayload | null {
+  if (!data || typeof data !== 'object') return null;
+  const d = data as Record<string, unknown>;
+  if (d.kind !== 'hello') return null;
+  if (typeof d.childName !== 'string' || typeof d.childToken !== 'string') return null;
+  if (d.childName.length === 0 || d.childToken.length === 0) return null;
+  return { childName: d.childName, childToken: d.childToken };
+}
+
+/**
+ * 부모가 아이 기기의 설정을 바꾼다.
+ *
+ * 아이 폰을 손에 들지 않고도 과목을 정할 수 있어야 한다. 아이가 둘이고
+ * 폰이 각자에게 있으면, 바꿀 때마다 폰을 걷어 오는 것은 현실적이지 않다.
+ *
+ * 지금은 과목만 보낸다. 하루 분량 같은 것도 같은 통로로 보낼 수 있지만,
+ * 아이가 스스로 정하게 둔 값이라 부모가 덮어쓰지 않는다.
+ */
+export interface SettingsPayload {
+  from: string;
+  subjects: Subject[];
+}
+
+export function buildSettingsBody(token: string, payload: SettingsPayload) {
+  const names = payload.subjects.map((s) => SUBJECT_LABEL[s]).join(' · ');
+  return {
+    to: token,
+    title: '⚙️ 공부할 과목이 바뀌었어요',
+    body: `${payload.from}이(가) ${names}(으)로 정했어요.`,
+    sound: 'default' as const,
+    priority: 'high' as const,
+    channelId: 'child-nudge',
+    data: { kind: 'settings', from: payload.from, subjects: payload.subjects },
+  };
+}
+
+/**
+ * 받은 푸시에서 설정을 꺼낸다.
+ *
+ * 과목이 하나도 없거나 모르는 값만 오면 **받아들이지 않는다.** 빈 과목으로
+ * 덮어쓰면 아이 화면에 낼 문제가 없어져 앱이 고장 난 것처럼 보인다.
+ */
+export function parseSettings(data: unknown): SettingsPayload | null {
+  if (!data || typeof data !== 'object') return null;
+  const d = data as Record<string, unknown>;
+  if (d.kind !== 'settings') return null;
+  if (!Array.isArray(d.subjects)) return null;
+  const all: Subject[] = ['en', 'ko'];
+  const subjects = all.filter((x) => (d.subjects as unknown[]).includes(x));
+  if (subjects.length === 0) return null;
+  return { from: typeof d.from === 'string' ? d.from : '부모님', subjects };
+}
+
+/** 부모가 고를 수 있는 문구. 직접 쓰는 것보다 누르기 쉽다. */
+export const NUDGE_PRESETS = [
+  '오늘 공부 시작할 시간이에요! 📚',
+  '10분만 해 볼까요? 😊',
+  '오늘 아직 안 했네요. 같이 해요!',
+  '조금만 더 하면 레벨업이에요! 🎉',
+] as const;
+
+
+/**
+ * 푸시 토큰 발급이 실패한 까닭을 사람이 읽을 수 있는 말로.
+ *
+ * 예전에는 어떤 오류가 나든 "Expo Go에서는 받을 수 없습니다"라고만 했다.
+ * EAS로 제대로 빌드한 앱에서도 그 말이 나와서, 무엇이 잘못됐는지 알 길이
+ * 없었다. 실제로 그렇게 한나절을 잃었다.
+ *
+ * 짐작되는 원인을 앞에 적고 **원래 오류도 함께** 남긴다. 짐작이 틀렸을 때
+ * 원래 오류가 없으면 더 볼 것이 없어진다.
+ *
+ * 안드로이드에서 가장 흔한 원인은 FCM 설정이 없는 것이다. 구글이 안드로이드
+ * 푸시를 FCM으로만 받게 해 두어서, 파이어베이스 설정 파일과 EAS에 올린 열쇠가
+ * 둘 다 있어야 토큰이 나온다.
+ *
+ * @param isExpoGo Expo Go로 돌고 있는지. 네이티브 모듈을 여기서 읽지 않으려고
+ *                 밖에서 받는다 — 이 파일은 기기 없이 테스트할 수 있어야 한다.
+ */
+export function pushFailureReason(e: unknown, isExpoGo = false): string {
+  const raw = e instanceof Error ? e.message : String(e);
+
+  if (isExpoGo) {
+    return 'Expo Go에서는 푸시 토큰을 받을 수 없습니다. EAS로 빌드한 앱에서 다시 시도해 주세요.';
+  }
+
+  if (/FCM|FirebaseApp|google-services/i.test(raw)) {
+    return (
+      '안드로이드 푸시(FCM) 설정이 없습니다. 컴퓨터에서 파이어베이스 설정을 마치고 ' +
+      `앱을 다시 빌드해 주세요.\n\n원래 오류: ${raw}`
+    );
+  }
+
+  if (/network|timeout|ENOTFOUND|fetch/i.test(raw)) {
+    return `인터넷 연결을 확인해 주세요.\n\n원래 오류: ${raw}`;
+  }
+
+  return `푸시 토큰을 받지 못했습니다.\n\n원래 오류: ${raw}`;
 }

@@ -80,6 +80,43 @@ if (wantAndroid) {
 
   if (!app.android?.package) bad('android.package가 없습니다.');
   else ok(`패키지 ${app.android.package}`);
+
+  /*
+   * google-services.json 의 패키지 이름과 맞는지.
+   *
+   * **여기가 어긋나면 푸시 알림만 조용히 죽는다.** FCM 은 패키지 이름으로
+   * 앱을 찾는데, 앱은 멀쩡히 깔리고 학습도 되고 오류도 안 난다. 부모 폰으로
+   * 리포트만 안 온다 — 그것도 "아이가 공부를 안 했나 보다"로 읽히기 쉬워서
+   * 몇 주가 지나도 아무도 모른다.
+   *
+   * 실제로 패키지 이름을 gomtangvoca 에서 gomtangivoca 로 바꾸면서 이 파일을
+   * 같이 못 바꿨다. 파이어베이스 콘솔에서 앱을 새로 등록하고 파일을 다시
+   * 받아야 하는 일이라 코드로는 못 고친다. 그래서 빌드 전에 잡는다.
+   */
+  if (app.android?.package && existsSync('google-services.json')) {
+    try {
+      const g = JSON.parse(readFileSync('google-services.json', 'utf8'));
+      const names = (g.client ?? [])
+        .map((c) => c?.client_info?.android_client_info?.package_name)
+        .filter(Boolean);
+      if (names.length === 0) {
+        warn('google-services.json 에서 패키지 이름을 못 읽었습니다.');
+      } else if (!names.includes(app.android.package)) {
+        bad(
+          `google-services.json 이 다른 패키지를 가리킵니다.\n` +
+            `      app.json            : ${app.android.package}\n` +
+            `      google-services.json: ${names.join(', ')}\n` +
+            `      → 이대로 빌드하면 앱은 깔리는데 푸시 알림만 조용히 안 옵니다.\n` +
+            `      → 파이어베이스 콘솔에서 '${app.android.package}' 로 안드로이드 앱을\n` +
+            `        추가하고 google-services.json 을 새로 받아 덮어써 주세요.`,
+        );
+      } else {
+        ok('google-services.json 의 패키지가 app.json 과 같습니다');
+      }
+    } catch {
+      warn('google-services.json 을 읽지 못했습니다.');
+    }
+  }
 }
 
 if (wantIos) {
@@ -127,8 +164,41 @@ if (!existsSync('eas.json')) {
       );
     } else if (!app.runtimeVersion) {
       warn('app.json에 runtimeVersion이 없습니다. 무선 업데이트가 어느 빌드에 갈지 정하지 못합니다.');
+    } else if (typeof app.runtimeVersion === 'object' && app.runtimeVersion.policy === 'appVersion') {
+      /*
+       * **이게 무선 업데이트를 조용히 막는다.**
+       *
+       * policy: 'appVersion' 은 runtimeVersion 을 앱 판(version)에 묶는다.
+       * 그러면 판을 0.21.0 → 0.22.0 으로 올리는 순간 **이미 깔린 0.21.0 폰은
+       * 새 업데이트를 못 받는다.** 두 runtime 이 다른 것으로 취급되기 때문이다.
+       *
+       * 낱말을 자주 더해 무선으로 내보내려는 앱에서는 치명적이다 — 아무 오류도
+       * 안 나고, 그냥 아무한테도 안 간다. "보냈는데 왜 안 들어오지" 가 된다.
+       *
+       * 고정 문자열로 두면 앱 판과 상관없이 같은 runtime 을 쓴다. native 를
+       * 건드릴 때(권한 · 패키지 · SDK)만 손으로 올린다.
+       */
+      bad(
+        "app.json 의 runtimeVersion 이 policy: 'appVersion' 입니다. " +
+          '이러면 앱 판을 올릴 때마다 **이미 깔린 폰이 무선 업데이트를 못 받습니다.** ' +
+          '고정 문자열로 바꾸세요 — 예: "runtimeVersion": "1". ' +
+          'native 를 건드릴 때(권한·패키지 이름·SDK)만 숫자를 올리면 됩니다.',
+      );
     } else {
-      ok('무선 업데이트(EAS Update) 준비됨');
+      ok(`무선 업데이트(EAS Update) 준비됨 — runtime ${app.runtimeVersion}`);
+      /*
+       * 어휘 판도 함께 적는다. 빌드 전에 "지금 몇 개짜리 낱말 묶음을 굽는가"
+       * 를 알 수 있어야 한다.
+       */
+      try {
+        const dv = readFileSync('src/data/dataVersion.ts', 'utf8');
+        const v = dv.match(/DATA_VERSION = '([^']+)'/)?.[1];
+        const en = dv.match(/totalEn:\s*(\d+)/)?.[1];
+        const ko = dv.match(/totalKo:\s*(\d+)/)?.[1];
+        if (v) ok(`어휘 판 ${v} — 영어 ${en}개 · 국어 ${ko}개`);
+      } catch {
+        warn('어휘 판(src/data/dataVersion.ts)을 읽지 못했습니다.');
+      }
     }
   }
 }

@@ -1,0 +1,88 @@
+# 숙어 배치 1 — 중학 기초 (a couple of ~ get to)
+#   node scripts/add-entries.mjs data/batch-idiom-1.txt
+#
+# 형식:  표제어|품사|뜻|유의어;유의어|영어::해석|영어::해석|영어::해석
+# 숙어의 품사는 phr. 로 통일한다. 뜻은 위키낱말사전과 대조해 적었다.
+
+a couple of|phr.|두어 개의, 몇몇의|a few;some|I need a couple of minutes to finish this.::이걸 끝내려면 몇 분 정도 필요해.|We stayed there for a couple of days.::우리는 그곳에 이틀쯤 머물렀다.|She asked me a couple of questions.::그녀는 나에게 몇 가지 질문을 했다.
+a kind of|phr.|일종의, ~같은 것|a sort of;a type of|A whale is a kind of mammal.::고래는 포유류의 일종이다.|It was a kind of game we invented ourselves.::그것은 우리가 직접 만든 일종의 놀이였다.|He felt a kind of relief when it ended.::그것이 끝났을 때 그는 일종의 안도감을 느꼈다.
+a number of|phr.|다수의, 여러|several;many|A number of students joined the club.::여러 학생이 그 동아리에 들어왔다.|We found a number of mistakes in the report.::우리는 보고서에서 여러 오류를 발견했다.|A number of people were waiting outside.::여러 사람이 밖에서 기다리고 있었다.
+a pair of|phr.|한 쌍의, 한 켤레의|a couple of|I bought a pair of shoes yesterday.::나는 어제 신발 한 켤레를 샀다.|She wore a pair of glasses.::그녀는 안경을 쓰고 있었다.|He needs a pair of clean socks.::그는 깨끗한 양말 한 켤레가 필요하다.
+a piece of|phr.|한 조각의, 한 개의||Can I have a piece of cake?::케이크 한 조각 먹어도 될까요?|She gave me a piece of paper.::그녀는 나에게 종이 한 장을 주었다.|That was a useful piece of advice.::그것은 유용한 조언 하나였다.
+after all|phr.|결국, 그래도 (생각과 달리)|in the end|It did not rain after all.::결국 비는 오지 않았다.|He came to the party after all.::그는 결국 파티에 왔다.|After all, we are still friends.::그래도 우리는 여전히 친구다.
+agree with|phr.|~에 동의하다|accept;approve of|I agree with your opinion.::나는 네 의견에 동의한다.|Not everyone agreed with the plan.::모두가 그 계획에 동의한 것은 아니었다.|Do you agree with what she said?::너는 그녀가 한 말에 동의하니?
+all day long|phr.|하루 종일||It rained all day long.::하루 종일 비가 내렸다.|She practiced the piano all day long.::그녀는 하루 종일 피아노를 연습했다.|The baby slept all day long.::아기는 하루 종일 잤다.
+all kinds of|phr.|온갖 종류의|various;all sorts of|The market sells all kinds of fruit.::그 시장은 온갖 종류의 과일을 판다.|He has all kinds of excuses.::그는 온갖 핑계를 댄다.|We saw all kinds of birds in the park.::우리는 공원에서 온갖 새를 보았다.
+all over the world|phr.|전 세계에서, 온 세계에|worldwide|People all over the world watched the game.::전 세계 사람들이 그 경기를 보았다.|This song is loved all over the world.::이 노래는 전 세계에서 사랑받는다.|She has traveled all over the world.::그녀는 전 세계를 여행했다.
+all the time|phr.|늘, 언제나|always;constantly|He complains all the time.::그는 늘 불평한다.|The library is open all the time.::그 도서관은 언제나 열려 있다.|She was thinking about it all the time.::그녀는 그것을 계속 생각하고 있었다.
+apologize to|phr.|~에게 사과하다||You should apologize to your sister.::너는 여동생에게 사과해야 한다.|He apologized to the teacher for being late.::그는 늦은 것에 대해 선생님께 사과했다.|She never apologized to anyone.::그녀는 누구에게도 사과하지 않았다.
+arrive at|phr.|~에 도착하다|reach;get to|We arrived at the station on time.::우리는 제시간에 역에 도착했다.|They arrived at the hotel after midnight.::그들은 자정이 지나서 호텔에 도착했다.|She arrived at school before anyone else.::그녀는 누구보다 먼저 학교에 도착했다.
+ask for|phr.|~을 요청하다, 달라고 하다|request|He asked for a glass of water.::그는 물 한 잔을 달라고 했다.|Do not be afraid to ask for help.::도움을 청하는 것을 두려워하지 마라.|She asked for more time to finish.::그녀는 끝낼 시간을 더 달라고 했다.
+at first|phr.|처음에는|initially|At first I did not like the movie.::처음에는 그 영화가 마음에 들지 않았다.|At first the work seemed easy.::처음에는 그 일이 쉬워 보였다.|She was shy at first, but soon relaxed.::그녀는 처음에는 수줍어했지만 곧 편해졌다.
+at home|phr.|집에, 집에서|indoors|My mother is at home now.::어머니는 지금 집에 계신다.|We stayed at home all weekend.::우리는 주말 내내 집에 있었다.|He works at home on Fridays.::그는 금요일에는 집에서 일한다.
+at last|phr.|마침내, 드디어|finally;at length|At last the rain stopped.::마침내 비가 그쳤다.|She finished the book at last.::그녀는 드디어 그 책을 다 읽었다.|At last we found the right answer.::마침내 우리는 정답을 찾았다.
+at least|phr.|적어도, 최소한||It will take at least an hour.::적어도 한 시간은 걸릴 것이다.|At least twenty people came.::적어도 스무 명이 왔다.|You should at least say thank you.::최소한 고맙다는 말은 해야지.
+at night|phr.|밤에||Owls hunt at night.::올빼미는 밤에 사냥한다.|She reads at night before sleeping.::그녀는 자기 전 밤에 책을 읽는다.|The streets are quiet at night.::밤에는 거리가 조용하다.
+at once|phr.|즉시, 당장|immediately;right away|Come here at once.::당장 이리 오너라.|The doctor came at once.::의사가 즉시 왔다.|She recognized him at once.::그녀는 그를 곧바로 알아보았다.
+at the same time|phr.|동시에|simultaneously|They both spoke at the same time.::그 둘은 동시에 말했다.|You cannot do two things at the same time.::두 가지를 동시에 할 수는 없다.|The lights went out at the same time.::불이 동시에 꺼졌다.
+be about to|phr.|막 ~하려던 참이다||I was about to call you.::막 너에게 전화하려던 참이었다.|The train is about to leave.::기차가 막 떠나려 한다.|She was about to cry when he arrived.::그가 도착했을 때 그녀는 막 울려던 참이었다.
+be angry with|phr.|~에게 화가 나다||He was angry with his brother.::그는 형에게 화가 나 있었다.|Do not be angry with me.::나에게 화내지 마.|She is still angry with them.::그녀는 아직도 그들에게 화가 나 있다.
+be busy with|phr.|~로 바쁘다||She is busy with her homework.::그녀는 숙제로 바쁘다.|He was busy with preparations all day.::그는 하루 종일 준비로 바빴다.|They are busy with the new project.::그들은 새 프로젝트로 바쁘다.
+be covered with|phr.|~로 덮여 있다||The field was covered with snow.::들판이 눈으로 덮여 있었다.|His shoes were covered with mud.::그의 신발은 진흙으로 덮여 있었다.|The table is covered with books.::탁자가 책으로 덮여 있다.
+be different from|phr.|~와 다르다||My opinion is different from yours.::내 의견은 네 의견과 다르다.|This city is different from what I imagined.::이 도시는 내가 상상한 것과 다르다.|Her style is different from his.::그녀의 방식은 그의 것과 다르다.
+be famous for|phr.|~로 유명하다|be known for|The town is famous for its bridge.::그 마을은 다리로 유명하다.|She is famous for her paintings.::그녀는 그림으로 유명하다.|Korea is famous for its food.::한국은 음식으로 유명하다.
+be filled with|phr.|~로 가득 차다|be full of|The room was filled with laughter.::방은 웃음으로 가득 찼다.|His eyes were filled with tears.::그의 눈은 눈물로 가득했다.|The box was filled with old photos.::그 상자는 오래된 사진으로 가득했다.
+be good for|phr.|~에 좋다, 이롭다||Walking is good for your health.::걷기는 건강에 좋다.|This medicine is good for a cough.::이 약은 기침에 좋다.|Sleep is good for the brain.::잠은 뇌에 좋다.
+be kind to|phr.|~에게 친절하다||Please be kind to your classmates.::반 친구들에게 친절하게 대하렴.|She was kind to everyone she met.::그녀는 만나는 모든 사람에게 친절했다.|He is always kind to animals.::그는 늘 동물에게 친절하다.
+be late for|phr.|~에 늦다||I was late for school again.::나는 또 학교에 지각했다.|Do not be late for the meeting.::회의에 늦지 마라.|She was late for her own party.::그녀는 자기 파티에 늦었다.
+be made of|phr.|~로 만들어지다 (재료가 그대로 보일 때)||The chair is made of wood.::그 의자는 나무로 만들어졌다.|This ring is made of gold.::이 반지는 금으로 만들어졌다.|The walls are made of stone.::그 벽은 돌로 만들어졌다.
+be proud of|phr.|~을 자랑스러워하다||I am proud of my sister.::나는 내 여동생이 자랑스럽다.|She was proud of her work.::그녀는 자신의 일을 자랑스러워했다.|They are proud of what they built.::그들은 자신들이 만든 것을 자랑스러워한다.
+be ready for|phr.|~할 준비가 되다||Are you ready for the test?::시험 볼 준비가 되었니?|We are ready for winter.::우리는 겨울을 맞을 준비가 되었다.|He was not ready for the question.::그는 그 질문에 준비되어 있지 않았다.
+be similar to|phr.|~와 비슷하다||Her voice is similar to her mother's.::그녀의 목소리는 어머니의 것과 비슷하다.|This problem is similar to the last one.::이 문제는 지난번 것과 비슷하다.|The two languages are similar to each other.::그 두 언어는 서로 비슷하다.
+be sure of|phr.|~을 확신하다|be certain of|I am sure of his honesty.::나는 그의 정직함을 확신한다.|She was sure of the answer.::그녀는 답을 확신했다.|No one was sure of the date.::아무도 날짜를 확신하지 못했다.
+be surprised at|phr.|~에 놀라다||We were surprised at the news.::우리는 그 소식에 놀랐다.|He was surprised at how fast she ran.::그는 그녀가 얼마나 빨리 달리는지에 놀랐다.|They were surprised at the result.::그들은 그 결과에 놀랐다.
+be tired of|phr.|~에 싫증나다, 지겹다|be sick of|I am tired of the same food every day.::나는 매일 같은 음식에 싫증이 났다.|She was tired of waiting.::그녀는 기다리는 데 지쳤다.|He is tired of hearing that excuse.::그는 그 핑계를 듣는 것이 지겹다.
+be worried about|phr.|~에 대해 걱정하다|worry about|She is worried about the exam.::그녀는 시험을 걱정하고 있다.|We were worried about you.::우리는 너를 걱정했다.|He is worried about his health.::그는 자기 건강을 걱정한다.
+believe in|phr.|~의 존재를 믿다, ~을 신뢰하다||Do you believe in ghosts?::너는 유령의 존재를 믿니?|She believes in hard work.::그녀는 노력의 가치를 믿는다.|We believe in you.::우리는 너를 믿는다.
+belong to|phr.|~의 것이다, ~에 속하다||This umbrella belongs to me.::이 우산은 내 것이다.|He belongs to the tennis club.::그는 테니스 동아리에 속해 있다.|These books belong to the library.::이 책들은 도서관 것이다.
+both A and B|phr.|A와 B 둘 다||Both my father and my mother work.::아버지와 어머니 두 분 다 일하신다.|She speaks both Korean and English.::그녀는 한국어와 영어를 둘 다 한다.|Both the food and the service were good.::음식과 서비스 둘 다 좋았다.
+bring up|phr.|(아이를) 기르다; (화제를) 꺼내다|raise|Her grandparents brought her up.::조부모가 그녀를 길렀다.|He brought up the subject at dinner.::그는 저녁 식사 때 그 이야기를 꺼냈다.|They brought up three children alone.::그들은 아이 셋을 혼자 길렀다.
+by accident|phr.|우연히, 실수로|by chance;accidentally|I found the letter by accident.::나는 우연히 그 편지를 발견했다.|He broke the window by accident.::그는 실수로 창문을 깼다.|We met by accident at the airport.::우리는 공항에서 우연히 만났다.
+by chance|phr.|우연히|by accident|We met by chance in the library.::우리는 도서관에서 우연히 만났다.|She discovered the truth by chance.::그녀는 우연히 진실을 알게 되었다.|Did you find it by chance?::그것을 우연히 찾았니?
+by mistake|phr.|실수로||I took your bag by mistake.::내가 실수로 네 가방을 가져갔다.|He deleted the file by mistake.::그는 실수로 그 파일을 지웠다.|She called the wrong number by mistake.::그녀는 실수로 잘못된 번호로 전화했다.
+by oneself|phr.|혼자서, 스스로|alone|He fixed the bike by himself.::그는 혼자서 자전거를 고쳤다.|She lives by herself.::그녀는 혼자 산다.|The children walked home by themselves.::아이들은 혼자서 집까지 걸어갔다.
+by the way|phr.|그런데, 그건 그렇고||By the way, did you call her?::그런데, 그녀에게 전화했니?|By the way, I found your keys.::그건 그렇고, 네 열쇠를 찾았어.|By the way, the meeting is at three.::그런데 회의는 세 시야.
+call back|phr.|나중에 다시 전화하다||I will call back in ten minutes.::10분 뒤에 다시 전화할게.|She promised to call back soon.::그녀는 곧 다시 전화하겠다고 약속했다.|Please call back after lunch.::점심 후에 다시 전화해 주세요.
+care about|phr.|~에 관심을 갖다, 신경 쓰다||She cares about the environment.::그녀는 환경에 관심을 갖는다.|He does not care about money.::그는 돈에 신경 쓰지 않는다.|Do you really care about what they think?::너는 정말 그들이 어떻게 생각하는지 신경 쓰니?
+catch a cold|phr.|감기에 걸리다||Wear a coat or you will catch a cold.::외투를 입어라, 안 그러면 감기에 걸린다.|He caught a cold last week.::그는 지난주에 감기에 걸렸다.|She catches a cold every winter.::그녀는 겨울마다 감기에 걸린다.
+cheer up|phr.|기운을 내다, 격려하다||Cheer up, tomorrow is another day.::기운 내, 내일이 있잖아.|Her letter cheered me up.::그녀의 편지가 나를 기운 나게 했다.|We tried to cheer up the losing team.::우리는 지고 있는 팀을 격려하려 했다.
+clean up|phr.|깨끗이 치우다||Please clean up your room.::방을 좀 치워라.|They cleaned up after the party.::그들은 파티가 끝난 뒤 치웠다.|Volunteers cleaned up the beach.::자원봉사자들이 해변을 치웠다.
+come back|phr.|돌아오다|return|He came back late at night.::그는 밤늦게 돌아왔다.|Please come back soon.::곧 돌아와 주세요.|The birds come back every spring.::그 새들은 봄마다 돌아온다.
+come in|phr.|들어오다|enter|Please come in and sit down.::들어와서 앉으세요.|A cold wind came in through the window.::찬 바람이 창문으로 들어왔다.|She knocked and came in.::그녀는 노크하고 들어왔다.
+come out|phr.|나오다; (책·영화가) 나오다|appear|The sun came out after the rain.::비가 그친 뒤 해가 나왔다.|His new book comes out next month.::그의 새 책이 다음 달에 나온다.|She came out of the room quietly.::그녀는 조용히 방에서 나왔다.
+come over|phr.|(집에) 들르다, 건너오다||Come over for dinner tonight.::오늘 저녁 식사하러 들러.|He came over to say hello.::그는 인사하러 건너왔다.|Can I come over after school?::방과 후에 놀러 가도 될까?
+come true|phr.|실현되다, 이루어지다||Her dream finally came true.::그녀의 꿈이 마침내 이루어졌다.|I hope your wish comes true.::네 소원이 이루어지길 바라.|The prediction came true.::그 예측은 사실이 되었다.
+count on|phr.|~을 믿다, 의지하다|rely on;depend on|You can count on me.::너는 나를 믿어도 된다.|We are counting on your help.::우리는 네 도움을 기대하고 있다.|She counts on her friends when things are hard.::그녀는 힘들 때 친구들에게 의지한다.
+cut down|phr.|베어 넘어뜨리다; 줄이다|reduce|They cut down the old tree.::그들은 오래된 나무를 베어 냈다.|He is trying to cut down on sugar.::그는 설탕을 줄이려 하고 있다.|We must cut down our spending.::우리는 지출을 줄여야 한다.
+die of|phr.|~으로 죽다||Many people died of hunger.::많은 사람이 굶어 죽었다.|His grandfather died of old age.::그의 할아버지는 노환으로 돌아가셨다.|The plant died of thirst.::그 식물은 물이 없어 말라 죽었다.
+each other|phr.|서로|one another|They helped each other.::그들은 서로 도왔다.|We looked at each other and laughed.::우리는 서로 쳐다보며 웃었다.|The two sisters write to each other often.::두 자매는 자주 서로에게 편지를 쓴다.
+eat out|phr.|외식하다||We eat out on Fridays.::우리는 금요일에 외식한다.|They decided to eat out tonight.::그들은 오늘 밤 외식하기로 했다.|Eating out every day is expensive.::매일 외식하는 것은 비싸다.
+fall asleep|phr.|잠들다||He fell asleep during the movie.::그는 영화를 보다 잠들었다.|The baby fell asleep in the car.::아기가 차 안에서 잠들었다.|She fell asleep with the light on.::그녀는 불을 켠 채 잠들었다.
+fall down|phr.|넘어지다, 무너지다||The boy fell down and cried.::그 아이는 넘어져서 울었다.|The old wall fell down last night.::그 낡은 벽이 어젯밤에 무너졌다.|She fell down on the icy road.::그녀는 얼어붙은 길에서 넘어졌다.
+fill in|phr.|(빈칸을) 채워 넣다||Fill in your name and address.::이름과 주소를 적어 넣으세요.|She filled in the missing words.::그녀는 빠진 낱말을 채워 넣었다.|Please fill in this form first.::먼저 이 양식을 작성해 주세요.
+fill out|phr.|(서식을) 작성하다||Fill out the application carefully.::신청서를 꼼꼼히 작성하세요.|He filled out the form in ten minutes.::그는 10분 만에 양식을 작성했다.|You must fill out both pages.::두 쪽 모두 작성해야 합니다.
+focus on|phr.|~에 집중하다, 초점을 맞추다|concentrate on|Focus on one thing at a time.::한 번에 한 가지에 집중해라.|The report focuses on climate change.::그 보고서는 기후 변화에 초점을 맞춘다.|She focused on her studies this year.::그녀는 올해 공부에 집중했다.
+for a long time|phr.|오랫동안||We waited for a long time.::우리는 오랫동안 기다렸다.|He has lived here for a long time.::그는 여기서 오래 살았다.|They talked for a long time.::그들은 오랫동안 이야기했다.
+for a while|phr.|잠시 동안||Let's rest for a while.::잠시 쉬자.|She stayed silent for a while.::그녀는 잠시 말이 없었다.|I have not seen him for a while.::나는 그를 한동안 못 봤다.
+for free|phr.|공짜로, 무료로||The museum lets students in for free.::그 박물관은 학생을 무료로 들여보낸다.|He fixed my bike for free.::그는 내 자전거를 공짜로 고쳐 주었다.|You can download the app for free.::그 앱은 무료로 내려받을 수 있다.
+for the first time|phr.|처음으로||I saw the sea for the first time.::나는 처음으로 바다를 보았다.|She spoke in public for the first time.::그녀는 처음으로 사람들 앞에서 말했다.|He cooked for the first time yesterday.::그는 어제 처음으로 요리를 했다.
+from now on|phr.|이제부터||From now on I will study every day.::이제부터 매일 공부하겠다.|From now on the store opens at nine.::이제부터 가게는 아홉 시에 연다.|Be careful from now on.::이제부터 조심해라.
+from time to time|phr.|때때로, 이따금|occasionally;sometimes|We meet from time to time.::우리는 이따금 만난다.|She writes to her aunt from time to time.::그녀는 때때로 이모에게 편지를 쓴다.|Check the water level from time to time.::수위를 때때로 확인해라.
+get in|phr.|(차 등에) 타다; 들어가다||Get in the car, we are late.::차에 타, 우리 늦었어.|He got in through the back door.::그는 뒷문으로 들어갔다.|She got in and closed the door.::그녀는 타고 나서 문을 닫았다.
+get married|phr.|결혼하다||They got married last spring.::그들은 지난봄에 결혼했다.|She got married in her hometown.::그녀는 고향에서 결혼했다.|My brother is getting married soon.::내 형이 곧 결혼한다.
+get off|phr.|(차에서) 내리다||Get off at the next stop.::다음 정류장에서 내리세요.|She got off the bus in the rain.::그녀는 빗속에서 버스에서 내렸다.|We got off at the wrong station.::우리는 엉뚱한 역에서 내렸다.
+get on|phr.|(차에) 타다||He got on the train at Seoul.::그는 서울에서 기차를 탔다.|Get on quickly, it is leaving.::빨리 타, 출발한다.|She got on the bus with her dog.::그녀는 개를 데리고 버스에 탔다.
+get out of|phr.|~에서 나오다, 벗어나다||Get out of the water, it is cold.::물에서 나와, 차가워.|He got out of the car slowly.::그는 천천히 차에서 내렸다.|She wants to get out of this town.::그녀는 이 마을을 벗어나고 싶어 한다.
+get over|phr.|(어려움·병을) 이겨 내다, 극복하다|overcome;recover from|It took him a month to get over the flu.::그가 독감을 이겨 내는 데 한 달이 걸렸다.|She never got over her fear of heights.::그녀는 높은 곳에 대한 두려움을 끝내 이겨 내지 못했다.|He is trying to get over the loss.::그는 그 상실을 극복하려 하고 있다.
+get to|phr.|~에 도착하다, 이르다|reach;arrive at|What time did you get to school?::몇 시에 학교에 도착했니?|We got to the top before sunset.::우리는 해 지기 전에 정상에 도착했다.|How do I get to the museum?::박물관에 어떻게 가나요?
+get together|phr.|모이다, 만나다|meet|Let's get together this weekend.::이번 주말에 모이자.|The family gets together every New Year.::그 가족은 새해마다 모인다.|We got together to plan the trip.::우리는 여행을 계획하려고 모였다.

@@ -7,12 +7,13 @@
  * 백업이 된다.
  *
  * 여기에는 **파일을 만들고 읽는 순수 로직만** 둔다. 실제 파일 입출력은
- * app/parent-backup.tsx 가 한다. 되돌리기는 한 번 잘못하면 기록이 날아가는
+ * app/backup.tsx 가 한다. 되돌리기는 한 번 잘못하면 기록이 날아가는
  * 동작이라, 판단하는 부분을 화면과 떼어 놓고 테스트로 묶어 두려는 것이다.
  */
 
 import { AppState, Profile, ProfileData, RewardRequest } from '../types';
 import { emptyProfileData } from '../store/storage';
+import { APP_NAME } from './app-name';
 
 /**
  * 백업 파일 판.
@@ -23,9 +24,19 @@ import { emptyProfileData } from '../store/storage';
  */
 export const BACKUP_FORMAT = 1;
 
+/**
+ * 백업 파일에 찍는 이름표.
+ *
+ * 앱 이름을 통일하면서 `urivocab` 에서 바뀌었다. **읽을 때는 둘 다 받는다** —
+ * 이름을 바꿨다고 어제 빼 둔 백업 파일이 "다른 앱 파일"이 되어 버리면,
+ * 폰을 바꾼 그날 아이 기록이 통째로 사라진다.
+ */
+export const APP_MARK = 'gomtangivoca';
+export const OLD_APP_MARK = 'urivocab';
+
 export interface BackupFile {
   /** 다른 앱의 json을 잘못 고르는 것을 막는 표시 */
-  app: 'urivocab';
+  app: typeof APP_MARK | typeof OLD_APP_MARK;
   format: number;
   /** 만들 때의 저장 포맷 판. 가져올 때 마이그레이션에 쓴다. */
   stateVersion: number;
@@ -56,7 +67,7 @@ export function buildBackup(
   now: number,
 ): BackupFile {
   return {
-    app: 'urivocab',
+    app: APP_MARK,
     format: BACKUP_FORMAT,
     stateVersion: state.version,
     createdAt: now,
@@ -67,7 +78,7 @@ export function buildBackup(
       // 기기에 매인 것들은 백업에 넣지 않는다. 새 기기에서 그대로 되살리면
       // 남의 폰으로 리포트를 쏘거나, 죽은 토큰으로 계속 실패한다.
       role: 'child',
-      parentLink: null,
+      parentLinks: [],
       myPushToken: null,
       receivedReports: [],
     },
@@ -114,8 +125,9 @@ export function readBackup(text: string, currentFormat: number = BACKUP_FORMAT):
 
   const b = parsed as Partial<BackupFile>;
 
-  if (b.app !== 'urivocab') {
-    return { ok: false, reason: '가가_Voca 백업 파일이 아니에요. 다른 앱의 파일 같아요.' };
+  // 예전 이름표도 받는다. 이름을 바꾸기 전에 빼 둔 파일이 남아 있다.
+  if (b.app !== APP_MARK && b.app !== OLD_APP_MARK) {
+    return { ok: false, reason: `${APP_NAME} 백업 파일이 아니에요. 다른 앱의 파일 같아요.` };
   }
   if (typeof b.format !== 'number') {
     return { ok: false, reason: '백업 파일이 손상됐어요.' };
@@ -192,7 +204,7 @@ export function restoreReplace(backup: BackupFile, current: AppState): RestoreRe
       pin: current.parent.pin,
     },
     role: current.role,
-    parentLink: current.parentLink,
+    parentLinks: current.parentLinks,
     myPushToken: current.myPushToken,
     receivedReports: current.receivedReports,
   };

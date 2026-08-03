@@ -3,31 +3,50 @@ import { StyleSheet, Text, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Body, Button, Card, H1, H3, Muted, Screen } from '../src/components/ui';
 import { useApp } from '../src/store/AppProvider';
-import { isValidPushToken } from '../src/features/push';
+import { fetchPushToken, isValidPushToken, sendHelloToParent } from '../src/features/push';
 import { colors, spacing } from '../src/theme';
 
 /**
- * 부모님 폰이 보낸 연결 링크(`urivocab://link?token=...`)를 처리한다.
+ * 부모님 폰이 보낸 연결 링크(`gomtangivoca://link?token=...`)를 처리한다.
  *
  * 바로 연결해 버리지 않고 한 번 확인을 받는다. 부모님이 자기 폰에서
  * 실수로 링크를 누르면 자기 자신과 연결되어 버리기 때문이다.
  */
 export default function LinkScreen() {
-  const { state, linkParent, setRole } = useApp();
+  const { state, linkParent, setRole, setMyPushToken } = useApp();
   const params = useLocalSearchParams<{ token?: string; label?: string }>();
   const [done, setDone] = useState(false);
 
   const token = (params.token ?? '').trim();
   const label = (params.label ?? '부모님 폰').trim();
 
+  const profileName =
+    state.profiles.find((p) => p.id === state.activeProfileId)?.name ??
+    state.profiles[0]?.name ??
+    '아이';
+
   const valid = isValidPushToken(token);
   const isSelf = state.myPushToken != null && state.myPushToken === token;
 
-  function confirm() {
-    linkParent({ token, label, linkedAt: Date.now(), lastSentDate: null });
-    // 링크를 받은 기기는 아이 기기다.
+  /**
+   * 연결하면서 **이 기기 주소를 부모에게 한 번 보낸다.**
+   *
+   * 부모가 "공부하자"고 되보내려면 아이 기기 주소를 알아야 하는데, 리포트에
+   * 실어 보내는 것만으로는 늦다. 부르고 싶은 때가 바로 **리포트가 안 온
+   * 날**이기 때문이다. 연결하는 순간이 가장 이른 기회다.
+   *
+   * 주소를 못 받아도(권한 거부 등) 연결 자체는 그대로 된다. 리포트 보내기는
+   * 주소가 없어도 되고, 부모가 부르는 것만 나중으로 미뤄진다.
+   */
+  async function confirm() {
+    linkParent({ token, label, linkedAt: Date.now(), lastSentDate: null, isPrimary: false });
     if (state.role !== 'child') setRole('child');
     setDone(true);
+
+    const { token: mine } = await fetchPushToken();
+    if (!mine) return;
+    setMyPushToken(mine);
+    void sendHelloToParent(token, profileName, mine);
   }
 
   if (done) {

@@ -10,12 +10,16 @@ function makeProfile(over: Partial<Profile> = {}): Profile {
   return {
     id: 'p1',
     name: '서준',
+    kind: 'child',
     avatar: '🦊',
     level: 'm1-1',
+    koLevel: 'm1-1',
     settings: {
       newPerDay: 10,
       reviewPerDay: 10,
       rounds: 3,
+      subjects: ['en'],
+      firstSubject: 'en',
       showTranslation: true,
       ttsEnabled: true,
       hapticsEnabled: true,
@@ -25,8 +29,13 @@ function makeProfile(over: Partial<Profile> = {}): Profile {
     bestStreak: 5,
     lastCompletedDate: '2026-07-26',
     pendingLevelUps: [],
+    koPendingLevelUps: [],
     clearedLevels: [],
+    koClearedLevels: [],
     claimedMonths: [],
+    awards: null,
+    linkWaived: false,
+    parentStudy: { tracks: ['daily'], dailyTheme: 'w', perTrack: { daily: 5, enWord: 5, ko: 5 } },
     ...over,
   };
 }

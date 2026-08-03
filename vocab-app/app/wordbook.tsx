@@ -4,16 +4,36 @@ import { Body, Card, Chip, EmptyState, H3, Muted, ProgressBar, Row, Screen } fro
 import { useApp } from '../src/store/AppProvider';
 import { entriesOf } from '../src/data';
 import { PLAN_COUNT } from '../src/data/plan';
-import { meaningLine, videoUrl } from '../src/data/entry';
+import { meaningLine, posLabel, videoUrl } from '../src/data/entry';
 import { isMastered } from '../src/srs/scheduler';
 import { LevelPicker } from '../src/components/LevelPicker';
+import { TodayWordsList } from '../src/components/TodayWordsList';
+import { SynonymLine } from '../src/components/SynonymLine';
 import { speak } from '../src/lib/feedback';
 import { LEVEL_SHORT, LevelId } from '../src/types';
 import { colors, font, radius, spacing } from '../src/theme';
 
-/** 레벨별 전체 단어 목록. 검색과 '안 외운 것만 보기'를 지원한다. */
+/**
+ * 단어장. **오늘 배운 것과 전체 목록을 갈라 둔다.**
+ *
+ * ── 왜 갈랐나 ───────────────────────────────────────────────
+ *
+ * 여기는 레벨의 전체 목록만 있었다. 중1-1 이면 150여 개가 통째로 늘어선다.
+ * 그런데 "오늘 뭘 배웠더라" 를 되짚고 싶을 때 그 안에서 오늘 것을 골라낼
+ * 방법이 없었다 — 정작 제일 자주 보고 싶은 쪽이 안 보이는 목록이었던 것이다.
+ *
+ * 전체 목록을 없애지는 않았다. 어제 본 단어를 다시 찾거나 다음 레벨을 미리
+ * 훑는 데는 그쪽이 맞다. 다만 **먼저 보이는 쪽을 오늘로 바꿨다.**
+ *
+ * 오늘 목록은 일상 문장 · 영어 단어 · 국어를 섞어 보여 준다. 부모는 셋을
+ * 함께 공부하는데, 영어만 늘어놓으면 오늘 한 것의 3분의 1만 보인다.
+ * 전체 목록은 영어 레벨 기준 그대로다 — 국어와 일상 문장은 레벨로 훑는
+ * 물건이 아니라서 여기 억지로 얹지 않았다.
+ */
 export default function Wordbook() {
   const { profile, data } = useApp();
+  /** '오늘 배운 것' 이 먼저다. 여기 오는 대부분은 오늘 것을 보러 온다. */
+  const [tab, setTab] = useState<'today' | 'all'>('today');
   const [level, setLevel] = useState<LevelId>(profile?.level ?? 'm1-1');
   const [query, setQuery] = useState('');
   const [onlyUnlearned, setOnlyUnlearned] = useState(false);
@@ -42,6 +62,30 @@ export default function Wordbook() {
 
   return (
     <Screen>
+      {/* 두 갈래. 고른 쪽만 아래에 펼친다. */}
+      <Row style={{ gap: spacing.sm, paddingTop: spacing.md }}>
+        {(
+          [
+            { key: 'today', label: '오늘 배운 것' },
+            { key: 'all', label: '전체 목록' },
+          ] as const
+        ).map((t) => (
+          <Pressable
+            key={t.key}
+            onPress={() => setTab(t.key)}
+            style={[s.tab, tab === t.key && s.tabOn]}
+            accessibilityRole="radio"
+            accessibilityState={{ selected: tab === t.key }}
+          >
+            <Text style={[s.tabText, tab === t.key && s.tabTextOn]}>{t.label}</Text>
+          </Pressable>
+        ))}
+      </Row>
+
+      {tab === 'today' ? <TodayWordsList /> : null}
+
+      {tab === 'all' ? (
+      <>
       <View style={{ paddingTop: spacing.md }}>
         <LevelPicker value={level} onChange={setLevel} showCounts={false} />
       </View>
@@ -98,7 +142,7 @@ export default function Wordbook() {
                     <View style={{ flex: 1 }}>
                       <Row style={{ gap: spacing.sm }}>
                         <H3>{e.word}</H3>
-                        <Muted>{e.pos}</Muted>
+                        <Muted>{posLabel(e.pos)}</Muted>
                       </Row>
                       <Muted style={{ marginTop: 2 }}>{meaningLine(e)}</Muted>
                     </View>
@@ -118,8 +162,17 @@ export default function Wordbook() {
                       <View key={i} style={{ marginBottom: spacing.md }}>
                         <Body style={{ fontWeight: '700' }}>
                           {i + 1}. {sense.meaning}
-                          {sense.synonyms.length > 0 ? `  (= ${sense.synonyms.join(', ')})` : ''}
                         </Body>
+                        {/*
+                          유의어는 뜻 줄에 괄호로 붙이지 않고 아래 줄로 내린다.
+                          문구가 뜻을 직접 부르므로, 같은 줄에 두면 '단단한'이
+                          한 줄에 두 번 나온다.
+                        */}
+                        <SynonymLine
+                          meaning={sense.meaning}
+                          synonyms={sense.synonyms}
+                          ttsEnabled={profile.settings.ttsEnabled}
+                        />
                         {sense.examples.map((ex, j) => (
                           <Pressable
                             key={j}
@@ -147,11 +200,29 @@ export default function Wordbook() {
           })}
         </View>
       )}
+      </>
+      ) : null}
     </Screen>
   );
 }
 
 const s = StyleSheet.create({
+  /*
+   * 두 갈래를 큼직한 단추로 둔다. 작은 글자 링크로 두면 '전체 목록' 이 어디
+   * 갔는지 물어보게 된다 — 없앤 것이 아니라 옆으로 옮긴 것이다.
+   */
+  tab: {
+    flex: 1,
+    paddingVertical: spacing.md,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.card,
+    alignItems: 'center',
+  },
+  tabOn: { backgroundColor: colors.primary, borderColor: colors.primary },
+  tabText: { fontSize: font.body, fontWeight: '800', color: colors.subtext },
+  tabTextOn: { color: '#fff' },
   search: {
     marginTop: spacing.md,
     borderWidth: 1,

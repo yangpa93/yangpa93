@@ -3,6 +3,7 @@ import {
   buildChoices,
   buildRounds,
   meaningKeys,
+  ceilingOf,
   pickGame,
   SessionItem,
 } from '../src/srs/session';
@@ -11,6 +12,7 @@ import { ALL_ENTRIES, entriesOf } from '../src/data';
 import { CardState, GameId, LEVEL_ORDER, Stage, VocabEntry } from '../src/types';
 import { primaryMeaning, senseExposure } from '../src/data/entry';
 import { hasAntonym } from '../src/data/antonyms';
+import { canScramble, tokenize } from '../src/games/scramble';
 
 const TODAY = '2026-07-27';
 const POOL = entriesOf('m1-1');
@@ -166,6 +168,13 @@ describe('buildSession', () => {
   });
 });
 
+/** 연속 정답이 n회 쌓인 카드. 열리는 난이도를 시험할 때 쓴다. */
+function card(streak: number): CardState {
+  let c = createCard('x');
+  for (let i = 0; i < streak; i++) c = grade(c, true);
+  return c;
+}
+
 function item(entry: VocabEntry, over: Partial<SessionItem> = {}): SessionItem {
   return {
     entry,
@@ -190,8 +199,16 @@ describe('buildRounds', () => {
     expect(q).toHaveLength(60);
   });
 
-  it('라운드마다 익히기 → 활용하기 → 떠올리기 순으로 올라간다', () => {
+  it('처음 만난 단어는 세 라운드 내내 익히기에 머문다', () => {
+    // 오늘 처음 본 단어를 그날 세 번째 라운드에서 외워 쓰라고 하면
+    // 시험이 아니라 벌이다. 연속 정답이 쌓여야 어려운 유형이 열린다.
     const q = buildRounds(words, 3, fixedRand);
+    expect(q.every((x) => x.stage === 'learn')).toBe(true);
+  });
+
+  it('연속 정답이 쌓이면 라운드마다 단계가 올라간다', () => {
+    const seasoned = words.map((w) => item(w.entry, { card: card(5), mode: 'review' }));
+    const q = buildRounds(seasoned, 3, fixedRand);
     const stages: Stage[] = [];
     for (let r = 0; r < 3; r++) {
       const round = q.filter((x) => x.round === r);
@@ -199,6 +216,29 @@ describe('buildRounds', () => {
       stages.push(round[0].stage);
     }
     expect(stages).toEqual(['learn', 'apply', 'recall']);
+  });
+
+  it('열린 단계까지만 올라간다 — 연속 정답이 적으면 거기서 멈춘다', () => {
+    for (const [streak, top] of [
+      [0, 'learn'],
+      [2, 'apply'],
+      [4, 'build'],
+      [5, 'recall'],
+    ] as [number, Stage][]) {
+      const q = buildRounds(
+        words.map((w) => item(w.entry, { card: card(streak), mode: 'review' })),
+        3,
+        fixedRand,
+      );
+      const seen = [...new Set(q.map((x) => x.stage))];
+      expect({ streak, top: seen[seen.length - 1] }).toEqual({ streak, top });
+    }
+  });
+
+  it('틀려서 연속 정답이 0이 되면 난이도도 내려온다', () => {
+    // 못 외운 단어를 계속 어려운 유형으로 물으면 아이는 찍기 시작한다.
+    expect(ceilingOf(card(5))).toBe('recall');
+    expect(ceilingOf(grade(card(5), false))).toBe('learn');
   });
 
   it('모든 단어가 매 라운드에 한 번씩 나온다', () => {
@@ -237,7 +277,8 @@ describe('buildRounds', () => {
   });
 
   it('라운드가 3을 넘으면 마지막 단계를 반복한다', () => {
-    const q = buildRounds(words, 4, fixedRand);
+    const seasoned = words.map((w) => item(w.entry, { card: card(5), mode: 'review' }));
+    const q = buildRounds(seasoned, 4, fixedRand);
     expect(q.filter((x) => x.round === 3).every((x) => x.stage === 'recall')).toBe(true);
   });
 
@@ -268,9 +309,10 @@ describe('pickGame', () => {
       'polysemy',
       'synonym',
       'antonym',
+      'scramble',
     ];
     for (const entry of POOL) {
-      for (const stage of ['learn', 'apply', 'recall'] as Stage[]) {
+      for (const stage of ['learn', 'apply', 'build', 'recall'] as Stage[]) {
         for (const g of possibleGames(item(entry, { stage, mode: 'review' }))) {
           expect(sentenceBased).toContain(g);
         }
@@ -609,5 +651,52 @@ describe('보기가 모자라지 않는지 (전 레벨)', () => {
     }
 
     expect(thin).toEqual([]);
+  });
+});
+
+describe('어순 배열 (scramble)', () => {
+  it('낱말이 4~10개인 문장만 낸다', () => {
+    // 3낱말 이하면 놓을 자리가 없고, 10낱말을 넘으면 조각이 화면을 덮는다.
+    expect(canScramble('I am ok.')).toBe(false);
+    expect(canScramble('They will build a new library.')).toBe(true);
+    expect(canScramble('a b c d e f g h i j k'.split(' ').join(' '))).toBe(false);
+  });
+
+  it('문장부호는 앞 낱말에 붙여 둔다', () => {
+    // 마침표를 따로 조각으로 내면 어순이 아니라 부호 맞추기 문제가 된다.
+    expect(tokenize('They will build a new library.')).toEqual([
+      'They',
+      'will',
+      'build',
+      'a',
+      'new',
+      'library.',
+    ]);
+  });
+
+  it('우리 예문 대부분이 배열 문제가 된다', () => {
+    let ok = 0;
+    let all = 0;
+    for (const e of ALL_ENTRIES) {
+      for (const sense of e.senses) {
+        for (const ex of sense.examples) {
+          all++;
+          if (canScramble(ex.en)) ok++;
+        }
+      }
+    }
+    expect(ok / all).toBeGreaterThan(0.95);
+  });
+
+  it("낼 수 없는 문장이면 '문장 만들기' 단계라도 다른 유형으로 돌린다", () => {
+    // 짧은 예문만 가진 단어를 찾아 build 단계로 물어본다.
+    const short = ALL_ENTRIES.find((e) =>
+      e.senses.every((sn) => sn.examples.every((ex) => !canScramble(ex.en))),
+    );
+    if (!short) return;
+    const asked = item(short, { stage: 'build', mode: 'review' });
+    const games = new Set<GameId>();
+    for (let i = 0; i < 40; i++) games.add(pickGame(asked, () => i / 40));
+    expect([...games]).not.toContain('scramble');
   });
 });

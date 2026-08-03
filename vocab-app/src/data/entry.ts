@@ -9,6 +9,96 @@
 import { CardState, Example, Sense, VocabEntry } from '../types';
 import { irregularOf } from './irregular';
 
+/**
+ * 품사 약어 → 한국어 이름.
+ *
+ * 데이터의 `p` 값은 `n.` `aux.` 같은 약어로 두고 화면에서만 풀어 쓴다.
+ * `p` 자체를 한국어로 바꾸면 표제어 파일 3,286줄을 건드리게 되고,
+ * 사전 대조의 기준도 흔들린다.
+ */
+const POS_NAMES: Record<string, string> = {
+  'n.': '명사',
+  'v.': '동사',
+  'adj.': '형용사',
+  'adv.': '부사',
+  'prep.': '전치사',
+  'conj.': '접속사',
+  'pron.': '대명사',
+  'art.': '관사',
+  'num.': '수사',
+  'int.': '감탄사',
+  'aux.': '조동사',
+  'phr.': '숙어',
+  // 부모님용 일상 문장의 표현들. 'on the same page' 는 명사도 동사도 아니라
+  // 품사로 가를 수 없어서 한 갈래로 묶었다.
+  'expr.': '표현',
+};
+
+/**
+ * 품사 표기를 아이가 읽을 수 있는 말로 바꾼다. `'v., adj.'` → `'동사 · 형용사'`
+ *
+ * 중학생은 `phr.` `art.` `num.` `int.` `aux.` 를 바로 알아보지 못한다.
+ * 모르는 값이 하나라도 섞이면 **원래 문자열을 그대로** 돌려준다.
+ * 반쯤 번역해서 내보내면 빈칸이나 뒤죽박죽이 화면에 남기 때문이다.
+ */
+export function posLabel(pos: string): string {
+  const parts = pos
+    .split(',')
+    .map((p) => p.trim())
+    .filter((p) => p.length > 0);
+  if (parts.length === 0) return pos;
+
+  const names = parts.map((p) => POS_NAMES[p]);
+  if (names.some((n) => n === undefined)) return pos;
+
+  return names.join(' · ');
+}
+
+/**
+ * 유의어 앞에 붙이는 말.
+ *
+ * 예전에는 `= firm` 이라고 찍었다. `=` 는 "이 둘은 언제나 같다"로 읽혀서,
+ * 아이가 문장을 떼고 `solid = firm` 으로 외운다. 실제로는 **그 뜻일 때만**
+ * 바꿔 쓸 수 있다. 유의어는 표제어가 아니라 뜻(sense)마다 붙어 있으므로
+ * 조건을 말로 드러내 준다.
+ *
+ * '이 뜻일 때' 라고만 하면 '이 뜻'이 어느 뜻인지 아이가 되짚어야 한다.
+ * 뜻이 여러 개인 단어에서는 바로 위 줄을 다시 봐야 한다. 그래서 뜻을
+ * 직접 부른다 — 한 줄만 봐도 어느 뜻에 걸리는 말인지 알 수 있다.
+ *
+ * 유의어를 문장 안에 넣지 않고 뒤에 붙이는 것은 조사 때문이다.
+ * `firm 로` 는 틀렸다 — '펌'이라 `으로`가 맞다. `hard`는 '하드'라 `로`가
+ * 맞다. 받침이 붙는지는 영어 낱말을 한글로 어떻게 읽느냐에 달렸고
+ * (look→룩, put→풋), 유의어 목록 끝에 오는 낱말이 1,600가지다.
+ * 규칙으로 고르면 반드시 틀린 자리가 생기고, 아이 화면에 틀린 조사가 남는다.
+ */
+export function synonymLead(meaning: string): string {
+  return `"${meaning}"${iRaNeun(meaning)} 뜻일 때 이렇게 바꿔 쓸 수 있어요`;
+}
+
+/**
+ * 앞말에 맞는 `이라는` / `라는`.
+ *
+ * 받침이 있으면 `이라는`, 없으면 `라는`이다. '단단한'은 받침 ㄴ이 있어
+ * `"단단한"이라는`, '~에 대하여'는 없어서 `"~에 대하여"라는`.
+ * 3,462개 뜻 중 2,018개가 받침이 없어서, 한쪽으로 박아 두면 절반 넘게 틀린다.
+ *
+ * 뒤에 괄호 주석이 붙는 뜻이 많으므로(`'조금, 약간의 (몇 개의)'`)
+ * **마지막 한글 글자**를 찾아 본다. 한글이 하나도 없으면 `라는`으로 둔다 —
+ * 영어나 숫자 뒤에는 무엇을 붙여도 어색하고, 그런 뜻은 audit 이 따로 잡는다.
+ */
+export function iRaNeun(word: string): string {
+  const hangul = word.replace(/[^가-힣]/g, '');
+  if (hangul.length === 0) return '라는';
+  const code = hangul.charCodeAt(hangul.length - 1) - 0xac00;
+  return code % 28 === 0 ? '라는' : '이라는';
+}
+
+/** 유의어까지 한 줄로. `'"단단한" 이라는 뜻일 때 이렇게 바꿔 쓸 수 있어요 : firm, hard'` */
+export function synonymSentence(meaning: string, synonyms: string[]): string {
+  return `${synonymLead(meaning)} : ${synonyms.join(', ')}`;
+}
+
 /** 화면에 한 줄로 보여줄 뜻. 다의어는 `;`로 이어 붙인다. */
 export function meaningLine(entry: VocabEntry): string {
   return entry.senses.map((s) => s.meaning).join(' ; ');

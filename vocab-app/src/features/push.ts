@@ -27,7 +27,9 @@ import {
   buildPushBody,
   buildSettingsBody,
   EXPO_PUSH_ENDPOINT,
+  isPreviewToken,
   type NudgePayload,
+  previewPushToken,
   pushFailureReason,
   type SettingsPayload,
   PushPayload,
@@ -38,13 +40,16 @@ export {
   buildLinkUrl,
   buildChildLinkUrl,
   buildNudgeBody,
+  isPreviewToken,
   isValidPushToken,
+  previewPushToken,
   parseLinkUrl,
   parseChildLinkUrl,
   parseScanned,
   scannedError,
   parseLinkBack,
   toShortCode,
+  toShortCodeLines,
   fromShortCode,
   shortCodeError,
   NUDGE_PRESETS,
@@ -80,6 +85,20 @@ export type {
  * 'FCM' 또는 'FirebaseApp' 이 들어 있다.
  */
 export async function fetchPushToken(): Promise<{ token: string | null; reason?: string }> {
+  /*
+   * 노트북 미리보기(웹)에서는 가짜 주소를 준다.
+   *
+   * 브라우저에는 FCM 이 없어서 진짜 주소가 안 나오고, 그러면 아이 화면에서
+   * QR 자체가 안 떠서 **연결 흐름을 노트북에서 한 번도 시험할 수 없었다.**
+   * 확인할 방법이 없으니 고쳤는지도 말할 수 없었다.
+   *
+   * 실제 폰에서는 이 문이 안 열린다 — 판단은 previewPushToken 안에 있고,
+   * 거기서 'web' 이 아니면 무조건 null 이다. 실기기의 Platform.OS 는 늘
+   * 'android' 또는 'ios' 다. 그 규칙은 시험으로 못박아 두었다.
+   */
+  const preview = previewPushToken(Platform.OS);
+  if (preview) return { token: preview };
+
   const perm = await Notifications.getPermissionsAsync();
   if (!perm.granted) {
     const asked = await Notifications.requestPermissionsAsync();
@@ -178,7 +197,18 @@ export async function sendSettingsToChild(
 }
 
 /** 실제 전송. 보내는 내용만 다르고 오류를 읽는 방법은 같다. */
-async function sendPush(body: unknown): Promise<SendResult> {
+async function sendPush(body: { to: string }): Promise<SendResult> {
+  /*
+   * 미리보기용 가짜 주소로는 **실제로 보내지 않는다.**
+   *
+   * 보내 봐야 Expo 가 "그런 주소 모른다"고 되돌려 줄 뿐이고, 그러면 노트북에서
+   * 확인하려던 흐름이 거기서 끊긴다. 확인하려고 만든 길이 확인을 막는 셈이다.
+   *
+   * 실제 폰에는 가짜 주소가 아예 생기지 않으므로(previewPushToken 참고) 이
+   * 갈래는 노트북에서만 지나간다.
+   */
+  if (isPreviewToken(body.to)) return { ok: true };
+
   try {
     const res = await fetch(EXPO_PUSH_ENDPOINT, {
       method: 'POST',

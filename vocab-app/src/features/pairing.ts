@@ -289,12 +289,44 @@ export function scannedError(text: string): string {
  * **끊는 자리는 공백으로 표시한다.** 처음에는 하이픈을 썼는데, 푸시 토큰은
  * base64url 이라 `-` 와 `_` 를 글자로 쓴다. 하이픈으로 끊으면 토큰이 원래
  * 갖고 있던 하이픈과 구별되지 않아, 되돌릴 때 그 글자까지 지워 버린다.
+ *
+ * **한 줄로 이어 붙인 이 모양은 화면에 그대로 쓰지 않는다.** 왜 그런지는
+ * 바로 아래 `toShortCodeLines` 에 적어 두었다. 여기는 기계끼리 주고받거나
+ * 한 줄로 적어야 하는 자리에서만 쓴다.
  */
 export function toShortCode(token: string): string {
+  return toShortCodeLines(token).join(' ');
+}
+
+/**
+ * 사람이 보고 옮겨 적을 코드. **넉 자씩 잘라 줄 목록으로 돌려준다.**
+ *
+ * ── 왜 한 줄이면 안 되나 ────────────────────────────────────
+ *
+ * 한 줄로 이어 붙이면 이렇게 나온다.
+ *
+ *     토큰   ExponentPushToken[dK9-xY2_pQrS4tUvWz]
+ *     코드   dK9- xY2_ pQrS 4tUv WzN
+ *
+ * 빈칸은 넉 자씩 끊어 읽으라고 넣은 것이다. 그런데 푸시 토큰은 base64url 이라
+ * `-` 와 `_` 를 **글자로** 쓴다. 그러니 `dK9- xY2_` 를 보고 있으면 그 빈칸이
+ * 끊는 자리인지 코드의 일부인지 알 수가 없다. 옮겨 적으면 틀릴 수밖에 없다.
+ * 되돌리는 쪽(`fromShortCode`)은 빈칸을 다 걷어내므로 기계는 멀쩡한데,
+ * **사람이 틀린다.**
+ *
+ * 줄을 바꾸면 그 헷갈림이 통째로 사라진다. 끊는 자리에는 아무 글자도 없고,
+ * 줄 안에 보이는 `-` 와 `_` 는 전부 코드의 글자다. 옮겨 적을 것이 한 줄에
+ * 넉 자뿐이라 눈이 자리를 잃지도 않는다.
+ *
+ * **옛 코드는 그대로 읽힌다.** 되돌리는 쪽은 예나 지금이나 공백 종류를 가리지
+ * 않고 다 걷어낸다(`\s`). 빈칸으로 끊어 적은 옛 코드도, 줄로 끊은 새 코드도
+ * 같은 토큰으로 돌아온다.
+ */
+export function toShortCodeLines(token: string): string[] {
   const inner = innerOf(token);
-  if (!inner) return '';
+  if (!inner) return [];
   const body = inner + checksumChar(inner);
-  return (body.match(/.{1,4}/g) ?? []).join(' ');
+  return body.match(/.{1,4}/g) ?? [];
 }
 
 /**
@@ -360,6 +392,66 @@ function checksumChar(inner: string): string {
     sum = (sum + inner.charCodeAt(i) * (i + 1)) % ALPHABET.length;
   }
   return ALPHABET[sum];
+}
+
+/* ------------------------------------------------------------------ */
+/* 미리보기용 가짜 주소 — 노트북에서 연결을 끝까지 시험하려고               */
+/* ------------------------------------------------------------------ */
+
+/**
+ * 가짜 주소임을 알아보게 하는 표.
+ *
+ * 진짜 Expo 토큰의 안쪽은 base64url 로 아무렇게나 뽑힌 글자라, 사람이 읽을 수
+ * 있는 낱말이 앞에 붙는 일이 없다. 그래서 이 표가 붙어 있으면 우리가 만든
+ * 것이라고 봐도 된다.
+ */
+const PREVIEW_MARK = 'Preview-';
+
+/**
+ * 노트북 브라우저에서 쓸 **가짜 푸시 주소**를 만든다. 웹이 아니면 null.
+ *
+ * ── 왜 필요한가 ─────────────────────────────────────────────
+ *
+ * 지금 `npm run preview`(웹)에서는 진짜 푸시 주소를 받을 수 없다 — 브라우저에
+ * FCM 이 없다. 그래서 아이 화면에서 '📱 내 QR 띄우기' 를 눌러도 QR 이 안 뜨고,
+ * **연결이라는 흐름 전체를 노트북에서 한 번도 시험해 볼 수가 없었다.** 확인할
+ * 방법이 없으니 고쳤는지 안 고쳤는지도 말할 수 없었다. 그게 이번 일의 절반이다.
+ *
+ * 그래서 웹에서만 진짜처럼 생긴 가짜 주소를 하나 만들어 준다. 그러면 창 두
+ * 개로 아이 → 부모 흐름을 끝까지 눌러 볼 수 있다.
+ *
+ * ── 실제 폰에서는 절대 안 만든다 ────────────────────────────
+ *
+ * 가짜 주소가 실기기로 새어 나가면 최악이다 — 리포트가 안 가는데 화면에는
+ * "연결됨" 이라고 뜬다. 조용한 실패다.
+ *
+ * 그래서 판단을 **여기 순수 함수 하나로** 몰아 두고, 무엇으로 판단하는지를
+ * 밖에서 넘겨받는다. 실제 폰의 `Platform.OS` 는 늘 'android' 또는 'ios' 라
+ * 이 문은 그 두 곳에서 절대 열리지 않는다. 기기 없이 시험으로 못박을 수
+ * 있다는 것이 이 모양의 값어치다.
+ *
+ * @param platform `Platform.OS` 를 그대로. 이 파일이 react-native 를 안 읽으려고 밖에서 받는다.
+ */
+export function previewPushToken(platform: string, rand: () => number = Math.random): string | null {
+  if (platform !== 'web') return null;
+
+  // 진짜 토큰과 같은 글자판(base64url)으로 채운다. 짧은 코드로 되돌리는 길도
+  // 그대로 통해야 노트북 시험이 실제와 같은 길을 밟는다.
+  const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let tail = '';
+  for (let i = 0; i < 16; i++) tail += ALPHABET[Math.floor(rand() * ALPHABET.length)];
+  return `ExponentPushToken[${PREVIEW_MARK}${tail}]`;
+}
+
+/**
+ * 미리보기용 가짜 주소인지.
+ *
+ * 두 곳에서 쓴다. 화면에는 **가짜라고 적어 주려고**(안 적으면 스크린샷만 보고
+ * 진짜 연결된 줄 안다), 전송할 때는 **Expo 서버에 보내지 않으려고**. 가짜
+ * 주소를 진짜 서버에 보내면 반드시 실패하고, 확인하려던 흐름이 거기서 끊긴다.
+ */
+export function isPreviewToken(token: string): boolean {
+  return new RegExp(`^Expo(nent)?PushToken\\[${PREVIEW_MARK}`).test(token.trim());
 }
 
 /**

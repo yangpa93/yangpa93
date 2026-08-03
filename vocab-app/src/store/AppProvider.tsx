@@ -215,13 +215,37 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     })();
   }, []);
 
+  /**
+   * 상태를 갈아 끼우고 저장한다.
+   *
+   * ── 왜 ref 를 여기서 손으로 앞당기나 ────────────────────────
+   *
+   * `ref.current = store` 는 **다시 그려질 때** 갱신된다. 그런데 여기 있는
+   * 설정 함수들은 전부 `ref.current.state` 를 읽어다 고쳐 쓴다. 그러니 한
+   * 틱 안에서 둘을 이어 부르면 **뒤엣것이 앞엣것을 지운다** — 뒤엣것이
+   * 읽은 것은 아직 갱신되지 않은 옛 상태이기 때문이다.
+   *
+   * 이것 때문에 **아이 연결이 안 됐다.** 부모 폰이 아이 QR 을 찍으면
+   * `rememberChild()` 로 아이를 넣고 바로 다음 줄에서 `setReceivesReports(true)`
+   * 를 부르는데, 그 한 줄이 방금 넣은 아이를 통째로 되돌려 놓았다. 화면은
+   * 아이 목록으로 넘어가고 거기에는 아무도 없다. 찍은 사람 눈에는 "찍었는데
+   * 연결이 안 됐다" 로 보인다. 정확히 그 말을 들었다.
+   *
+   * 부르는 쪽마다 순서를 조심하는 것으로는 못 고친다 — 고쳐야 할 자리가
+   * 스무 곳이고, 새로 하나 늘 때마다 같은 함정이 다시 생긴다. 값이 갱신되는
+   * 자리를 한 곳으로 모아 **저장하는 순간 ref 도 같이 앞당긴다.**
+   *
+   * 저장은 여전히 dispatch 로 흘러가므로 화면은 평소대로 다시 그려진다.
+   */
   const persistState = useCallback((state: AppState) => {
+    ref.current = { ...ref.current, state };
     dispatch({ type: 'setState', state });
     void saveState(state);
   }, []);
 
   const persistData = useCallback((data: ProfileData) => {
     const id = ref.current.state.activeProfileId;
+    ref.current = { ...ref.current, data };
     dispatch({ type: 'setData', data });
     if (id) void saveProfileData(id, data);
   }, []);

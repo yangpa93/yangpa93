@@ -19,7 +19,7 @@ import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { Body, Button, Card, Chip, H3, Muted, Row } from './ui';
 import { useApp } from '../store/AppProvider';
-import { buildChildLinkUrl, fetchPushToken, toShortCode } from '../features/push';
+import { buildChildLinkUrl, fetchPushToken, isPreviewToken, toShortCodeLines } from '../features/push';
 import { QrCode } from './QrCode';
 import { colors, font, radius, spacing } from '../theme';
 
@@ -154,15 +154,52 @@ export function ConnectParentCard() {
 
       {showing && state.myPushToken ? (
         <View style={s.codeBox}>
-          <QrCode value={buildChildLinkUrl(state.myPushToken, profile.name)} size={230} />
+          <QrCode
+            value={buildChildLinkUrl(state.myPushToken, profile.name)}
+            size={230}
+            testID="child-qr"
+          />
           <Text style={s.qrHint}>부모님 폰으로 이 QR 을 찍어 주세요</Text>
 
-          {/* 부모님 폰에 카메라가 없거나 안 될 때를 위해 코드도 같이 둔다. */}
+          {/*
+            노트북 미리보기에서는 가짜 주소를 쓴다. **그 사실을 화면에 적는다.**
+            안 적으면 화면만 보고 진짜로 연결된 줄 알게 되는데, 조용한 실패가
+            시끄러운 실패보다 나쁘다. 실제 폰에서는 이 줄이 나올 수 없다.
+          */}
+          {isPreviewToken(state.myPushToken) ? (
+            <Text style={s.previewWarn}>
+              🧪 이것은 노트북 미리보기용 가짜 주소예요. 진짜 폰에서는 진짜 주소가 뜹니다.
+            </Text>
+          ) : null}
+
+          {/*
+            부모님 폰에 카메라가 없거나 안 될 때를 위해 코드도 같이 둔다.
+
+            **넉 자씩 줄을 바꿔 번호를 붙인다.** 예전에는 한 줄에 빈칸으로
+            끊어 적었는데, 토큰에 `-` 와 `_` 가 글자로 들어 있어서 그 빈칸이
+            끊는 자리인지 코드의 일부인지 알 수가 없었다. 줄을 바꾸면 끊는
+            자리에 아무 글자도 없어 헷갈릴 것이 없고, 번호가 있으니 어디까지
+            불렀는지 놓치지 않는다.
+          */}
           <View style={s.codeFallback}>
             <Muted style={{ fontSize: 11 }}>카메라가 안 되면 이 코드를 불러 주세요</Muted>
-            <Text style={s.code} selectable>
-              {toShortCode(state.myPushToken)}
-            </Text>
+            <Muted style={{ fontSize: 11, marginTop: 2 }}>
+              한 줄에 넉 자씩이에요. 대문자와 소문자를 구별해 주세요.
+            </Muted>
+            <View style={s.codeLines}>
+              {toShortCodeLines(state.myPushToken).map((chunk, i) => (
+                <View key={i} style={s.codeLine}>
+                  <Text style={s.codeNo}>{i + 1}</Text>
+                  {/*
+                    노트북 확인(e2e)에서 이 줄들을 모아 부모 창에 옮겨 적는다.
+                    글자로 찾으면 코드가 매번 달라서 잡을 수가 없다.
+                  */}
+                  <Text style={s.code} selectable testID="link-code-chunk">
+                    {chunk}
+                  </Text>
+                </View>
+              ))}
+            </View>
           </View>
         </View>
       ) : null}
@@ -225,17 +262,37 @@ const s = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
   },
+  previewWarn: {
+    marginTop: spacing.sm,
+    fontSize: font.small,
+    fontWeight: '700',
+    color: '#B45309',
+    textAlign: 'center',
+    lineHeight: 20,
+  },
+  codeLines: { marginTop: spacing.sm, gap: 2 },
+  codeLine: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  /* 몇 번째 줄인지. 어디까지 불렀는지 놓치지 않게 하는 것이 전부다. */
+  codeNo: {
+    width: 20,
+    textAlign: 'right',
+    fontSize: font.tiny,
+    fontWeight: '700',
+    color: colors.muted,
+  },
   /*
    * 코드는 크고 고정폭이라야 한다. 부모가 화면을 보고 옮겨 적는데,
    * 글자 폭이 들쭉날쭉하면 어디까지 쳤는지 자꾸 놓친다.
+   *
+   * 자간을 넉넉히 준다. 넉 자뿐이라 자리를 넓게 써도 되고, `-` 와 `_` 가
+   * 옆 글자에 붙어 보이면 그것대로 잘못 읽는다.
    */
   code: {
-    marginTop: spacing.xs,
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: '700',
     color: colors.text,
     fontFamily: Platform.select({ ios: 'Menlo', android: 'monospace', default: 'monospace' }),
-    letterSpacing: 1,
-    lineHeight: 30,
+    letterSpacing: 3,
+    lineHeight: 32,
   },
 });

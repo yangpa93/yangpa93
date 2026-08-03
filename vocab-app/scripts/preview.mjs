@@ -19,12 +19,34 @@
  * 넘어간다. 이 파일은 **dist 에만 생기고 APK 에는 안 들어간다** — 굽는
  * 폴더는 매번 새로 만들어지고, 앱 소스(app/, src/)에는 손대지 않는다.
  *
- * ── 웹에서 안 되는 것 ────────────────────────────────────────
+ * ── 웹에서 안 되는 것, 그리고 이제 되는 것 ───────────────────
  *
- * 푸시 알림과 카메라는 브라우저에서 안 된다(또는 폰과 다르게 동작한다).
- * 그래서 '부모가 아이 QR 을 찍어 연결' 은 웹으로 끝까지 확인할 수 없다.
- * 대신 **이미 연결된 상태**를 심어 두어, 연결된 뒤의 화면은 다 볼 수 있게 했다.
- * 무엇이 확인되고 무엇이 안 되는지는 demo.html 화면에도 적어 둔다.
+ * 카메라는 브라우저에서 폰과 다르게 동작한다. 그래서 **QR 을 찍는 것**은
+ * 여기서 확인할 수 없다.
+ *
+ * 그런데 예전에는 그보다 더 큰 것이 막혀 있었다 — 아이가 QR 을 띄우는 것부터
+ * 안 됐다. 브라우저에는 FCM 이 없어 푸시 주소가 안 나왔기 때문이다. 그러니
+ * **연결이라는 흐름 전체를 노트북에서 한 번도 시험할 수 없었고**, 고쳤는지
+ * 안 고쳤는지 말할 방법도 없었다.
+ *
+ * 이제 웹에서는 가짜 푸시 주소를 쓴다(src/features/pairing.ts 의
+ * previewPushToken). 실제 폰에서는 절대 안 만들어진다. 덕분에 **카메라만 뺀
+ * 연결 전체**를 노트북에서 눌러 볼 수 있다.
+ *
+ *   창1(아이) 내 QR 띄우기 → QR 과 코드가 뜬다
+ *   창2(부모) 그 코드를 옮겨 적는다 → 아이 목록에 나타난다
+ *
+ * ── 창 두 개를 어떻게 가르나 ────────────────────────────────
+ *
+ * 창을 둘 열어도 주소가 같으면 **저장소를 같이 쓴다.** 아이로 심으면 부모 창도
+ * 아이가 되어 버려 두 폰 흉내가 안 난다.
+ *
+ * 그래서 두 창의 **주소를 다르게** 연다. 브라우저는 localhost 와 127.0.0.1 을
+ * 서로 다른 곳으로 쳐서 저장소를 따로 준다. 같은 서버, 같은 화면인데 기억만
+ * 갈린다 — 폰 두 대와 같은 모양이 된다.
+ *
+ *   창1(아이)  http://localhost:8088/demo/
+ *   창2(부모)  http://127.0.0.1:8088/demo/
  */
 
 import {
@@ -140,6 +162,15 @@ console.log('');
 console.log(`      http://localhost:${PORT}/demo/`);
 console.log('');
 console.log('  거기서 보고 싶은 상황을 고르면 앱으로 넘어갑니다.');
+console.log('');
+console.log('  ▶ 연결(아이 → 부모)을 시험하시려면 창을 하나 더 여세요');
+console.log('');
+console.log(`      http://127.0.0.1:${PORT}/demo/`);
+console.log('');
+console.log('     주소가 다르면 브라우저가 저장소를 따로 줍니다. 같은 화면인데');
+console.log('     기억만 갈려서, 폰 두 대처럼 씁니다.');
+console.log(`     창1(localhost)=아이 · 창2(127.0.0.1)=부모 로 심고 이어 보세요.`);
+console.log('');
 console.log('  끝내려면 이 창에서 Ctrl+C 를 누르세요.');
 console.log('─'.repeat(60));
 console.log('');
@@ -257,12 +288,40 @@ function demoPage() {
   <b>👩‍💼 부모 — 아이 둘이 등록된 상태</b>
   <span>네 갈래 홈. 아이들 보고서 → 아이를 눌러 그 아이 설정까지 봅니다</span>
 </button>
+<button onclick="seed('parentEmpty')">
+  <b>👩‍💼 부모 — 아이가 아직 하나도 없는 상태</b>
+  <span>연결을 처음부터 시험할 때 씁니다. 아래 4번을 보세요</span>
+</button>
 <button onclick="seed('parentFresh')">
   <b>👩‍💼 부모 — 무엇을 공부할지 아직 안 고른 상태</b>
   <span>'무엇을 공부할지 정하기'부터 시작합니다</span>
 </button>
 
-<h2>4. 영어 소리 들어보기</h2>
+<h2>4. 연결을 끝까지 시험하기 (창 두 개)</h2>
+<div class="warn" style="background:#ECFDF5;border-color:#6EE7B7">
+  <b>창을 둘 여시되 주소를 다르게 여세요.</b> 브라우저는 아래 두 주소를 서로 다른 곳으로
+  쳐서 저장소를 따로 줍니다. 같은 화면인데 기억만 갈려서 <b>폰 두 대처럼</b> 씁니다.
+  <ol style="margin:10px 0 0;padding-left:20px">
+    <li>창1 <code>http://localhost:${PORT}/demo/</code> 에서
+        <b>🦊 아이 — 부모님과 아직 연결 안 됨</b></li>
+    <li>창2 <code>http://127.0.0.1:${PORT}/demo/</code> 에서
+        <b>👩‍💼 부모 — 아이가 아직 하나도 없는 상태</b></li>
+    <li>창1 : ⚙️ 설정 → 📚 내 공부 설정 옆의 <b>부모님과 연결하기</b> →
+        <b>📱 내 QR 띄우기</b> → QR 과 넉 자씩 끊긴 코드가 뜹니다</li>
+    <li>창2 : ⚙️ 설정 → 아이들 폰 설정 → <b>코드로 연결하기</b> →
+        창1 의 코드를 1번 줄부터 차례대로 적고 이름을 넣으세요</li>
+    <li>창2 의 아이 목록에 그 이름이 나타나면 된 것입니다</li>
+  </ol>
+  <p style="margin:10px 0 0;font-size:13px;color:#065F46">
+    미리보기에서는 <b>가짜 푸시 주소</b>를 씁니다(화면에도 그렇게 적힙니다).
+    실제 폰에서는 이 가짜 주소가 만들어지지 않습니다. 여기서 확인되는 것은
+    <b>QR 을 만들고 · 코드로 바꾸고 · 되읽어 아이를 등록하는</b> 길까지입니다.
+    푸시가 실제로 날아가는지는 폰 두 대라야 알 수 있고, 그건
+    <code>npm run push-test</code> 로 따로 가립니다.
+  </p>
+</div>
+
+<h2>5. 영어 소리 들어보기</h2>
 <p class="sub" style="margin-bottom:8px">
   앱이 어느 목소리로 읽는지 여기서 바로 들으실 수 있습니다.
   <b>노트북 스피커를 켜 주세요.</b>
@@ -273,11 +332,11 @@ function demoPage() {
 
 <div class="warn" style="margin-top:28px">
   <b>브라우저에서 확인할 수 없는 것</b><br>
-  · <b>QR 찍기</b> — 카메라가 폰과 다르게 동작합니다<br>
-  · <b>푸시 알림</b> — 부모↔아이 사이 실제 전송은 폰에서만 됩니다<br>
-  · <b>소리·진동</b> — 브라우저에 따라 다릅니다<br>
-  그래서 위 3번의 '아이 둘이 등록된 상태'는 <b>이미 연결된 뒤</b>를 심어 둔 것입니다.
-  연결 그 자체는 폰 두 대로 한 번 확인해 주세요.
+  · <b>카메라로 QR 찍기</b> — 카메라가 폰과 다르게 동작합니다.
+    대신 위 4번처럼 <b>코드로</b> 이으면 같은 길을 밟습니다<br>
+  · <b>푸시가 실제로 날아가는지</b> — 폰 두 대라야 압니다.
+    그건 <code>npm run push-test</code> 로 따로 가립니다<br>
+  · <b>소리·진동</b> — 브라우저에 따라 다릅니다
 </div>
 
 <script>
@@ -305,13 +364,32 @@ const parent = base({ id:PARENT, name:'엄마', kind:'parent', avatar:'👩‍�
   parentStudy:{ tracks:['daily','enWord','ko'], dailyTheme:'w',
     perTrack:{ daily:10, enWord:5, ko:5 } } });
 
+/*
+ * 심어 두는 푸시 주소는 전부 **Preview- 로 시작한다.**
+ *
+ * 앱은 이 표가 붙은 주소로는 Expo 서버에 실제로 보내지 않는다
+ * (src/features/pairing.ts 의 isPreviewToken). 표가 없는 가짜 주소를 심어 두면
+ * 확인을 돌릴 때마다 남의 서버로 진짜 요청이 나가고, 그쪽은 "그런 주소 모른다"
+ * 고 되돌려 준다 — 얻는 것 없이 시끄럽기만 하다.
+ */
+const MOM = 'ExponentPushToken[Preview-Mom0000000000]';
+const DAD = 'ExponentPushToken[Preview-Dad0000000000]';
+const PARENT_TOKEN = 'ExponentPushToken[Preview-ThisParent0000]';
+
 function root(profiles, activeId, extra={}) {
   return { version:6, profiles, activeProfileId:activeId,
     parent:{ pin:'1234', awards:{ middleLevel:20000, highLevel:30000, koreanLevel:10000,
       perfectMonth:20000, bonus:10000 }, notifyHour:22, notifyMinute:0, notifyEnabled:true,
       notifyOnlyWhenMissed:false, pushToParent:true },
     rewards:[], role:'child', parentLinks:[],
-    myPushToken:'ExponentPushToken[Demo1234_-abcdEFGHij]',
+    /*
+     * 아이 창은 주소를 **비워 둔다.**
+     *
+     * 심어 두면 '📱 내 QR 띄우기' 를 눌러도 주소를 새로 받는 길을 안 밟는다.
+     * 정작 확인하려는 것이 그 길이다. 비워 두면 누르는 순간 웹용 가짜 주소가
+     * 새로 만들어지고, 창마다 다른 값이 나온다 — 폰 두 대와 같은 모양이 된다.
+     */
+    myPushToken:null,
     receivesReports:false, receivedReports:[], knownChildren:[], ...extra };
 }
 const empty = { cards:{}, days:{}, answers:[], exams:[] };
@@ -427,9 +505,9 @@ function seed(which) {
      * 고르는 것을 노트북에서 확인하려면 하나로는 볼 수가 없다.
      */
     put(root([kids[0]], A, { parentLinks:[
-      { token:'ExponentPushToken[Parent_-demo9876]', label:'엄마 폰',
+      { token:MOM, label:'엄마 폰',
         linkedAt:Date.now(), lastSentDate:null, isPrimary:true },
-      { token:'ExponentPushToken[Parent_-demo5432]', label:'아빠 폰',
+      { token:DAD, label:'아빠 폰',
         linkedAt:Date.now(), lastSentDate:null, isPrimary:false },
     ] }), { [A]: history(9) });
   } else if (which === 'childReview') {
@@ -437,8 +515,16 @@ function seed(which) {
         { [A]: reviewCards(['a-couple-of','a-kind-of','a-number-of','a-pair-of','a-piece-of',
                             'after-all','agree-with','all-day-long','all-kinds-of']) });
   } else if (which === 'parent') {
-    put(root([parent, ...kids], PARENT, { receivesReports:true }),
+    put(root([parent, ...kids], PARENT, { receivesReports:true, myPushToken:PARENT_TOKEN }),
         { [PARENT]: history(6), [A]: history(12), [B]: history(4) });
+  } else if (which === 'parentEmpty') {
+    /*
+     * 아이가 하나도 없는 부모 폰. 연결을 처음부터 밟아 보는 창이다.
+     * 이 폰 주소는 심어 둔다 — 되보내기(link-back)가 이 주소로 나가는데,
+     * 없으면 그 자리에서 새로 받아 오느라 확인하려는 흐름이 흐려진다.
+     */
+    put(root([parent], PARENT, { receivesReports:false, myPushToken:PARENT_TOKEN }),
+        { [PARENT]: history(6) });
   } else if (which === 'parentFresh') {
     const p = { ...parent, parentStudy:{ tracks:[], dailyTheme:'w', perTrack:{ daily:5, enWord:5, ko:5 } } };
     put(root([p], PARENT), { [PARENT]: empty });

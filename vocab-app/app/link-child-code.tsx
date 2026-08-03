@@ -125,7 +125,23 @@ export default function LinkChildCode() {
           <Text style={s.strong}>부모님과 연결하기</Text> →{' '}
           <Text style={s.strong}>📱 내 QR 띄우기</Text>
           {'\n'}QR 아래 <Text style={s.strong}>‘카메라가 안 되면 이 코드를 불러 주세요’</Text> 밑의
-          글자입니다. 대문자와 소문자를 구별해야 해요.
+          글자입니다. <Text style={s.strong}>1번 줄부터 차례대로</Text> 넉 자씩 적혀 있어요.
+        </Muted>
+
+        {/*
+          **띄어쓰기는 신경 쓰지 않아도 된다는 말을 반드시 적는다.**
+
+          코드에는 `-` 와 `_` 가 글자로 들어 있다. 그래서 아이 폰 화면을 보고
+          옮겨 적는 사람은 "이 사이를 띄워야 하나" 를 계속 신경 쓰게 되고,
+          거기서 틀린다. 실제로 그것 때문에 안 됐다.
+
+          되돌리는 쪽은 공백을 종류 가리지 않고 전부 걷어낸다. 붙여 쓰든
+          띄워 쓰든 줄을 바꾸든 같은 값이 된다 — 그 사실을 여기서 말해 준다.
+        */}
+        <Muted style={{ marginTop: spacing.sm }}>
+          줄을 바꾸거나 띄어 써도 괜찮아요. <Text style={s.strong}>대문자와 소문자만</Text>{' '}
+          구별해 주세요. <Text style={s.strong}>-</Text> 와 <Text style={s.strong}>_</Text> 는
+          코드에 들어 있는 글자예요.
         </Muted>
 
         <TextInput

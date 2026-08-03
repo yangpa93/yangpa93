@@ -13,7 +13,21 @@ import { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { cellSize, qrMatrix, QUIET_ZONE } from '../features/qr';
 
-export function QrCode({ value, size = 220 }: { value: string; size?: number }) {
+/**
+ * @param testID 노트북 확인(e2e)에서 이 그림만 따로 찍으려고 받는다. 찍은
+ *               그림을 QR 읽개에 넣어 **넣은 주소가 그대로 나오는지** 본다.
+ *               격자가 맞는지는 시험으로 보지만, 그 격자가 화면에 제대로
+ *               얹혔는지는 그려진 것을 되읽어야만 안다.
+ */
+export function QrCode({
+  value,
+  size = 220,
+  testID,
+}: {
+  value: string;
+  size?: number;
+  testID?: string;
+}) {
   const { matrix, cell } = useMemo(() => {
     const m = qrMatrix(value);
     return { matrix: m, cell: cellSize(m.size, size) };
@@ -22,7 +36,10 @@ export function QrCode({ value, size = 220 }: { value: string; size?: number }) 
   const side = (matrix.size + QUIET_ZONE * 2) * cell;
 
   return (
-    <View style={[s.frame, { width: side, height: side, padding: QUIET_ZONE * cell }]}>
+    <View
+      testID={testID}
+      style={[s.frame, { width: side, height: side, padding: QUIET_ZONE * cell }]}
+    >
       {matrix.rows.map((row, y) => (
         <View key={y} style={{ flexDirection: 'row', height: cell }}>
           {runsOf(row).map((run, i) => (

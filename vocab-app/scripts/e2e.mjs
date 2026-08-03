@@ -23,6 +23,8 @@
 
 import { chromium } from 'playwright';
 import { existsSync } from 'node:fs';
+import jsQR from 'jsqr';
+import { PNG } from 'pngjs';
 
 const BASE = process.env.E2E_BASE ?? 'http://localhost:8088';
 
@@ -482,6 +484,122 @@ ok('어휘 판 목록이 나온다', await has(page, '어휘 판 세기를 시�
  */
 await go(page, '/home');
 ok('늘어난 것이 없으면 안내가 안 뜬다', !(await has(page, '새 낱말이', 2000)));
+
+/* ================================================================= */
+console.log('');
+console.log('  ⑨ 연결 — 아이가 띄우고 부모가 받는다 (창 두 개)');
+/*
+ * ── 여태 이 흐름을 노트북에서 한 번도 못 봤다 ────────────────
+ *
+ * 브라우저에는 FCM 이 없어 푸시 주소가 안 나왔고, 그래서 아이 화면에서 QR 이
+ * 아예 안 떴다. 연결이 안 된다는 말을 듣고도 **확인할 방법이 없어** 코드만
+ * 읽고 "고쳤다" 고 말하는 일이 되풀이됐다.
+ *
+ * 이제 웹에서는 가짜 주소를 쓴다(실제 폰에서는 안 만들어진다). 카메라만 빼고
+ * 연결 전체를 여기서 눌러 본다.
+ *
+ * **창을 둘 쓴다.** 한 창으로 하면 아이로 심는 순간 부모도 아이가 된다 —
+ * 저장소를 같이 쓰기 때문이다. playwright 는 newPage 마다 저장소를 따로 주니
+ * 폰 두 대와 같은 모양이 된다.
+ *
+ * 여기서 확인되는 것과 안 되는 것을 분명히 해 둔다.
+ *   확인된다  — QR 을 만들고 · 코드로 바꾸고 · 되읽어 아이를 등록하는 길
+ *   안 된다   — 푸시가 실제로 날아가는지. 그건 npm run push-test 로 가린다
+ */
+/* ================================================================= */
+
+const childPage = await browser.newPage({ viewport: { width: 420, height: 900 } });
+const parentPage = await browser.newPage({ viewport: { width: 420, height: 900 } });
+childPage.on('pageerror', (e) => pageErrors.push(e.message));
+parentPage.on('pageerror', (e) => pageErrors.push(e.message));
+
+/* ── 아이 창 : 내 QR 띄우기 ─────────────────────────────── */
+
+await seed(childPage, '부모님과 아직 연결 안 됨');
+await go(childPage, '/settings');
+await childPage.getByText('내 QR 띄우기', { exact: false }).first().click();
+await childPage.waitForTimeout(1800);
+
+ok('아이 폰에 QR 이 뜬다', await has(childPage, '부모님 폰으로 이 QR 을 찍어 주세요'));
+/*
+ * 가짜 주소라고 화면에 적혀 있어야 한다. 안 적으면 스크린샷만 보고 진짜로
+ * 연결된 줄 알게 된다 — 조용한 실패가 시끄러운 실패보다 나쁘다.
+ */
+ok('미리보기 가짜 주소라고 적어 준다', await has(childPage, '미리보기용 가짜 주소'));
+
+const chunks = await childPage.getByTestId('link-code-chunk').allTextContents();
+ok('코드가 넉 자씩 끊겨 나온다', chunks.length >= 5, `${chunks.length}줄`);
+ok(
+  '마지막 줄 빼고 모두 넉 자다',
+  chunks.length > 1 && chunks.slice(0, -1).every((c) => c.length === 4),
+  chunks.join('|'),
+);
+
+/*
+ * **화면에 그려진 QR 을 진짜로 되읽는다.**
+ *
+ * 격자가 맞는지는 jest 가 본다. 그 격자가 화면에 제대로 얹혔는지는 그려진
+ * 것을 찍어서 읽어 봐야만 안다. 지난번에 막힌 자리가 딱 여기였다 —
+ * "찍었는데 아무 일도 안 일어난다".
+ */
+let qrUrl = '';
+try {
+  const shot = await childPage.getByTestId('child-qr').screenshot();
+  const png = PNG.sync.read(shot);
+  qrUrl = jsQR(new Uint8ClampedArray(png.data), png.width, png.height)?.data ?? '';
+} catch (e) {
+  qrUrl = '';
+}
+ok('화면에 그려진 QR 이 실제로 읽힌다', qrUrl.includes('://child?token='), qrUrl.slice(0, 40));
+
+/*
+ * QR 속 주소와 화면 아래 코드가 **같은 것**인지. 둘이 어긋나면 카메라로는
+ * 되는데 코드로는 안 되는(또는 그 반대인) 일이 생기고, 그때는 어느 쪽이
+ * 틀렸는지 알 길이 없다.
+ */
+const inQr = decodeURIComponent(new URLSearchParams(qrUrl.split('?')[1] ?? '').get('token') ?? '');
+const innerOfQr = inQr.replace(/^Expo(nent)?PushToken\[/, '').replace(/\]$/, '');
+ok(
+  'QR 속 주소와 화면의 코드가 같은 것이다',
+  innerOfQr.length > 0 && chunks.join('').slice(0, -1) === innerOfQr,
+  `QR=${innerOfQr} 코드=${chunks.join('').slice(0, -1)}`,
+);
+
+/* ── 부모 창 : 그 코드를 옮겨 적는다 ────────────────────── */
+
+await seed(parentPage, '아이가 아직 하나도 없는 상태');
+await go(parentPage, '/parent-children');
+ok('처음에는 아이가 없다', !(await has(parentPage, '서준', 2000)));
+
+await go(parentPage, '/link-child-code');
+/*
+ * 사람이 화면을 보고 옮겨 적는 그대로. 줄로 끊긴 것을 줄바꿈째 넣는다 —
+ * 되돌리는 쪽이 공백 종류를 안 가리는지도 여기서 함께 확인된다.
+ */
+await parentPage.getByPlaceholder('아이 폰에 뜬 연결 코드').fill(chunks.join('\n'));
+await parentPage.getByPlaceholder('아이 이름').fill('서준');
+await parentPage.getByText('연결하기', { exact: true }).first().click();
+await parentPage.waitForTimeout(2000);
+
+ok('부모 폰이 아이를 등록했다고 말한다', await has(parentPage, '서준 등록했어요'));
+ok('되보내기도 됐다고 말한다', await has(parentPage, '아이 폰에도 알림이 갔습니다', 2500));
+
+await go(parentPage, '/parent-children');
+ok('아이 목록에 서준이 나타난다', await has(parentPage, '서준'));
+
+/*
+ * 창 둘이 저장소를 정말 따로 쓰는지. 같이 쓰면 부모 창도 아이가 되어 위
+ * 확인이 통째로 거짓말이 된다.
+ */
+await go(childPage, '/parent-children');
+ok(
+  '아이 창은 부모 창의 아이 목록을 갖지 않는다',
+  !(await has(childPage, '아이별 설정', 2000)),
+  '두 창이 저장소를 같이 쓰고 있다',
+);
+
+await childPage.close();
+await parentPage.close();
 
 /* ================================================================= */
 

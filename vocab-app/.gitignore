@@ -67,3 +67,6 @@ service-account*.json
 
 # 연결 미리 보기가 만드는 QR 그림. 올릴 것이 아니다.
 link-check/
+
+# 미리보기를 창 뒤로 돌려 띄울 때 나오는 기록. 그때그때 버린다.
+preview.log

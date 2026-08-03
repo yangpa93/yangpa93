@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Pressable } from 'react-native';
 import { router } from 'expo-router';
-import { Chip, Muted, Screen, SettingsTile } from '../src/components/ui';
+import { Muted, Screen, SettingsTile } from '../src/components/ui';
+import { VersionButton } from '../src/components/VersionButton';
 import { useApp } from '../src/store/AppProvider';
-import { buildInfo, buildLabel } from '../src/features/build-info';
 import { englishVoiceName, prepareVoice } from '../src/lib/feedback';
 import { soundSummary } from '../src/lib/voice';
 import { PARENT_TRACK_SHORT } from '../src/types';
@@ -31,7 +30,6 @@ import { colors, spacing } from '../src/theme';
  */
 export default function ParentSettings() {
   const { state, profile } = useApp();
-  const build = buildInfo();
 
   /*
    * 목소리 이름은 기기 음성 목록을 다 읽어야 나온다. 앱이 뜰 때 한 번
@@ -120,12 +118,7 @@ export default function ParentSettings() {
         그냥 적어 둔 것인지 알 수 없다는 말을 들었다. 같은 화면에서 어떤 것은
         눌리고 어떤 것은 안 눌리는데 생긴 것이 다르면 매번 시험해 봐야 한다.
       */}
-      <SettingsTile
-        icon="📱"
-        title={buildLabel(build)}
-        hint="지금 쓰는 판이에요. 눌러서 낱말이 얼마나 늘었는지 볼 수 있어요"
-        onPress={() => router.push('/whats-new')}
-      />
+      <VersionButton tone="parent" style={{ marginTop: spacing.xl }} />
     </Screen>
   );
 }

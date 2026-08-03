@@ -168,6 +168,53 @@ export function parseLinkBack(data: unknown): LinkBackPayload | null {
 }
 
 /**
+ * 부모가 연결을 끊었다고 아이에게 알린다.
+ *
+ * ── 왜 아이에게도 알려야 하나 ───────────────────────────────
+ *
+ * 연결은 양쪽에 하나씩 있다. 부모 폰에는 '아이 주소', 아이 폰에는 '부모 주소'.
+ * 부모 쪽만 지우면 **아이는 계속 보낸다.** 그리고 리포트가 도착하면 부모 앱이
+ * 그 아이를 다시 목록에 넣는다(PushBridge). 지운 아이가 며칠 뒤 되살아나는
+ * 셈이라, 지운 사람 눈에는 앱이 고장 난 것으로 보인다.
+ *
+ * 그래서 끊는 것도 양쪽에서 한다. 아이 폰은 이 알림을 받아 그 부모만
+ * 목록에서 뺀다 — 엄마 폰을 끊어도 아빠 폰은 그대로 남는다.
+ *
+ * 알림을 **누르지 않아도** 적용된다. 아이가 지나쳐 버리면 계속 보내게 되고,
+ * 그러면 끊은 것이 끊은 것이 아니다.
+ */
+export interface UnlinkPayload {
+  /** 끊는 부모 폰의 주소. 아이는 이것으로 누구를 뺄지 가린다. */
+  parentToken: string;
+  /** 화면에 적을 이름. '엄마 폰' */
+  parentLabel: string;
+}
+
+export function buildUnlinkBody(childToken: string, payload: UnlinkPayload) {
+  return {
+    to: childToken,
+    title: '🔌 부모님 폰 연결이 끊겼어요',
+    body: `${payload.parentLabel}으로는 이제 기록이 가지 않아요.`,
+    sound: 'default' as const,
+    priority: 'high' as const,
+    channelId: 'child-nudge',
+    data: { kind: 'unlink', ...payload },
+  };
+}
+
+export function parseUnlink(data: unknown): UnlinkPayload | null {
+  if (!data || typeof data !== 'object') return null;
+  const d = data as Record<string, unknown>;
+  if (d.kind !== 'unlink') return null;
+  if (typeof d.parentToken !== 'string' || !isValidPushToken(d.parentToken)) return null;
+  return {
+    parentToken: d.parentToken,
+    parentLabel:
+      typeof d.parentLabel === 'string' && d.parentLabel.trim() ? d.parentLabel.trim() : '부모님 폰',
+  };
+}
+
+/**
  * 이름을 바꾸기 전에 쓰던 스킴들. **읽을 때만 받는다.**
  *
  * 앱 주소는 `urivocab` → `gomtangvoca` → `gomtangivoca` 로 두 번 바뀌었다.
@@ -290,12 +337,29 @@ export function scannedError(text: string): string {
  * base64url 이라 `-` 와 `_` 를 글자로 쓴다. 하이픈으로 끊으면 토큰이 원래
  * 갖고 있던 하이픈과 구별되지 않아, 되돌릴 때 그 글자까지 지워 버린다.
  *
- * **한 줄로 이어 붙인 이 모양은 화면에 그대로 쓰지 않는다.** 왜 그런지는
- * 바로 아래 `toShortCodeLines` 에 적어 두었다. 여기는 기계끼리 주고받거나
- * 한 줄로 적어야 하는 자리에서만 쓴다.
+ * ── 끊어 적는 것을 그만뒀다 ─────────────────────────────────
+ *
+ * 처음에는 빈칸으로 넉 자씩 끊었다. 눈이 자리를 잃지 말라고 넣은 것인데,
+ * 푸시 토큰은 base64url 이라 `-` 와 `_` 를 **글자로** 쓴다. 그래서 실제로
+ * 이런 것이 떴다.
+ *
+ *     WLDv RDLX NikW -PbJ kPm1 vYF
+ *
+ * 넷째 토막이 하이픈으로 시작한다. 빈칸 바로 뒤에 하이픈이 오면 그것이
+ * 글자인지 끊는 표시인지 사람은 가릴 수 없고, 그래서 "빈칸도 넣어야 하는
+ * 건지 헷갈립니다" 라는 말을 들었다.
+ *
+ * 넉 자씩 네모에 넣어 봤더니 헷갈림은 없어졌는데 **옮겨 적을 것이 일곱 줄**이
+ * 됐다. 스물세 글자를 대소문자까지 맞춰 손으로 치는 일 자체가 남아 있었다.
+ *
+ * 그래서 **끊지 않는다.** 한 덩어리로 두고 복사해 쓰게 한다. 옮겨 적지 않는
+ * 것이 가장 좋다 — 손으로 치는 일이 없어지면 틀릴 일도 없다.
+ *
+ * 되돌리는 쪽은 예나 지금이나 공백을 종류 가리지 않고 다 걷어내므로,
+ * **빈칸으로 끊어 적은 옛 코드도 그대로 읽힌다.**
  */
 export function toShortCode(token: string): string {
-  return toShortCodeLines(token).join(' ');
+  return toShortCodeLines(token).join('');
 }
 
 /**

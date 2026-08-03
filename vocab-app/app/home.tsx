@@ -184,14 +184,6 @@ export default function Home() {
         {profile.bestStreak > profile.streak ? (
           <Chip label={`최고 ${profile.bestStreak}일`} tone="default" />
         ) : null}
-        {/*
-          **옆의 칩들과 달라 보여야 한다.**
-
-          🔥 연속 칩은 그냥 보는 것이고 이것만 눌린다. 그런데 셋이 똑같이
-          생겨서 "이게 버튼인지 그냥 정보인지 알 수가 없다" 는 말을 들었다.
-          테두리와 글자 색과 '보기' 라는 말, 셋으로 갈라 둔다.
-        */}
-        <VersionButton tone="primary" />
       </Row>
 
       {/* 오늘의 학습 */}
@@ -490,6 +482,15 @@ export default function Home() {
           </>
         )}
       </Card>
+
+      {/*
+        판 번호는 **맨 아래에 작게** 둔다.
+
+        늘 보여야 하지만 화면에서 제일 중요한 것은 아니다. 위쪽 칩 줄에 두었을
+        때는 `🔥 3일 연속` 과 나란히 서서 크기도 무게도 같아 보였는데, 그건
+        장식이고 이건 눌러 들어가는 것이라 같은 자리에 있을 것이 아니었다.
+      */}
+      <VersionButton tone="primary" style={{ marginTop: spacing.xl }} />
     </Screen>
   );
 }

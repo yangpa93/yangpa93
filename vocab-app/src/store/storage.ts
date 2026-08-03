@@ -113,6 +113,7 @@ export function emptyState(): AppState {
     receivesReports: false,
     receivedReports: [],
     knownChildren: [],
+    forgottenChildren: [],
     // 새로 깐 폰은 지금 있는 낱말을 다 갖고 시작한다. 늘어난 것이 없다.
     seenDataVersion: DATA_VERSION,
   };
@@ -213,6 +214,20 @@ export function normalizeKind(v: unknown): ProfileKind {
 /** 아이별 금액표. 안 정했으면 null 이고 기기 기본값을 쓴다. */
 function normalizeProfileAwards(v: unknown): AwardRates | null {
   return v == null || typeof v !== 'object' ? null : awardRates(v as Partial<AwardRates>);
+}
+
+/**
+ * 저장된 갈래 차례를 다듬는다. 모르는 값과 중복을 걷어낸다.
+ *
+ * 없으면 `undefined` 로 둔다. 빈 배열로 두면 "차례를 정한 적이 있는데 비었다"
+ * 는 뜻이 되어, 읽는 쪽이 옛 `firstSubject` 를 못 보게 된다.
+ */
+export function normalizeSubjectOrder(v: unknown): Subject[] | undefined {
+  if (!Array.isArray(v)) return undefined;
+  const all: Subject[] = ['en', 'ko', 'daily'];
+  const out = v.filter((x): x is Subject => all.includes(x as Subject));
+  const seen = [...new Set(out)];
+  return seen.length > 0 ? seen : undefined;
 }
 
 export function normalizeSubjects(v: unknown): Subject[] {
@@ -444,6 +459,12 @@ function migrate(state: AppState): AppState {
         subjects: normalizeSubjects(p.settings?.subjects),
         // 순서를 고를 수 있게 된 것은 나중이다. 예전 저장본은 영어부터.
         firstSubject: p.settings?.firstSubject === 'ko' ? 'ko' : 'en',
+        /*
+         * 갈래 차례. 없으면 비워 둔다 — 읽는 쪽(orderedSubjects)이
+         * firstSubject 로 미루어 짐작한다. 여기서 지어내면 아이가 예전에
+         * 고른 것이 판을 올린 날 저 혼자 바뀐다.
+         */
+        subjectOrder: normalizeSubjectOrder(p.settings?.subjectOrder),
         showTranslation: p.settings?.showTranslation ?? true,
       },
     })),
@@ -461,5 +482,7 @@ function migrate(state: AppState): AppState {
     // 받은 리포트는 최근 60건만 남긴다.
     receivedReports: (state.receivedReports ?? []).slice(0, 60),
     knownChildren: state.knownChildren ?? [],
+    // 예전 저장본에는 없다. 없으면 아무도 안 끊은 것이다.
+    forgottenChildren: state.forgottenChildren ?? [],
   };
 }

@@ -74,15 +74,33 @@ export function buildInfo(): BuildInfo {
 }
 
 /**
- * `0.9.0 (12) · android` — 화면 아래에 한 줄로 적는다.
+ * `0.23.0.6` — 사람에게 보여 주는 판 번호. **네 자리 한 덩어리다.**
+ *
+ * ── 왜 괄호를 없앴나 ────────────────────────────────────────
+ *
+ * 예전에는 `0.23.0 (6) · android` 라고 적었다. 빌드 번호를 괄호에 넣은 것인데,
+ * 괄호는 "덧붙인 말" 로 읽힌다 — 그래서 사람들이 판을 말할 때 괄호 안을
+ * 빼고 "0.23.0 이요" 라고 한다. 그런데 같은 0.23.0 으로 만든 빌드가 여럿일
+ * 수 있어서, 그 번호를 빼면 어느 앱인지 다시 알 수 없어진다.
+ *
+ * 점으로 이어 붙이면 네 자리가 **한 번호**가 된다. 그러면 통째로 읽는다.
+ *
+ * 빌드 번호를 못 읽는 자리(노트북 미리보기)에서는 0 으로 둔다. 없는 번호를
+ * 지어내지 않으면서 자릿수는 지키는 값이다.
+ */
+export function versionLabel(info: BuildInfo = buildInfo()): string {
+  const build = /^\d+$/.test(info.build) ? info.build : '0';
+  return `${info.version}.${build}`;
+}
+
+/**
+ * `0.23.0.6 · android` — 자세히 적어야 하는 자리에 쓴다.
  *
  * '베타'라고 적지 않는다. 아이가 모르는 말이고, 안다고 해도 "아직 덜 만든 것"
- * 으로 들려 이상한 것을 말하기 어려워진다. 판과 빌드 번호만 있으면 어느
- * 앱인지 가리는 데는 충분하다.
+ * 으로 들려 이상한 것을 말하기 어려워진다.
  */
 export function buildLabel(info: BuildInfo = buildInfo()): string {
-  const head = info.version;
-  const parts = [`${head} (${info.build})`, info.platform];
+  const parts = [versionLabel(info), info.platform];
   // 무선 업데이트로 받은 판이면 그것까지 적어야 같은 빌드 번호끼리도 구별된다.
   if (info.update) parts.push(`업데이트 ${info.update}`);
   if (info.isExpoGo) parts.push('Expo Go');

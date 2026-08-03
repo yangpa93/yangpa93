@@ -8,12 +8,18 @@ describe('toShortCode', () => {
     expect(toShortCode(TOKEN)).not.toContain('ExponentPushToken');
   });
 
-  it('넉 자씩 끊어 준다 — 눈이 자리를 잃지 않게', () => {
+  /*
+   * **끊지 않는다.** 예전에는 빈칸으로 넉 자씩 끊었는데, 토큰에 `-` 와 `_` 가
+   * 글자로 들어 있어서 그 빈칸이 끊는 자리인지 글자인지 가릴 수가 없었다.
+   * 지금은 한 덩어리로 두고 복사해 쓰게 한다 — 옮겨 적지 않는 것이 가장 좋다.
+   *
+   * 끊어 적은 옛 코드는 여전히 읽힌다(아래 fromShortCode 시험 참고).
+   */
+  it('한 덩어리로 이어 붙인다 — 복사해서 쓰라고', () => {
     const code = toShortCode(TOKEN);
-    for (const group of code.split(' ')) {
-      expect(group.length).toBeGreaterThan(0);
-      expect(group.length).toBeLessThanOrEqual(4);
-    }
+    expect(code).not.toContain(' ');
+    expect(code).not.toContain('\n');
+    expect(code.length).toBeGreaterThan(10);
   });
 
   it('토큰이 아니면 빈 문자열', () => {

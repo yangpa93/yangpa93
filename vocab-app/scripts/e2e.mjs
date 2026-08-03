@@ -514,12 +514,76 @@ await page.waitForTimeout(1200);
 await go(page, '/settings');
 ok('국어를 켜면 고르는 화면에도 국어라고 뜬다', await has(page, '국어'));
 
+/*
+ * **셋을 다 켜면 줄을 세울 수 있는가.**
+ *
+ * "3개 모두 선택하면 무엇부터 풀까요에 우선순위를 두어야 합니다" 라는 말을
+ * 들었다. 예전에는 '영어 먼저 / 국어 먼저' 둘 중 하나였고, 셋이 되면서
+ * 나머지 둘의 차례를 정할 방법이 없어졌다.
+ */
+await go(page, '/settings-study');
+await page.getByText('일상 생활 문장 학습하기', { exact: false }).first().click();
+await page.waitForTimeout(1200);
+ok('셋을 켜면 차례를 정하는 자리가 나온다', await has(page, '무엇부터 풀까요'));
+ok('화살표로 바꾸라고 말해 준다', await has(page, '화살표로 차례를 바꿉니다'));
+
+/*
+ * 실제로 옮겨지는지. 맨 아래 것을 두 번 올리면 맨 위로 와야 한다.
+ *
+ * 차례 줄만 골라 읽는다(testID). 글자로 찾으면 위 '무엇을 공부할까요' 카드의
+ * 같은 이름이 먼저 잡혀서, 차례가 바뀌어도 늘 같은 것이 나온다. 실제로 그렇게
+ * 한 번 틀렸다 — **늘 같은 답이 나오는 자는 자가 아니다.**
+ */
+const before = await page.getByTestId('rank-name').allTextContents();
+ok('차례가 세 줄로 나온다', before.length === 3, before.join(' | '));
+
+const up = page.getByLabel('일상 문장 위로', { exact: false }).first();
+if (await up.isVisible().catch(() => false)) {
+  await up.click();
+  await page.waitForTimeout(700);
+  await page.getByLabel('일상 문장 위로', { exact: false }).first().click();
+  await page.waitForTimeout(900);
+  const after = await page.getByTestId('rank-name').allTextContents();
+  ok('위로 두 번 누르면 맨 앞으로 온다', (after[0] ?? '').includes('일상'), after.join(' | '));
+
+  /* 화면만 바뀌고 저장이 안 되면 다시 들어왔을 때 되돌아간다. */
+  await go(page, '/settings-study');
+  const kept = await page.getByTestId('rank-name').allTextContents();
+  ok('나갔다 와도 그 차례 그대로다', (kept[0] ?? '').includes('일상'), kept.join(' | '));
+} else {
+  ok('위로 두 번 누르면 맨 앞으로 온다', false, '화살표를 못 찾음');
+  ok('나갔다 와도 그 차례 그대로다', false, '화살표를 못 찾음');
+}
+
 await go(page, '/settings-me');
 ok('내 캐릭터 설정이 있다', await has(page, '내 캐릭터 설정'));
 ok('부모님과 연결하기가 여기로 왔다', await has(page, '내 QR 띄우기'));
 ok('백업 및 복구가 여기로 왔다', await has(page, '공부 기록 백업 및 복구'));
-ok('문의하기가 여기로 왔다', await has(page, '이상한 점 알려주기'));
 ok('아이 설정에 코드로 연결하기는 없다', !(await has(page, 'QR 말고 코드로 연결하기', 1500)));
+
+/*
+ * **문의가 어디로 가는지.**
+ *
+ * "이상한 점 알려주기는 어디로 알람이 가나요?" — 아무 데도 안 갔다는 것이
+ * 답이었다. 폰의 공유 창만 열고 받는 주소는 어디에도 없었다.
+ */
+ok('앱 담당자에게 문의하기로 이름이 바뀌었다', await has(page, '앱 담당자에게 문의하기'));
+ok('받는 메일 주소가 화면에 있다', await has(page, 'yangpa93@gmail.com'));
+
+/*
+ * **백업 화면에서 설명 카드를 없앴다.**
+ *
+ * 같은 말이 여기 오는 길에 이미 두 번 나온다. 여기서 또 설명하면 정작
+ * 눌러야 할 단추가 한 화면 아래로 밀린다.
+ */
+await go(page, '/backup');
+ok('왜 백업이 필요한가 설명은 없앴다', !(await has(page, '왜 백업이 필요한가요', 1500)));
+ok('파일로 저장하기는 그대로 있다', await has(page, '파일로 저장하기'));
+ok(
+  '다른 앱으로 보내기가 눌러 볼 것으로 보인다',
+  await looksPressable(page, '다른 앱으로 보내기'),
+  '바탕도 테두리도 없다',
+);
 
 await go(page, '/settings-sound');
 ok('소리로 읽어주기가 여기로 왔다', await has(page, '소리로 읽어주기'));
@@ -618,19 +682,34 @@ ok('늘어난 것이 없으면 안내가 안 뜬다', !(await has(page, '새 낱
  *
  * 눈으로는 다음에 또 놓친다. 테두리나 바탕이 있는지를 기계가 센다.
  */
+/*
+ * **판 번호는 괄호 없이 네 자리 한 덩어리로.**
+ *
+ * `0.23.0 (6)` 이라고 적었더니 사람들이 괄호 안을 빼고 "0.23.0 이요" 라고
+ * 말한다. 같은 판으로 만든 빌드가 여럿일 수 있어서 그 번호를 빼면 어느
+ * 앱인지 다시 알 수 없다. 점으로 이으면 통째로 읽는다.
+ */
 for (const [where, path] of [
   ['아이 홈', '/home'],
   ['아이 설정', '/settings'],
 ]) {
   await go(page, path);
-  ok(`${where} 의 판 정보가 눌러 볼 것으로 보인다`, await looksPressable(page, '📱'), '그냥 글자다');
+  ok(`${where} 에 현재 버전이 적혀 있다`, await has(page, '현재 버전'));
+  ok(`${where} 의 판 번호가 네 자리다`, await has(page, '0.23.0.'), '괄호가 남아 있다');
+  ok(`${where} 에 상세 단추가 있다`, await has(page, '상세 버전 정보 확인하기'));
+  ok(
+    `${where} 의 상세 단추가 눌러 볼 것으로 보인다`,
+    await looksPressable(page, '상세 버전 정보 확인하기'),
+    '그냥 글자다',
+  );
 }
+ok('괄호 친 옛 모양은 안 남아 있다', !(await has(page, '(0)', 1200)));
 
 /* 실제로 눌러서 넘어가는지. 눌리게 생겼는데 안 눌리면 더 나쁘다. */
 await go(page, '/settings');
-await page.getByText('📱', { exact: false }).first().click();
+await page.getByText('상세 버전 정보 확인하기', { exact: false }).first().click();
 await page.waitForTimeout(1500);
-ok('아이 설정에서 판을 누르면 판 정보로 넘어간다', await has(page, '지금 쓰는 판은'));
+ok('아이 설정에서 누르면 판 정보로 넘어간다', await has(page, '지금 쓰는 판은'));
 
 await seed(page, '아이 둘이 등록된 상태');
 for (const [where, path] of [
@@ -639,7 +718,12 @@ for (const [where, path] of [
   ['아이들 폰 설정', '/parent-child-devices'],
 ]) {
   await go(page, path);
-  ok(`${where} 의 판 정보가 눌러 볼 것으로 보인다`, await looksPressable(page, '📱'), '그냥 글자다');
+  ok(`${where} 에 현재 버전이 적혀 있다`, await has(page, '현재 버전'));
+  ok(
+    `${where} 의 상세 단추가 눌러 볼 것으로 보인다`,
+    await looksPressable(page, '상세 버전 정보 확인하기'),
+    '그냥 글자다',
+  );
 }
 
 /* ================================================================= */
@@ -684,27 +768,23 @@ ok('아이 폰에 QR 이 뜬다', await has(childPage, '부모님 폰으로 이 
  */
 ok('미리보기 가짜 주소라고 적어 준다', await has(childPage, '미리보기용 가짜 주소'));
 
-const chunks = await childPage.getByTestId('link-code-chunk').allTextContents();
-ok('코드가 넉 자씩 끊겨 나온다', chunks.length >= 5, `${chunks.length}줄`);
-ok(
-  '마지막 줄 빼고 모두 넉 자다',
-  chunks.length > 1 && chunks.slice(0, -1).every((c) => c.length === 4),
-  chunks.join('|'),
-);
 /*
- * **"빈칸도 넣어야 하나" 를 없앤 줄이 화면에 있는지.**
+ * **코드는 한 덩어리로 나와야 한다.**
  *
- * 실제로 이 말을 들었다 — "빈칸도 구분해서 넣어야 하는 건지 헷갈립니다".
- * 넣어야 하나 말아야 하나를 고민하는 순간 이미 틀릴 준비가 된 것이다.
+ * 여기까지 세 번 고쳤다. 빈칸으로 끊었더니 "빈칸도 넣어야 하는 건지
+ * 헷갈립니다", 넉 자씩 네모에 넣었더니 옮겨 적을 것이 일곱 줄. 지금은
+ * 한 줄로 두고 복사해 쓰게 한다 — 옮겨 적지 않는 것이 가장 좋다.
  */
-ok('네모 안의 글자만 적으면 된다고 말해 준다', await has(childPage, '네모 안의 글자만'));
-ok('띄어쓰기는 신경 안 써도 된다고 말해 준다', await has(childPage, '띄어쓰기는 신경 쓰지'));
-/* 토막마다 네모가 쳐져 있는지. 끊는 자리를 테두리가 맡아야 빈칸이 사라진다. */
-ok(
-  '토막마다 네모가 쳐져 있다',
-  await looksPressable(childPage, chunks[0]),
-  '테두리가 없으면 어디까지가 한 토막인지 다시 헷갈린다',
-);
+const code = (await childPage.getByTestId('link-code').first().textContent()) ?? '';
+ok('코드가 한 덩어리로 나온다', code.length > 10 && !/\s/.test(code), JSON.stringify(code));
+ok('복사 단추가 있다', await has(childPage, '코드 복사하기'));
+ok('복사해서 보내라고 말해 준다', await has(childPage, '복사해서 부모님께'));
+
+/* 눌러서 실제로 '복사했어요' 로 바뀌는지. 글자만 있고 안 눌리면 없는 것과 같다. */
+await childPage.getByText('코드 복사하기', { exact: false }).first().click();
+await childPage.waitForTimeout(800);
+ok('누르면 복사했다고 말한다', await has(childPage, '복사했어요', 2500));
+
 
 /*
  * **화면에 그려진 QR 을 진짜로 되읽는다.**
@@ -732,8 +812,8 @@ const inQr = decodeURIComponent(new URLSearchParams(qrUrl.split('?')[1] ?? '').g
 const innerOfQr = inQr.replace(/^Expo(nent)?PushToken\[/, '').replace(/\]$/, '');
 ok(
   'QR 속 주소와 화면의 코드가 같은 것이다',
-  innerOfQr.length > 0 && chunks.join('').slice(0, -1) === innerOfQr,
-  `QR=${innerOfQr} 코드=${chunks.join('').slice(0, -1)}`,
+  innerOfQr.length > 0 && code.slice(0, -1) === innerOfQr,
+  `QR=${innerOfQr} 코드=${code.slice(0, -1)}`,
 );
 
 /* ── 부모 창 : 그 코드를 옮겨 적는다 ────────────────────── */
@@ -743,11 +823,8 @@ await go(parentPage, '/parent-children');
 ok('처음에는 아이가 없다', !(await has(parentPage, '서준', 2000)));
 
 await go(parentPage, '/link-child-code');
-/*
- * 사람이 화면을 보고 옮겨 적는 그대로. 줄로 끊긴 것을 줄바꿈째 넣는다 —
- * 되돌리는 쪽이 공백 종류를 안 가리는지도 여기서 함께 확인된다.
- */
-await parentPage.getByPlaceholder('아이 폰에 뜬 연결 코드').fill(chunks.join('\n'));
+/* 복사해서 붙여넣은 그대로. 아이 화면에 뜬 것을 한 글자도 안 고치고 넣는다. */
+await parentPage.getByPlaceholder('아이 폰에 뜬 연결 코드').fill(code);
 await parentPage.getByPlaceholder('아이 이름').fill('서준');
 await parentPage.getByText('연결하기', { exact: true }).first().click();
 await parentPage.waitForTimeout(2000);

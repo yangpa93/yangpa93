@@ -1,10 +1,9 @@
-import { Pressable } from 'react-native';
 import { router } from 'expo-router';
 import { Button, Muted, Screen, SettingsTile } from '../src/components/ui';
+import { VersionButton } from '../src/components/VersionButton';
 import { useApp } from '../src/store/AppProvider';
 import { SUBJECT_LABEL, SUBJECT_ORDER } from '../src/types';
 import { labelOf } from '../src/components/AvatarPicker';
-import { APP_NAME, buildInfo, buildLabel } from '../src/features/build-info';
 import { soundSummary } from '../src/lib/voice';
 import { englishVoiceName, prepareVoice } from '../src/lib/feedback';
 import { useEffect, useState } from 'react';
@@ -37,7 +36,6 @@ import { colors, spacing } from '../src/theme';
  */
 export default function ChildSettings() {
   const { profile } = useApp();
-  const build = buildInfo();
 
   /*
    * 목소리 이름은 기기 음성 목록을 다 읽어야 나온다. 앱이 뜰 때 한 번 정해지지만
@@ -108,12 +106,7 @@ export default function ChildSettings() {
         누를 것으로 보이지 않았다. 같은 화면 안에서 어떤 것은 눌리고 어떤 것은
         안 눌리는데 생긴 것이 다르면, 무엇이 눌리는지 매번 시험해 봐야 한다.
       */}
-      <SettingsTile
-        icon="📱"
-        title={`${APP_NAME} ${buildLabel(build)}`}
-        hint="지금 쓰는 판이에요. 눌러서 낱말이 얼마나 늘었는지 볼 수 있어요"
-        onPress={() => router.push('/whats-new')}
-      />
+      <VersionButton tone="primary" style={{ marginTop: spacing.xl }} />
 
       {/*
         부모님 모드로 들어가는 문. 눈에 잘 안 띄는 맨 아래에 한 줄로 남긴다 —
@@ -125,7 +118,7 @@ export default function ChildSettings() {
         title="👨‍👩‍👧 부모님 모드"
         variant="ghost"
         onPress={() => router.push('/parent')}
-        style={{ marginTop: spacing.xl }}
+        style={{ marginTop: spacing.lg }}
       />
     </Screen>
   );

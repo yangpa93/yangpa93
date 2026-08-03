@@ -93,10 +93,6 @@ export default function ParentHome() {
         </Pressable>
       </Row>
 
-      {/* 판을 누르면 이번 판에 무엇이 들어 있는지 나온다. */}
-      <Row style={{ marginTop: spacing.md }}>
-        <VersionButton tone="parent" />
-      </Row>
 
       {/*
         ① 공부하기. **아무것도 안 골랐으면 이 카드를 아예 안 띄운다.**
@@ -228,6 +224,9 @@ export default function ParentHome() {
           부모님도 공부하고 싶으시면 ⚙️ 설정 → 내 공부 설정 에서 켜실 수 있어요.
         </Muted>
       ) : null}
+
+      {/* 판 번호는 맨 아래에 작게. 늘 보여야 하지만 제일 중요한 것은 아니다. */}
+      <VersionButton tone="parent" style={{ marginTop: spacing.xl }} />
     </Screen>
   );
 }

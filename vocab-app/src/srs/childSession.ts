@@ -22,7 +22,7 @@
  * 다만 **섞지는 않는다.** 갈래를 오가게 하면 셋 다 힘들다. 이어 붙이기만 한다.
  */
 
-import { CardState, Profile, Subject } from '../types';
+import { CardState, orderedSubjects, Profile, Subject } from '../types';
 import { entriesOf } from '../data';
 import { KO_ENTRIES } from '../data/korean/levels';
 import { DAILY_ENTRIES, DAILY_LEVEL } from '../data/daily';
@@ -139,16 +139,20 @@ export function buildChildQueue(args: BuildChildQueueArgs): ChildQueueItem[] {
   const rounds = profile.settings.rounds;
   const { en, daily, ko } = pick(args);
 
-  const enQ: ChildQueueItem[] = [
-    ...buildRounds(en, rounds, rand).map((i) => ({ subject: 'en' as const, ...i })),
-    ...buildRounds(daily, rounds, rand).map((i) => ({ subject: 'en' as const, ...i })),
-  ];
-  const koQ: ChildQueueItem[] = buildKoRounds(ko, rounds, KO_ENTRIES, rand).map((i) => ({
-    subject: 'ko' as const,
-    ...i,
-  }));
+  /*
+   * 갈래마다 큐를 따로 만들어 두고 **아이가 정한 차례대로** 이어 붙인다.
+   *
+   * 예전에는 '영어 먼저냐 국어 먼저냐' 둘 중 하나였고, 일상 문장은 영어에
+   * 딸려 붙었다. 갈래가 셋이 되면서 그것으로는 줄을 세울 수 없게 됐다 —
+   * "1. 영어 2. 국어 3. 일상생활 문장" 처럼 셋을 각자 놓을 수 있어야 한다.
+   */
+  const parts: Record<Subject, ChildQueueItem[]> = {
+    en: buildRounds(en, rounds, rand).map((i) => ({ subject: 'en' as const, ...i })),
+    daily: buildRounds(daily, rounds, rand).map((i) => ({ subject: 'en' as const, ...i })),
+    ko: buildKoRounds(ko, rounds, KO_ENTRIES, rand).map((i) => ({ subject: 'ko' as const, ...i })),
+  };
 
-  return profile.settings.firstSubject === 'ko' ? [...koQ, ...enQ] : [...enQ, ...koQ];
+  return orderedSubjects(profile.settings).flatMap((s) => parts[s]);
 }
 
 /**

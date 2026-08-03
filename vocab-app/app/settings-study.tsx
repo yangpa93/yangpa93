@@ -4,7 +4,15 @@ import { router } from 'expo-router';
 import { Body, Button, Card, H3, Muted, Row, Screen } from '../src/components/ui';
 import { useApp } from '../src/store/AppProvider';
 import { childPlannedCount, DAILY_PER_DAY, KO_PER_DAY } from '../src/srs/childSession';
-import { SUBJECT_LABEL, SUBJECT_LONG, SUBJECT_ORDER, Subject, toggleSubject } from '../src/types';
+import {
+  moveSubject,
+  orderedSubjects,
+  SUBJECT_LABEL,
+  SUBJECT_LONG,
+  SUBJECT_ORDER,
+  Subject,
+  toggleSubject,
+} from '../src/types';
 import { colors, font, radius, spacing } from '../src/theme';
 
 /** 하루에 새로 만날 영어 단어 수. 아이가 고른다. */
@@ -39,9 +47,31 @@ export default function ChildSettingsStudy() {
 
   if (!profile) return null;
 
-  const { subjects, firstSubject, newPerDay, reviewPerDay, rounds } = profile.settings;
-  // 두 과목을 다 켠 아이에게만 순서를 묻는다. 하나뿐이면 고를 것이 없다.
-  const bothSubjects = subjects.includes('en') && subjects.includes('ko');
+  const { subjects, newPerDay, reviewPerDay, rounds } = profile.settings;
+  /** 켠 갈래를 푸는 차례. 하나뿐이면 줄 세울 것이 없다. */
+  const order = orderedSubjects(profile.settings);
+
+  /**
+   * 차례를 한 칸 옮긴다.
+   *
+   * **켠 것만 옮기고 나머지는 그대로 둔다.** 안 켠 갈래도 저장된 줄에는
+   * 남아 있는데(껐다 다시 켰을 때 제자리로 돌아가야 한다), 화면에는 켠 것만
+   * 보이므로 화면에서 옮긴 결과를 저장된 줄에 그대로 얹으면 안 켠 것의
+   * 자리가 엉킨다. 켠 것들의 자리만 새 차례로 갈아 끼운다.
+   */
+  function move(one: Subject, dir: -1 | 1) {
+    const moved = moveSubject(order, one, dir);
+    if (moved === order) return;
+    const full = profile!.settings.subjectOrder?.length
+      ? [...profile!.settings.subjectOrder]
+      : [...SUBJECT_ORDER];
+    // 켠 갈래가 놓여 있던 자리들을 새 차례로 채운다.
+    const slots = full.map((s, i) => (order.includes(s) ? i : -1)).filter((i) => i >= 0);
+    slots.forEach((slot, k) => {
+      full[slot] = moved[k];
+    });
+    updateSettings(profile!.id, { subjectOrder: full });
+  }
 
   // 오늘 몇 문제를 풀게 되는지. 개수만 보면 감이 안 와서 시간까지 적는다.
   const questions = planned * rounds;
@@ -93,34 +123,60 @@ export default function ChildSettingsStudy() {
       </Card>
 
       {/*
-        무엇을 먼저 풀지 아이가 고른다.
+        무엇부터 풀지 아이가 **줄을 세운다.**
 
-        머리가 맑을 때 어려운 쪽을 먼저 하고 싶은 아이가 있고, 쉬운 쪽으로
-        몸을 풀고 싶은 아이가 있다. 어느 쪽이 어려운지는 아이마다 달라서
-        어른이 정해 줄 일이 아니다.
+        예전에는 '영어 먼저 / 국어 먼저' 둘 중 하나를 고르는 것이었다. 갈래가
+        둘일 때는 그것으로 충분했지만, 일상 생활 문장이 들어와 셋이 되면서
+        무너졌다 — 셋 중 하나를 골라도 **나머지 둘의 차례**가 안 정해진다.
 
-        일상 문장은 여기 없다. 영어 낱말 옆에 붙어 다니므로 따로 자리를 정할
-        것이 없고, 고를 것을 하나 더 늘리면 거기서 멈추는 아이가 생긴다.
+        위아래 화살표로 한 칸씩 옮긴다. 끌어다 놓기는 아이 손에 어렵고,
+        '몇 번째' 를 숫자로 고르게 하면 둘이 같은 번호를 갖는 경우를 또
+        다뤄야 한다. 한 칸씩이면 잘못 눌러도 한 칸이라 되돌리기 쉽다.
+
+        하나만 켰으면 안 보인다. 줄 세울 것이 없다.
       */}
-      {bothSubjects ? (
+      {order.length > 1 ? (
         <Card style={{ marginTop: spacing.md }}>
           <H3>무엇부터 풀까요</H3>
-          <Muted style={{ marginTop: spacing.xs }}>고른 쪽을 먼저 다 풀고 나머지로 넘어가요.</Muted>
-          <Row style={{ gap: spacing.sm, marginTop: spacing.md }}>
-            {(['en', 'ko'] as const).map((sub) => (
-              <Pressable
-                key={sub}
-                onPress={() => updateSettings(profile.id, { firstSubject: sub })}
-                style={[s.chip, firstSubject === sub && s.chipOn]}
-                accessibilityRole="radio"
-                accessibilityState={{ selected: firstSubject === sub }}
-              >
-                <Text style={[s.chipText, firstSubject === sub && s.chipTextOn]}>
-                  {SUBJECT_LABEL[sub]} 먼저
+          <Muted style={{ marginTop: spacing.xs }}>
+            위에 있는 것부터 다 풀고 다음으로 넘어가요. 화살표로 차례를 바꿉니다.
+          </Muted>
+
+          <View style={{ marginTop: spacing.md, gap: spacing.sm }}>
+            {order.map((sub, i) => (
+              <View key={sub} style={s.rank}>
+                <Text style={s.rankNo}>{i + 1}</Text>
+                {/*
+                  testID 는 노트북 확인(e2e)에서 이 줄들만 골라 읽으려는 것이다.
+                  글자로 찾으면 위 '무엇을 공부할까요' 카드의 같은 이름이 먼저
+                  잡혀서, 차례가 바뀌었는지를 볼 수가 없다.
+                */}
+                <Text style={s.rankName} testID="rank-name">
+                  {SUBJECT_LONG[sub]}
                 </Text>
-              </Pressable>
+                <Pressable
+                  onPress={() => move(sub, -1)}
+                  disabled={i === 0}
+                  accessibilityRole="button"
+                  accessibilityLabel={`${SUBJECT_LABEL[sub]} 위로`}
+                  hitSlop={8}
+                  style={[s.arrow, i === 0 && s.arrowOff]}
+                >
+                  <Text style={s.arrowText}>▲</Text>
+                </Pressable>
+                <Pressable
+                  onPress={() => move(sub, 1)}
+                  disabled={i === order.length - 1}
+                  accessibilityRole="button"
+                  accessibilityLabel={`${SUBJECT_LABEL[sub]} 아래로`}
+                  hitSlop={8}
+                  style={[s.arrow, i === order.length - 1 && s.arrowOff]}
+                >
+                  <Text style={s.arrowText}>▼</Text>
+                </Pressable>
+              </View>
             ))}
-          </Row>
+          </View>
         </Card>
       ) : null}
 
@@ -205,6 +261,35 @@ const s = StyleSheet.create({
   pickTitle: { fontSize: font.body, fontWeight: '700', color: colors.subtext },
   pickTitleOn: { color: colors.text, fontWeight: '800' },
   pickHint: { fontSize: font.tiny, color: colors.subtext, marginTop: 2 },
+  rank: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    padding: spacing.sm,
+    borderRadius: radius.md,
+    backgroundColor: colors.bg,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  /* 몇 번째인지. 회원님이 말씀하신 "1. 영어 2. 국어 3. 일상생활 문장" 이다. */
+  rankNo: {
+    width: 22,
+    textAlign: 'center',
+    fontSize: font.body,
+    fontWeight: '800',
+    color: colors.primary,
+  },
+  rankName: { flex: 1, fontSize: font.small, fontWeight: '700', color: colors.text },
+  arrow: {
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.card,
+  },
+  arrowOff: { opacity: 0.25 },
+  arrowText: { fontSize: 12, color: colors.primary, fontWeight: '800' },
   chip: {
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,

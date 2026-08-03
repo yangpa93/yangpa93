@@ -25,6 +25,7 @@ import {
   RewardAskPayload,
   buildLinkBackBody,
   buildNudgeBody,
+  buildUnlinkBody,
   buildPushBody,
   buildSettingsBody,
   EXPO_PUSH_ENDPOINT,
@@ -57,6 +58,7 @@ export {
   parseHello,
   parseNudge,
   parseSettings,
+  parseUnlink,
   pushFailureReason,
   LINK_SCHEME,
   parseIncoming,
@@ -177,6 +179,21 @@ export async function sendLinkBackToChild(
   parentLabel: string,
 ): Promise<SendResult> {
   return sendPush(buildLinkBackBody(childToken, { parentToken, parentLabel }));
+}
+
+/**
+ * 부모가 연결을 끊었다고 아이에게 알린다.
+ *
+ * 이게 없으면 끊은 것이 끊은 것이 아니다 — 아이는 계속 보내고, 리포트가
+ * 도착하면 부모 앱이 그 아이를 다시 목록에 넣는다. 지운 아이가 며칠 뒤
+ * 되살아난다.
+ */
+export async function sendUnlinkToChild(
+  childToken: string,
+  parentToken: string,
+  parentLabel: string,
+): Promise<SendResult> {
+  return sendPush(buildUnlinkBody(childToken, { parentToken, parentLabel }));
 }
 
 /**

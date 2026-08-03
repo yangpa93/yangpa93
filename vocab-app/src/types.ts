@@ -427,6 +427,60 @@ export const SUBJECT_ORDER: Subject[] = ['en', 'ko', 'daily'];
  * 순수 함수로 둔 이유는 이 규칙이 아이 화면과 부모 화면 두 곳에서 쓰이기
  * 때문이다. 두 곳에 따로 적으면 한쪽만 고치는 날이 온다.
  */
+/**
+ * 켠 갈래를 **풀 차례대로** 돌려준다.
+ *
+ * ── 왜 순서를 따로 두나 ─────────────────────────────────────
+ *
+ * 예전에는 `firstSubject` 하나로 "영어 먼저냐 국어 먼저냐"만 정했다. 갈래가
+ * 둘일 때는 그것으로 충분했다 — 먼저 할 것을 고르면 나머지는 저절로 뒤다.
+ *
+ * 그런데 일상 생활 문장이 들어와 셋이 되면서 그 방식이 무너졌다. 셋 중
+ * 하나를 고르는 것으로는 **나머지 둘의 차례**를 정할 수 없다. "1. 영어
+ * 2. 국어 3. 일상생활 문장" 처럼 줄을 세울 수 있어야 한다는 말을 들었고,
+ * 맞는 말이다.
+ *
+ * ── 옛 저장본을 어떻게 읽나 ─────────────────────────────────
+ *
+ * `subjectOrder` 가 없는 폰은 `firstSubject` 만 갖고 있다. 그걸 앞에 놓고
+ * 나머지를 기본 차례로 채운다. 아이가 예전에 고른 것이 그대로 지켜진다 —
+ * 판을 올렸다고 순서가 저 혼자 바뀌면 아이는 무엇이 어떻게 된 것인지 모른다.
+ *
+ * 켜지 않은 갈래는 순서에 남아 있어도 걸러진다. 껐다 다시 켰을 때 예전
+ * 자리로 돌아가야 하므로 순서 자체는 지우지 않는다.
+ */
+export function orderedSubjects(settings: {
+  subjects: Subject[];
+  subjectOrder?: Subject[];
+  firstSubject: Subject;
+}): Subject[] {
+  const saved = settings.subjectOrder?.length
+    ? settings.subjectOrder
+    : // 옛 저장본. 먼저 고른 것을 앞에 두고 나머지는 기본 차례로.
+      [settings.firstSubject, ...SUBJECT_ORDER.filter((s) => s !== settings.firstSubject)];
+
+  // 저장된 순서에 없는 갈래가 나중에 생길 수 있다(일상 문장이 그랬다).
+  // 뒤에 붙여 두면 새 갈래를 켜도 화면에서 사라지지 않는다.
+  const full = [...saved, ...SUBJECT_ORDER.filter((s) => !saved.includes(s))];
+  return full.filter((s) => settings.subjects.includes(s));
+}
+
+/**
+ * 갈래 하나를 한 칸 위(또는 아래)로 옮긴다. 끝이면 그대로 돌려준다.
+ *
+ * 순서를 바꾸는 방법은 여러 가지인데 ↑↓ 를 골랐다. 끌어다 놓기는 아이 손에
+ * 어렵고, "몇 번째" 를 숫자로 고르게 하면 두 갈래가 같은 번호를 갖는 경우를
+ * 또 다뤄야 한다. 한 칸씩 옮기는 것은 잘못 눌러도 한 칸이라 되돌리기 쉽다.
+ */
+export function moveSubject(order: Subject[], one: Subject, dir: -1 | 1): Subject[] {
+  const i = order.indexOf(one);
+  const j = i + dir;
+  if (i < 0 || j < 0 || j >= order.length) return order;
+  const next = [...order];
+  [next[i], next[j]] = [next[j], next[i]];
+  return next;
+}
+
 export function toggleSubject(subjects: Subject[], one: Subject): Subject[] | null {
   const on = subjects.includes(one);
   if (on && subjects.length <= 1) return null;
@@ -451,8 +505,20 @@ export interface ProfileSettings {
    * 순서를 정하게 두는 이유: 머리가 맑을 때 어려운 쪽을 먼저 하고 싶은
    * 아이가 있고, 쉬운 쪽으로 몸을 풀고 싶은 아이가 있다. 어느 쪽이 어려운지는
    * 아이마다 다르므로 어른이 정해 줄 일이 아니다.
+   *
+   * **갈래가 셋이 되면서 이것만으로는 모자라게 됐다.** 아래 `subjectOrder` 를
+   * 쓴다. 이 값은 옛 저장본을 읽을 때 차례를 미루어 짐작하는 데만 남는다.
    */
   firstSubject: Subject;
+  /**
+   * 켠 갈래를 푸는 차례.
+   *
+   * 셋 중 하나를 골라도 나머지 둘의 차례가 안 정해진다. 그래서 줄을 통째로
+   * 저장한다. 읽는 규칙은 `orderedSubjects` 한 곳에 모아 두었다.
+   *
+   * 안 켠 갈래도 목록에 남긴다. 껐다 다시 켰을 때 예전 자리로 돌아가야 한다.
+   */
+  subjectOrder?: Subject[];
   /**
    * 하루에 새로 만날 단어 수 (5~20).
    *
@@ -806,6 +872,23 @@ export interface AppState {
    * 기다릴 수는 없다 — 리포트가 안 왔을 때 부르고 싶은 것이기 때문이다.
    */
   knownChildren: KnownChild[];
+  /**
+   * 부모가 **손으로 끊은** 아이 주소들.
+   *
+   * ── 왜 이 목록이 따로 필요한가 ──────────────────────────
+   *
+   * 목록에서 지우기만 하면 지운 아이가 되살아난다. 리포트가 도착할 때마다
+   * `PushBridge` 가 보낸 아이를 자동으로 다시 넣기 때문이다 — 그 자동 등록은
+   * 원래 좋은 것이다(아이가 앱을 다시 깔아 주소가 바뀌어도 알아서 이어진다).
+   * 다만 **사람이 끊은 것까지 되돌리면** 안 된다.
+   *
+   * 끊을 때 아이 폰에도 알려서 아이가 보내기를 멈추게 하지만, 그 알림이 못
+   * 갈 수도 있다(폰이 꺼져 있거나 앱을 지웠거나). 그때를 위한 마지막 빗장이다.
+   *
+   * 부모가 그 아이 QR 을 **다시 찍으면** 이 목록에서 빠진다. 손으로 끊은 것을
+   * 손으로 다시 이은 것이니 빗장을 풀어야 맞다.
+   */
+  forgottenChildren: string[];
   /**
    * 이 폰이 마지막으로 본 어휘 판.
    *

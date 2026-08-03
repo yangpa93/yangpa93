@@ -326,17 +326,14 @@ export default function ParentBackup() {
 
   return (
     <Screen>
-      <Card style={{ marginTop: spacing.md, backgroundColor: colors.accentSoft, borderColor: colors.accent }}>
-        <H3>왜 백업이 필요한가요?</H3>
-        <Body style={{ marginTop: spacing.sm, color: colors.subtext }}>
-          이 앱은 서버가 없어서 학습 기록이 <Text style={{ fontWeight: '800' }}>이 기기 안에만</Text>{' '}
-          있습니다. 폰을 바꾸거나 앱을 지우면 그동안의 기록이 모두 사라집니다.
-          {'\n\n'}
-          한 달에 한 번쯤 폰의 '다운로드' 같은 폴더에 저장해 두세요.
-          파일 한 장이면 새 폰에서 그대로 되살아나요.
-        </Body>
-      </Card>
+      {/*
+        '왜 백업이 필요한가요?' 카드를 없앴다.
 
+        같은 말이 이미 여기까지 오는 길에 두 번 나온다 — ⚙️ 설정의 갈래 이름과
+        '💾 공부 기록 백업 및 복구' 카드 설명. 이 화면에 들어온 사람은 이미
+        왜 하는지 알고 들어온 것이다. 여기서 또 설명하면 정작 눌러야 할 단추가
+        한 화면 아래로 밀린다.
+      */}
       <Card style={{ marginTop: spacing.md }}>
         <H3>내보내기</H3>
         <Muted style={{ marginTop: spacing.xs }}>
@@ -363,9 +360,15 @@ export default function ParentBackup() {
           받는 쪽에서 "파일을 열 수 있는 앱이 없다"며 내려받지 못했다. 그런데
           드라이브나 메일로 보내는 것은 잘 되므로 길 자체를 없애지는 않는다.
         */}
+        {/*
+          ghost 였던 것을 secondary 로 바꾼다. 바탕도 테두리도 없어서 "버튼인지
+          모르겠다" 는 말을 들었다. 카톡이 막는 형식이라 이 길을 권하지는
+          않지만, **권하지 않는 것과 안 보이게 두는 것은 다르다.** 위 단추와
+          색을 갈라 두어 무엇이 먼저인지는 그대로 보이게 한다.
+        */}
         <Button
           title="다른 앱으로 보내기 (드라이브·메일)"
-          variant="ghost"
+          variant="secondary"
           onPress={shareBackup}
           style={{ marginTop: spacing.md }}
         />

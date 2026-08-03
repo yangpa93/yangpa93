@@ -19,7 +19,8 @@ import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { Body, Button, Card, Chip, H3, Muted, Row } from './ui';
 import { useApp } from '../store/AppProvider';
-import { buildChildLinkUrl, fetchPushToken, isPreviewToken, toShortCodeLines } from '../features/push';
+import * as Clipboard from 'expo-clipboard';
+import { buildChildLinkUrl, fetchPushToken, isPreviewToken, toShortCode } from '../features/push';
 import { QrCode } from './QrCode';
 import { colors, font, radius, spacing } from '../theme';
 
@@ -28,6 +29,24 @@ export function ConnectParentCard() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [showing, setShowing] = useState(false);
+  /** 복사했다고 잠깐 알려 준다. 아무 표시가 없으면 눌렸는지 알 수 없다. */
+  const [copied, setCopied] = useState(false);
+
+  /**
+   * 코드를 복사한다.
+   *
+   * **손으로 옮겨 적지 않는 것이 가장 좋다.** 스물몇 글자를 대소문자까지 맞춰
+   * 치는 일은 그 자체가 틀릴 자리다. 복사해 두면 카톡으로 보내든 붙여넣든
+   * 쓰는 사람이 편한 대로 한다.
+   */
+  async function copyCode() {
+    if (!state.myPushToken) return;
+    await Clipboard.setStringAsync(toShortCode(state.myPushToken)).catch(() => {});
+    setCopied(true);
+    // 잠깐 뒤 원래 글자로 돌아온다. 계속 '복사했어요' 로 두면 다음에 눌러도
+    // 눌린 것인지 알 수 없다.
+    setTimeout(() => setCopied(false), 2000);
+  }
 
   if (!profile) return null;
 
@@ -175,77 +194,60 @@ export function ConnectParentCard() {
           {/*
             부모님 폰에 카메라가 없거나 안 될 때를 위해 코드도 같이 둔다.
 
-            **넉 자씩 줄을 바꿔 번호를 붙인다.** 예전에는 한 줄에 빈칸으로
-            끊어 적었는데, 토큰에 `-` 와 `_` 가 글자로 들어 있어서 그 빈칸이
-            끊는 자리인지 코드의 일부인지 알 수가 없었다. 줄을 바꾸면 끊는
-            자리에 아무 글자도 없어 헷갈릴 것이 없고, 번호가 있으니 어디까지
-            불렀는지 놓치지 않는다.
+            ── 여기까지 오는 데 세 번 고쳤다 ────────────────────────
+
+            ① 한 줄에 빈칸으로 끊어 적었다 → "빈칸도 넣어야 하는 건지
+               헷갈립니다". 토큰에 `-` 와 `_` 가 글자로 들어 있어서 그 빈칸이
+               끊는 자리인지 코드의 일부인지 가릴 수가 없었다.
+
+            ② 넉 자씩 네모에 넣고 번호를 붙였다 → 헷갈림은 없어졌는데 **옮겨
+               적을 것이 일곱 줄**이 됐다. 스물세 글자를 대소문자까지 맞춰
+               손으로 치는 일 자체가 남아 있었다.
+
+            ③ 지금 — **한 줄로 붙여 놓고 복사 단추를 단다.** 옮겨 적지 않는
+               것이 가장 좋다. 손으로 치는 일이 없어지면 틀릴 일도 없다.
+               복사해서 카톡으로 보내든 붙여넣든 그건 쓰는 사람이 정한다.
+
+            눈으로 읽어야 하는 경우도 남으므로 글자는 크고 고정폭으로 두고,
+            `-` 와 `_` 만 색을 달리 칠한다.
           */}
           <View style={s.codeFallback}>
-            <Muted style={{ fontSize: 11 }}>카메라가 안 되면 이 코드를 불러 주세요</Muted>
-            {/*
-              **"빈칸도 넣어야 하나" 를 없애는 것이 이 줄의 전부다.**
+            <Muted style={{ fontSize: 11 }}>카메라가 안 되면 이 코드를 쓰세요</Muted>
 
-              실제로 이 말을 들었다 — "코드도 4칸 4칸 이렇게 있어야 되는데
-              빈칸도 구분해서 넣어야 하는 건지 헷갈립니다". 넣어야 하나 말아야
-              하나를 고민하는 순간 이미 틀릴 준비가 된 것이다. 되돌리는 쪽은
-              공백을 다 걷어내니 어느 쪽이든 되는데, 그 사실을 모르면 소용이
-              없다. 되는 것을 말해 주는 것이 규칙을 하나 더 만드는 것보다 낫다.
-            */}
-            <Muted style={{ fontSize: 11, marginTop: 2, textAlign: 'center' }}>
-              네모 안의 글자만 1번부터 차례대로 적으면 돼요.{'\n'}
-              띄어쓰기는 신경 쓰지 않아도 되고, 대문자와 소문자만 맞춰 주세요.{'\n'}
-              <Text style={s.mark}>-</Text> 와 <Text style={s.mark}>_</Text> 도 코드의 글자예요.
-              빠뜨리지 마세요.
-            </Muted>
-            <View style={s.codeLines}>
-              {toShortCodeLines(state.myPushToken).map((chunk, i) => (
-                <View key={i} style={s.codeLine}>
-                  <Text style={s.codeNo}>{i + 1}</Text>
-                  {/*
-                    **네모로 감싼다.** 예전에는 한 줄에 빈칸으로 끊어 적었는데,
-                    푸시 토큰은 base64url 이라 `-` 와 `_` 를 글자로 쓴다. 그래서
-                    실제로 이런 것이 떴다 —
+            <View style={s.codeBoxOne}>
+              <Text style={s.code} selectable testID="link-code">
+                {/*
+                  **`-` 와 `_` 만 색을 달리 칠한다.**
 
-                        WLDv RDLX NikW -PbJ kPm1 vYF
-
-                    넷째 토막이 하이픈으로 시작한다. 빈칸 바로 뒤에 하이픈이
-                    오면 그것이 글자인지 끊는 표시인지 사람은 가릴 수 없다.
-
-                    네모 안에 넣으면 그 물음이 통째로 사라진다. 테두리가 끊는
-                    자리를 맡으므로 안에 보이는 것은 전부 코드의 글자다.
-
-                    testID 는 노트북 확인(e2e)에서 이 토막들을 모아 부모 창에
-                    옮겨 적으려는 것이다. 코드가 매번 달라 글자로는 못 찾는다.
-                  */}
-                  <View style={s.codeBoxOne}>
-                    <Text style={s.code} selectable testID="link-code-chunk">
-                      {/*
-                        **`-` 와 `_` 만 색을 달리 칠한다.**
-
-                        네모로 감쌌더니 새 함정이 하나 남았다 — 토막 끝에 하이픈이
-                        오면(`iew-`) 그것이 "다음 줄로 이어진다" 는 표시로 읽힌다.
-                        책에서 줄 끝에 하이픈을 넣는 그 규칙 때문이다. 그러면
-                        옮겨 적는 사람이 하이픈을 빼 버린다.
-
-                        색을 칠하면 그 물음이 끝난다. 글자로 보이는 것과 다른
-                        색이면 "이건 장식이 아니라 내용" 이라는 뜻이 된다.
-                        위 안내줄에도 같은 색으로 한 번 더 짚어 둔다.
-                      */}
-                      {chunk.split('').map((ch, j) =>
-                        ch === '-' || ch === '_' ? (
-                          <Text key={j} style={s.mark}>
-                            {ch}
-                          </Text>
-                        ) : (
-                          ch
-                        ),
-                      )}
-                    </Text>
-                  </View>
-                </View>
-              ))}
+                  이 둘은 코드의 글자인데 장식으로 읽히기 쉽다 — 줄 끝에 오면
+                  이어짐 표시로, 앞에 오면 목록의 줄표로. 색이 다르면 "이건
+                  장식이 아니라 내용" 이라는 뜻이 된다.
+                */}
+                {toShortCode(state.myPushToken)
+                  .split('')
+                  .map((ch, j) =>
+                    ch === '-' || ch === '_' ? (
+                      <Text key={j} style={s.mark}>
+                        {ch}
+                      </Text>
+                    ) : (
+                      ch
+                    ),
+                  )}
+              </Text>
             </View>
+
+            <Button
+              title={copied ? '✅ 복사했어요' : '📋 코드 복사하기'}
+              variant="secondary"
+              onPress={() => void copyCode()}
+              style={{ marginTop: spacing.md, alignSelf: 'stretch' }}
+            />
+            <Muted style={{ fontSize: 11, marginTop: spacing.xs, textAlign: 'center' }}>
+              복사해서 부모님께 보내시면 돼요. 손으로 적으실 때는{' '}
+              <Text style={s.mark}>-</Text> 와 <Text style={s.mark}>_</Text> 도 빠뜨리지 말고,
+              띄어쓰기는 신경 쓰지 않으셔도 됩니다.
+            </Muted>
           </View>
         </View>
       ) : null}
@@ -322,46 +324,34 @@ const s = StyleSheet.create({
    * 색이 다르면 그 물음이 생기지 않는다.
    */
   mark: { color: '#B45309', fontWeight: '800' },
-  codeLines: { marginTop: spacing.md, gap: spacing.xs },
-  codeLine: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   /*
-   * 토막 하나를 담는 네모.
+   * 코드를 담는 네모. 한 줄로 이어 붙인 것을 통째로 담는다.
    *
-   * 끊는 자리를 **테두리가 맡는다.** 그래야 안에 보이는 것이 전부 코드의
-   * 글자가 된다 — 빈칸으로 끊으면 그 빈칸이 글자인지 아닌지를 사람이 판단해야
-   * 하는데, 코드에 `-` 와 `_` 가 들어 있어서 판단할 수가 없다.
+   * 대개는 복사해서 쓰지만, 눈으로 읽어야 하는 경우도 남는다. 테두리가 있으면
+   * 어디부터 어디까지가 코드인지 한눈에 갈린다 — 그것이 없으면 위아래 안내
+   * 글자와 섞여 보인다.
    */
   codeBoxOne: {
+    marginTop: spacing.sm,
+    alignSelf: 'stretch',
     paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
+    paddingVertical: spacing.sm,
     borderRadius: radius.md,
     borderWidth: 1,
     borderColor: colors.border,
     backgroundColor: '#fff',
-    minWidth: 118,
-    alignItems: 'center',
-  },
-  /* 몇 번째 줄인지. 어디까지 불렀는지 놓치지 않게 하는 것이 전부다. */
-  codeNo: {
-    width: 20,
-    textAlign: 'right',
-    fontSize: font.tiny,
-    fontWeight: '700',
-    color: colors.muted,
   },
   /*
-   * 코드는 크고 고정폭이라야 한다. 부모가 화면을 보고 옮겨 적는데,
-   * 글자 폭이 들쭉날쭉하면 어디까지 쳤는지 자꾸 놓친다.
-   *
-   * 자간을 넉넉히 준다. 넉 자뿐이라 자리를 넓게 써도 되고, `-` 와 `_` 가
-   * 옆 글자에 붙어 보이면 그것대로 잘못 읽는다.
+   * 고정폭이라야 한다. 글자 폭이 들쭉날쭉하면 눈으로 따라갈 때 자리를 놓친다.
+   * 스물몇 자가 한 줄에 들어가야 하므로 크기는 적당히 두고 자간만 살짝 준다.
    */
   code: {
-    fontSize: 24,
+    fontSize: 17,
     fontWeight: '700',
     color: colors.text,
     fontFamily: Platform.select({ ios: 'Menlo', android: 'monospace', default: 'monospace' }),
-    letterSpacing: 3,
-    lineHeight: 32,
+    letterSpacing: 1.5,
+    lineHeight: 26,
+    textAlign: 'center',
   },
 });

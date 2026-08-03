@@ -1,34 +1,28 @@
 /**
- * 지금 쓰는 판. **눌러서 들어가는 것으로 보여야 한다.**
+ * 지금 쓰는 판. **판 번호를 적고, 그 아래에 작은 단추를 둔다.**
  *
- * ── 왜 부품으로 만들었나 ────────────────────────────────────
+ * ── 두 번 고쳤다 ────────────────────────────────────────────
  *
- * "버전 정보도 누르면 다른 창이 나온다는 걸 알 수 있게 해 주세요. 이게
- *  버튼인지 아니면 그냥 정보성인지 확인이 안 됩니다."
+ * 처음에는 판이 그냥 글자였다. "이게 버튼인지 아니면 그냥 정보성인지 확인이
+ * 안 됩니다" 는 말을 들었다 — 다섯 군데가 다 그랬고, 아이 홈에서는 옆의
+ * `🔥 3일 연속` 같은 장식용 칩과 똑같이 생겨서 더 나빴다.
  *
- * 맞는 말이었고, 같은 것이 다섯 군데에 흩어져 있었다. 그중 아이 홈이 제일
- * 나빴다 — 판이 `🔥 3일 연속` 같은 **장식용 칩과 똑같이** 생겨서, 옆의 것들이
- * 안 눌리는데 이것만 눌린다는 것을 알 방법이 없었다. 누를 수 있다는 표가
- * 화살표(`›`) 하나뿐이었는데 그것은 장식으로도 읽힌다.
+ * 그래서 테두리를 두르고 '판 정보 보기' 라고 적었더니, 이번에는 **너무
+ * 커졌다.** 판 번호는 늘 보이기는 해야 하지만 화면에서 제일 중요한 것은
+ * 아니다.
  *
- * 그래서 다섯 곳이 같은 것을 쓰게 부품으로 뺐다. 다섯 곳에 따로 적어 두면
- * 한쪽만 고치는 날이 반드시 오고, 그러면 또 어디는 되고 어디는 안 되는
- * 화면이 된다.
+ * 지금 모양은 둘을 갈라 놓은 것이다.
  *
- * ── 무엇으로 '누를 것' 임을 알리나 ──────────────────────────
+ *   현재 버전 : 0.23.0.6      ← 그냥 읽는 것. 늘 보인다
+ *   [상세 버전 정보 확인하기 ›]  ← 누르는 것. 작게, 아래에
  *
- * 색깔 하나로는 무리다. 셋을 겹쳐 쓴다.
- *
- *   · **테두리와 바탕** — 옆의 장식용 칩에는 없는 것
- *   · **글자 색** — 이 앱에서 눌리는 것에 쓰는 색
- *   · **할 일을 적은 말** — '보기' 처럼 동작으로 끝맺는다
- *
- * 셋 중 둘이 사라져도 나머지 하나가 남는다.
+ * 읽는 것과 누르는 것이 생김새로 갈리면 "이게 버튼인가" 를 물을 일이 없다.
+ * 단추 쪽에만 테두리와 색이 있다.
  */
 
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
-import { buildInfo, buildLabel } from '../features/build-info';
+import { buildInfo, versionLabel } from '../features/build-info';
 import { colors, font, radius, spacing } from '../theme';
 
 export function VersionButton({
@@ -43,38 +37,38 @@ export function VersionButton({
   const color = tone === 'parent' ? colors.parent : colors.primary;
 
   return (
-    <Pressable
-      onPress={() => router.push('/whats-new')}
-      accessibilityRole="button"
-      accessibilityLabel={`지금 쓰는 판 ${buildLabel(build)} — 눌러서 판 정보 보기`}
-      style={({ pressed }) => [s.box, { borderColor: color }, pressed && s.pressed, style]}
-    >
-      <Text style={[s.label, { color }]}>📱 {buildLabel(build)}</Text>
-      {/*
-        **'보기' 라고 적는다.** 번호만 있으면 그것이 무엇을 하는 것인지 알 수
-        없다. 동작으로 끝맺는 말이 하나 붙으면 누를 것이라는 뜻이 된다.
-      */}
-      <View style={[s.divider, { backgroundColor: color }]} />
-      <Text style={[s.action, { color }]}>판 정보 보기 ›</Text>
-    </Pressable>
+    <View style={[s.wrap, style]}>
+      <Text style={s.now}>
+        현재 버전 : <Text style={s.version}>{versionLabel(build)}</Text>
+      </Text>
+
+      <Pressable
+        onPress={() => router.push('/whats-new')}
+        accessibilityRole="button"
+        accessibilityLabel="상세 버전 정보 확인하기"
+        // 작아진 만큼 누를 자리는 넓혀 둔다. 눈에 작은 것과 손에 작은 것은
+        // 다른 문제다 — 손가락은 글자 크기대로 줄어들지 않는다.
+        hitSlop={10}
+        style={({ pressed }) => [s.btn, { borderColor: color }, pressed && s.pressed]}
+      >
+        <Text style={[s.btnText, { color }]}>상세 버전 정보 확인하기 ›</Text>
+      </Pressable>
+    </View>
   );
 }
 
 const s = StyleSheet.create({
-  box: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignSelf: 'flex-start',
-    gap: spacing.sm,
+  wrap: { alignItems: 'center', gap: spacing.xs },
+  now: { fontSize: font.tiny, color: colors.subtext },
+  /* 번호만 진하게. 사람이 불러 줘야 하는 것은 이 네 자리다. */
+  version: { fontWeight: '800', color: colors.text },
+  btn: {
     paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs + 2,
+    paddingVertical: spacing.xs,
     borderRadius: radius.pill,
-    borderWidth: 1.5,
+    borderWidth: 1,
     backgroundColor: colors.card,
   },
   pressed: { opacity: 0.7 },
-  label: { fontSize: font.tiny, fontWeight: '800' },
-  /* 판 번호와 할 일을 갈라 준다. 붙여 두면 한 덩어리로 읽혀 둘 다 흐려진다. */
-  divider: { width: 1, height: 12, opacity: 0.4 },
-  action: { fontSize: font.tiny, fontWeight: '700' },
+  btnText: { fontSize: font.tiny, fontWeight: '700' },
 });

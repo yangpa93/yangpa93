@@ -126,13 +126,56 @@ describe('푸는 순서', () => {
     expect(q[0].subject).toBe('ko');
   });
 
-  /* 일상 문장은 영어 낱말 옆에 붙는다. 같은 영어라 머리를 옮길 일이 적다. */
-  it('일상 문장은 영어 낱말 바로 뒤에 붙는다', () => {
-    const q = buildChildQueue(args(['en', 'ko', 'daily']));
+  /*
+   * **셋을 각자 줄 세울 수 있다.**
+   *
+   * 예전에는 일상 문장이 영어에 딸려 붙어서 자기 자리를 못 가졌다. 갈래가
+   * 셋이 되면서 "1. 영어 2. 국어 3. 일상생활 문장" 처럼 정할 수 있어야 한다는
+   * 말을 들었고, 그러려면 셋이 각자 서야 한다.
+   */
+  it('정한 차례대로 나온다 — 국어 · 일상 문장 · 영어', () => {
+    const a = args(['en', 'ko', 'daily']);
+    a.profile.settings.subjectOrder = ['ko', 'daily', 'en'];
+    const q = buildChildQueue(a);
+
     const firstKo = q.findIndex((i) => i.subject === 'ko');
-    const lastDaily = q.map((i) => DAILY_IDS.has(i.entry.id)).lastIndexOf(true);
-    expect(lastDaily).toBeGreaterThanOrEqual(0);
-    expect(lastDaily).toBeLessThan(firstKo);
+    const firstDaily = q.findIndex((i) => DAILY_IDS.has(i.entry.id));
+    const firstEn = q.findIndex((i) => EN_IDS.has(i.entry.id));
+
+    expect(firstKo).toBe(0);
+    expect(firstKo).toBeLessThan(firstDaily);
+    expect(firstDaily).toBeLessThan(firstEn);
+  });
+
+  it('차례를 바꾸면 큐도 따라 바뀐다', () => {
+    const a = args(['en', 'daily']);
+    a.profile.settings.subjectOrder = ['daily', 'en'];
+    const q = buildChildQueue(a);
+    expect(DAILY_IDS.has(q[0].entry.id)).toBe(true);
+  });
+
+  /*
+   * 옛 저장본에는 `subjectOrder` 가 없고 `firstSubject` 만 있다. 아이가
+   * 예전에 고른 것이 그대로 지켜져야 한다 — 판을 올렸다고 순서가 저 혼자
+   * 바뀌면 아이는 무엇이 어떻게 된 것인지 모른다.
+   */
+  it('차례를 정한 적이 없으면 예전에 고른 것을 따른다', () => {
+    const a = args(['en', 'ko', 'daily']);
+    a.profile.settings.subjectOrder = undefined;
+    a.profile.settings.firstSubject = 'ko';
+    expect(buildChildQueue(a)[0].subject).toBe('ko');
+  });
+
+  /*
+   * 안 켠 갈래가 차례에 남아 있어도 큐에는 안 들어간다. 껐다 다시 켰을 때
+   * 제자리로 돌아가야 해서 순서 자체는 지우지 않는다.
+   */
+  it('안 켠 갈래는 차례에 남아 있어도 안 나온다', () => {
+    const a = args(['en']);
+    a.profile.settings.subjectOrder = ['ko', 'daily', 'en'];
+    const q = buildChildQueue(a);
+    expect(q.length).toBeGreaterThan(0);
+    expect(q.every((i) => EN_IDS.has(i.entry.id))).toBe(true);
   });
 });
 

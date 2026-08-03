@@ -744,8 +744,23 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
    * 여긴다. 못 받았으면 못 받았다고 말해 줘야 한다.
    */
   const rememberChild = useCallback(
-    (name: string, token: string): boolean => {
+    (name: string, token: string, byHand = false): boolean => {
       const { state } = ref.current;
+      const forgotten = state.forgottenChildren ?? [];
+
+      /*
+       * **손으로 끊은 아이는 저절로 돌아오지 않는다.**
+       *
+       * 리포트가 도착할 때마다 보낸 아이를 자동으로 넣는데(PushBridge), 그건
+       * 원래 좋은 것이다 — 아이가 앱을 다시 깔아 주소가 바뀌어도 알아서
+       * 이어진다. 다만 사람이 끊은 것까지 되돌리면 안 된다. 그러면 지운 아이가
+       * 며칠 뒤 되살아나고, 지운 사람 눈에는 앱이 고장 난 것으로 보인다.
+       *
+       * 부모가 그 아이 QR 을 다시 찍은 것(byHand)은 다르다. 손으로 끊은 것을
+       * 손으로 다시 이은 것이니 빗장을 푼다.
+       */
+      if (!byHand && forgotten.includes(token)) return false;
+
       if (!canAcceptChild(state.profiles, state.knownChildren ?? [], name)) return false;
       const rest = (state.knownChildren ?? []).filter((c) => c.name !== name);
       persistState({
@@ -753,8 +768,34 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         // 같은 이름이 이미 있으면 주소를 갱신한다. 앱을 다시 깔면 주소가
         // 바뀌는데, 옛 주소로 보내면 조용히 사라진다.
         knownChildren: [{ name, token, lastSeen: Date.now() }, ...rest].slice(0, MAX_CHILDREN),
+        forgottenChildren: byHand ? forgotten.filter((t) => t !== token) : forgotten,
       });
       return true;
+    },
+    [persistState],
+  );
+
+  /**
+   * 아이 하나를 목록에서 뺀다. **되살아나지 않게 빗장도 건다.**
+   *
+   * 자리가 넷뿐이라 뺄 자리가 없으면 새 아이를 못 넣는다. 그런데 여태 이
+   * 함수가 없었다 — 화면에는 "한 명을 지우면 새로 연결할 수 있습니다" 라고
+   * 적혀 있는데 지울 자리가 어디에도 없었다. 있지도 않은 길을 알려 주는 것이
+   * 아무 말 안 하는 것보다 나쁘다.
+   *
+   * 아이 폰에도 알려야 완전히 끊긴다(sendUnlinkToChild). 그건 부르는 화면이
+   * 한다 — 여기는 네트워크를 안 쓴다.
+   */
+  const forgetChild = useCallback(
+    (token: string) => {
+      const { state } = ref.current;
+      const forgotten = state.forgottenChildren ?? [];
+      persistState({
+        ...state,
+        knownChildren: (state.knownChildren ?? []).filter((c) => c.token !== token),
+        // 같은 주소를 두 번 적지 않는다. 목록이 길어질 이유가 없다.
+        forgottenChildren: forgotten.includes(token) ? forgotten : [...forgotten, token],
+      });
     },
     [persistState],
   );

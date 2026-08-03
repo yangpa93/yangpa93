@@ -5,6 +5,7 @@ import { useApp } from '../src/store/AppProvider';
 import { awardRates } from '../src/features/awards';
 import { buildInfo, buildLabel } from '../src/features/build-info';
 import { FeedbackCard } from '../src/components/FeedbackCard';
+import { VersionButton } from '../src/components/VersionButton';
 import { AwardRatesEditor } from '../src/components/AwardRatesEditor';
 import { LinkChildCard } from '../src/components/LinkChildCard';
 import { colors, font, radius, spacing } from '../src/theme';
@@ -153,18 +154,8 @@ export default function ParentChildDevices() {
 
       <FeedbackCard />
 
-      {/* 판을 누르면 이번 판에 무엇이 들어 있는지 나온다. */}
-      <Pressable
-        onPress={() => router.push('/whats-new')}
-        accessibilityRole="button"
-        accessibilityLabel="이번 판에서 바뀐 것 보기"
-        style={{ marginTop: spacing.xl }}
-      >
-        <Muted style={{ textAlign: 'center' }}>{buildLabel(build)} ›</Muted>
-        <Muted style={{ textAlign: 'center', marginTop: 2, color: colors.parent }}>
-          이번 판에서 바뀐 것 보기
-        </Muted>
-      </Pressable>
+      {/* 흐린 글자 두 줄로는 누를 것인지 알 수 없다. 눌리는 것은 눌리게 생겨야 한다. */}
+      <VersionButton tone="parent" style={{ marginTop: spacing.xl, alignSelf: 'center' }} />
     </Screen>
   );
 }

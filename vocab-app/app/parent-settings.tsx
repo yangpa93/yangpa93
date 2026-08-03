@@ -115,18 +115,17 @@ export default function ParentSettings() {
         onPress={() => router.push('/parent-sound')}
       />
 
-      {/* 판을 누르면 이번 판에 무엇이 들어 있는지 나온다. */}
-      <Pressable
+      {/*
+        판도 **위 셋과 같은 모양으로** 둔다. 칩 하나로 두었더니 그것이 버튼인지
+        그냥 적어 둔 것인지 알 수 없다는 말을 들었다. 같은 화면에서 어떤 것은
+        눌리고 어떤 것은 안 눌리는데 생긴 것이 다르면 매번 시험해 봐야 한다.
+      */}
+      <SettingsTile
+        icon="📱"
+        title={buildLabel(build)}
+        hint="지금 쓰는 판이에요. 눌러서 낱말이 얼마나 늘었는지 볼 수 있어요"
         onPress={() => router.push('/whats-new')}
-        accessibilityRole="button"
-        accessibilityLabel="이번 판에서 바뀐 것 보기"
-        style={{ marginTop: spacing.xl, alignItems: 'center' }}
-      >
-        <Chip label={`📱 ${buildLabel(build)} ›`} tone="default" />
-        <Muted style={{ marginTop: spacing.sm, color: colors.parent }}>
-          이번 판에서 바뀐 것 보기
-        </Muted>
-      </Pressable>
+      />
     </Screen>
   );
 }

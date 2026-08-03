@@ -103,20 +103,17 @@ export default function ChildSettings() {
         지금 어느 앱을 쓰고 있는지 아이 스스로 말할 수 있어야 한다. 고쳐서 새로
         올렸는데 아직 옛 앱을 쓰고 있는 경우가 흔한데, 그때 이 줄을 읽어 주면
         바로 가려진다. 부모님 모드 안에만 있으면 물어볼 때마다 부모를 거쳐야 한다.
+
+        **위 셋과 같은 모양으로 둔다.** 예전에는 가운데 정렬한 흐린 글자 두 줄이라
+        누를 것으로 보이지 않았다. 같은 화면 안에서 어떤 것은 눌리고 어떤 것은
+        안 눌리는데 생긴 것이 다르면, 무엇이 눌리는지 매번 시험해 봐야 한다.
       */}
-      <Pressable
+      <SettingsTile
+        icon="📱"
+        title={`${APP_NAME} ${buildLabel(build)}`}
+        hint="지금 쓰는 판이에요. 눌러서 낱말이 얼마나 늘었는지 볼 수 있어요"
         onPress={() => router.push('/whats-new')}
-        accessibilityRole="button"
-        accessibilityLabel="이번 판에서 바뀐 것 보기"
-        style={{ marginTop: spacing.xl }}
-      >
-        <Muted style={{ textAlign: 'center' }}>
-          {APP_NAME} {buildLabel(build)} ›
-        </Muted>
-        <Muted style={{ textAlign: 'center', marginTop: 2, color: colors.primary }}>
-          이번 판에서 바뀐 것 보기
-        </Muted>
-      </Pressable>
+      />
 
       {/*
         부모님 모드로 들어가는 문. 눈에 잘 안 띄는 맨 아래에 한 줄로 남긴다 —

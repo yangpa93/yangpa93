@@ -6,6 +6,7 @@ import { Body, Button, Card, Chip, H1, H2, H3, Muted, ProgressBar, Row, Screen }
 import { WelcomeHome } from '../src/components/WelcomeHome';
 import { useApp } from '../src/store/AppProvider';
 import { NewWordsCard } from '../src/components/NewWordsCard';
+import { VersionButton } from '../src/components/VersionButton';
 import { ALL_ENTRIES, entriesOf } from '../src/data';
 import { KO_ENTRIES } from '../src/data/korean/levels';
 import { canTakeKoExam } from '../src/srs/koExam';
@@ -183,13 +184,14 @@ export default function Home() {
         {profile.bestStreak > profile.streak ? (
           <Chip label={`최고 ${profile.bestStreak}일`} tone="default" />
         ) : null}
-        <Pressable
-          onPress={() => router.push('/whats-new')}
-          accessibilityRole="button"
-          accessibilityLabel="이번 판에서 바뀐 것 보기"
-        >
-          <Chip label={`📱 ${buildLabel(build)} ›`} tone="default" />
-        </Pressable>
+        {/*
+          **옆의 칩들과 달라 보여야 한다.**
+
+          🔥 연속 칩은 그냥 보는 것이고 이것만 눌린다. 그런데 셋이 똑같이
+          생겨서 "이게 버튼인지 그냥 정보인지 알 수가 없다" 는 말을 들었다.
+          테두리와 글자 색과 '보기' 라는 말, 셋으로 갈라 둔다.
+        */}
+        <VersionButton tone="primary" />
       </Row>
 
       {/* 오늘의 학습 */}

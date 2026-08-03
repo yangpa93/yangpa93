@@ -4,6 +4,7 @@ import { router } from 'expo-router';
 import { Button, Card, Chip, H2, H3, Muted, ProgressBar, Row, Screen } from '../src/components/ui';
 import { useApp } from '../src/store/AppProvider';
 import { NewWordsCard } from '../src/components/NewWordsCard';
+import { VersionButton } from '../src/components/VersionButton';
 import { ParentRecordCards } from '../src/components/ParentRecordCards';
 import { buildParentQueue, perTrackCount, TRACK_ORDER } from '../src/srs/parentSession';
 import { buildInfo, buildLabel } from '../src/features/build-info';
@@ -94,13 +95,7 @@ export default function ParentHome() {
 
       {/* 판을 누르면 이번 판에 무엇이 들어 있는지 나온다. */}
       <Row style={{ marginTop: spacing.md }}>
-        <Pressable
-          onPress={() => router.push('/whats-new')}
-          accessibilityRole="button"
-          accessibilityLabel="이번 판에서 바뀐 것 보기"
-        >
-          <Chip label={`📱 ${buildLabel(build)} ›`} tone="default" />
-        </Pressable>
+        <VersionButton tone="parent" />
       </Row>
 
       {/*

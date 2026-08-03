@@ -608,6 +608,40 @@ ok('어휘 판 목록이 나온다', await has(page, '어휘 판 세기를 시�
 await go(page, '/home');
 ok('늘어난 것이 없으면 안내가 안 뜬다', !(await has(page, '새 낱말이', 2000)));
 
+/*
+ * **판 정보가 눌러 볼 것으로 보이는가.**
+ *
+ * "이게 버튼인지 아니면 그냥 정보성인지 확인이 안 됩니다" 는 말을 들었다.
+ * 다섯 군데에 흩어져 있었고 전부 그냥 글자였다. 아이 홈이 특히 나빴다 —
+ * 옆의 🔥 연속 칩과 똑같이 생겼는데 그것들은 안 눌린다. 무엇이 눌리는지
+ * 알려면 하나하나 눌러 봐야 했다.
+ *
+ * 눈으로는 다음에 또 놓친다. 테두리나 바탕이 있는지를 기계가 센다.
+ */
+for (const [where, path] of [
+  ['아이 홈', '/home'],
+  ['아이 설정', '/settings'],
+]) {
+  await go(page, path);
+  ok(`${where} 의 판 정보가 눌러 볼 것으로 보인다`, await looksPressable(page, '📱'), '그냥 글자다');
+}
+
+/* 실제로 눌러서 넘어가는지. 눌리게 생겼는데 안 눌리면 더 나쁘다. */
+await go(page, '/settings');
+await page.getByText('📱', { exact: false }).first().click();
+await page.waitForTimeout(1500);
+ok('아이 설정에서 판을 누르면 판 정보로 넘어간다', await has(page, '지금 쓰는 판은'));
+
+await seed(page, '아이 둘이 등록된 상태');
+for (const [where, path] of [
+  ['부모 홈', '/parent-home'],
+  ['부모 설정', '/parent-settings'],
+  ['아이들 폰 설정', '/parent-child-devices'],
+]) {
+  await go(page, path);
+  ok(`${where} 의 판 정보가 눌러 볼 것으로 보인다`, await looksPressable(page, '📱'), '그냥 글자다');
+}
+
 /* ================================================================= */
 console.log('');
 console.log('  ⑨ 연결 — 아이가 띄우고 부모가 받는다 (창 두 개)');

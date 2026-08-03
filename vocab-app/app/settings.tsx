@@ -31,7 +31,6 @@ export default function ChildSettings() {
     profile.settings;
   // 두 과목을 다 켠 아이에게만 순서를 묻는다. 하나뿐이면 고를 것이 없다.
   const bothSubjects = subjects.includes('en') && subjects.includes('ko');
-  const linkedParent = state.parentLinks.length > 0;
   const build = buildInfo();
 
   // 오늘 몇 문제를 풀게 되는지. 개수만 보면 감이 안 와서 시간까지 적는다.
@@ -152,15 +151,17 @@ export default function ChildSettings() {
       */}
       <ConnectParentCard />
 
-      {/* QR 이 안 될 때를 위한 예전 길. 눈에 덜 띄는 자리에 둔다. */}
-      {linkedParent || profile.linkWaived ? null : (
-        <Button
-          title="QR 말고 코드로 연결하기"
-          variant="ghost"
-          onPress={() => router.push('/parent-link')}
-          style={{ marginTop: spacing.sm }}
-        />
-      )}
+      {/*
+        '**QR 말고 코드로 연결하기**' 를 뺐다.
+
+        그건 부모 폰이 만든 코드를 아이가 옮겨 적는 길이었는데, 연결하는
+        방법을 하나로 줄이면서 그 방향을 통째로 없앴다. 아이가 할 일은 위
+        카드에서 QR 을 띄우는 것 하나뿐이다.
+
+        부모 폰 카메라가 안 되는 경우는 부모 쪽에서 푼다 — 아이 QR 아래
+        짧은 코드를 부모가 옮겨 적으면 된다(부모 설정 → 코드로 연결하기).
+        아이 화면에 그 걱정을 얹지 않는다.
+      */}
 
       {/*
         백업도 아이 설정에 둔다.

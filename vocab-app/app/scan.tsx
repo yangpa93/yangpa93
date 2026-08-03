@@ -1,19 +1,24 @@
 /**
- * QR 을 찍어 연결하는 화면. 부모 폰과 아이 폰이 함께 쓴다.
+ * QR 을 찍어 아이를 등록하는 화면. **부모 폰이 쓴다.**
  *
- * **두 방향을 다 받는다.**
- *  · 부모가 아이 QR 을 찍는다 (지금의 기본 길) — 아이를 등록하고, 부모 폰
- *    주소를 아이에게 되보낸다. 그러면 아이 쪽은 아무것도 안 눌러도 된다.
- *  · 아이가 부모 QR 을 찍는다 (예전 길) — 부모 폰을 연결하고, 자기 주소를
- *    부모에게 알린다.
+ * ── 방향은 하나다 ───────────────────────────────────────────
  *
- * 찍은 QR 이 어느 쪽인지로 갈린다. 화면을 둘로 나누지 않은 이유: 카메라를
- * 켜기 전에 "나는 부모인가 아이인가"를 한 번 더 묻게 되는데, 그건 이미
- * 프로필로 정해진 것이라 다시 물을 이유가 없다.
+ * 예전에는 두 방향을 다 받았다 — 부모가 아이 QR 을 찍는 길과, 아이가 부모 QR
+ * 을 찍는 길. 그런데 연결 한 번을 하려고 "누가 만들고 누가 찍는가" 를 매번
+ * 정해야 했고, 그게 헷갈린다는 말을 들었다. 맞는 말이라 하나만 남겼다.
  *
- * **왜 QR 인가.** 카톡으로 링크를 보내려면 두 기기에 카톡이 있어야 하고,
- * 코드를 옮겨 적으려면 스물몇 글자를 대소문자까지 맞춰 쳐야 한다. QR 은
- * 두 기기를 마주 보게 하기만 하면 된다.
+ *   아이 폰이 QR 을 띄운다 → 부모 폰이 찍는다 → 끝
+ *
+ * 이쪽이 남은 이유. 찍는 쪽이 부모라 아이를 부를 필요가 없고, 찍는 순간
+ * 아이가 등록되면서 이 폰 주소가 아이에게 되돌아간다. 아이 이름도 QR 에
+ * 실려 오므로 따로 묻지 않아도 된다. 아이는 더 누를 것이 없다.
+ *
+ * 부모 QR 을 읽는 코드는 남겨 둔다. 새로 만들지는 않지만 예전 판이 만든
+ * QR 이 어딘가 남아 있을 수 있고, 그때 **왜 안 되는지 말해 주려면** 그것이
+ * 무엇인지 알아볼 수는 있어야 한다.
+ *
+ * **왜 QR 인가.** 코드를 옮겨 적으려면 스물몇 글자를 대소문자까지 맞춰 쳐야
+ * 한다. QR 은 두 기기를 마주 보게 하기만 하면 된다.
  *
  * 카메라 권한은 이 화면에 들어올 때만 묻는다. 앱을 켤 때 미리 물으면 왜
  * 필요한지 알 수 없어 대부분 거절한다.
@@ -21,7 +26,7 @@
 
 import { useCallback, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router } from 'expo-router';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Body, Button, Card, H1, H3, Muted, Screen } from '../src/components/ui';
@@ -30,28 +35,22 @@ import {
   fetchPushToken,
   parseScanned,
   scannedError,
-  sendHelloToParent,
   sendLinkBackToChild,
 } from '../src/features/push';
 import { childLimitMessage } from '../src/features/children';
 import { colors, font, radius, spacing } from '../src/theme';
 
 export default function Scan() {
-  const { state, profile, linkParent, setMyPushToken, setReceivesReports, rememberChild } = useApp();
+  const { state, profile, setMyPushToken, setReceivesReports, rememberChild } = useApp();
   const [permission, requestPermission] = useCameraPermissions();
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
 
   /*
-   * 누가 찍고 있는지.
-   *
-   * 프로필 종류로만 가리면 틀린다 — 부모님 모드는 아이 프로필이 켜져 있는
-   * 폰에서도 들어올 수 있고, 그러면 부모가 '아이 QR 찍기' 를 눌렀는데 화면은
-   * "부모님 폰의 QR 을 맞춰 주세요" 라고 말한다. 부른 쪽이 누구인지 알고
-   * 있으니 그 값을 그대로 받는다. 없으면 프로필로 갈음한다.
+   * `as=parent` 를 받던 자리는 없앴다. 방향이 하나뿐이라 누가 찍고 있는지
+   * 갈릴 일이 없다 — 이 화면은 늘 **아이 QR 을 찍는 부모 폰**의 것이다.
+   * 부르는 쪽이 아직 그 값을 넘겨도 그냥 무시되므로 깨지지 않는다.
    */
-  const params = useLocalSearchParams<{ as?: string }>();
-  const isParent = params.as ? params.as === 'parent' : profile?.kind === 'parent';
 
   /**
    * 이미 한 번 읽었는지.
@@ -103,10 +102,23 @@ export default function Scan() {
        */
       if (got.kind === 'token') {
         handled.current = true;
-        router.replace({
-          pathname: isParent ? '/link-child-code' : '/parent-link',
-          params: { token: got.token },
-        });
+        router.replace({ pathname: '/link-child-code', params: { token: got.token } });
+        return;
+      }
+
+      /*
+       * 부모 폰 QR 을 찍었다. **이제 이 방향은 안 쓴다.**
+       *
+       * 예전 판이 만든 QR 이 종이나 대화방에 남아 있을 수 있다. 조용히 넘기면
+       * "찍었는데 아무 일도 없다" 가 되고, 몰래 예전 방식으로 이어 버리면 길이
+       * 다시 둘이 된다. 무엇을 찍었고 무엇을 찍어야 하는지 말해 준다.
+       */
+      if (got.kind === 'parent') {
+        setError(
+          '이건 부모님 폰 QR 이에요. 지금은 안 씁니다.\n' +
+            '아이 폰에서 ⚙️ 설정 → 부모님과 연결하기 → 📱 내 QR 띄우기 로 띄운\n' +
+            'QR 을 찍어 주세요.',
+        );
         return;
       }
 
@@ -148,26 +160,13 @@ export default function Scan() {
           return;
         }
 
-        /* 아이가 부모 QR 을 찍은 경우 */
-        linkParent({
-          token: got.token,
-          label: got.label,
-          linkedAt: Date.now(),
-          lastSentDate: null,
-          // 첫 폰이면 addParentLink 가 주 부모로 만든다. 둘째부터는 아이가 고른다.
-          isPrimary: false,
-        });
         /*
-         * 이 기기의 주소를 부모님께 알려 둔다.
-         *
-         * 리포트로 대신할 수 없다. 부모가 아이를 부르고 싶은 때가 바로 리포트가
-         * 안 온 날이기 때문이다. 연결하는 지금 한 번 보내 둔다.
+         * 여기 오면 안 된다. 위에서 child 는 처리하고 parent 와 token 은
+         * 되돌려 보냈으므로 남는 갈래가 없다. 그래도 조용히 빠지지는 않는다.
          */
-        if (mine) {
-          await sendHelloToParent(got.token, profile?.name ?? '아이', mine).catch(() => {});
-        }
         setBusy(false);
-        router.replace('/parent-link');
+        handled.current = false;
+        setError('이 QR 은 지금 쓰지 않는 것이에요. 아이 폰의 QR 을 찍어 주세요.');
       } catch (e) {
         // 다시 찍을 수 있게 되돌린다. 무엇이 터졌는지도 적는다.
         handled.current = false;
@@ -179,23 +178,12 @@ export default function Scan() {
     },
     [
       state.myPushToken,
-      linkParent,
       setMyPushToken,
       setReceivesReports,
       rememberChild,
       profile?.name,
-      isParent,
     ],
   );
-
-  /*
-   * 카메라가 안 될 때 가는 곳. **찍는 쪽이 누구냐로 갈린다.**
-   *
-   * 예전에는 양쪽 다 `/parent-link` 로 갔다. 그 화면은 아이 쪽 화면이라,
-   * 부모 폰에서 누르면 "부모님이 보낸 요청 승인하기" 가 떴다 — 부모에게
-   * 부모와 연결하라는 말이 되니 무엇을 하라는 것인지 알 수가 없다.
-   */
-  const codeRoute = isParent ? '/link-child-code' : '/parent-link';
 
   /* ---------------- 권한을 아직 안 물었을 때 ---------------- */
 
@@ -218,7 +206,7 @@ export default function Scan() {
         <Card style={{ marginTop: spacing.xl }}>
           <H3>왜 필요한가요?</H3>
           <Body style={{ marginTop: spacing.sm, color: colors.subtext }}>
-            {isParent ? '아이 폰' : '부모님 폰'} 화면에 뜬 QR 코드를 찍어 연결하는 데에만 씁니다.
+            아이 폰 화면에 뜬 QR 코드를 찍어 연결하는 데에만 씁니다.
             사진을 찍거나 저장하지 않고, 어디로도 보내지 않아요.
           </Body>
           <Button
@@ -229,9 +217,9 @@ export default function Scan() {
         </Card>
 
         <Button
-          title={isParent ? '📵 코드로 아이 연결하기' : '📵 코드로 부모님 폰 연결하기'}
+          title="📵 코드로 아이 연결하기"
           variant="ghost"
-          onPress={() => router.replace(codeRoute)}
+          onPress={() => router.replace('/link-child-code')}
           style={{ marginTop: spacing.md }}
         />
       </Screen>
@@ -246,7 +234,7 @@ export default function Scan() {
         <Pressable onPress={() => router.back()} accessibilityRole="button" hitSlop={12}>
           <Text style={s.close}>✕</Text>
         </Pressable>
-        <Text style={s.title}>{isParent ? '아이 QR 찍기' : '부모님 폰 QR 찍기'}</Text>
+        <Text style={s.title}>아이 QR 찍기</Text>
         <View style={{ width: 40 }} />
       </View>
 
@@ -265,8 +253,8 @@ export default function Scan() {
 
       <View style={s.bottom}>
         <Text style={s.guide}>
-          {isParent ? '아이 폰' : '부모님 폰'}의 <Text style={{ fontWeight: '800' }}>QR 코드</Text>를
-          네모 안에 맞춰 주세요.
+          <Text style={{ fontWeight: '800' }}>아이 폰</Text>에서 ⚙️ 설정 → 부모님과 연결하기 →
+          📱 내 QR 띄우기 로 띄운 QR 을 네모 안에 맞춰 주세요.
         </Text>
         <Muted style={{ marginTop: spacing.sm, textAlign: 'center' }}>
           찍으면 바로 연결됩니다. 아무것도 누르지 않아도 돼요.
@@ -274,9 +262,9 @@ export default function Scan() {
         {error ? <Body style={{ color: colors.wrong, marginTop: spacing.md }}>{error}</Body> : null}
 
         <Button
-          title={isParent ? '📵 코드로 아이 연결하기' : '📵 코드로 부모님 폰 연결하기'}
+          title="📵 코드로 아이 연결하기"
           variant="ghost"
-          onPress={() => router.replace(codeRoute)}
+          onPress={() => router.replace('/link-child-code')}
           style={{ marginTop: spacing.md }}
         />
       </View>

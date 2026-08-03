@@ -3,7 +3,7 @@
     "name": "곰탱이보카",
     "slug": "vocab-app",
     "scheme": "gomtangivoca",
-    "version": "0.20.0",
+    "version": "0.21.0",
     "runtimeVersion": {
       "policy": "appVersion"
     },

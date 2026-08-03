@@ -130,10 +130,17 @@ export function ConnectParentCard() {
         틀린 단어 · 레벨 진도)이 부모님 폰으로 갑니다. 그 밖에는 아무것도 보내지 않아요.
       </Muted>
 
+      {/*
+        **길이 하나뿐이라 걸음만 적으면 된다.**
+
+        예전에는 부모 QR 을 아이가 찍는 길도 있어서, 아이 화면에도 '찍기' 가
+        같이 있었다. 그 길을 없앴으니 아이가 할 일은 QR 을 띄우는 것 하나다.
+        고를 것이 없으면 설명이 짧아지고, 짧으면 읽는다.
+      */}
       <View style={s.steps}>
-        <Text style={s.step}>1. 아래 버튼을 누르면 내 QR 이 뜹니다</Text>
-        <Text style={s.step}>2. 부모님 폰에서 아이들 학습 보고서 → 아이 QR 찍기</Text>
-        <Text style={s.step}>3. 찍히면 끝이에요. 더 누를 것 없어요</Text>
+        <Text style={s.step}>1. 아래 버튼을 누르면 내 QR 이 떠요</Text>
+        <Text style={s.step}>2. 부모님이 그 QR 을 부모님 폰으로 찍어요</Text>
+        <Text style={s.step}>3. 끝이에요. 더 누를 것 없어요</Text>
       </View>
 
       <Button

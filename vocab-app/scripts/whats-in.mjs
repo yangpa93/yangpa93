@@ -104,7 +104,7 @@ const MARKS = [
   ['영어 발음 목소리 고르기', 'src/lib/voice.ts', 'pickEnglishVoice'],
   ['판 누르면 바뀐 것 보기', 'app/whats-new.tsx', 'RELEASES'],
   ['아이 홈에 부모님 버튼 없음', 'app/home.tsx', '부모님 버튼을 안 둔다'],
-  ['연결 카드 한 장으로', 'src/components/LinkChildCard.tsx', '내폰에서 찍어 연결하기'],
+  ['연결하는 길은 하나뿐', 'src/components/LinkChildCard.tsx', '길은 하나뿐이다'],
   ['요청권 금액 직접 적기', 'src/components/AwardRatesEditor.tsx', 'parseWon'],
   ['부모 홈에 학습 기록 바로 보이기', 'app/parent-home.tsx', 'ParentRecordCards'],
   ['부모 설정이 갈래로 나뉨', 'app/parent-settings.tsx', '아이들 폰 설정'],

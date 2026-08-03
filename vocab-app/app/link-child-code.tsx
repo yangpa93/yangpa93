@@ -78,9 +78,13 @@ export default function LinkChildCode() {
      * 이 폰 주소를 아이에게 되보낸다. 이게 없으면 연결이 반만 된다 — 부모는
      * 아이를 알지만 아이는 리포트를 어디로 보낼지 모른다.
      *
-     * 실패해도 막지 않는다. 아이는 이미 등록됐고, 아이 폰에서 부모 QR 을 찍는
-     * 길이 남아 있다. 다만 **되보내지 못했다는 말은 한다** — 조용히 넘기면
-     * 리포트가 영영 안 오는 이유를 아무도 모른다.
+     * 실패해도 막지 않는다. 아이는 이미 등록됐다. 다만 **되보내지 못했다는
+     * 말은 한다** — 조용히 넘기면 리포트가 영영 안 오는 이유를 아무도 모른다.
+     *
+     * 고치는 길은 **같은 길을 한 번 더 가는 것**이다. 다시 찍으면 되보내기가
+     * 다시 일어난다. 예전에는 여기서 "아이 폰에서 부모 QR 을 찍으세요" 라고
+     * 반대 방향을 안내했는데, 그 길을 없앴으니 그 말도 없앤다. 있지도 않은
+     * 길을 알려 주는 것이 아무 말 안 하는 것보다 나쁘다.
      */
     const mine = state.myPushToken ?? (await fetchPushToken().catch(() => ({ token: null }))).token;
     if (mine) setMyPushToken(mine);
@@ -98,7 +102,7 @@ export default function LinkChildCode() {
       sent
         ? `${who} 등록했어요. 아이 폰에도 알림이 갔습니다.`
         : `${who} 등록했어요. 다만 아이 폰에 이 폰 주소를 알리지 못했습니다 — ` +
-            `아이 폰에서 ⚙️ 설정 → QR 찍기 로 이 폰 QR 을 한 번 찍어 주세요.`,
+            `잠시 뒤 아이 QR 을 한 번 더 찍어 주세요. 그때 다시 보냅니다.`,
     );
     setCode('');
     setName('');
@@ -166,7 +170,7 @@ export default function LinkChildCode() {
         <Button
           title="📷 아이 QR 찍기"
           variant="secondary"
-          onPress={() => router.replace({ pathname: '/scan', params: { as: 'parent' } })}
+          onPress={() => router.replace('/scan')}
           style={{ marginTop: spacing.md }}
         />
       </Card>

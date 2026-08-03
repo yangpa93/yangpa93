@@ -192,7 +192,18 @@ console.log('  ② 중간에 그만두면 다 한 것으로 안 적히는가');
 
 await go(page, '/parent-home');
 await page.getByText('공부 시작하기', { exact: false }).first().click();
-await page.waitForTimeout(2000);
+/*
+ * 문제 카드가 실제로 그려질 때까지 기다린다.
+ *
+ * 처음에는 2초를 세고 넘어갔는데, 첫 문제를 만드는 데 그보다 오래 걸리는
+ * 때가 있어 **가끔 0개를 풀고 실패**했다. 고장이 아닌데 빨간 줄이 뜨면
+ * 그다음부터는 빨간 줄을 안 믿게 된다. 시간을 세지 말고 화면을 기다린다.
+ */
+await page
+  .locator('[role="button"]')
+  .nth(2)
+  .waitFor({ state: 'visible', timeout: 20000 })
+  .catch(() => {});
 ok('공부 화면이 뜬다', !(await has(page, '오늘 공부할 단어가 없어요', 2000)));
 
 /*
@@ -320,8 +331,23 @@ if (await codeBox.isVisible().catch(() => false)) {
   ok('이름 없이 누르면 말을 한다', false, '코드 칸을 못 찾음');
 }
 
+/*
+ * **연결하는 길이 하나뿐인지.**
+ *
+ * 두 방향을 다 지원하던 것을 하나로 줄였다. 없앤 쪽의 입구가 어딘가 남아
+ * 있으면 눌러 보고 멈추게 되므로, 남아 있지 않은 것까지 함께 본다.
+ */
 await go(page, '/parent-child-devices');
 ok('연결 카드에 코드 길이 있다', await has(page, '카메라가 안 되면 — 코드로 연결하기'));
+ok('아이 QR 찍기가 있다', await has(page, '아이 QR 찍기'));
+/*
+ * 없앤 것을 이름으로 짚는다. '내 QR 띄우기' 라는 글자만 보고 판단하면 안 된다 —
+ * 그건 **아이 폰에서 눌러야 할 것**을 알려 주는 안내문에도 나오는 말이라,
+ * 멀쩡한 화면을 실패로 적게 된다. 실제로 한 번 그렇게 틀렸다.
+ */
+ok('부모가 자기 QR 을 띄우는 갈래가 없다', !(await has(page, '내 폰에서 생성한 QR', 2000)));
+ok('카톡으로 링크 보내기가 없다', !(await has(page, '카톡·메일로 링크 보내기', 1500)));
+ok('이 폰 이름을 묻는 칸이 없다', !(await hasField(page, '이 폰 이름', 1500)));
 
 /*
  * **폰 기본 카메라로 찍고 '링크 열기' 를 누른 길.**
@@ -360,8 +386,13 @@ ok('연결된 아이에게는 연결됨이 보인다', await has(page, '연결�
 // 아직 연결 안 한 아이에게는 승인하기 칸이 그대로 있어야 한다.
 await seed(page, '부모님과 아직 연결 안 됨');
 await go(page, '/parent-link');
-ok('아직 연결 안 한 아이는 승인하기 화면', await has(page, '부모님이 보낸 요청 승인하기'));
-ok('아이 쪽 코드 칸은 그대로', await hasField(page, '연결 코드 또는 주소'));
+ok('아이에게 승인하기 칸은 없어졌다', !(await has(page, '부모님이 보낸 요청 승인하기', 2000)));
+ok('아이 쪽 코드 칸도 없어졌다', !(await hasField(page, '연결 코드 또는 주소', 1500)));
+ok('대신 내 QR 을 띄우라고 한다', await has(page, '내 QR 을 부모님이 찍는'));
+
+await go(page, '/settings');
+ok('아이 설정에 내 QR 띄우기가 있다', await has(page, '내 QR 띄우기'));
+ok('아이 설정에 코드로 연결하기는 없다', !(await has(page, 'QR 말고 코드로 연결하기', 1500)));
 
 await go(page, '/settings');
 ok('아이 설정에 소리가 있다', await has(page, '소리로 읽어주기'));

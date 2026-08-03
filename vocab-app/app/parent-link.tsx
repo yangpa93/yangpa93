@@ -1,23 +1,34 @@
 import { useCallback, useState } from 'react';
-import { Alert, Platform, Share, StyleSheet, Text, TextInput, View } from 'react-native';
-import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { Alert, Text, View } from 'react-native';
+import { router, useFocusEffect } from 'expo-router';
 import { Body, Button, Card, Chip, H1, H3, Muted, Row, Screen } from '../src/components/ui';
 import { useApp } from '../src/store/AppProvider';
-import { buildLinkUrl, fetchPushToken, fromShortCode, shortCodeError } from '../src/features/push';
+import { fetchPushToken } from '../src/features/push';
 import { formatKo } from '../src/lib/date';
-import { colors, radius, spacing } from '../src/theme';
-import { APP_NAME } from '../src/features/build-info';
+import { colors, spacing } from '../src/theme';
 import { primaryParent } from '../src/features/parentLinks';
 
 /**
- * 부모님 폰과 아이 기기를 연결하는 화면.
+ * 연결 상태를 보는 화면.
  *
- * 기기 역할에 따라 보이는 내용이 다르다.
- *  - 부모님 폰: 자기 푸시 주소를 만들어 아이 기기로 보낸다.
- *  - 아이 기기: 받은 주소를 붙여넣어 연결한다.
+ * ── 이 화면이 하던 일의 절반이 사라졌다 ─────────────────────
  *
- * QR 스캔 대신 '링크 보내기'와 '붙여넣기'를 쓴다. 카메라 권한을 요구하지
- * 않기 위해서다. 링크는 카카오톡으로 아이 기기에 보내고 한 번 누르면 된다.
+ * 예전에는 여기가 **연결을 만드는** 자리이기도 했다. 부모 폰이 자기 주소로
+ * 링크를 만들어 카톡으로 보내고, 아이가 그 링크를 누르거나 코드를 옮겨 적었다.
+ *
+ * 그 길을 없앴다. 연결하는 방법이 둘이면 "누가 만들고 누가 찍는가" 를 매번
+ * 정해야 하는데, 그건 도움이 안 되는 선택이다 — 고를 것이 있으면 고민이
+ * 생기고, 고민이 생기면 거기서 멈춘다. 이제 길은 하나다.
+ *
+ *   아이 폰이 QR 을 띄운다 → 부모 폰이 찍는다
+ *
+ * 그래서 이 화면에는 **이미 이어진 것을 보고 만지는 일**만 남았다.
+ *
+ *   아이 기기   연결된 부모 폰 · 지금 한 번 보내보기 · 연결 끊기
+ *   부모 기기   받은 리포트 · 아이 QR 찍으러 가는 길
+ *
+ * 딥링크(`gomtangivoca://link`)를 받는 link.tsx 는 그대로 둔다. 새로 만들지는
+ * 않지만 카톡 대화방에 남아 있는 옛 링크가 눌렸을 때 죽으면 안 된다.
  */
 export default function ParentLinkScreen() {
   const {
@@ -27,17 +38,12 @@ export default function ParentLinkScreen() {
     setMyPushToken,
     setReceivesReports,
     unlinkParent,
-    linkParent,
     pushReportNow,
   } = useApp();
   const isParentDevice = state.role === 'parent';
 
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
-  /* 카메라에서 '주소만 있는 QR' 을 읽었으면 그 값을 들고 온다. */
-  const scanned = useLocalSearchParams<{ token?: string }>();
-  const [pasted, setPasted] = useState(scanned.token ?? '');
-  const [label, setLabel] = useState('');
   const [sendResult, setSendResult] = useState('');
 
   // 부모 기기면 화면에 들어올 때마다 토큰이 살아 있는지 확인한다.
@@ -121,49 +127,6 @@ export default function ParentLinkScreen() {
     setReceivesReports(true);
   }
 
-  async function shareLink() {
-    if (!state.myPushToken) return;
-    const name = label.trim() || '부모님 폰';
-    const url = buildLinkUrl(state.myPushToken, name);
-    await Share.share({
-      message:
-        `[${APP_NAME}] ${name} 연결하기\n\n` +
-        `아이 기기에서 아래 링크를 눌러 주세요.\n${url}\n\n` +
-        `링크가 안 열리면 아래 주소를 복사해서\n아이 기기 → 부모님 모드 → 부모님 폰 연결 → 붙여넣기 하세요.\n\n${state.myPushToken}`,
-    }).catch(() => {});
-  }
-
-  function linkByPaste() {
-    setError('');
-    /*
-     * 연결 코드와 주소를 모두 받는다.
-     *
-     * 카톡으로 링크를 받은 아이는 주소를 통째로 붙여넣고, 아무것도 안 깔린
-     * 태블릿을 쓰는 아이는 부모 폰 화면의 코드를 보고 옮겨 적는다. 어느
-     * 쪽으로 왔는지 아이가 구별할 이유가 없으므로 한 칸에서 둘 다 받는다.
-     */
-    const token = fromShortCode(pasted);
-    if (!token) {
-      setError(shortCodeError(pasted) || '코드를 다시 확인해 주세요.');
-      return;
-    }
-    // 자기 주소를 붙여넣으면 자기에게 보내게 된다. 이 폰이 리포트를 받기도
-    // 하게 되면서 생긴 자리다 — 링크로 들어올 때는 link.tsx 가 막고 있었는데
-    // 붙여넣기에는 그 확인이 없었다.
-    if (state.myPushToken != null && state.myPushToken === token) {
-      setError('이 폰의 주소예요. 아이 기기에 붙여넣어야 합니다.');
-      return;
-    }
-    linkParent({
-      token,
-      label: label.trim() || '부모님 폰',
-      linkedAt: Date.now(),
-      lastSentDate: null,
-      isPrimary: false,
-    });
-    setPasted('');
-  }
-
   async function testSend() {
     setBusy(true);
     setSendResult('');
@@ -185,48 +148,37 @@ export default function ParentLinkScreen() {
           </Muted>
         </View>
 
-        <Card style={{ marginTop: spacing.lg }}>
-          <H3>이 폰의 이름</H3>
-          <Muted style={{ marginTop: spacing.xs }}>아이 기기에 이 이름으로 표시됩니다.</Muted>
-          <TextInput
-            value={label}
-            onChangeText={setLabel}
-            placeholder="예) 엄마 폰"
-            placeholderTextColor={colors.muted}
-            style={s.input}
-            maxLength={20}
-          />
-        </Card>
+        {/*
+          **여기에도 '연결 링크 보내기' 가 있었다.**
 
-        <Card style={{ marginTop: spacing.md }}>
-          <H3>아이 기기에 연결하기</H3>
+          이 폰 주소를 카톡으로 보내고 아이가 그 링크를 누르는 길이었는데,
+          그건 반대 방향이다. 연결하는 길을 하나로 줄이면서 함께 없앴다.
+
+          없애고 나니 이 폰 이름을 물어볼 이유도 사라졌다 — 이름은 아이 폰에
+          표시하려던 것인데, 이제 부모가 아이 QR 을 찍는 순간 프로필 이름이
+          그대로 실려 간다. 물어보는 칸이 하나 줄었다.
+        */}
+        <Card style={{ marginTop: spacing.lg, borderColor: colors.parent }}>
+          <H3>아이를 등록하려면</H3>
           <Muted style={{ marginTop: spacing.xs }}>
-            아이가 여럿이면 기기마다 한 번씩 연결해 주세요. 같은 링크를 그대로 쓰면 됩니다.
+            아이 폰에서 ⚙️ 설정 → 부모님과 연결하기 → 📱 내 QR 띄우기 를 누르게 하고,
+            이 폰으로 그 QR 을 찍으세요. 아이가 여럿이면 아이 폰마다 한 번씩.
           </Muted>
-
-          {state.myPushToken ? (
-            <>
-              <Button
-                title="연결 링크 보내기"
-                variant="parent"
-                onPress={shareLink}
-                style={{ marginTop: spacing.lg }}
-              />
-              <Muted style={{ marginTop: spacing.md }}>
-                카카오톡으로 아이 기기에 보낸 뒤, 아이 기기에서 링크를 한 번 누르면 연결됩니다.
-              </Muted>
-              <View style={s.tokenBox}>
-                <Muted style={{ fontSize: 11 }}>내 푸시 주소</Muted>
-                <Text style={s.token} selectable>
-                  {state.myPushToken}
-                </Text>
-              </View>
-            </>
-          ) : (
-            <View style={{ marginTop: spacing.lg }}>
-              {error ? <Body style={{ color: colors.wrong }}>{error}</Body> : <Muted>주소를 만드는 중…</Muted>}
-            </View>
-          )}
+          <Button
+            title="📷 아이 QR 찍기"
+            variant="parent"
+            onPress={() => router.push('/scan')}
+            style={{ marginTop: spacing.md }}
+          />
+          <Button
+            title="📵 카메라가 안 되면 — 코드로 연결하기"
+            variant="ghost"
+            onPress={() => router.push('/link-child-code')}
+            style={{ marginTop: spacing.sm }}
+          />
+          {error ? (
+            <Body style={{ color: colors.wrong, marginTop: spacing.md }}>{error}</Body>
+          ) : null}
         </Card>
 
         <Card style={{ marginTop: spacing.md }}>
@@ -291,7 +243,7 @@ export default function ParentLinkScreen() {
           <Button
             title="📷 아이 QR 찍기"
             variant="parent"
-            onPress={() => router.replace({ pathname: '/scan', params: { as: 'parent' } })}
+            onPress={() => router.replace('/scan')}
             style={{ marginTop: spacing.md }}
           />
           <Button
@@ -369,46 +321,25 @@ export default function ParentLinkScreen() {
       ) : (
         <>
           {/*
-            아이 화면에는 **아이가 할 일만** 적는다.
+            **아직 연결 안 된 아이에게는 할 일 하나만 적는다.**
 
-            예전에는 '부모님 폰에서 준비하기' 안내가 여기 있었다. 아이는 그
-            단계를 할 수 없고, 읽어도 자기가 뭘 해야 하는지 알 수 없다.
-            그 안내는 부모님 설정으로 옮겼다.
+            여기에는 '부모님이 보낸 요청 승인하기' 라는 칸이 있었다. 부모 폰이
+            만든 코드를 아이가 옮겨 적는 자리였는데, 그건 **반대 방향**이다.
+
+            연결하는 길을 하나로 줄이면서 그 방향을 통째로 없앴다 — 아이가 QR 을
+            띄우고 부모가 찍는다, 그것뿐이다. 없앤 길의 입구를 남겨 두면 눌러
+            보고 "여기서 뭘 적으라는 거지" 하다가 멈춘다. 길이 하나면 안내도
+            하나여야 한다.
           */}
           <Card style={{ marginTop: spacing.lg }}>
-            <H3>부모님이 보낸 요청 승인하기</H3>
+            <H3>아직 연결 안 됐어요</H3>
             <Muted style={{ marginTop: spacing.sm }}>
-              부모님이 보내 주신 링크를 누르면 바로 연결돼요.{'\n'}
-              링크가 없으면, 부모님 폰 화면에 뜬 <Text style={{ fontWeight: '700' }}>연결 코드</Text>를
-              아래에 그대로 적으세요. 대문자와 소문자를 구별해야 해요.
+              연결은 <Text style={{ fontWeight: '700' }}>내 QR 을 부모님이 찍는</Text> 것
+              하나예요. 아래로 가서 QR 을 띄우면 됩니다.
             </Muted>
-
-            <TextInput
-              value={pasted}
-              onChangeText={setPasted}
-              placeholder="연결 코드 또는 주소"
-              placeholderTextColor={colors.muted}
-              style={[s.input, s.codeInput]}
-              multiline
-              autoCapitalize="none"
-              autoCorrect={false}
-              autoComplete="off"
-              spellCheck={false}
-            />
-            <TextInput
-              value={label}
-              onChangeText={setLabel}
-              placeholder="누구 폰인가요? (예: 엄마 폰)"
-              placeholderTextColor={colors.muted}
-              style={s.input}
-              maxLength={20}
-            />
-            {error ? <Body style={{ color: colors.wrong, marginTop: spacing.sm }}>{error}</Body> : null}
-
             <Button
-              title="승인하기"
-              onPress={linkByPaste}
-              disabled={pasted.trim().length === 0}
+              title="📱 내 QR 띄우러 가기"
+              onPress={() => router.replace('/settings')}
               style={{ marginTop: spacing.md }}
             />
           </Card>
@@ -427,34 +358,7 @@ export default function ParentLinkScreen() {
   );
 }
 
-const s = StyleSheet.create({
-  /*
-   * 코드 칸은 고정폭에 글자를 키운다. 아이가 부모 폰 화면을 보고 옮겨
-   * 적는데, 글자 폭이 들쭉날쭉하면 어디까지 쳤는지 자꾸 놓친다.
-   */
-  codeInput: {
-    height: 84,
-    textAlignVertical: 'top',
-    fontFamily: Platform.select({ ios: 'Menlo', android: 'monospace', default: 'monospace' }),
-    fontSize: 18,
-    letterSpacing: 1,
-  },
-  input: {
-    marginTop: spacing.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radius.md,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
-    fontSize: 15,
-    color: colors.text,
-    backgroundColor: colors.bg,
-  },
-  tokenBox: {
-    marginTop: spacing.md,
-    padding: spacing.md,
-    backgroundColor: colors.bg,
-    borderRadius: radius.md,
-  },
-  token: { fontSize: 12, color: colors.subtext, marginTop: 2 },
-});
+/*
+ * 따로 둘 모양이 없다. 코드 칸도 주소 상자도 전부 반대 방향(부모가 코드를
+ * 만들고 아이가 옮겨 적는 길)에 딸린 것이었고, 그 길을 없애면서 함께 사라졌다.
+ */

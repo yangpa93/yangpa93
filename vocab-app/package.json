@@ -69,7 +69,8 @@
     "reference": "node scripts/fetch-reference.mjs",
     "export": "node scripts/export-review.mjs",
     "check-link": "node scripts/check-link.mjs",
-    "e2e": "node scripts/e2e.mjs"
+    "e2e": "node scripts/e2e.mjs",
+    "bump-data": "node scripts/bump-data.mjs"
   },
   "private": true
 }

@@ -21,6 +21,7 @@ import {
 } from '../types';
 import { awardRates, DEFAULT_AWARD_RATES, levelUpAmount, MIDDLE_LEVEL_AWARD } from '../features/awards';
 import { DAILY_THEME_LIST, DEFAULT_DAILY_THEME } from '../data/daily';
+import { DATA_VERSION } from '../data/dataVersion';
 import { normalizeParentLinks } from '../features/parentLinks';
 import { LEGACY_ID_WORD } from './legacy-ids';
 
@@ -79,8 +80,11 @@ async function readWithFallback(key: string, oldKey: string): Promise<string | n
  *         셋을 합쳐 10개인지 화면만 보고는 알 수 없었다.
  *  7 → 8  아이 폰이 부모 폰을 여러 대 기억하게(parentLink → parentLinks).
  *         엄마가 찍고 나서 아빠가 찍으면 엄마 폰이 조용히 밀려났다.
+ *  8 → 9  마지막으로 본 어휘 판을 적어 둔다(seenDataVersion).
+ *         **지금 판을 적어 넣는다.** 비워 두면 이미 다 갖고 있는 사람에게
+ *         "3,690개가 새로 추가됐다" 고 말하게 된다.
  */
-export const STATE_VERSION = 8;
+export const STATE_VERSION = 9;
 
 /** 하루에 새로 만날 단어 수 기본값. 10개면 3,286개를 약 1년에 돈다. */
 export const DEFAULT_NEW_PER_DAY = 10;
@@ -109,6 +113,8 @@ export function emptyState(): AppState {
     receivesReports: false,
     receivedReports: [],
     knownChildren: [],
+    // 새로 깐 폰은 지금 있는 낱말을 다 갖고 시작한다. 늘어난 것이 없다.
+    seenDataVersion: DATA_VERSION,
   };
 }
 
@@ -402,6 +408,15 @@ function migrate(state: AppState): AppState {
       // 있어도(숫자가 아니거나 음수) 기본값으로 메운다.
       awards: awardRates(state.parent?.awards),
     },
+    /*
+     * 어휘 판.
+     *
+     * 예전 저장본에는 이 칸이 없다. 그때 비워 두면 "그 뒤로 온 것" 을 셀 수
+     * 없어서 0개가 되는데, 그건 맞는 답이다 — 그 사람은 지금 묶음에 든 낱말을
+     * 이미 다 갖고 있다. 그래서 **지금 판을 적어 넣는다.** 다음에 낱말이
+     * 늘면 그때부터 제대로 센다.
+     */
+    seenDataVersion: state.seenDataVersion ?? DATA_VERSION,
     // rounds는 나중에 추가된 설정이라 예전에 저장된 프로필에는 없다.
     profiles: (state.profiles ?? []).map((p) => ({
       ...p,

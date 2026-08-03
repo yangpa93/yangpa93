@@ -131,6 +131,9 @@ const MARKS = [
   ['오늘 배운 것 먼저 보기', 'src/components/TodayWordsList.tsx', 'studiedToday'],
   ['부모 홈에 오답 노트·단어장', 'app/parent-home.tsx', "router.push('/wordbook')"],
   ['설치 전 연결 미리 보기', 'scripts/check-link.mjs', '기본 카메라 앱'],
+  ['어휘 판 따로 세기', 'src/data/dataVersion.ts', 'DATA_VERSION'],
+  ['새 낱말 왔다고 알리기', 'src/components/NewWordsCard.tsx', '새 낱말이'],
+  ['어휘 판 올리는 한 줄', 'scripts/bump-data.mjs', 'bump-data'],
   ['만든 QR 을 도로 읽어 확인', 'scripts/check-link.mjs', 'jsQR'],
   ['폰 카메라로 찍은 아이 QR 받기', 'app/child.tsx', '이 아이를 등록할까요'],
   ['눌러 보는 시험을 대신', 'scripts/e2e.mjs', '실제로 눌러 보는 시험'],
@@ -140,6 +143,14 @@ const MARKS = [
 /* 판 번호도 같이 적는다. "몇 판을 받았나"가 제일 먼저 궁금한 것이다. */
 const appJson = JSON.parse(readFileSync('app.json', 'utf8'));
 console.log(`  판(버전)       ${appJson.expo.version}`);
+/* 어휘 판도 함께. 낱말은 앱과 따로 늘어나므로 숫자가 둘이다. */
+try {
+  const dv = readFileSync('src/data/dataVersion.ts', 'utf8');
+  const v = dv.match(/DATA_VERSION = '([^']+)'/)?.[1];
+  if (v) console.log(`  어휘 판        ${v}`);
+} catch {
+  /* 없으면 그냥 넘어간다 */
+}
 console.log('');
 
 console.log('  이번 판에 들어 있어야 할 것 ' + '─'.repeat(29));

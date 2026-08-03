@@ -164,8 +164,41 @@ if (!existsSync('eas.json')) {
       );
     } else if (!app.runtimeVersion) {
       warn('app.json에 runtimeVersion이 없습니다. 무선 업데이트가 어느 빌드에 갈지 정하지 못합니다.');
+    } else if (typeof app.runtimeVersion === 'object' && app.runtimeVersion.policy === 'appVersion') {
+      /*
+       * **이게 무선 업데이트를 조용히 막는다.**
+       *
+       * policy: 'appVersion' 은 runtimeVersion 을 앱 판(version)에 묶는다.
+       * 그러면 판을 0.21.0 → 0.22.0 으로 올리는 순간 **이미 깔린 0.21.0 폰은
+       * 새 업데이트를 못 받는다.** 두 runtime 이 다른 것으로 취급되기 때문이다.
+       *
+       * 낱말을 자주 더해 무선으로 내보내려는 앱에서는 치명적이다 — 아무 오류도
+       * 안 나고, 그냥 아무한테도 안 간다. "보냈는데 왜 안 들어오지" 가 된다.
+       *
+       * 고정 문자열로 두면 앱 판과 상관없이 같은 runtime 을 쓴다. native 를
+       * 건드릴 때(권한 · 패키지 · SDK)만 손으로 올린다.
+       */
+      bad(
+        "app.json 의 runtimeVersion 이 policy: 'appVersion' 입니다. " +
+          '이러면 앱 판을 올릴 때마다 **이미 깔린 폰이 무선 업데이트를 못 받습니다.** ' +
+          '고정 문자열로 바꾸세요 — 예: "runtimeVersion": "1". ' +
+          'native 를 건드릴 때(권한·패키지 이름·SDK)만 숫자를 올리면 됩니다.',
+      );
     } else {
-      ok('무선 업데이트(EAS Update) 준비됨');
+      ok(`무선 업데이트(EAS Update) 준비됨 — runtime ${app.runtimeVersion}`);
+      /*
+       * 어휘 판도 함께 적는다. 빌드 전에 "지금 몇 개짜리 낱말 묶음을 굽는가"
+       * 를 알 수 있어야 한다.
+       */
+      try {
+        const dv = readFileSync('src/data/dataVersion.ts', 'utf8');
+        const v = dv.match(/DATA_VERSION = '([^']+)'/)?.[1];
+        const en = dv.match(/totalEn:\s*(\d+)/)?.[1];
+        const ko = dv.match(/totalKo:\s*(\d+)/)?.[1];
+        if (v) ok(`어휘 판 ${v} — 영어 ${en}개 · 국어 ${ko}개`);
+      } catch {
+        warn('어휘 판(src/data/dataVersion.ts)을 읽지 못했습니다.');
+      }
     }
   }
 }

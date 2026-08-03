@@ -34,6 +34,7 @@ import {
   RewardStatus,
 } from '../types';
 import { ALL_ENTRIES, entriesOf } from '../data';
+import { DATA_VERSION } from '../data/dataVersion';
 import { Award, buildRewardRequest, claimAward, ratesOf } from '../features/awards';
 import { MAX_CHILDREN, canAcceptChild } from '../features/children';
 import { addAnswer, closeSession, emptyDay } from '../features/dayRecord';
@@ -153,6 +154,8 @@ interface Ctx {
   setPrimaryParent(token: string): void;
   /** 이 기기가 아이들 리포트를 받을지 켜고 끈다. */
   setReceivesReports(on: boolean): void;
+  /** 새로 온 낱말 안내를 봤다고 적는다. 사람이 확인을 누를 때만 부른다. */
+  markDataSeen(): void;
   /** 부모 기기가 받은 리포트를 쌓는다. 같은 아이·같은 날짜는 최신 것으로 덮는다. */
   addReceivedReport(report: Omit<ReceivedReport, 'id' | 'receivedAt'>): void;
   /**
@@ -698,6 +701,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   );
 
   /**
+   * 새로 온 낱말 안내를 봤다고 적는다.
+   *
+   * **자동으로 적지 않는다.** 앱이 뜨자마자 표시해 버리면, 알림을 보기도 전에
+   * 잠깐 다른 화면에 갔다 오는 사이에 사라진다. 사람이 '확인' 을 누른 뒤에만
+   * 적는다 — 놓쳐서 영영 못 보는 것보다 한 번 더 보이는 편이 낫다.
+   */
+  const markDataSeen = useCallback(
+    () => persistState({ ...ref.current.state, seenDataVersion: DATA_VERSION }),
+    [persistState],
+  );
+
+  /**
    * QR 로 이어진 아이를 기억한다. **자리가 없으면 false 를 돌려준다.**
    *
    * 조용히 무시하지 않는 이유: 부모는 QR 을 찍었고 화면은 아무 말이 없는데
@@ -844,6 +859,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setRole,
     setMyPushToken,
     setReceivesReports,
+    markDataSeen,
     rememberChild,
     linkParent,
     unlinkParent,

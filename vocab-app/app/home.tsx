@@ -5,6 +5,7 @@ import { useCallback } from 'react';
 import { Body, Button, Card, Chip, H1, H2, H3, Muted, ProgressBar, Row, Screen } from '../src/components/ui';
 import { WelcomeHome } from '../src/components/WelcomeHome';
 import { useApp } from '../src/store/AppProvider';
+import { NewWordsCard } from '../src/components/NewWordsCard';
 import { ALL_ENTRIES, entriesOf } from '../src/data';
 import { KO_ENTRIES } from '../src/data/korean/levels';
 import { canTakeKoExam } from '../src/srs/koExam';
@@ -131,6 +132,9 @@ export default function Home() {
 
   return (
     <Screen>
+      {/* 새 낱말이 왔으면 맨 위에서 한 번 말해 준다. 안 왔으면 아무것도 안 그린다. */}
+      <NewWordsCard />
+
       <Row style={{ justifyContent: 'space-between', paddingTop: spacing.lg }}>
         <Pressable style={s.who} onPress={() => router.push('/profiles')} accessibilityRole="button">
           <Text style={{ fontSize: 30 }}>{profile.avatar}</Text>

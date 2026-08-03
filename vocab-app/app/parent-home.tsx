@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { Button, Card, Chip, H2, H3, Muted, ProgressBar, Row, Screen } from '../src/components/ui';
 import { useApp } from '../src/store/AppProvider';
+import { NewWordsCard } from '../src/components/NewWordsCard';
 import { ParentRecordCards } from '../src/components/ParentRecordCards';
 import { buildParentQueue, perTrackCount, TRACK_ORDER } from '../src/srs/parentSession';
 import { buildInfo, buildLabel } from '../src/features/build-info';
@@ -61,6 +62,9 @@ export default function ParentHome() {
 
   return (
     <Screen>
+      {/* 새 낱말이 왔으면 맨 위에서 한 번 말해 준다. 부모도 같은 낱말을 쓴다. */}
+      <NewWordsCard />
+
       <Row style={{ justifyContent: 'space-between', paddingTop: spacing.lg, alignItems: 'center' }}>
         <Pressable style={s.who} onPress={() => router.push('/profiles')} accessibilityRole="button">
           <Text style={{ fontSize: 30 }}>{profile.avatar}</Text>

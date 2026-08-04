@@ -152,7 +152,11 @@ const MARKS = [
   ['아이가 국어를 켤 수 있다', 'app/settings-study.tsx', '무엇을 공부할까요'],
   ['아이도 일상 문장을 켤 수 있다', 'src/srs/childSession.ts', 'DAILY_PER_DAY'],
   ['알림 통로를 앱 켤 때 다 만들기', 'app/_layout.tsx', 'ensureNotificationChannels'],
-  ['판 정보가 눌리는 것으로 보이기', 'src/components/VersionButton.tsx', '판 정보 보기'],
+  ['판 정보를 네 자리로 적기', 'src/features/build-info.ts', 'export function versionLabel'],
+  ['문의를 메일로 보내기', 'src/components/FeedbackCard.tsx', 'yangpa93@gmail.com'],
+  ['공부할 갈래 줄 세우기', 'src/types.ts', 'export function moveSubject'],
+  ['연결 코드 복사 단추', 'src/components/ConnectParentCard.tsx', '코드 복사하기'],
+  ['국어와 일상 문장도 표로 뽑기', 'scripts/export-review.mjs', '국어-어휘.csv'],
 ];
 
 /* 판 번호도 같이 적는다. "몇 판을 받았나"가 제일 먼저 궁금한 것이다. */

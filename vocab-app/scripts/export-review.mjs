@@ -8,20 +8,45 @@
  * 뭘 외우고 있나" 확인하려면 타입스크립트 파일을 열어야 한다. 그건 확인이
  * 아니다. 표로 뽑아 두면 훑어보다가 이상한 것을 짚을 수 있다.
  *
- * 두 가지를 만든다.
- *   vocab.csv   — 엑셀·구글시트에서 열어 정렬하고 걸러 보는 용도.
- *                 예문 한 줄이 한 행이다.
- *   vocab.html  — 폰에서 그냥 열어 보는 용도. 검색과 레벨 고르기가 된다.
- *                 파일 하나로 끝나서 인터넷 없이도 열린다.
+ * 만드는 것.
+ *   영어-단어.csv   — 표제어 · 품사 · 뜻 · 유의어 · 반대말 · 예문 · 해석
+ *   국어-어휘.csv   — 표제어 · 한자 · 한자확인 · 갈래 · 분류 · 뜻 · 예문 · 출처
+ *   일상-문장.csv   — 주제 · 표현 · 문장 · 해석 · 언제 쓰는 말인지
+ *   vocab.csv       — 영어-단어.csv 와 같은 것. 예전 이름이라 같이 둔다.
+ *   vocab.html      — 폰에서 그냥 열어 보는 용도(영어). 검색과 레벨 고르기.
  *
  * 레벨 파일을 import 하지 않고 글자로 읽는 이유: 이 스크립트는 순수
  * node 로 돌아야 한다(엑스포 없이). audit.mjs 도 같은 방식이다.
+ *
+ * ── 글자로 읽는 것의 대가, 그리고 그 대가를 갚는 법 ─────────
+ *
+ * 글자로 읽으면 데이터 모양이 조금만 바뀌어도 **조용히** 안 읽힌다. 실제로
+ * 그렇게 당했다 — 윈도우에서 이 스크립트를 돌리면 예문이 **하나도** 안 나왔다.
+ * 파일이 CRLF 라 줄 끝에 `\r` 이 붙는데 예문 규칙만 줄 끝(`$`)을 물고 있어서
+ * 전부 흘렀다. 그런데 화면에는 "예문 0" 이라고만 적혀서, 예문이 원래 없는
+ * 것인지 못 읽은 것인지 알 수가 없었다. 확인하려고 만든 도구가 거짓말을 한
+ * 것이다.
+ *
+ * 그래서 **뽑고 나서 스스로 따져 본다**(맨 아래). 예문이 없는 표제어가 있으면
+ * 몇 개인지 적고 0 이 아닌 값으로 끝낸다. 뽑히지 않은 것을 뽑힌 것처럼
+ * 내놓느니 시끄럽게 실패하는 편이 낫다.
  */
 
 import { readFileSync, readdirSync, mkdirSync, writeFileSync } from 'node:fs';
 
 const OUT_DIR = process.argv[2] ?? 'review';
 const LEVEL_DIR = 'src/data/levels';
+const KO_DIR = 'src/data/korean/levels';
+const DAILY_FILE = 'src/data/daily/phrases.ts';
+
+/**
+ * 줄로 자른다. **`\r` 을 반드시 떼어 낸다.**
+ *
+ * 저장소 파일은 윈도우에서 CRLF 로 받아진다. `split('\n')` 만 하면 줄 끝에
+ * `\r` 이 남고, 줄 끝을 물고 있는 규칙은 전부 빗나간다. 리눅스에서는 잘 돌고
+ * 윈도우에서만 조용히 비는 — 가장 찾기 어려운 모양의 고장이다.
+ */
+const lines = (src) => src.split(/\r?\n/);
 
 /* ------------------------------------------------------------------ */
 /* 읽기                                                                */
@@ -49,7 +74,7 @@ for (const file of files) {
   let cur = null;
   let sense = null;
 
-  for (const [i, line] of src.split('\n').entries()) {
+  for (const [i, line] of lines(src).entries()) {
     const w = line.match(/^ {2}\{ w: '((?:[^'\\]|\\.)*)', p: '((?:[^'\\]|\\.)*)'/);
     if (w) {
       cur = { level, line: i + 1, word: unq(w[1]), pos: unq(w[2]), senses: [] };
@@ -71,11 +96,113 @@ for (const file of files) {
   }
 }
 
+/* ------------------------------------------------------------------ */
+/* 국어 어휘                                                            */
+/* ------------------------------------------------------------------ */
+
+/** 화면에 쓰는 갈래 이름. 파일 안에서는 영어 낱말로 적혀 있다. */
+const KO_CATEGORY = {
+  idiom: '사자성어',
+  concept: '개념어',
+  classic: '고전',
+  csat: '수능 어휘',
+};
+
+const koEntries = [];
+
+for (const file of readdirSync(KO_DIR)
+  .filter((f) => f.endsWith('.ts') && f !== 'index.ts')
+  .sort((a, b) => LEVEL_ORDER.indexOf(a.replace(/\.ts$/, '')) - LEVEL_ORDER.indexOf(b.replace(/\.ts$/, '')))) {
+  const src = readFileSync(`${KO_DIR}/${file}`, 'utf8');
+  const level = file.replace(/\.ts$/, '');
+
+  let category = '';
+  let cur = null;
+
+  for (const [i, line] of lines(src).entries()) {
+    // 갈래가 바뀌는 자리. defineKoLevel('m1-1', 'idiom', [
+    const cat = line.match(/defineKoLevel\('[^']+', '([a-z]+)'/);
+    if (cat) {
+      category = KO_CATEGORY[cat[1]] ?? cat[1];
+      continue;
+    }
+
+    /*
+     * 표제어 한 줄. 값들이 모두 여는 줄에 있다.
+     *   { w: '고진감래', h: '苦盡甘來', m: '고생 끝에…', e: [
+     *   { w: '감정이입', f: '문학', m: '화자의 감정을…', e: [
+     * h(한자) · v(한자 확인됨) · f(분류) 는 있을 수도 없을 수도 있다.
+     */
+    const w = line.match(/^\s*\{ w: '((?:[^'\\]|\\.)*)',(.*), e: \[/);
+    if (w) {
+      const rest = w[2];
+      const field = (name) => {
+        const m = rest.match(new RegExp(`${name}: '((?:[^'\\\\]|\\\\.)*)'`));
+        return m ? unq(m[1]) : '';
+      };
+      cur = {
+        level,
+        line: i + 1,
+        category,
+        word: unq(w[1]),
+        hanja: field('h'),
+        // v: false 는 '사전에서 한자를 확인하지 못했다'는 뜻이다. 안 적혀
+        // 있으면 확인된 것으로 본다 — 예외만 표시하는 편이 눈에 띈다.
+        hanjaChecked: /\bv: false\b/.test(rest) ? '못 함' : field('h') ? '확인' : '',
+        field: field('f'),
+        meaning: field('m'),
+        examples: [],
+      };
+      koEntries.push(cur);
+      continue;
+    }
+
+    // 예문 한 줄. { t: '…' } · 고전이면 g(현대어 풀이)·s(출처)가 붙는다.
+    const ex = line.match(/^\s*\{ t: '((?:[^'\\]|\\.)*)'(.*)\},?\s*$/);
+    if (ex && cur) {
+      const rest = ex[2];
+      const sub = (name) => {
+        const m = rest.match(new RegExp(`${name}: '((?:[^'\\\\]|\\\\.)*)'`));
+        return m ? unq(m[1]) : '';
+      };
+      cur.examples.push({ text: unq(ex[1]), gloss: sub('g'), source: sub('s') });
+    }
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* 일상 생활 문장                                                       */
+/* ------------------------------------------------------------------ */
+
+/**
+ * 이쪽은 JSON 그대로 박혀 있다(build-daily.mjs 가 그렇게 만든다). 그래서
+ * 글자로 더듬을 것 없이 통째로 읽어 파싱한다 — 읽을 수 있는 것을 굳이
+ * 규칙으로 더듬으면 어긋날 자리만 는다.
+ */
+const dailyThemes = (() => {
+  const src = readFileSync(DAILY_FILE, 'utf8');
+  /*
+   * 여는 대괄호를 `= [` 로 찾는다. 그냥 `[` 를 찾으면 **타입에 붙은 것**이
+   * 먼저 걸린다(`DailyTheme[]`). 실제로 그것 때문에 하나도 못 읽었고,
+   * 아래 자체 검사가 잡았다.
+   */
+  const at = src.indexOf('DAILY_THEMES');
+  if (at < 0) return [];
+  const open = src.indexOf('= [', at);
+  const end = src.lastIndexOf('];');
+  if (open < 0 || end < 0) return [];
+  try {
+    return JSON.parse(src.slice(open + 2, end + 1));
+  } catch {
+    return [];
+  }
+})();
+
 /** 반대말 표. 짝은 양방향이라 양쪽에 채운다. */
 const antonyms = {};
 {
   const src = readFileSync('src/data/antonyms.ts', 'utf8');
-  for (const line of src.split('\n')) {
+  for (const line of lines(src)) {
     const m = line.match(/^ {2}'([^']+)': \[(.*)\],\s*$/);
     if (!m) continue;
     const word = m[1];
@@ -131,12 +258,51 @@ for (const e of entries) {
   }
 }
 
-// 맨 앞의 BOM은 엑셀이 한글을 깨뜨리지 않게 하려고 붙인다.
-writeFileSync(
-  `${OUT_DIR}/vocab.csv`,
-  '﻿' + rows.map((r) => r.map(csvCell).join(',')).join('\n') + '\n',
-  'utf8',
-);
+/** 엑셀이 한글을 안 깨뜨리게 맨 앞에 BOM 을 붙인다. */
+function writeCsv(name, table) {
+  writeFileSync(
+    `${OUT_DIR}/${name}`,
+    '﻿' + table.map((r) => r.map(csvCell).join(',')).join('\n') + '\n',
+    'utf8',
+  );
+}
+
+writeCsv('영어-단어.csv', rows);
+// 예전 이름. 이걸로 알고 계신 분이 있어 같이 둔다.
+writeCsv('vocab.csv', rows);
+
+/* ── 국어 어휘 ─────────────────────────────────────────────── */
+
+const koRows = [
+  ['레벨', '갈래', '표제어', '한자', '한자 확인', '분류', '뜻', '예문', '현대어 풀이', '출처'],
+];
+for (const e of koEntries) {
+  const head = [
+    LEVEL_LABEL[e.level],
+    e.category,
+    e.word,
+    e.hanja,
+    e.hanjaChecked,
+    e.field,
+    e.meaning,
+  ];
+  if (e.examples.length === 0) {
+    koRows.push([...head, '', '', '']);
+    continue;
+  }
+  for (const x of e.examples) koRows.push([...head, x.text, x.gloss, x.source]);
+}
+writeCsv('국어-어휘.csv', koRows);
+
+/* ── 일상 생활 문장 ─────────────────────────────────────────── */
+
+const dailyRows = [['주제', '표현', '원래 표제어', '문장', '해석', '언제 쓰는 말인지']];
+for (const t of dailyThemes) {
+  for (const p of t.phrases ?? []) {
+    dailyRows.push([t.label, p.word, p.keyExpression, p.en, p.ko, p.note]);
+  }
+}
+writeCsv('일상-문장.csv', dailyRows);
 
 /* ------------------------------------------------------------------ */
 /* HTML — 폰에서 그냥 열어 보는 용도                                    */
@@ -323,6 +489,67 @@ render();
 
 writeFileSync(`${OUT_DIR}/vocab.html`, html, 'utf8');
 
-console.log(`표제어 ${totals.words} · 뜻 ${totals.senses} · 예문 ${totals.examples}`);
-console.log(`  ${OUT_DIR}/vocab.csv   — 엑셀·구글시트용 (${rows.length - 1}행)`);
-console.log(`  ${OUT_DIR}/vocab.html  — 폰에서 열어 보는 용도`);
+/* ------------------------------------------------------------------ */
+/* 뽑은 것을 스스로 따져 본다                                            */
+/* ------------------------------------------------------------------ */
+
+/*
+ * **확인하려고 만든 도구가 거짓말을 하면 안 된다.**
+ *
+ * 윈도우에서 이 스크립트는 예문을 하나도 못 뽑고 있었다(줄 끝 `\r`). 그런데
+ * 화면에는 "예문 0" 이라고만 적혀서, 예문이 원래 없는 것인지 못 읽은 것인지
+ * 알 수가 없었다. 글자로 읽는 도구는 데이터 모양이 조금만 바뀌어도 조용히
+ * 비는데, 조용히 비는 것이 이 도구에서는 제일 나쁜 일이다.
+ *
+ * 그래서 뽑고 나서 따진다. 이상하면 시끄럽게 실패한다.
+ */
+const koExamples = koEntries.reduce((n, e) => n + e.examples.length, 0);
+const dailyCount = dailyThemes.reduce((n, t) => n + (t.phrases?.length ?? 0), 0);
+
+const complaints = [];
+if (totals.words === 0) complaints.push('영어 표제어를 하나도 못 읽었습니다.');
+if (totals.examples === 0) complaints.push('영어 예문을 하나도 못 읽었습니다.');
+if (koEntries.length === 0) complaints.push('국어 표제어를 하나도 못 읽었습니다.');
+if (koExamples === 0) complaints.push('국어 예문을 하나도 못 읽었습니다.');
+if (dailyCount === 0) complaints.push('일상 문장을 하나도 못 읽었습니다.');
+
+/* 낱낱이 비어 있는 것도 센다. 데이터 구멍일 수도, 못 읽은 것일 수도 있다. */
+const enNoEx = entries.filter((e) => e.senses.every((s) => s.examples.length === 0));
+const koNoEx = koEntries.filter((e) => e.examples.length === 0);
+
+console.log('');
+console.log('  뽑았습니다 ' + '─'.repeat(46));
+console.log('');
+console.log(`  영어      표제어 ${totals.words} · 뜻 ${totals.senses} · 예문 ${totals.examples}`);
+console.log(`  국어      표제어 ${koEntries.length} · 예문 ${koExamples}`);
+console.log(`  일상 문장 ${dailyCount}`);
+console.log('');
+console.log(`  ${OUT_DIR}/영어-단어.csv   (${rows.length - 1}행)`);
+console.log(`  ${OUT_DIR}/국어-어휘.csv   (${koRows.length - 1}행)`);
+console.log(`  ${OUT_DIR}/일상-문장.csv   (${dailyRows.length - 1}행)`);
+console.log(`  ${OUT_DIR}/vocab.html      — 폰에서 열어 보는 용도(영어)`);
+console.log('');
+console.log('  엑셀로 여시면 됩니다. 한글이 안 깨지게 만들어 두었습니다.');
+
+if (enNoEx.length > 0 || koNoEx.length > 0) {
+  console.log('');
+  console.log('  ⚠️  예문이 하나도 없는 표제어');
+  if (enNoEx.length > 0) {
+    console.log(`      영어 ${enNoEx.length}개 — ${enNoEx.slice(0, 5).map((e) => e.word).join(', ')}`);
+  }
+  if (koNoEx.length > 0) {
+    console.log(`      국어 ${koNoEx.length}개 — ${koNoEx.slice(0, 5).map((e) => e.word).join(', ')}`);
+  }
+}
+
+if (complaints.length > 0) {
+  console.log('');
+  for (const c of complaints) console.log(`  ❌ ${c}`);
+  console.log('');
+  console.log('     데이터가 비었거나, 이 스크립트가 못 읽고 있는 것입니다.');
+  console.log('     뽑히지 않은 것을 뽑힌 것처럼 내놓지 않으려고 여기서 멈춥니다.');
+  console.log('');
+  process.exitCode = 1;
+} else {
+  console.log('');
+}

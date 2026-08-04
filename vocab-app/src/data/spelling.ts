@@ -34,8 +34,6 @@ export interface Variant {
 
 export const VARIANTS: Variant[] = [
   // -our / -or
-  { br: 'colour', us: 'color', kind: 'spelling' },
-  { br: 'favourite', us: 'favorite', kind: 'spelling' },
   { br: 'flavour', us: 'flavor', kind: 'spelling' },
   { br: 'harbour', us: 'harbor', kind: 'spelling' },
   { br: 'honour', us: 'honor', kind: 'spelling' },
@@ -51,9 +49,6 @@ export const VARIANTS: Variant[] = [
   // -ce / -se
   { br: 'defence', us: 'defense', kind: 'spelling' },
   // 그 밖의 철자
-  { br: 'aeroplane', us: 'airplane', kind: 'spelling' },
-  { br: 'grey', us: 'gray', kind: 'spelling' },
-  { br: 'programme', us: 'program', kind: 'spelling' },
 
   // 낱말 자체가 다른 것
   { br: 'petrol', us: 'gasoline', kind: 'usage' },

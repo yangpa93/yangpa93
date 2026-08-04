@@ -9,13 +9,6 @@
 import { defineLevel } from '../define';
 
 export const M2_4 = defineLevel('m2-4', [
-  { w: 'ant', p: 'n.', s: [
-    { m: '개미', syn: [], ex: [
-      ['Ants work together all day.', '개미는 하루 종일 함께 일한다.'],
-      ['An ant crawled up my arm.', '개미 한 마리가 내 팔을 기어올랐다.'],
-      ['Ants live in large groups.', '개미는 큰 무리를 지어 산다.'],
-    ]},
-  ]},
   { w: 'anxious', p: 'adj.', s: [
     { m: '불안한, 걱정하는', syn: ['worried'], ex: [
       ['She felt anxious before the test.', '그녀는 시험 전에 불안했다.'],

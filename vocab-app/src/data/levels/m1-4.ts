@@ -194,13 +194,6 @@ export const M1_4 = defineLevel('m1-4', [
       ['She hopes for good weather tomorrow.', '그녀는 내일 좋은 날씨이기를 바란다.'],
     ]},
   ]},
-  { w: 'horse', p: 'n.', s: [
-    { m: '말', syn: [], ex: [
-      ['The horse runs very fast.', '그 말은 아주 빨리 달린다.'],
-      ['She rode a horse for the first time.', '그녀는 처음으로 말을 탔다.'],
-      ['Horses eat grass and hay.', '말은 풀과 건초를 먹는다.'],
-    ]},
-  ]},
   { w: 'hospital', p: 'n.', s: [
     { m: '병원', syn: [], ex: [
       ['He works at a hospital.', '그는 병원에서 일한다.'],
@@ -283,13 +276,6 @@ export const M1_4 = defineLevel('m1-4', [
       ['Her husband is a firefighter.', '그녀의 남편은 소방관이다.'],
       ['She met her husband in college.', '그녀는 대학에서 남편을 만났다.'],
       ['My aunt and her husband came to visit.', '이모와 이모부가 놀러 오셨다.'],
-    ]},
-  ]},
-  { w: 'ice', p: 'n.', s: [
-    { m: '얼음', syn: [], ex: [
-      ['The ice on the lake is thick.', '호수의 얼음이 두껍다.'],
-      ['Put some ice in my drink.', '음료에 얼음을 좀 넣어 주세요.'],
-      ['The ice melted quickly.', '얼음이 빨리 녹았다.'],
     ]},
   ]},
   { w: 'idea', p: 'n.', s: [
@@ -407,13 +393,6 @@ export const M1_4 = defineLevel('m1-4', [
       ['The issue was solved quickly.', '그 문제는 빨리 해결되었다.'],
     ]},
   ]},
-  { w: 'it', p: 'pron.', s: [
-    { m: '그것', syn: [], ex: [
-      ['It is my favorite book.', '그것은 내가 제일 좋아하는 책이다.'],
-      ['Put it on the table.', '그것을 탁자 위에 놓아라.'],
-      ['It looks very old.', '그것은 아주 낡아 보인다.'],
-    ]},
-  ]},
   { w: 'jacket', p: 'n.', s: [
     { m: '재킷, 웃옷', syn: [], ex: [
       ['He wore a black jacket.', '그는 검은 재킷을 입었다.'],
@@ -512,20 +491,6 @@ export const M1_4 = defineLevel('m1-4', [
     { m: '종류', syn: ['type', 'sort'], ex: [
       ['What kind of music do you like?', '너는 어떤 종류의 음악을 좋아하니?'],
       ['They sell many kinds of bread.', '그들은 여러 종류의 빵을 판다.'],
-    ]},
-  ]},
-  { w: 'king', p: 'n.', s: [
-    { m: '왕', syn: [], ex: [
-      ['The king lived in a palace.', '왕은 궁전에 살았다.'],
-      ['A wise king helps his people.', '현명한 왕은 백성을 돕는다.'],
-      ['He played the king in the play.', '그는 연극에서 왕 역을 맡았다.'],
-    ]},
-  ]},
-  { w: 'kiss', p: 'v.', s: [
-    { m: '입 맞추다', syn: [], ex: [
-      ['She kissed her baby gently.', '그녀는 아기에게 부드럽게 입 맞췄다.'],
-      ['He kissed his mother goodbye.', '그는 어머니께 작별 입맞춤을 했다.'],
-      ['They kissed and said goodbye.', '그들은 입을 맞추고 작별했다.'],
     ]},
   ]},
   { w: 'kitchen', p: 'n.', s: [
@@ -842,13 +807,6 @@ export const M1_4 = defineLevel('m1-4', [
       ['She wants to make friends with everyone.', '그녀는 모두와 친해지고 싶어 한다.'],
     ]},
   ]},
-  { w: 'man', p: 'n.', s: [
-    { m: '남자, 사람', syn: [], ex: [
-      ['A man is waiting outside.', '한 남자가 밖에서 기다린다.'],
-      ['That man is my uncle.', '저 남자는 우리 삼촌이다.'],
-      ['Every man has a name.', '누구에게나 이름이 있다.'],
-    ]},
-  ]},
   { w: 'many', p: 'adj.', s: [
     { m: '많은', syn: ['a lot of'], ex: [
       ['Many students joined the club.', '많은 학생이 동아리에 가입했다.'],
@@ -884,25 +842,11 @@ export const M1_4 = defineLevel('m1-4', [
       ['My sister is getting married in May.', '내 언니는 5월에 결혼한다.'],
     ]},
   ]},
-  { w: 'math', p: 'n.', s: [
-    { m: '수학', syn: ['mathematics'], ex: [
-      ['Math is my favorite subject.', '수학은 내가 제일 좋아하는 과목이다.'],
-      ['We have a math test tomorrow.', '우리는 내일 수학 시험이 있다.'],
-      ['She is good at math.', '그녀는 수학을 잘한다.'],
-    ]},
-  ]},
   { w: 'mathematics', p: 'n.', s: [
     { m: '수학', syn: ['math'], ex: [
       ['Mathematics is used in science.', '수학은 과학에 쓰인다.'],
       ['He teaches mathematics at school.', '그는 학교에서 수학을 가르친다.'],
       ['Mathematics needs a lot of practice.', '수학은 연습이 많이 필요하다.'],
-    ]},
-  ]},
-  { w: 'maths', p: 'n.', s: [
-    { m: '수학 (영국식)', syn: ['math'], ex: [
-      ['She studies maths every evening.', '그녀는 매일 저녁 수학을 공부한다.'],
-      ['Maths was hard for me.', '수학은 나에게 어려웠다.'],
-      ['We had a maths lesson today.', '우리는 오늘 수학 수업이 있었다.'],
     ]},
   ]},
   { w: 'may', p: 'aux.', s: [
@@ -962,13 +906,6 @@ export const M1_4 = defineLevel('m1-4', [
       ['She might come later.', '그녀가 나중에 올지도 모른다.'],
       ['It might snow tonight.', '오늘 밤 눈이 올지도 모른다.'],
       ['He might not know the answer.', '그는 답을 모를지도 모른다.'],
-    ]},
-  ]},
-  { w: 'milk', p: 'n.', s: [
-    { m: '우유', syn: [], ex: [
-      ['I drink milk every morning.', '나는 매일 아침 우유를 마신다.'],
-      ['The milk went bad.', '우유가 상했다.'],
-      ['Cows give us milk.', '소는 우리에게 우유를 준다.'],
     ]},
   ]},
   { w: 'mind', p: 'n., v.', s: [
@@ -1040,25 +977,11 @@ export const M1_4 = defineLevel('m1-4', [
       ['See you tomorrow morning.', '내일 아침에 보자.'],
     ]},
   ]},
-  { w: 'mother', p: 'n.', s: [
-    { m: '어머니', syn: ['mom'], ex: [
-      ['My mother cooks very well.', '우리 어머니는 요리를 아주 잘하신다.'],
-      ['She became a mother last year.', '그녀는 작년에 어머니가 되었다.'],
-      ['His mother works at a school.', '그의 어머니는 학교에서 일하신다.'],
-    ]},
-  ]},
   { w: 'mountain', p: 'n.', s: [
     { m: '산', syn: [], ex: [
       ['We climbed the mountain last Sunday.', '우리는 지난 일요일에 산을 올랐다.'],
       ['That mountain is covered with snow.', '저 산은 눈으로 덮여 있다.'],
       ['There are many mountains in Korea.', '한국에는 산이 많다.'],
-    ]},
-  ]},
-  { w: 'mouse', p: 'n.', s: [
-    { m: '쥐, 마우스', syn: [], ex: [
-      ['The cat caught a mouse.', '고양이가 쥐를 잡았다.'],
-      ['Click the mouse twice.', '마우스를 두 번 클릭해라.'],
-      ['A mouse ran under the desk.', '쥐 한 마리가 책상 밑으로 달아났다.'],
     ]},
   ]},
   { w: 'mouth', p: 'n.', s: [
@@ -1106,13 +1029,6 @@ export const M1_4 = defineLevel('m1-4', [
       ['She must be tired.', '그녀는 피곤할 것이 틀림없다.'],
     ]},
   ]},
-  { w: 'name', p: 'n.', s: [
-    { m: '이름', syn: [], ex: [
-      ['What is your name?', '이름이 뭐니?'],
-      ['Write your name here.', '여기에 이름을 쓰세요.'],
-      ['I forgot her name.', '나는 그녀의 이름을 잊어버렸다.'],
-    ]},
-  ]},
   { w: 'nation', p: 'n.', s: [
     { m: '나라, 국가', syn: ['country'], ex: [
       ['Korea is a small nation.', '한국은 작은 나라다.'],
@@ -1128,13 +1044,6 @@ export const M1_4 = defineLevel('m1-4', [
     { m: '본성, 성질', syn: ['character'], ex: [
       ['It is human nature to make mistakes.', '실수하는 것은 인간의 본성이다.'],
       ['She has a gentle nature.', '그녀는 온화한 성품을 지녔다.'],
-    ]},
-  ]},
-  { w: 'nay', p: 'adv.', s: [
-    { m: '아니 (옛 말투)', syn: ['no'], ex: [
-      ['He said nay to the plan.', '그는 그 계획에 반대했다.'],
-      ['Nay, that is not true.', '아니, 그것은 사실이 아니다.'],
-      ['She answered nay without thinking.', '그녀는 생각 없이 아니라고 답했다.'],
     ]},
   ]},
   { w: 'near', p: 'prep.', s: [

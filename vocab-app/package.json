@@ -62,6 +62,7 @@
     "data:idioms": "node scripts/fetch-idioms.mjs idioms-ref.json && node scripts/verify-idioms.mjs idioms-ref.json",
     "data:korean": "node scripts/korean/update-korean.mjs",
     "apply-korean": "node scripts/korean/apply-review.mjs",
+    "apply-english": "node scripts/apply-english.mjs",
     "data:import": "node scripts/import-csv.mjs",
     "preflight": "node scripts/preflight.mjs",
     "relink": "node scripts/relink-eas.mjs",

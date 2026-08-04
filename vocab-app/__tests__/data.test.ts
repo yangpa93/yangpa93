@@ -467,11 +467,25 @@ describe('영국식·미국식 짝(spelling.ts)', () => {
     }
   });
 
+  /*
+   * 교과서와 수능은 미국식이다. 영국식을 만났을 때 그것을 짚어 주는 것이
+   * 이 기능의 핵심이다.
+   *
+   * **낱말 하나를 박아 두지 않는다.** 예전에는 aeroplane 으로 시험했는데,
+   * 어휘를 정리하면서 그 짝(airplane)이 빠지자 짝 자체가 없어져 이 시험이
+   * 터졌다. 규칙은 멀쩡한데 고른 보기가 사라진 것이다.
+   *
+   * 지금은 남아 있는 짝을 전부 훑는다. 무엇이 빠지든 하나라도 남아 있으면
+   * 규칙이 지켜지는지 확인된다.
+   */
   it('철자만 다른 짝은 우리나라 시험 기준(미국식)을 알려 준다', () => {
-    // 교과서와 수능은 미국식이다. 영국식을 만났을 때 그것을 짚어 주는 것이
-    // 이 기능의 핵심이다.
-    const br = variantOf('aeroplane')!;
-    expect(br.other).toBe('airplane');
-    expect(br.text).toContain('airplane');
+    const spelling = VARIANTS.filter((v) => v.kind === 'spelling');
+    expect(spelling.length).toBeGreaterThan(0);
+
+    for (const v of spelling) {
+      const br = variantOf(v.br)!;
+      expect(br.other).toBe(v.us);
+      expect(br.text).toContain(v.us);
+    }
   });
 });

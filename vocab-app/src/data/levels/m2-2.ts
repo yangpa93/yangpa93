@@ -142,20 +142,6 @@ export const M2_2 = defineLevel('m2-2', [
       ['We set a date for the meeting.', '우리는 회의 날짜를 정했다.'],
     ]},
   ]},
-  { w: 'seven', p: 'num.', s: [
-    { m: '일곱, 7', syn: [], ex: [
-      ['There are seven days in a week.', '일주일은 7일이다.'],
-      ['The train leaves at seven.', '기차는 7시에 떠난다.'],
-      ['She has seven cousins.', '그녀는 사촌이 일곱 명이다.'],
-    ]},
-  ]},
-  { w: 'she', p: 'pron.', s: [
-    { m: '그녀', syn: [], ex: [
-      ['She is my sister.', '그녀는 내 여동생이다.'],
-      ['She runs every morning.', '그녀는 매일 아침 달린다.'],
-      ['She said nothing to me.', '그녀는 나에게 아무 말도 하지 않았다.'],
-    ]},
-  ]},
   { w: 'ship', p: 'n.', s: [
     { m: '배, 선박', syn: [], ex: [
       ['The ship left the port at dawn.', '배는 새벽에 항구를 떠났다.'],
@@ -297,13 +283,6 @@ export const M2_2 = defineLevel('m2-2', [
       ['The sky is clear today.', '오늘 하늘이 맑다.'],
       ['Birds flew across the sky.', '새들이 하늘을 가로질러 날았다.'],
       ['The sky turned dark before the storm.', '폭풍 전에 하늘이 어두워졌다.'],
-    ]},
-  ]},
-  { w: 'sleep', p: 'v., n.', s: [
-    { m: '자다, 잠', syn: [], ex: [
-      ['I sleep eight hours every night.', '나는 매일 밤 여덟 시간 잔다.'],
-      ['He slept well last night.', '그는 어젯밤에 잘 잤다.'],
-      ['The baby is sleeping now.', '아기가 지금 자고 있다.'],
     ]},
   ]},
   { w: 'slow', p: 'adj.', s: [
@@ -616,13 +595,6 @@ export const M2_2 = defineLevel('m2-2', [
       ['She visited Europe last summer.', '그녀는 지난여름 유럽을 방문했다.'],
     ]},
   ]},
-  { w: 'sun', p: 'n.', s: [
-    { m: '해, 태양', syn: [], ex: [
-      ['The sun rises in the east.', '해는 동쪽에서 뜬다.'],
-      ['The sun is very bright today.', '오늘 햇빛이 아주 밝다.'],
-      ['Plants need the sun to grow.', '식물은 자라려면 해가 필요하다.'],
-    ]},
-  ]},
   { w: 'sunny', p: 'adj.', s: [
     { m: '화창한, 햇볕이 잘 드는', syn: [], ex: [
       ['It is sunny and warm today.', '오늘은 화창하고 따뜻하다.'],
@@ -773,13 +745,6 @@ export const M2_2 = defineLevel('m2-2', [
       ['He is telling his plan.', '그는 자기 계획을 말하고 있다.'],
     ]},
   ]},
-  { w: 'ten', p: 'num.', s: [
-    { m: '열, 10', syn: [], ex: [
-      ['I have ten fingers.', '나는 손가락이 열 개다.'],
-      ['The class ends at ten.', '수업은 10시에 끝난다.'],
-      ['She read ten books.', '그녀는 책 열 권을 읽었다.'],
-    ]},
-  ]},
   { w: 'tennis', p: 'n.', s: [
     { m: '테니스', syn: [], ex: [
       ['They play tennis on Sunday.', '그들은 일요일에 테니스를 친다.'],
@@ -836,25 +801,11 @@ export const M2_2 = defineLevel('m2-2', [
       ['Give me that book.', '그 책을 나에게 줘.'],
     ]},
   ]},
-  { w: 'the', p: 'art.', s: [
-    { m: '그 (정관사)', syn: [], ex: [
-      ['The book on the desk is mine.', '책상 위의 책은 내 것이다.'],
-      ['Close the door, please.', '문을 닫아 주세요.'],
-      ['The sun is bright today.', '오늘 해가 밝다.'],
-    ]},
-  ]},
   { w: 'there', p: 'adv.', s: [
     { m: '거기에', syn: [], ex: [
       ['Put the box over there.', '상자를 저기에 놓아라.'],
       ['She has been there before.', '그녀는 전에 거기 가 본 적이 있다.'],
       ['There is a park near here.', '이 근처에 공원이 있다.'],
-    ]},
-  ]},
-  { w: 'they', p: 'pron.', s: [
-    { m: '그들', syn: [], ex: [
-      ['They are my classmates.', '그들은 내 반 친구들이다.'],
-      ['They went home early.', '그들은 일찍 집에 갔다.'],
-      ['They will come tomorrow.', '그들은 내일 올 것이다.'],
     ]},
   ]},
   { w: 'thing', p: 'n.', s: [
@@ -911,20 +862,6 @@ export const M2_2 = defineLevel('m2-2', [
       ['The class has thirty students.', '그 반은 학생이 서른 명이다.'],
       ['He is thirty years old.', '그는 서른 살이다.'],
       ['We waited thirty minutes.', '우리는 30분을 기다렸다.'],
-    ]},
-  ]},
-  { w: 'this', p: 'pron.', s: [
-    { m: '이것', syn: [], ex: [
-      ['This is my notebook.', '이것은 내 공책이다.'],
-      ['Read this before you go.', '가기 전에 이것을 읽어라.'],
-      ['This tastes very good.', '이것은 아주 맛있다.'],
-    ]},
-  ]},
-  { w: 'three', p: 'num.', s: [
-    { m: '셋, 3', syn: [], ex: [
-      ['I have three brothers.', '나는 남자 형제가 셋이다.'],
-      ['The movie is three hours long.', '그 영화는 세 시간짜리다.'],
-      ['Three birds sat on the wire.', '새 세 마리가 전선에 앉았다.'],
     ]},
   ]},
   { w: 'ticket', p: 'n.', s: [
@@ -1037,13 +974,6 @@ export const M2_2 = defineLevel('m2-2', [
       ['I grew up in a small town.', '나는 작은 마을에서 자랐다.'],
       ['The town has only one school.', '그 마을에는 학교가 하나뿐이다.'],
       ['Many people left the town.', '많은 사람이 그 마을을 떠났다.'],
-    ]},
-  ]},
-  { w: 'toy', p: 'n.', s: [
-    { m: '장난감', syn: [], ex: [
-      ['The baby likes this toy.', '아기는 이 장난감을 좋아한다.'],
-      ['Put your toys in the box.', '장난감을 상자에 넣어라.'],
-      ['He bought a new toy.', '그는 새 장난감을 샀다.'],
     ]},
   ]},
   { w: 'track', p: 'n.', s: [

@@ -802,13 +802,6 @@ export const M2_3 = defineLevel('m2-3', [
       ['She built a simple website.', '그녀는 간단한 웹사이트를 만들었다.'],
     ]},
   ]},
-  { w: 'wedding', p: 'n.', s: [
-    { m: '결혼식', syn: [], ex: [
-      ['We went to their wedding.', '우리는 그들의 결혼식에 갔다.'],
-      ['The wedding was in May.', '결혼식은 5월에 있었다.'],
-      ['She wore a white dress at the wedding.', '그녀는 결혼식에서 흰 드레스를 입었다.'],
-    ]},
-  ]},
   { w: 'week', p: 'n.', s: [
     { m: '주, 일주일', syn: [], ex: [
       ['We meet once a week.', '우리는 일주일에 한 번 만난다.'],
@@ -1054,20 +1047,6 @@ export const M2_3 = defineLevel('m2-3', [
       ['The leaves turned yellow.', '잎이 노랗게 변했다.'],
     ]},
   ]},
-  { w: 'yep', p: 'int.', s: [
-    { m: '응, 그래 (구어)', syn: ['yes'], ex: [
-      ['Yep, that is right.', '응, 맞아.'],
-      ['He answered yep without looking.', '그는 보지도 않고 응이라고 답했다.'],
-      ['Yep, I will be there.', '응, 나 갈게.'],
-    ]},
-  ]},
-  { w: 'yes', p: 'int.', s: [
-    { m: '네, 그렇다', syn: ['yeah'], ex: [
-      ['Yes, I understand.', '네, 이해합니다.'],
-      ['She said yes to the plan.', '그녀는 그 계획에 찬성했다.'],
-      ['Yes, that is my bag.', '네, 그것이 제 가방입니다.'],
-    ]},
-  ]},
   { w: 'yesterday', p: 'n.', s: [
     { m: '어제', syn: [], ex: [
       ['It rained yesterday.', '어제 비가 왔다.'],
@@ -1075,25 +1054,11 @@ export const M2_3 = defineLevel('m2-3', [
       ['Yesterday was very busy.', '어제는 아주 바빴다.'],
     ]},
   ]},
-  { w: 'you', p: 'pron.', s: [
-    { m: '너, 당신', syn: [], ex: [
-      ['You are my best friend.', '너는 내 가장 친한 친구다.'],
-      ['Can you help me?', '나를 도와줄 수 있니?'],
-      ['You should sleep early.', '너는 일찍 자야 한다.'],
-    ]},
-  ]},
   { w: 'young', p: 'adj.', s: [
     { m: '어린, 젊은', syn: [], ex: [
       ['She is too young to drive.', '그녀는 운전하기에 너무 어리다.'],
       ['Young people learn quickly.', '젊은 사람들은 빨리 배운다.'],
       ['He looks young for his age.', '그는 나이에 비해 젊어 보인다.'],
-    ]},
-  ]},
-  { w: 'zoo', p: 'n.', s: [
-    { m: '동물원', syn: [], ex: [
-      ['We saw lions at the zoo.', '우리는 동물원에서 사자를 보았다.'],
-      ['The zoo opens at nine.', '동물원은 9시에 문을 연다.'],
-      ['She works at a zoo.', '그녀는 동물원에서 일한다.'],
     ]},
   ]},
 ], 'curriculum');

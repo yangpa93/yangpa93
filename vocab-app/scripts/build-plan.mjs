@@ -66,8 +66,25 @@ function readList(path) {
  *
  * `okey` 는 바로 윗줄 `okay` 를 옮겨 적다 난 오타다. 원본 파일은 교육부 별표를
  * 그대로 옮긴 것이라 손대지 않고, 배치할 때만 뺀다.
+ *
+ * ── data/not-taught.json ────────────────────────────────────
+ *
+ * 나머지는 파일에 적어 둔다. 표를 보시고 "이건 초등학교 수준이라 뺀다" 고
+ * 정하신 것들이 여기 쌓인다(scripts/apply-english.mjs 가 적는다).
+ *
+ * **원본 목록은 여전히 손대지 않는다.** 교육부 목록은 있는 그대로 두어야
+ * 나중에 "이 낱말이 원래 목록에 있었나" 를 확인할 수 있다. 무엇을 왜 뺐는지는
+ * 그 파일에 이유와 함께 남는다. 국어 쪽 corrections.json 과 같은 생각이다.
  */
 const DROP = new Set(['okey']);
+try {
+  const notTaught = JSON.parse(readFileSync('data/not-taught.json', 'utf8'));
+  for (const word of Object.keys(notTaught)) {
+    if (!word.startsWith('_')) DROP.add(word);
+  }
+} catch {
+  // 없으면 okey 하나만 뺀다.
+}
 
 /** 난이도 층이 맡는 레벨 구간. [시작, 끝) — LEVELS 의 자리 번호다. */
 const TIER_RANGE = {

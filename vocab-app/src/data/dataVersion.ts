@@ -32,7 +32,7 @@
  */
 
 /** 지금 이 묶음에 들어 있는 어휘 판. 맨 앞 항목의 version 과 같아야 한다. */
-export const DATA_VERSION = '2026.08.04';
+export const DATA_VERSION = '2026.08.04-2';
 
 export interface DataRelease {
   /** `yyyy.mm.dd` — 하루에 두 번이면 `yyyy.mm.dd-2` */
@@ -65,6 +65,19 @@ export interface DataRelease {
 
 /** 새 판이 맨 앞. 화면도 이 순서 그대로 보여준다. */
 export const DATA_RELEASES: DataRelease[] = [
+  {
+    version: '2026.08.04-2',
+    date: '2026-08-04',
+    // 초등학교 수준 낱말 108개를 뺐다. 아이들이 이미 아는 것을 다시 묻느라
+    // 하루치가 채워지면 정작 배울 것을 못 만난다.
+    en: -108,
+    ko: 0,
+    daily: 0,
+    note: '초등학교 때 배우는 쉬운 영어 낱말 108개를 뺐어요. 중학교 낱말부터 만납니다.',
+    totalEn: 3582,
+    totalKo: 1282,
+    totalDaily: 80,
+  },
   {
     version: '2026.08.04',
     date: '2026-08-04',

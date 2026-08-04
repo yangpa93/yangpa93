@@ -153,21 +153,51 @@ describe('실제 데이터', () => {
     }
   });
 
-  it('같은 길이 짝이 모자란 성어에는 문제를 내지 않는다', () => {
-    // 석 자(미봉책·등용문)와 다섯 자(가정맹어호·빙탄불상용)는 각각 둘뿐이라
-    // 오답 셋을 채울 수 없다. 억지로 넉 자를 섞느니 다른 유형으로 낸다.
+  /*
+   * 넉 자가 아닌 성어는 **같은 길이 짝이 셋 있으면** 문제를 낼 수 있고,
+   * 모자라면 아예 안 낸다.
+   *
+   * 예전에는 "석 자와 다섯 자는 각각 둘뿐이니 전부 못 낸다" 고 적어 두었다.
+   * 그런데 다섯 자 성어의 한자를 사전에서 확인하면서 넷이 되었고
+   * (가정맹어호 · 빙탄불상용 · 십년마일검 · 일각여삼추) 이제 낼 수 있게 됐다.
+   * 좋아진 것이다.
+   *
+   * 그래서 **그때의 개수가 아니라 규칙을 적는다.** 개수를 적어 두면 데이터가
+   * 좋아질 때마다 시험이 빨갛게 되고, 빨간 줄을 고치다 보면 규칙이 흐려진다.
+   */
+  it('넉 자가 아닌 성어는 짝이 차면 내고 모자라면 안 낸다', () => {
     const odd = idioms.filter((e) => canHanja(e) && chars(e.hanja).length !== 4);
     expect(odd.length).toBeGreaterThan(0);
+
     for (const e of odd) {
-      expect(buildHanjaChoices(e, idioms, () => 0.5)).toEqual([]);
+      const len = chars(e.hanja).length;
+      const peers = idioms.filter(
+        (x) => x.id !== e.id && canHanja(x) && chars(x.hanja).length === len,
+      );
+      const choices = buildHanjaChoices(e, idioms, () => 0.5);
+
+      if (peers.length < 3) {
+        // 오답 셋을 못 채운다. 억지로 넉 자를 섞느니 다른 유형으로 낸다.
+        expect(choices).toEqual([]);
+      } else {
+        expect(choices).toHaveLength(4);
+        // 글자 수가 섞이면 그것만 눈에 띄어 답이 아님이 바로 보인다.
+        expect(choices.every((c) => chars(c.hanja).length === len)).toBe(true);
+      }
     }
   });
 
-  it('확인 못 한 사자성어에는 문제를 내지 않는다', () => {
+  /*
+   * **지금은 확인 못 한 성어가 하나도 없다.** 사자성어 한자를 전부 표준국어
+   * 대사전과 대조했고, 사전에 없어 확인이 안 되던 열아홉 개는 회원님이
+   * 하나씩 찾아 확인하거나 빼 주셨다.
+   *
+   * 규칙 자체(확인 못 한 한자로는 문제를 안 낸다)는 위쪽 시험들이 지어낸
+   * 성어로 지킨다. 여기서는 **실제 데이터에 하나도 안 남았다는 것**을 못박는다.
+   * 이 줄이 빨개지면 확인 안 한 한자가 다시 들어왔다는 뜻이다.
+   */
+  it('확인 못 한 사자성어가 하나도 없다', () => {
     const unsure = idioms.filter((e) => !e.hanjaVerified);
-    expect(unsure.length).toBeGreaterThan(0);
-    for (const e of unsure) {
-      expect(buildHanjaChoices(e, idioms, () => 0.5)).toEqual([]);
-    }
+    expect(unsure.map((e) => e.word)).toEqual([]);
   });
 });

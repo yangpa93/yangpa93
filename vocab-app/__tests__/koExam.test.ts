@@ -89,10 +89,22 @@ describe('koGameFor', () => {
     expect(koGameFor(target, idioms, 0)).toBe('hanja');
   });
 
+  /*
+   * **지어낸 성어로 시험한다.**
+   *
+   * 예전에는 실제 데이터에서 확인 못 한 것을 하나 골라 썼다. 그런데 사자성어
+   * 한자를 전부 사전에서 확인하면서 그런 것이 **하나도 안 남았고**, 그 순간
+   * 이 시험이 고를 것이 없어 터졌다.
+   *
+   * 지키려는 것은 데이터가 아니라 **규칙**이다 — 확인 못 한 한자로는 한자
+   * 문제를 안 낸다. 나중에 새 성어를 더하다가 확인 못 한 것이 다시 생길 수
+   * 있고, 그때 이 규칙이 살아 있어야 한다. 규칙을 지키는 시험이 데이터가
+   * 좋아졌다고 없어지면 안 된다.
+   */
   it('확인 못 한 사자성어는 한자를 안 묻는다', () => {
-    const unsure = KO_ENTRIES.find((e) => e.category === 'idiom' && !e.hanjaVerified)!;
-    const pool = KO_ENTRIES.filter((e) => e.level === unsure.level);
-    expect(koGameFor(unsure, pool, 0)).not.toBe('hanja');
+    const sure = idioms.find((e) => e.hanjaVerified && [...e.hanja].length === 4)!;
+    const unsure = { ...sure, id: 'ko-확인못함', hanjaVerified: false };
+    expect(koGameFor(unsure, [unsure, ...idioms], 0)).not.toBe('hanja');
   });
 
   it('빈칸을 못 뚫으면 뜻으로 내려간다', () => {

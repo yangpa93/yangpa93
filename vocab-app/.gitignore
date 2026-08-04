@@ -82,3 +82,10 @@ preview.log
 *firebase-adminsdk*.json
 *service-account*.json
 *serviceAccount*.json
+
+# 엑셀이 파일을 열어 두면 만드는 잠금 파일. 올릴 것이 아니다.
+~$*.xlsx
+~$*.xls
+
+# 회원님이 검토하며 만드시는 작업 파일(2027보카 등). 앱 소스가 아니다.
+review/*.xlsx

@@ -70,11 +70,37 @@ describe('목록 자체가 온전한가', () => {
     for (const r of DATA_RELEASES) expect(r.note.trim().length).toBeGreaterThan(0);
   });
 
-  it('개수는 음수가 아니다', () => {
+  it('전체 개수는 음수가 아니다', () => {
     for (const r of DATA_RELEASES) {
-      expect(r.en).toBeGreaterThanOrEqual(0);
-      expect(r.ko).toBeGreaterThanOrEqual(0);
-      expect(r.daily).toBeGreaterThanOrEqual(0);
+      expect(r.totalEn).toBeGreaterThanOrEqual(0);
+      expect(r.totalKo).toBeGreaterThanOrEqual(0);
+      expect(r.totalDaily).toBeGreaterThanOrEqual(0);
+    }
+  });
+
+  /*
+   * **늘고 준 것이 전체 개수와 맞아떨어지는가.**
+   *
+   * 예전에는 "더해진 개수는 음수가 아니다" 만 봤다. 그런데 낱말은 줄기도
+   * 한다 — 잘 안 쓰는 사자성어를 빼는 일이 실제로 있었다. 음수를 막아 두면
+   * 그때 0 으로 적게 되고, 그러면 판에 아무 표시도 안 남는다.
+   *
+   * 부호를 막는 대신 **앞뒤가 맞는지**를 본다. 이쪽이 훨씬 센 자다 —
+   * 낱말을 더하거나 빼고 개수 적는 것을 잊으면 여기서 걸린다.
+   */
+  it('늘고 준 개수가 앞 판의 전체와 맞아떨어진다', () => {
+    // 맨 앞이 새 판이므로 뒤에서 앞으로 훑는다.
+    for (let i = DATA_RELEASES.length - 2; i >= 0; i--) {
+      const prev = DATA_RELEASES[i + 1];
+      const cur = DATA_RELEASES[i];
+      const got = { en: cur.totalEn, ko: cur.totalKo, daily: cur.totalDaily };
+      const want = {
+        en: prev.totalEn + cur.en,
+        ko: prev.totalKo + cur.ko,
+        daily: prev.totalDaily + cur.daily,
+      };
+      // 어느 판이 어긋났는지 바로 보이게 판 번호를 함께 견준다.
+      expect({ 판: cur.version, ...got }).toEqual({ 판: cur.version, ...want });
     }
   });
 });

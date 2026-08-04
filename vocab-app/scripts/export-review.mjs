@@ -258,14 +258,40 @@ for (const e of entries) {
   }
 }
 
-/** 엑셀이 한글을 안 깨뜨리게 맨 앞에 BOM 을 붙인다. */
+/**
+ * 엑셀이 한글을 안 깨뜨리게 맨 앞에 BOM 을 붙인다.
+ *
+ * ── 손본 표를 말없이 덮어쓰지 않는다 ────────────────────────
+ *
+ * 이 표들은 **사람이 그 위에 직접 고쳐 넣는 물건**이다. 사자성어 한자를
+ * 사전에서 찾아 확인하고, 잘 안 쓰는 말을 지우고, 뜻을 다듬는다. 그렇게
+ * 반나절을 들인 파일 위로 `npm run export` 가 아무 말 없이 새 표를 부어
+ * 버리면 그 반나절이 통째로 사라진다.
+ *
+ * 그래서 지금 있는 것이 우리가 만들 것과 다르면 **먼저 옆에 치워 둔다.**
+ * 되돌릴 수 없는 일은 하지 않는다.
+ */
 function writeCsv(name, table) {
-  writeFileSync(
-    `${OUT_DIR}/${name}`,
-    '﻿' + table.map((r) => r.map(csvCell).join(',')).join('\n') + '\n',
-    'utf8',
-  );
+  const path = `${OUT_DIR}/${name}`;
+  const next = '﻿' + table.map((r) => r.map(csvCell).join(',')).join('\n') + '\n';
+
+  try {
+    const now = readFileSync(path, 'utf8');
+    if (now !== next) {
+      const stamp = new Date().toISOString().slice(0, 16).replace(/[-:]/g, '').replace('T', '-');
+      const kept = `${OUT_DIR}/${name.replace(/\.csv$/, '')}.손본것-${stamp}.csv`;
+      writeFileSync(kept, now, 'utf8');
+      saved.push(kept);
+    }
+  } catch {
+    // 아직 없는 파일. 치워 둘 것이 없다.
+  }
+
+  writeFileSync(path, next, 'utf8');
 }
+
+/** 덮어쓰기 전에 치워 둔 것들. 맨 아래에 어디 있는지 적는다. */
+const saved = [];
 
 writeCsv('영어-단어.csv', rows);
 // 예전 이름. 이걸로 알고 계신 분이 있어 같이 둔다.
@@ -530,6 +556,16 @@ console.log(`  ${OUT_DIR}/일상-문장.csv   (${dailyRows.length - 1}행)`);
 console.log(`  ${OUT_DIR}/vocab.html      — 폰에서 열어 보는 용도(영어)`);
 console.log('');
 console.log('  엑셀로 여시면 됩니다. 한글이 안 깨지게 만들어 두었습니다.');
+
+if (saved.length > 0) {
+  console.log('');
+  console.log('  ℹ️  손보신 표가 있어서 덮어쓰기 전에 옆에 치워 두었습니다');
+  for (const p of saved) console.log(`      ${p}`);
+  console.log('');
+  console.log('     고치신 것을 앱에 넣으시려면 (국어) :');
+  console.log('       npm run apply-korean            무엇이 바뀌는지 보여만 줍니다');
+  console.log('       npm run apply-korean -- --write  실제로 적습니다');
+}
 
 if (enNoEx.length > 0 || koNoEx.length > 0) {
   console.log('');

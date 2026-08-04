@@ -221,8 +221,22 @@ describe('pickKoGame', () => {
     expect(games.has('hanja')).toBe(true);
   });
 
+  /*
+   * **지어낸 성어로 시험한다.**
+   *
+   * 예전에는 실제 데이터에서 확인 못 한 것을 골라 썼는데, 사자성어 한자를
+   * 전부 사전에서 확인하면서 그런 것이 하나도 안 남았고 이 시험이 터졌다.
+   *
+   * 지키려는 것은 데이터가 아니라 **규칙**이다 — 확인 못 한 한자로는 문제를
+   * 안 낸다. 새 성어를 더하다 확인 못 한 것이 다시 생길 수 있고, 그때 이
+   * 규칙이 살아 있어야 한다. 데이터가 좋아졌다고 규칙을 지키는 자가 없어지면
+   * 안 된다.
+   */
   it('한자를 확인 못 한 성어에는 한자 문제를 안 낸다', () => {
-    const unsure = KO_ENTRIES.find((e) => e.category === 'idiom' && !e.hanjaVerified)!;
+    const sure = KO_ENTRIES.find(
+      (e) => e.category === 'idiom' && e.hanjaVerified && [...e.hanja].length === 4,
+    )!;
+    const unsure = { ...sure, id: 'ko-확인못함', hanjaVerified: false };
     const pool = KO_ENTRIES.filter((e) => e.category === 'idiom');
     for (let i = 0; i < 40; i++) {
       const g = pickKoGame(

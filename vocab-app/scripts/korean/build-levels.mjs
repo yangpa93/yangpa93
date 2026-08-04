@@ -95,6 +95,29 @@ function applyCorrections(src, corrections, notes) {
       row.hanja = fixed;
     }
 
+    /*
+     * 뜻풀이와 예문도 고칠 수 있게 한다.
+     *
+     * 엑셀 원본의 뜻풀이는 한 줄로 짧게 적혀 있어 무슨 말인지 안 와닿는
+     * 것이 있다('의심하는 마음에 없던 도깨비도 생김'). 사전을 찾아 다듬은
+     * 것을 여기에 적어 두면 엑셀은 원본 그대로 남고 고친 것만 diff 로 보인다.
+     *
+     * 이 자리가 생긴 까닭: 회원님이 review/국어-어휘.csv 를 손봐 사자성어
+     * 한자를 확인하고 뜻을 다듬어 주셨는데, 그것을 소스에 넣을 곳이 없었다.
+     * 레벨 파일에 직접 적으면 다음 빌드에 통째로 날아간다.
+     */
+    const meaning = c.meaning?.[row.word];
+    if (meaning && meaning !== row.meaning) {
+      notes.push(`사자성어 '${row.word}' 뜻 다듬음`);
+      row.meaning = meaning;
+    }
+
+    const example = c.example?.[row.word];
+    if (example && example !== row.example) {
+      notes.push(`사자성어 '${row.word}' 예문 바꿈`);
+      row.example = example;
+    }
+
     if (unverified.has(row.word)) row.hanjaVerified = false;
 
     kept.push(row);

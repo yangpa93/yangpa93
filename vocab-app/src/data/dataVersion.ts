@@ -32,13 +32,20 @@
  */
 
 /** 지금 이 묶음에 들어 있는 어휘 판. 맨 앞 항목의 version 과 같아야 한다. */
-export const DATA_VERSION = '2026.08.03';
+export const DATA_VERSION = '2026.08.04';
 
 export interface DataRelease {
   /** `yyyy.mm.dd` — 하루에 두 번이면 `yyyy.mm.dd-2` */
   version: string;
   date: string;
-  /** 이 판에서 **더해진** 개수 */
+  /**
+   * 이 판에서 **더해진** 개수. 줄었으면 음수다.
+   *
+   * 줄어드는 일도 있다 — 잘 안 쓰는 사자성어를 빼거나, 확인 못 한 것을
+   * 덜어 낸다. 그때 0 으로 적으면 표가 "는 것만 말하고 주는 것은 말 안 하는"
+   * 물건이 되어 믿을 수가 없다. 화면에는 는 것만 적히지만(addedLine),
+   * 아래 total 과 맞는지는 시험이 대조한다.
+   */
   en: number;
   ko: number;
   daily: number;
@@ -58,6 +65,24 @@ export interface DataRelease {
 
 /** 새 판이 맨 앞. 화면도 이 순서 그대로 보여준다. */
 export const DATA_RELEASES: DataRelease[] = [
+  {
+    version: '2026.08.04',
+    date: '2026-08-04',
+    en: 0,
+    /*
+     * **다섯이 줄었다.** 늘어난 것을 세는 칸인데 음수로 적는다.
+     *
+     * 0 으로 적으면 화면에 아무 말도 안 나가고, 그러면 낱말이 없어진 것을
+     * 아무도 모른 채 지나간다. 는 것만 말하고 주는 것은 말 안 하는 표는
+     * 믿을 수가 없다.
+     */
+    ko: -5,
+    daily: 0,
+    note: '사자성어 한자를 사전에서 다 확인했어요. 잘 안 쓰는 다섯 개는 뺐습니다.',
+    totalEn: 3690,
+    totalKo: 1282,
+    totalDaily: 80,
+  },
   {
     version: '2026.08.03',
     date: '2026-08-03',

@@ -728,6 +728,125 @@ for (const [where, path] of [
 
 /* ================================================================= */
 console.log('');
+console.log('  ⑧-2 영어 · 국어 · 일상 문장이 실제로 나오는가');
+/*
+ * ── 여태 이걸 볼 방법이 없었다 ──────────────────────────────
+ *
+ * "앱에서 제대로 영어, 국어가 나오는지는 어떻게 확인할 수 있나요?"
+ *
+ * 없었다. 세 갈래가 한 세션에 이어 붙어 나오는데 **화면에 무슨 갈래인지
+ * 적혀 있지 않았다.** 문제를 예순 개 다 풀어 보며 "이건 국어 같다" 고
+ * 짐작하는 수밖에 없었고, 그건 확인이 아니다.
+ *
+ * 이제 문제 위에 갈래 칩이 뜬다. 그걸 모아 셋이 다 나왔는지 센다.
+ * 눈으로 볼 때도 같은 칩을 보시면 된다.
+ */
+/* ================================================================= */
+
+await seed(page, '영어 · 국어 · 일상 문장을 다 켠 상태');
+await go(page, '/home');
+await page.getByText('공부 시작하기', { exact: false }).first().click();
+await page
+  .getByTestId('subject-tag')
+  .first()
+  .waitFor({ state: 'visible', timeout: 25000 })
+  .catch(() => {});
+
+/**
+ * 문제를 넘기면서 갈래 칩을 모은다.
+ *
+ * **읽는 것마다 기다리는 시간을 짧게 못박는다.** playwright 는 없는 것을
+ * 기본 30초씩 기다린다. 문제를 다 풀어 결과 화면으로 넘어가면 칩이 사라지는데,
+ * 그때부터 한 걸음에 30초씩 서서 시험이 통째로 멈춘다. 실제로 그렇게 멈췄다 —
+ * 자동으로 도는 시험이 사람보다 느려지면 아무도 안 돌린다.
+ */
+async function collectSubjects(p, steps) {
+  const seen = [];
+  const FAST = { timeout: 800 };
+
+  for (let i = 0; i < steps; i++) {
+    const tag =
+      (await p.getByTestId('subject-tag').first().textContent(FAST).catch(() => '')) ?? '';
+    // 칩이 사라졌으면 결과 화면으로 넘어간 것이다. 더 볼 것이 없다.
+    if (!tag) break;
+    if (seen[seen.length - 1] !== tag) seen.push(tag);
+
+    const nextBtn = p.getByText(/다음 문제|결과 보기/, { exact: false }).first();
+    if (await nextBtn.isVisible(FAST).catch(() => false)) {
+      await nextBtn.click(FAST).catch(() => {});
+      await p.waitForTimeout(400);
+      continue;
+    }
+
+    const choices = p.locator('[role="button"]');
+    const n = await choices.count();
+    let clicked = false;
+    for (let j = 0; j < n; j++) {
+      const t = (await choices.nth(j).textContent(FAST).catch(() => '')) ?? '';
+      // 갈래 칩과 단계 칩은 누를 것이 아니다. 보기만 누른다.
+      if (t && !/그만|✕|🔊|힌트|영어|국어|일상 문장/.test(t) && t.trim().length > 0) {
+        await choices.nth(j).click(FAST).catch(() => {});
+        clicked = true;
+        break;
+      }
+    }
+    if (!clicked) break;
+    await p.waitForTimeout(500);
+  }
+  return seen;
+}
+
+const seenTags = await collectSubjects(page, 40);
+ok('문제 위에 갈래가 적혀 있다', seenTags.length > 0, '갈래 칩이 아예 안 뜬다');
+ok('영어를 맨 앞에 두면 영어부터 나온다', seenTags[0] === '영어', seenTags.join(' → '));
+/* 섞지 않는다. 갈래가 오갔다 하면 머리를 그때마다 옮겨야 한다. */
+ok(
+  '갈래를 섞지 않고 하나씩 끝낸다',
+  seenTags.length === new Set(seenTags).size,
+  seenTags.join(' → '),
+);
+
+/*
+ * **갈래마다 맨 앞에 두고 첫 문제를 본다.**
+ *
+ * 처음에는 한 세션을 끝까지 걸어가며 셋이 다 나오는지 세려 했다. 그런데
+ * 영어가 앞에 있으면 국어까지 가는 데 문제 수십 개를 지나야 한다 — 시험은
+ * 느려지고, 사람이 눈으로 확인할 때는 아예 못 한다.
+ *
+ * 갈래를 맨 앞으로 올려 두고 첫 문제만 보면 같은 것이 확인된다.
+ * **그 갈래가 실제로 문제를 만들어 내는가**, 그리고 **정한 차례가 먹는가.**
+ * 미리보기에도 같은 상황을 심어 두어 눈으로도 같은 길로 볼 수 있게 했다.
+ */
+async function firstSubjectOf(label) {
+  await seed(page, label);
+  await go(page, '/home');
+  await page.getByText('공부 시작하기', { exact: false }).first().click();
+  await page
+    .getByTestId('subject-tag')
+    .first()
+    .waitFor({ state: 'visible', timeout: 25000 })
+    .catch(() => {});
+  return (
+    (await page
+      .getByTestId('subject-tag')
+      .first()
+      .textContent({ timeout: 3000 })
+      .catch(() => '')) ?? ''
+  );
+}
+
+const koFirst = await firstSubjectOf('국어부터 풀도록 차례를 바꾼 상태');
+ok('국어를 맨 앞에 두면 국어부터 나온다', koFirst.includes('국어'), `첫 문제 — ${koFirst}`);
+
+const dailyFirst = await firstSubjectOf('일상 문장부터 풀도록 차례를 바꾼 상태');
+ok(
+  '일상 문장을 맨 앞에 두면 일상 문장부터 나온다',
+  dailyFirst.includes('일상 문장'),
+  `첫 문제 — ${dailyFirst}`,
+);
+
+/* ================================================================= */
+console.log('');
 console.log('  ⑨ 연결 — 아이가 띄우고 부모가 받는다 (창 두 개)');
 /*
  * ── 여태 이 흐름을 노트북에서 한 번도 못 봤다 ────────────────

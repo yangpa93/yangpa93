@@ -18,7 +18,7 @@ import { buildParentQueue } from '../src/srs/parentSession';
 import { buildChildQueue, ChildQueueItem, childPool, isChildKo } from '../src/srs/childSession';
 import { DAILY_ENTRIES, dailyTheme } from '../src/data/daily';
 import { soundCorrect, soundWrong, tapCorrect, tapWrong, stopSpeaking } from '../src/lib/feedback';
-import { GAME_LABEL, STAGE_LABEL } from '../src/types';
+import { GAME_LABEL, STAGE_LABEL, SUBJECT_LABEL } from '../src/types';
 import { colors, font, radius, spacing } from '../src/theme';
 
 /**
@@ -65,8 +65,13 @@ export default function Study() {
         rounds: profile.settings.rounds,
       }).map((i) =>
         i.track === 'ko'
-          ? ({ subject: 'ko', ...i } as QueueItem)
-          : ({ subject: 'en', ...i } as QueueItem),
+          ? ({ subject: 'ko', ...i, track: 'ko' } as QueueItem)
+          : /*
+             * 부모 갈래 이름을 아이 쪽 이름으로 옮겨 담는다. 화면 위 표는
+             * 하나뿐이라 둘이 같은 말을 써야 한다 — 'enWord' 는 부모 설정
+             * 안에서만 쓰는 이름이다.
+             */
+            ({ subject: 'en', ...i, track: i.track === 'daily' ? 'daily' : 'en' } as QueueItem),
       );
     }
 
@@ -251,6 +256,20 @@ export default function Study() {
           </Pressable>
 
           <Row style={{ gap: spacing.sm }}>
+            {/*
+              **지금 어느 갈래를 푸는지.**
+
+              영어·국어·일상 문장이 한 세션에 이어 붙어 나오는데 화면에 아무
+              표시가 없었다. 아이는 국어 문제가 나올 때까지 국어가 켜져 있는지
+              모르고, 확인하는 사람은 셋이 다 나왔는지 알 방법이 없다.
+
+              갈래 이름 하나면 둘 다 풀린다. 자리도 거의 안 든다.
+            */}
+            <View style={s.subjectTag}>
+              <Text style={s.subjectTagText} testID="subject-tag">
+                {SUBJECT_LABEL[current.track]}
+              </Text>
+            </View>
             <View style={s.stageTag}>
               <Text style={s.stageTagText}>{STAGE_LABEL[current.stage]}</Text>
             </View>
@@ -371,6 +390,14 @@ const s = StyleSheet.create({
   backText: { color: colors.primary, fontWeight: '700' },
   close: { fontSize: 22, color: colors.muted, width: 40 },
   counter: { fontSize: font.small, color: colors.subtext, fontWeight: '700', width: 40, textAlign: 'right' },
+  /* 지금 어느 갈래인지. 단계·유형과 색을 갈라 두어 셋이 안 섞여 보이게 한다. */
+  subjectTag: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    borderRadius: radius.pill,
+    backgroundColor: colors.primarySoft,
+  },
+  subjectTagText: { fontSize: font.tiny, fontWeight: '800', color: colors.primary },
   stageTag: {
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.xs,

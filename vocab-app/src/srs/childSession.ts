@@ -32,16 +32,23 @@ import { buildRounds, buildSession, SessionItem } from './session';
 /**
  * 한 문항.
  *
- * `subject` 는 **화면이 무엇으로 그릴지**만 가린다. 일상 문장은 영어 문장이라
- * 영어 문항과 똑같이 그려지므로 여기서는 `'en'` 이다. 무엇을 켰는지는
- * `profile.settings.subjects` 가 알고 있고, 화면은 그것을 알 필요가 없다.
+ * `subject` 는 **화면이 무엇으로 그릴지**를 가린다. 일상 문장은 영어 문장이라
+ * 영어 문항과 똑같이 그려지므로 여기서는 `'en'` 이다.
+ *
+ * `track` 은 **어느 갈래에서 온 것인지**다. 화면 위에 '영어 / 국어 /
+ * 일상 문장' 이라고 적어 주려고 따로 들고 다닌다. 둘이 왜 다르냐 하면,
+ * 일상 문장은 그리는 방법은 영어와 같지만 아이에게는 다른 갈래이기 때문이다.
+ *
+ * 이 표가 없을 때는 영어와 국어가 한 세션에 섞여 나오는데 지금 무엇을 푸는
+ * 중인지 화면에 아무 표시가 없었다. 아이도 모르고, 확인하는 사람도 모른다.
  */
 export type ChildQueueItem =
-  | ({ subject: 'en' } & SessionItem)
-  | ({ subject: 'ko' } & KoSessionItem);
+  | ({ subject: 'en'; track: Subject } & SessionItem)
+  | ({ subject: 'ko'; track: Subject } & KoSessionItem);
 
-export const isChildKo = (i: ChildQueueItem): i is { subject: 'ko' } & KoSessionItem =>
-  i.subject === 'ko';
+export const isChildKo = (
+  i: ChildQueueItem,
+): i is { subject: 'ko'; track: Subject } & KoSessionItem => i.subject === 'ko';
 
 /**
  * 국어 하루치. 영어의 newPerDay 와 따로 둔다.
@@ -147,9 +154,22 @@ export function buildChildQueue(args: BuildChildQueueArgs): ChildQueueItem[] {
    * "1. 영어 2. 국어 3. 일상생활 문장" 처럼 셋을 각자 놓을 수 있어야 한다.
    */
   const parts: Record<Subject, ChildQueueItem[]> = {
-    en: buildRounds(en, rounds, rand).map((i) => ({ subject: 'en' as const, ...i })),
-    daily: buildRounds(daily, rounds, rand).map((i) => ({ subject: 'en' as const, ...i })),
-    ko: buildKoRounds(ko, rounds, KO_ENTRIES, rand).map((i) => ({ subject: 'ko' as const, ...i })),
+    en: buildRounds(en, rounds, rand).map((i) => ({
+      subject: 'en' as const,
+      track: 'en' as Subject,
+      ...i,
+    })),
+    daily: buildRounds(daily, rounds, rand).map((i) => ({
+      // 그리는 방법은 영어와 같지만 아이에게는 다른 갈래다.
+      subject: 'en' as const,
+      track: 'daily' as Subject,
+      ...i,
+    })),
+    ko: buildKoRounds(ko, rounds, KO_ENTRIES, rand).map((i) => ({
+      subject: 'ko' as const,
+      track: 'ko' as Subject,
+      ...i,
+    })),
   };
 
   return orderedSubjects(profile.settings).flatMap((s) => parts[s]);

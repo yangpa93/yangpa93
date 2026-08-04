@@ -278,6 +278,18 @@ function demoPage() {
   <b>🦊 아이 — 부모님과 연결됨</b>
   <span>연결 안내가 사라진 기존 그대로의 아이 홈입니다</span>
 </button>
+<button onclick="seed('childAll')">
+  <b>🦊 아이 — 영어 · 국어 · 일상 문장을 다 켠 상태</b>
+  <span>'공부 시작하기'를 누르면 셋이 차례로 나옵니다. 문제 위 파란 칩이 갈래를 알려 줘요</span>
+</button>
+<button onclick="seed('childKoFirst')">
+  <b>🦊 아이 — 국어부터 풀도록 차례를 바꾼 상태</b>
+  <span>첫 문제부터 국어가 나와야 맞습니다. ⚙️ → 📚 내 공부 설정에서 바꾼 것</span>
+</button>
+<button onclick="seed('childDailyFirst')">
+  <b>🦊 아이 — 일상 문장부터 풀도록 차례를 바꾼 상태</b>
+  <span>첫 문제부터 일상 생활 문장이 나와야 맞습니다</span>
+</button>
 <button onclick="seed('childReview')">
   <b>🦊 아이 — 숙어가 복습으로 나오는 상태</b>
   <span>'공부 시작하기'를 누르면 첫 문제부터 숙어가 나옵니다</span>
@@ -510,6 +522,28 @@ function seed(which) {
       { token:DAD, label:'아빠 폰',
         linkedAt:Date.now(), lastSentDate:null, isPrimary:false },
     ] }), { [A]: history(9) });
+  } else if (which === 'childAll') {
+    /*
+     * 세 갈래를 다 켠 아이. **'제대로 나오는지' 를 눈으로 보는 자리다.**
+     * 국어는 하루 6개, 일상 문장은 4개라 앞쪽 문제만 풀어도 셋이 다 나온다.
+     */
+    put(root([base({ id:A, name:'서준', kind:'child', avatar:'🦊', level:'m1-1', streak:3,
+      settings:settings({ subjects:['en','ko','daily'], subjectOrder:['en','ko','daily'],
+        newPerDay:5, reviewPerDay:5 }) })], A), { [A]: empty });
+  } else if (which === 'childKoFirst') {
+    /* 차례를 바꾼 것이 실제로 먹는지. 첫 문제가 국어라야 맞다. */
+    put(root([base({ id:A, name:'서준', kind:'child', avatar:'🦊', level:'m1-1', streak:3,
+      settings:settings({ subjects:['en','ko','daily'], subjectOrder:['ko','daily','en'],
+        newPerDay:5, reviewPerDay:5 }) })], A), { [A]: empty });
+  } else if (which === 'childDailyFirst') {
+    /*
+     * 일상 문장을 맨 앞으로. **갈래마다 맨 앞에 두고 첫 문제를 보는 것이
+     * 제일 빠른 확인이다** — 뒤에 있는 갈래를 보려고 앞 갈래를 다 풀면
+     * 수십 문제를 지나야 하고, 그러면 아무도 확인 안 한다.
+     */
+    put(root([base({ id:A, name:'서준', kind:'child', avatar:'🦊', level:'m1-1', streak:3,
+      settings:settings({ subjects:['en','ko','daily'], subjectOrder:['daily','en','ko'],
+        newPerDay:5, reviewPerDay:5 }) })], A), { [A]: empty });
   } else if (which === 'childReview') {
     put(root([kids[0]], A, { parentLinks:[] }),
         { [A]: reviewCards(['a-couple-of','a-kind-of','a-number-of','a-pair-of','a-piece-of',

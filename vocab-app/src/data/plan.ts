@@ -36,7 +36,6 @@ const RAW: Record<LevelId, Row[]> = {
     ["add", 1],
     ["address", 1],
     ["adult", 1],
-    ["aeroplane", 1],
     ["afraid", 1],
     ["after", 1],
     ["again", 1],
@@ -151,6 +150,7 @@ const RAW: Record<LevelId, Row[]> = {
     ["at first", 1, 1],
     ["at home", 1, 1],
     ["at last", 1, 1],
+    ["airplane", 1],
   ],
   'm1-2': [
     ["by", 1],

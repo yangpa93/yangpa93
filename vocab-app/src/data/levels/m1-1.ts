@@ -121,11 +121,11 @@ export const M1_1 = defineLevel('m1-1', [
       ['She became an adult last year.', '그녀는 작년에 성인이 되었다.'],
     ]},
   ]},
-  { w: 'aeroplane', p: 'n.', s: [
+  { w: 'airplane', p: 'n.', s: [
     { m: '비행기', syn: ['plane'], ex: [
-      ['The aeroplane landed safely.', '비행기가 안전하게 착륙했다.'],
-      ['We watched an aeroplane in the sky.', '우리는 하늘의 비행기를 보았다.'],
-      ['This aeroplane flies to London.', '이 비행기는 런던으로 간다.'],
+      ['The airplane takes off at noon.', '비행기는 정오에 이륙한다.'],
+      ['I have never taken an airplane.', '나는 비행기를 타 본 적이 없다.'],
+      ['An airplane is faster than a train.', '비행기는 기차보다 빠르다.'],
     ]},
   ]},
   { w: 'afraid', p: 'adj.', s: [

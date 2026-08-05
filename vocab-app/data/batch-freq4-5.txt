@@ -1,0 +1,9 @@
+# 빈도4 새 낱말 2차 — 층을 매기다 빠뜨린 여섯 개.
+
+emission|n.|배출(물), 배출량, 배기가스||Car emissions pollute the city air.::자동차 배출 가스가 도시 공기를 더럽힌다.|The factory reduced its carbon emission.::그 공장은 탄소 배출을 줄였다.|New rules limit emissions from ships.::새 규정이 배에서 나오는 배출을 제한한다.
+relative|adj.|상대적인||The relative size of the two rooms differs.::두 방의 상대적인 크기가 다르다.|Success is a relative term.::성공은 상대적인 말이다.|We live in relative comfort.::우리는 비교적 편안하게 산다.
+relative|n.|친족, 친척||We visited our relatives last weekend.::우리는 지난 주말에 친척을 찾아뵀다.|She is a distant relative of mine.::그녀는 나의 먼 친척이다.|All his relatives came to the wedding.::그의 친척이 모두 결혼식에 왔다.
+architecture|n.|건축, 구조, 체계||She studies architecture at university.::그녀는 대학에서 건축을 배운다.|The city is famous for its old architecture.::그 도시는 옛 건축으로 유명하다.|The architecture of the system is simple.::그 체계의 구조는 단순하다.
+interpretation|n.|해석, 이해, 설명, 판단||Her interpretation of the poem was new.::그 시에 대한 그녀의 해석은 새로웠다.|The law allows more than one interpretation.::그 법은 해석이 하나로 정해지지 않는다.|We disagreed on the interpretation of the data.::우리는 그 자료의 해석에서 뜻이 갈렸다.
+relevance|n.|관련성, 연관성, 적절성, 타당성||The question has no relevance to our topic.::그 물음은 우리 주제와 관련이 없다.|He explained the relevance of the example.::그는 그 보기의 적절성을 설명했다.|The old rule has lost its relevance.::그 낡은 규칙은 이제 맞지 않는다.
+stakeholder|n.|이해관계자, 이해 당사자||Every stakeholder was invited to the meeting.::모든 이해관계자가 그 모임에 초대됐다.|Students are stakeholders in school policy.::학생은 학교 정책의 이해 당사자다.|The plan considers all stakeholders.::그 계획은 모든 이해관계자를 고려한다.

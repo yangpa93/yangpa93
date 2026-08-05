@@ -1,5 +1,5 @@
 /**
- * 중학교 2학년 레벨 4 — 수록 154 / 계획 137개.
+ * 중학교 2학년 레벨 4 — 수록 156 / 계획 137개.
  *
  * 난이도 층: 중급(중학 권장)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -102,7 +102,7 @@ export const M2_4 = defineLevel('m2-4', [
     ]},
   ]},
   { w: 'arrange', p: 'v.', s: [
-    { m: '정리하다, 준비하다', syn: ['organize'], ex: [
+    { m: '준비하다, 마련하다, 정하다, 배열하다, 정리하다', syn: ['organize'], ex: [
       ['She arranged the books by size.', '그녀는 책을 크기순으로 정리했다.'],
       ['We arranged a meeting for Monday.', '우리는 월요일에 회의를 잡았다.'],
       ['He is arranging flowers in a vase.', '그는 꽃병에 꽃을 꽂고 있다.'],
@@ -151,14 +151,14 @@ export const M2_4 = defineLevel('m2-4', [
     ]},
   ]},
   { w: 'assign', p: 'v.', s: [
-    { m: '배정하다, (과제를) 내주다', syn: ['allocate', 'give out'], ex: [
+    { m: '(일·책임 등을) 배정하다, 맡기다, 배당하다, 할당하다, 지정하다', syn: ['allocate', 'give out'], ex: [
       ['The teacher assigned three chapters.', '선생님이 세 단원을 과제로 내주셨다.'],
       ['Each student was assigned a partner.', '각 학생에게 짝이 배정되었다.'],
       ['They assigned him to the night shift.', '그들은 그를 야간 근무에 배정했다.'],
     ]},
   ]},
   { w: 'assist', p: 'v.', s: [
-    { m: '돕다, 보조하다', syn: ['help', 'aid'], ex: [
+    { m: '돕다, 보조하다, 지원하다', syn: ['help', 'aid'], ex: [
       ['She assisted him with the project.', '그녀는 그의 과제를 도와주었다.'],
       ['Volunteers assisted the elderly.', '자원봉사자들이 노인들을 도왔다.'],
       ['This app assists students in studying.', '이 앱은 학생들의 학습을 돕는다.'],
@@ -172,7 +172,7 @@ export const M2_4 = defineLevel('m2-4', [
     ]},
   ]},
   { w: 'assume', p: 'v.', s: [
-    { m: '가정하다, 추정하다', syn: ['suppose', 'presume'], ex: [
+    { m: '가정하다, 추정[상정]하다, (성질·양상을) 띠다, (자세를) 취하다, (책임 등을) 지다', syn: ['suppose', 'presume'], ex: [
       ['Let us assume the story is true.', '그 이야기가 사실이라고 가정해 보자.'],
       ['I assumed you already knew.', '나는 네가 이미 아는 줄 알았다.'],
       ['Never assume without evidence.', '증거 없이 추정하지 마라.'],
@@ -186,7 +186,7 @@ export const M2_4 = defineLevel('m2-4', [
     ]},
   ]},
   { w: 'atmosphere', p: 'n.', s: [
-    { m: '대기, 분위기', syn: ['air'], ex: [
+    { m: '분위기, 대기', syn: ['air'], ex: [
       ['The atmosphere protects the earth.', '대기는 지구를 보호한다.'],
       ['The classroom had a warm atmosphere.', '교실은 따뜻한 분위기였다.'],
       ['Pollution harms the atmosphere.', '오염은 대기를 해친다.'],
@@ -242,7 +242,7 @@ export const M2_4 = defineLevel('m2-4', [
     ]},
   ]},
   { w: 'audience', p: 'n.', s: [
-    { m: '관객, 청중', syn: [], ex: [
+    { m: '관객, 독자, 시청자, 지지자, 청중', syn: [], ex: [
       ['The audience clapped loudly.', '관객이 크게 박수쳤다.'],
       ['A large audience came to the show.', '많은 관객이 공연에 왔다.'],
       ['She thanked the audience.', '그녀는 청중에게 감사했다.'],
@@ -371,7 +371,7 @@ export const M2_4 = defineLevel('m2-4', [
     ]},
   ]},
   { w: 'basis', p: 'n.', s: [
-    { m: '기초, 근거', syn: ['foundation'], ex: [
+    { m: '기반, 기초, 근간', syn: ['foundation'], ex: [
       ['Trust is the basis of friendship.', '신뢰는 우정의 기초다.'],
       ['What is the basis of your idea?', '네 생각의 근거는 무엇이니?'],
       ['We meet on a weekly basis.', '우리는 매주 단위로 만난다.'],
@@ -476,7 +476,7 @@ export const M2_4 = defineLevel('m2-4', [
     ]},
   ]},
   { w: 'beneficial', p: 'adj.', s: [
-    { m: '이로운, 유익한', syn: ['helpful', 'useful'], ex: [
+    { m: '유익한, 이로운', syn: ['helpful', 'useful'], ex: [
       ['Walking is beneficial to health.', '걷기는 건강에 유익하다.'],
       ['The change proved beneficial.', '그 변화는 이로운 것으로 드러났다.'],
       ['Bees are beneficial insects.', '벌은 이로운 곤충이다.'],
@@ -958,7 +958,7 @@ export const M2_4 = defineLevel('m2-4', [
     ]},
   ]},
   { w: 'category', p: 'n.', s: [
-    { m: '범주, 분류', syn: [], ex: [
+    { m: '범주, 구분', syn: [], ex: [
       ['Put the books into three categories.', '책을 세 범주로 나눠라.'],
       ['This word belongs to another category.', '이 단어는 다른 분류에 속한다.'],
       ['Each category has its own rule.', '각 범주에는 고유한 규칙이 있다.'],
@@ -986,6 +986,13 @@ export const M2_4 = defineLevel('m2-4', [
       ['The body is made of cells.', '몸은 세포로 이루어져 있다.'],
       ['A cell divides into two.', '세포는 둘로 나뉜다.'],
       ['The prisoner sat in a small cell.', '죄수가 작은 방에 앉아 있었다.'],
+    ]},
+  ]},
+  { w: 'density', p: 'n.', s: [
+    { m: '밀도, 농도, 밀집 상태', syn: [], ex: [
+      ['The density of the forest blocked the light.', '숲이 빽빽해 빛이 들지 않았다.'],
+      ['Ice has a lower density than water.', '얼음은 물보다 밀도가 낮다.'],
+      ['Population density is highest downtown.', '인구 밀도는 도심에서 가장 높다.'],
     ]},
   ]},
   { w: 'make a mistake', p: 'phr.', s: [
@@ -1105,6 +1112,32 @@ export const M2_4 = defineLevel('m2-4', [
       ['The train arrived on time.', '기차는 정시에 도착했다.'],
       ['Please be on time tomorrow.', '내일은 시간을 지켜 주세요.'],
       ['She always hands in her work on time.', '그녀는 언제나 제때 과제를 낸다.'],
+    ]},
+  ]},
+  { w: 'repetitive', p: 'adj.', s: [
+    { m: '반복적인', syn: [], ex: [
+      ['The work is simple but repetitive.', '그 일은 단순하지만 반복적이다.'],
+      ['Repetitive practice builds skill.', '반복 연습이 실력을 만든다.'],
+      ['He hurt his wrist from repetitive motion.', '그는 같은 동작을 되풀이하다 손목을 다쳤다.'],
+    ]},
+  ]},
+  { w: 'signal', p: 'v.', s: [
+    { m: '신호를 보내다, 알리다, 나타내다', syn: [], ex: [
+      ['He signaled the car to stop.', '그는 차에게 서라고 신호를 보냈다.'],
+      ['She signaled that she was ready.', '그녀는 준비됐다고 알렸다.'],
+      ['Falling leaves signal the end of summer.', '지는 잎은 여름이 끝났음을 알린다.'],
+    ]},
+    { m: '신호', syn: [], ex: [
+      ['The traffic signal turned green.', '신호등이 초록으로 바뀌었다.'],
+      ['My phone has no signal here.', '여기서는 전화가 안 터진다.'],
+      ['Wait for my signal before you start.', '시작하기 전에 내 신호를 기다려라.'],
+    ]},
+  ]},
+  { w: 'typical', p: 'adj.', s: [
+    { m: '전형적인, 평범한', syn: [], ex: [
+      ['It was a typical winter morning.', '평범한 겨울 아침이었다.'],
+      ['This is a typical example of his writing.', '이것은 그의 글의 전형적인 보기다.'],
+      ['Typical of him, he arrived early.', '그답게 그는 일찍 왔다.'],
     ]},
   ]},
 ], 'curriculum');

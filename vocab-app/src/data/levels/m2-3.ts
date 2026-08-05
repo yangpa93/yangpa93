@@ -1,5 +1,5 @@
 /**
- * 중학교 2학년 레벨 3 — 수록 154 / 계획 137개.
+ * 중학교 2학년 레벨 3 — 수록 156 / 계획 137개.
  *
  * 난이도 층: 기초(초등 권장), 중급(중학 권장)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -38,7 +38,7 @@ export const M2_3 = defineLevel('m2-3', [
     ]},
   ]},
   { w: 'accept', p: 'v.', s: [
-    { m: '받아들이다, 수락하다', syn: ['take', 'agree to'], ex: [
+    { m: '받아들이다, 수용하다', syn: ['take', 'agree to'], ex: [
       ['He accepted my apology.', '그는 내 사과를 받아들였다.'],
       ['She accepted the job offer.', '그녀는 그 일자리 제안을 수락했다.'],
       ['We must accept the result.', '우리는 그 결과를 받아들여야 한다.'],
@@ -121,7 +121,7 @@ export const M2_3 = defineLevel('m2-3', [
     ]},
   ]},
   { w: 'adopt', p: 'v.', s: [
-    { m: '채택하다, 입양하다', syn: ['take up'], ex: [
+    { m: '(특정한 방식 등을) 채택하다, 쓰다, (특정한 방식이나 자세를) 취하다, 받아들이다, 도입하다', syn: ['take up'], ex: [
       ['The school adopted a new rule.', '학교는 새 규칙을 채택했다.'],
       ['They adopted a child last year.', '그들은 작년에 아이를 입양했다.'],
       ['We should adopt this method.', '우리는 이 방법을 받아들여야 한다.'],
@@ -191,14 +191,14 @@ export const M2_3 = defineLevel('m2-3', [
     ]},
   ]},
   { w: 'afford', p: 'v.', s: [
-    { m: '여유가 되다', syn: [], ex: [
+    { m: '제공하다, 부여하다, ~의 여유가 있다', syn: [], ex: [
       ['We cannot afford a new car.', '우리는 새 차를 살 여유가 없다.'],
       ['She could not afford the ticket.', '그녀는 표를 살 형편이 못 되었다.'],
       ['Can you afford to wait?', '기다릴 여유가 있니?'],
     ]},
   ]},
   { w: 'agent', p: 'n.', s: [
-    { m: '대리인, 요원', syn: ['representative'], ex: [
+    { m: '행위자, 동인, 대리인, 대리점', syn: ['representative'], ex: [
       ['A travel agent booked our trip.', '여행사 직원이 우리 여행을 예약해 주었다.'],
       ['The agent answered our questions.', '대리인이 우리 질문에 답했다.'],
       ['She works as a sales agent.', '그녀는 영업 사원으로 일한다.'],
@@ -268,7 +268,7 @@ export const M2_3 = defineLevel('m2-3', [
     ]},
   ]},
   { w: 'alter', p: 'v.', s: [
-    { m: '바꾸다, 변경하다', syn: ['change', 'modify'], ex: [
+    { m: '변경[변형]하다, 개조하다, 고치다, 바꾸다, 변화시키다', syn: ['change', 'modify'], ex: [
       ['We altered the schedule slightly.', '우리는 일정을 약간 변경했다.'],
       ['Nothing can alter the past.', '어떤 것도 과거를 바꿀 수 없다.'],
       ['The dress was altered to fit her.', '그 옷은 그녀에게 맞게 수선되었다.'],
@@ -359,10 +359,24 @@ export const M2_3 = defineLevel('m2-3', [
     ]},
   ]},
   { w: 'annual', p: 'adj.', s: [
-    { m: '연례의, 해마다의', syn: ['yearly'], ex: [
+    { m: '연간의, 연례의, 매년의', syn: ['yearly'], ex: [
       ['The annual festival is in May.', '연례 축제는 5월에 있다.'],
       ['We hold an annual meeting.', '우리는 해마다 회의를 연다.'],
       ['This is our annual report.', '이것이 우리의 연례 보고서다.'],
+    ]},
+  ]},
+  { w: 'consciously', p: 'adv.', s: [
+    { m: '의식적으로', syn: [], ex: [
+      ['He consciously chose the harder path.', '그는 의식적으로 더 어려운 길을 골랐다.'],
+      ['She consciously slowed her breathing.', '그녀는 일부러 숨을 천천히 쉬었다.'],
+      ['We rarely consciously notice our own habits.', '우리는 자기 버릇을 의식하는 일이 드물다.'],
+    ]},
+  ]},
+  { w: 'emission', p: 'n.', s: [
+    { m: '배출(물), 배출량, 배기가스', syn: [], ex: [
+      ['Car emissions pollute the city air.', '자동차 배출 가스가 도시 공기를 더럽힌다.'],
+      ['The factory reduced its carbon emission.', '그 공장은 탄소 배출을 줄였다.'],
+      ['New rules limit emissions from ships.', '새 규정이 배에서 나오는 배출을 제한한다.'],
     ]},
   ]},
   { w: 'in the past', p: 'phr.', s: [
@@ -482,6 +496,55 @@ export const M2_3 = defineLevel('m2-3', [
       ['We must make a decision today.', '우리는 오늘 결정을 내려야 한다.'],
       ['She made a difficult decision.', '그녀는 어려운 결정을 내렸다.'],
       ['He made a decision to move abroad.', '그는 외국으로 이주하기로 결정했다.'],
+    ]},
+  ]},
+  { w: 'nutrient', p: 'n.', s: [
+    { m: '영양분, 영양소', syn: [], ex: [
+      ['Vegetables are rich in nutrients.', '채소에는 영양분이 많다.'],
+      ['The soil lost its nutrients after years of farming.', '여러 해 농사를 지어 땅의 영양분이 빠졌다.'],
+      ['Milk provides nutrients for growing children.', '우유는 자라는 아이에게 영양분을 준다.'],
+    ]},
+  ]},
+  { w: 'population', p: 'n.', s: [
+    { m: '개체군, 개체 수, (모)집단, 인구 (집단)', syn: [], ex: [
+      ['The population of the city is growing.', '그 도시의 인구가 늘고 있다.'],
+      ['The deer population doubled in ten years.', '십 년 만에 사슴 개체 수가 두 배가 됐다.'],
+      ['They surveyed a small population of students.', '그들은 적은 수의 학생 집단을 조사했다.'],
+    ]},
+  ]},
+  { w: 'probability', p: 'n.', s: [
+    { m: '확률, 개연성, 가능성', syn: [], ex: [
+      ['The probability of rain is low today.', '오늘 비 올 확률은 낮다.'],
+      ['We calculated the probability of winning.', '우리는 이길 확률을 계산했다.'],
+      ['There is a high probability of delay.', '늦어질 가능성이 높다.'],
+    ]},
+  ]},
+  { w: 'recognition', p: 'n.', s: [
+    { m: '인식, 인지, 인정, 알아봄', syn: [], ex: [
+      ['He received recognition for his work.', '그는 자기 일로 인정을 받았다.'],
+      ['Face recognition unlocks the phone.', '얼굴 인식으로 전화가 열린다.'],
+      ['Recognition of the problem came late.', '그 문제를 알아차린 것은 늦었다.'],
+    ]},
+  ]},
+  { w: 'remarkable', p: 'adj.', s: [
+    { m: '놀라운, 훌륭한, 주목할 만한, 뛰어난, 대단한', syn: [], ex: [
+      ['She made a remarkable recovery.', '그녀는 놀랍게 회복했다.'],
+      ['The view from the hill is remarkable.', '언덕에서 보는 경치는 대단하다.'],
+      ['He has a remarkable memory.', '그는 기억력이 뛰어나다.'],
+    ]},
+  ]},
+  { w: 'settlement', p: 'n.', s: [
+    { m: '정착(지), 합의금, 합의', syn: [], ex: [
+      ['The early settlement stood by the river.', '초기 정착지는 강가에 있었다.'],
+      ['They reached a settlement after long talks.', '그들은 긴 이야기 끝에 합의에 이르렀다.'],
+      ['The settlement was paid in full.', '합의금은 전액 지급되었다.'],
+    ]},
+  ]},
+  { w: 'transportation', p: 'n.', s: [
+    { m: '교통수단, 배송, 운송, 수송, 교통', syn: [], ex: [
+      ['Public transportation is cheap in this city.', '이 도시는 대중교통이 싸다.'],
+      ['The school arranges transportation for trips.', '학교가 여행에 쓸 교통편을 마련한다.'],
+      ['Transportation costs went up last year.', '지난해 운송비가 올랐다.'],
     ]},
   ]},
   { w: 'try', p: 'v.', s: [

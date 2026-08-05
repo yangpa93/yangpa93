@@ -1,5 +1,5 @@
 /**
- * 고등학교 1학년 레벨 1 — 수록 154 / 계획 137개.
+ * 고등학교 1학년 레벨 1 — 수록 159 / 계획 137개.
  *
  * 난이도 층: 중급(중학 권장)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -9,6 +9,13 @@
 import { defineLevel } from '../define';
 
 export const H1_1 = defineLevel('h1-1', [
+  { w: 'as opposed to', p: 'phr.', s: [
+    { m: '~과 반대로, ~과는 달리, ~과는 다르게, ~과는 대조적으로', syn: [], ex: [
+      ['He prefers walking as opposed to driving.', '그는 운전과 달리 걷기를 좋아한다.'],
+      ['We use fresh fruit as opposed to canned.', '우리는 통조림과 달리 신선한 과일을 쓴다.'],
+      ['She studies at night as opposed to morning.', '그녀는 아침과 달리 밤에 공부한다.'],
+    ]},
+  ]},
   { w: 'be supposed to', p: 'phr.', s: [
     { m: '~하기로 되어 있다', syn: [], ex: [
       ['You are supposed to wear a helmet.', '너는 헬멧을 써야 한다.'],
@@ -128,6 +135,34 @@ export const H1_1 = defineLevel('h1-1', [
       ['He came across a rare book.', '그는 희귀한 책을 우연히 발견했다.'],
     ]},
   ]},
+  { w: 'differentiate', p: 'v.', s: [
+    { m: '차별화시키다, 구별하다, 분화하다, 식별하다', syn: [], ex: [
+      ['Can you differentiate the two sounds?', '그 두 소리를 구별할 수 있니?'],
+      ['Good service differentiates this shop.', '좋은 서비스가 이 가게를 남다르게 한다.'],
+      ['Cells differentiate as the body grows.', '몸이 자라면서 세포가 분화한다.'],
+    ]},
+  ]},
+  { w: 'enrich', p: 'v.', s: [
+    { m: '풍요롭게 하다, 풍부하게 하다, 강화하다, 향상시키다', syn: [], ex: [
+      ['Travel enriches our understanding.', '여행은 우리 이해를 넓혀 준다.'],
+      ['Compost enriches the soil.', '퇴비가 흙을 기름지게 한다.'],
+      ['Music can enrich daily life.', '음악은 일상을 풍요롭게 할 수 있다.'],
+    ]},
+  ]},
+  { w: 'infrastructure', p: 'n.', s: [
+    { m: '사회[공공] 기반 시설, 인프라', syn: [], ex: [
+      ['The city improved its infrastructure.', '그 도시가 기반 시설을 손봤다.'],
+      ['Roads and bridges are basic infrastructure.', '길과 다리는 기본 기반 시설이다.'],
+      ['Poor infrastructure slows growth.', '기반 시설이 나쁘면 성장이 더디다.'],
+    ]},
+  ]},
+  { w: 'intervention', p: 'n.', s: [
+    { m: '개입, 중재, 조정, 간섭', syn: [], ex: [
+      ['Early intervention helped the student.', '이른 개입이 그 학생에게 도움이 됐다.'],
+      ['The teacher\'s intervention stopped the fight.', '선생님의 중재가 싸움을 멈췄다.'],
+      ['Medical intervention saved his life.', '의학적 처치가 그의 목숨을 구했다.'],
+    ]},
+  ]},
   { w: 'objective', p: 'n., adj.', s: [
     { m: '목표', syn: ['goal', 'aim'], ex: [
       ['Our main objective is safety.', '우리의 주요 목표는 안전이다.'],
@@ -139,28 +174,28 @@ export const H1_1 = defineLevel('h1-1', [
     ]},
   ]},
   { w: 'observe', p: 'v.', s: [
-    { m: '관찰하다, 지키다', syn: ['watch'], ex: [
+    { m: '관찰하다, 준수하다, (논평·의견을) 말하다, (관찰을 통해) 인식하다, 알다', syn: ['watch'], ex: [
       ['Scientists observe the stars.', '과학자들은 별을 관찰한다.'],
       ['She observed the birds quietly.', '그녀는 새들을 조용히 관찰했다.'],
       ['We must observe the rules.', '우리는 규칙을 지켜야 한다.'],
     ]},
   ]},
   { w: 'obvious', p: 'adj.', s: [
-    { m: '분명한, 명백한', syn: ['clear', 'plain'], ex: [
+    { m: '분명한, 명백한, 당연한, 자명한, 뻔한', syn: ['clear', 'plain'], ex: [
       ['The answer is obvious.', '그 답은 명백하다.'],
       ['It was obvious that he was lying.', '그가 거짓말하고 있는 것이 분명했다.'],
       ['There is an obvious difference.', '뚜렷한 차이가 있다.'],
     ]},
   ]},
   { w: 'occasion', p: 'n.', s: [
-    { m: '경우, 행사', syn: [], ex: [
+    { m: '일, (특정한) 경우, 때, 상황, 행사', syn: [], ex: [
       ['We meet on special occasions.', '우리는 특별한 경우에 만난다.'],
       ['The wedding was a happy occasion.', '그 결혼식은 기쁜 행사였다.'],
       ['On one occasion, he was late.', '한번은 그가 늦었다.'],
     ]},
   ]},
   { w: 'occur', p: 'v.', s: [
-    { m: '일어나다, 발생하다', syn: ['happen', 'take place'], ex: [
+    { m: '발생하다, 일어나다, 생기다', syn: ['happen', 'take place'], ex: [
       ['The accident occurred at night.', '그 사고는 밤에 일어났다.'],
       ['Earthquakes occur often in that region.', '그 지역에서는 지진이 자주 발생한다.'],
       ['It never occurred to me to ask.', '물어볼 생각이 전혀 나지 않았다.'],
@@ -212,7 +247,7 @@ export const H1_1 = defineLevel('h1-1', [
     ]},
   ]},
   { w: 'operate', p: 'v.', s: [
-    { m: '작동하다, 운영하다, 수술하다', syn: ['run'], ex: [
+    { m: '작동하다, 활동하다, 운영되다, 운영하다, 움직이다', syn: ['run'], ex: [
       ['Do you know how to operate it?', '그것을 작동시킬 줄 아니?'],
       ['They operate three shops.', '그들은 가게 세 곳을 운영한다.'],
       ['Doctors operated on him yesterday.', '의사들이 어제 그를 수술했다.'],
@@ -243,7 +278,7 @@ export const H1_1 = defineLevel('h1-1', [
     ]},
   ]},
   { w: 'ordinary', p: 'adj.', s: [
-    { m: '평범한, 보통의', syn: ['common'], ex: [
+    { m: '보통의, 평범한, 일상적인', syn: ['common'], ex: [
       ['It was an ordinary day.', '평범한 하루였다.'],
       ['He is an ordinary student.', '그는 보통 학생이다.'],
       ['Ordinary people can do great things.', '평범한 사람도 위대한 일을 할 수 있다.'],
@@ -550,7 +585,7 @@ export const H1_1 = defineLevel('h1-1', [
     ]},
   ]},
   { w: 'pitch', p: 'n.', s: [
-    { m: '음높이, 경기장', syn: ['tone'], ex: [
+    { m: '음의 높낮이, 투구, 음정', syn: ['tone'], ex: [
       ['Her voice has a high pitch.', '그녀의 목소리는 음이 높다.'],
       ['The players ran onto the pitch.', '선수들이 경기장으로 달려 나갔다.'],
       ['He could not match the pitch.', '그는 그 음을 맞추지 못했다.'],
@@ -651,7 +686,7 @@ export const H1_1 = defineLevel('h1-1', [
     ]},
   ]},
   { w: 'policy', p: 'n.', s: [
-    { m: '정책, 방침', syn: ['rule'], ex: [
+    { m: '정책, 방침, (보험) 증권, 방책', syn: ['rule'], ex: [
       ['The school changed its policy.', '학교가 방침을 바꿨다.'],
       ['This policy helps students.', '이 정책은 학생들을 돕는다.'],
       ['Honesty is the best policy.', '정직이 최선의 방책이다.'],
@@ -780,7 +815,7 @@ export const H1_1 = defineLevel('h1-1', [
     ]},
   ]},
   { w: 'practice', p: 'v., n.', s: [
-    { m: '연습하다; 연습', syn: ['train', 'rehearse'], ex: [
+    { m: '관행, 실천, 실무, 관습', syn: ['train', 'rehearse'], ex: [
       ['She practices the piano daily.', '그녀는 매일 피아노를 연습한다.'],
       ['Practice makes perfect.', '연습이 완벽을 만든다.'],
       ['We have soccer practice after school.', '우리는 방과 후에 축구 연습이 있다.'],
@@ -822,7 +857,7 @@ export const H1_1 = defineLevel('h1-1', [
     ]},
   ]},
   { w: 'presence', p: 'n.', s: [
-    { m: '존재, 참석', syn: [], ex: [
+    { m: '존재(감), 실재, 인력, 주둔군,', syn: [], ex: [
       ['Her presence made us calm.', '그녀의 존재가 우리를 진정시켰다.'],
       ['Your presence is required.', '당신의 참석이 필요합니다.'],
       ['He felt a strange presence.', '그는 이상한 기척을 느꼈다.'],
@@ -888,7 +923,7 @@ export const H1_1 = defineLevel('h1-1', [
     ]},
   ]},
   { w: 'priority', p: 'n.', s: [
-    { m: '우선순위, 우선 사항', syn: [], ex: [
+    { m: '우선순위, 우선 사항, 먼저[우선] 해야 할 일', syn: [], ex: [
       ['Safety is our top priority.', '안전이 우리의 최우선 과제이다.'],
       ['You need to set your priorities.', '너는 우선순위를 정해야 한다.'],
       ['Health takes priority over work.', '건강이 일보다 우선이다.'],
@@ -930,7 +965,7 @@ export const H1_1 = defineLevel('h1-1', [
     ]},
   ]},
   { w: 'proceed', p: 'v.', s: [
-    { m: '진행하다, 계속하다', syn: ['continue', 'go ahead'], ex: [
+    { m: '진행되다, 계속 진행하다, 나아가다', syn: ['continue', 'go ahead'], ex: [
       ['Please proceed with your presentation.', '발표를 계속해 주세요.'],
       ['The work proceeded without delay.', '작업은 지체 없이 진행되었다.'],
       ['We proceeded to the next question.', '우리는 다음 질문으로 넘어갔다.'],
@@ -979,7 +1014,7 @@ export const H1_1 = defineLevel('h1-1', [
     ]},
   ]},
   { w: 'promote', p: 'v.', s: [
-    { m: '승진시키다, 촉진하다', syn: [], ex: [
+    { m: '촉진하다, 지원하다, 돕다, 승진시키다, 증진하다', syn: [], ex: [
       ['They promoted her to manager.', '그들은 그녀를 관리자로 승진시켰다.'],
       ['Exercise promotes health.', '운동은 건강을 촉진한다.'],
       ['The school promotes reading.', '그 학교는 독서를 장려한다.'],
@@ -1000,7 +1035,7 @@ export const H1_1 = defineLevel('h1-1', [
     ]},
   ]},
   { w: 'property', p: 'n.', s: [
-    { m: '재산, 속성', syn: ['possession'], ex: [
+    { m: '재산, 소유물, 속성, 성질, 특성', syn: ['possession'], ex: [
       ['This land is his property.', '이 땅은 그의 재산이다.'],
       ['Water has special properties.', '물은 특별한 성질이 있다.'],
       ['Do not damage school property.', '학교 재산을 훼손하지 마라.'],
@@ -1109,6 +1144,13 @@ export const H1_1 = defineLevel('h1-1', [
       ['She wore a purple scarf.', '그녀는 보라색 스카프를 했다.'],
       ['The flowers are purple.', '그 꽃들은 보라색이다.'],
       ['He painted the door purple.', '그는 문을 보라색으로 칠했다.'],
+    ]},
+  ]},
+  { w: 'reproduction', p: 'n.', s: [
+    { m: '번식, 복제, 재생산', syn: [], ex: [
+      ['Plant reproduction depends on insects.', '식물의 번식은 곤충에 기댄다.'],
+      ['This is a reproduction of a famous painting.', '이것은 유명한 그림의 복제품이다.'],
+      ['The book explains animal reproduction.', '그 책은 동물의 번식을 설명한다.'],
     ]},
   ]},
 ], 'curriculum');

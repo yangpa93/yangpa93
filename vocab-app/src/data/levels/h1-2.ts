@@ -1,5 +1,5 @@
 /**
- * 고등학교 1학년 레벨 2 — 수록 154 / 계획 137개.
+ * 고등학교 1학년 레벨 2 — 수록 159 / 계획 137개.
  *
  * 난이도 층: 중급(중학 권장)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -9,6 +9,20 @@
 import { defineLevel } from '../define';
 
 export const H1_2 = defineLevel('h1-2', [
+  { w: 'appreciation', p: 'n.', s: [
+    { m: '이해, 감상, 감사, 올바른 인식, 평가', syn: [], ex: [
+      ['He showed his appreciation with a note.', '그는 쪽지로 고마움을 나타냈다.'],
+      ['The class deepened her appreciation of poetry.', '그 수업으로 그녀의 시 감상이 깊어졌다.'],
+      ['They gained an appreciation of the problem.', '그들은 그 문제를 제대로 이해하게 됐다.'],
+    ]},
+  ]},
+  { w: 'associated with', p: 'phr.', s: [
+    { m: '~과 관련된, ~과 연관된', syn: [], ex: [
+      ['Smoking is associated with many diseases.', '흡연은 여러 병과 관련이 있다.'],
+      ['The name is associated with great music.', '그 이름은 훌륭한 음악과 연관되어 있다.'],
+      ['Costs associated with the trip were high.', '그 여행에 딸린 비용이 컸다.'],
+    ]},
+  ]},
   { w: 'come down with', p: 'phr.', s: [
     { m: '(병에) 걸리다', syn: [], ex: [
       ['He came down with a fever.', '그는 열이 났다.'],
@@ -45,7 +59,7 @@ export const H1_2 = defineLevel('h1-2', [
     ]},
   ]},
   { w: 'contribute to', p: 'phr.', s: [
-    { m: '~에 기여하다, 원인이 되다', syn: [], ex: [
+    { m: '~의 한 원인이 되다, ~에 기여하다', syn: [], ex: [
       ['Exercise contributes to good health.', '운동은 건강에 기여한다.'],
       ['Everyone contributed to the success.', '모두가 그 성공에 기여했다.'],
       ['Smoking contributes to heart disease.', '흡연은 심장병의 원인이 된다.'],
@@ -66,7 +80,7 @@ export const H1_2 = defineLevel('h1-2', [
     ]},
   ]},
   { w: 'derive from', p: 'phr.', s: [
-    { m: '~에서 유래하다, 얻다', syn: [], ex: [
+    { m: '~로부터 비롯되다, ~에서 파생되다, ~로부터 나오다[유래하다], ~에서 기인하다', syn: [], ex: [
       ['The word derives from Latin.', '그 낱말은 라틴어에서 유래한다.'],
       ['She derives joy from teaching.', '그녀는 가르치는 데서 기쁨을 얻는다.'],
       ['Many medicines derive from plants.', '많은 약이 식물에서 나온다.'],
@@ -84,6 +98,13 @@ export const H1_2 = defineLevel('h1-2', [
       ['My view differs from yours.', '내 견해는 네 것과 다르다.'],
       ['This species differs from that one.', '이 종은 저 종과 다르다.'],
       ['Customs differ from country to country.', '관습은 나라마다 다르다.'],
+    ]},
+  ]},
+  { w: 'discrimination', p: 'n.', s: [
+    { m: '차별, 구별, 식별', syn: [], ex: [
+      ['The law forbids discrimination at work.', '법은 직장에서의 차별을 금한다.'],
+      ['She showed fine discrimination in taste.', '그녀는 맛을 섬세하게 구별했다.'],
+      ['Discrimination based on age is unfair.', '나이에 따른 차별은 부당하다.'],
     ]},
   ]},
   { w: 'do without', p: 'phr.', s: [
@@ -122,10 +143,24 @@ export const H1_2 = defineLevel('h1-2', [
     ]},
   ]},
   { w: 'engage in', p: 'phr.', s: [
-    { m: '~에 참여하다, 종사하다', syn: [], ex: [
+    { m: '~에 참여하다, ~에 관여하다,  ~을 수행하다', syn: [], ex: [
       ['They engage in volunteer work.', '그들은 자원봉사에 참여한다.'],
       ['He engaged in a long conversation.', '그는 긴 대화에 빠져들었다.'],
       ['Students engage in group projects.', '학생들은 조별 과제에 참여한다.'],
+    ]},
+  ]},
+  { w: 'entity', p: 'n.', s: [
+    { m: '실체, 존재, 독립체', syn: [], ex: [
+      ['The company is a separate legal entity.', '그 회사는 법적으로 따로 있는 존재다.'],
+      ['Each school is treated as one entity.', '학교마다 하나의 독립된 단위로 다뤄진다.'],
+      ['The two departments became a single entity.', '두 부서가 한 조직이 됐다.'],
+    ]},
+  ]},
+  { w: 'literary', p: 'adj.', s: [
+    { m: '문학의, 문학적인, 문헌의', syn: [], ex: [
+      ['She won a literary prize.', '그녀는 문학상을 받았다.'],
+      ['The essay uses literary devices.', '그 글은 문학적 장치를 쓴다.'],
+      ['He joined a literary club at school.', '그는 학교 문학 동아리에 들었다.'],
     ]},
   ]},
   { w: 'purpose', p: 'n.', s: [
@@ -416,7 +451,7 @@ export const H1_2 = defineLevel('h1-2', [
     ]},
   ]},
   { w: 'release', p: 'v.', s: [
-    { m: '풀어주다, 공개하다', syn: [], ex: [
+    { m: '방출하다, 발산하다, 발매하다, 풀어주다, 배출하다', syn: [], ex: [
       ['They released the bird.', '그들은 새를 놓아주었다.'],
       ['The band released a new song.', '그 밴드가 새 노래를 냈다.'],
       ['He was released yesterday.', '그는 어제 풀려났다.'],
@@ -493,7 +528,7 @@ export const H1_2 = defineLevel('h1-2', [
     ]},
   ]},
   { w: 'replace', p: 'v.', s: [
-    { m: '대체하다, 교체하다', syn: ['substitute'], ex: [
+    { m: '대체하다, 교체하다, 대신하다', syn: ['substitute'], ex: [
       ['Replace the old battery.', '낡은 배터리를 교체해라.'],
       ['Nothing can replace family.', '가족을 대신할 것은 없다.'],
       ['They replaced the broken window.', '그들은 깨진 창문을 갈았다.'],
@@ -573,10 +608,17 @@ export const H1_2 = defineLevel('h1-2', [
     ]},
   ]},
   { w: 'respond', p: 'v.', s: [
-    { m: '응답하다, 반응하다', syn: ['reply'], ex: [
+    { m: '응답하다, 대답하다, 대응[반응]하다', syn: ['reply'], ex: [
       ['She responded to my email.', '그녀는 내 이메일에 답했다.'],
       ['He did not respond at all.', '그는 전혀 반응하지 않았다.'],
       ['Patients respond to the medicine.', '환자들이 그 약에 반응한다.'],
+    ]},
+  ]},
+  { w: 'respondent', p: 'n.', s: [
+    { m: '응답자', syn: [], ex: [
+      ['Each respondent answered ten questions.', '응답자마다 열 문항에 답했다.'],
+      ['Most respondents preferred the first design.', '응답자 대부분이 첫 번째 디자인을 골랐다.'],
+      ['The survey had two hundred respondents.', '그 조사에는 응답자가 이백 명이었다.'],
     ]},
   ]},
   { w: 'responsible', p: 'adj.', s: [
@@ -803,7 +845,7 @@ export const H1_2 = defineLevel('h1-2', [
     ]},
   ]},
   { w: 'scale', p: 'n.', s: [
-    { m: '규모, 저울', syn: [], ex: [
+    { m: '수준, 규모, 척도', syn: [], ex: [
       ['The project is large in scale.', '그 사업은 규모가 크다.'],
       ['Weigh it on the scale.', '저울에 그것을 달아라.'],
       ['Draw the map to scale.', '지도를 축척에 맞춰 그려라.'],
@@ -998,7 +1040,7 @@ export const H1_2 = defineLevel('h1-2', [
     ]},
   ]},
   { w: 'session', p: 'n.', s: [
-    { m: '시간, 기간', syn: ['meeting'], ex: [
+    { m: '(특정 활동의) 시간, 기간, 회차, 회기, 사진 찍는 시간', syn: ['meeting'], ex: [
       ['The morning session was long.', '오전 시간은 길었다.'],
       ['We had a practice session.', '우리는 연습 시간을 가졌다.'],
       ['The session ended early.', '그 회기는 일찍 끝났다.'],

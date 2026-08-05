@@ -1,5 +1,5 @@
 /**
- * 중학교 1학년 레벨 1 — 수록 154 / 계획 137개.
+ * 중학교 1학년 레벨 1 — 수록 157 / 계획 137개.
  *
  * 난이도 층: 기초(초등 권장)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -83,6 +83,48 @@ export const M1_1 = defineLevel('m1-1', [
       ['My room is above the kitchen.', '내 방은 부엌 위에 있다.'],
     ]},
   ]},
+  { w: 'absence', p: 'n.', s: [
+    { m: '부재, 결석', syn: [], ex: [
+      ['The teacher was worried about his absence from class.', '선생님은 그가 수업에 안 온 것을 걱정했다.'],
+      ['She explained the reason for her absence.', '그녀는 결석한 이유를 설명했다.'],
+      ['In the absence of rain, the plants died.', '비가 없어서 식물이 죽었다.'],
+    ]},
+  ]},
+  { w: 'abundant', p: 'adj.', s: [
+    { m: '많은, 풍부한, 수많은, 남아도는', syn: ['plentiful'], ex: [
+      ['Water is abundant in this region.', '이 지역에는 물이 풍부하다.'],
+      ['The forest has abundant wildlife.', '그 숲에는 야생 동물이 많다.'],
+      ['Fresh fruit was abundant at the market.', '시장에 신선한 과일이 넘쳐 났다.'],
+    ]},
+  ]},
+  { w: 'acceptance', p: 'n.', s: [
+    { m: '인정, 수용, 받아들임', syn: [], ex: [
+      ['His acceptance of the offer surprised us.', '그가 그 제안을 받아들여 우리는 놀랐다.'],
+      ['She waited for acceptance into the program.', '그녀는 그 과정에 붙기를 기다렸다.'],
+      ['Acceptance of the new rule took time.', '새 규칙을 받아들이는 데 시간이 걸렸다.'],
+    ]},
+  ]},
+  { w: 'accessible', p: 'adj.', s: [
+    { m: '접근하기 쉬운, 이용[접근] 가능한', syn: [], ex: [
+      ['The library is accessible by bus.', '그 도서관은 버스로 가기 쉽다.'],
+      ['We made the building accessible to wheelchairs.', '우리는 그 건물을 휠체어로 다닐 수 있게 만들었다.'],
+      ['The information is accessible to everyone.', '그 정보는 누구나 볼 수 있다.'],
+    ]},
+  ]},
+  { w: 'accommodation', p: 'n.', s: [
+    { m: '숙박, 숙소, 순응, 적응', syn: [], ex: [
+      ['The school arranged accommodation for the trip.', '학교가 여행 숙소를 마련했다.'],
+      ['Cheap accommodation is hard to find here.', '여기서는 값싼 숙소를 찾기 어렵다.'],
+      ['The price includes meals and accommodation.', '그 값에는 식사와 숙박이 들어 있다.'],
+    ]},
+  ]},
+  { w: 'accuracy', p: 'n.', s: [
+    { m: '정확도, 정확성', syn: [], ex: [
+      ['The accuracy of the map is impressive.', '그 지도의 정확도는 놀랍다.'],
+      ['Check your answers for accuracy.', '답이 정확한지 확인해라.'],
+      ['Speed matters less than accuracy here.', '여기서는 속도보다 정확도가 중요하다.'],
+    ]},
+  ]},
   { w: 'across', p: 'prep.', s: [
     { m: '~을 가로질러, 건너서', syn: ['over'], ex: [
       ['We walked across the bridge.', '우리는 다리를 건너 걸었다.'],
@@ -100,6 +142,13 @@ export const M1_1 = defineLevel('m1-1', [
       ['He acted the part of a king.', '그는 왕 역을 연기했다.'],
     ]},
   ]},
+  { w: 'activate', p: 'v.', s: [
+    { m: '활성화하다', syn: [], ex: [
+      ['Press this button to activate the alarm.', '경보를 켜려면 이 단추를 누르세요.'],
+      ['Sunlight activates the sensor.', '햇빛이 그 감지기를 작동시킨다.'],
+      ['The card is activated after you sign it.', '그 카드는 서명한 뒤에 쓸 수 있게 된다.'],
+    ]},
+  ]},
   { w: 'add', p: 'v.', s: [
     { m: '더하다, 추가하다', syn: ['put in'], ex: [
       ['Please add some sugar to the tea.', '차에 설탕을 조금 넣어 주세요.'],
@@ -108,7 +157,7 @@ export const M1_1 = defineLevel('m1-1', [
     ]},
   ]},
   { w: 'address', p: 'n.', s: [
-    { m: '주소', syn: [], ex: [
+    { m: '(어려운 문제 등을) 다루다, 처리하다, 해결하다, 대상으로 하다, 대응[대처]하다', syn: [], ex: [
       ['Write your address here.', '여기에 주소를 쓰세요.'],
       ['I forgot her email address.', '나는 그녀의 이메일 주소를 잊어버렸다.'],
       ['This address is wrong.', '이 주소는 틀렸다.'],
@@ -119,6 +168,13 @@ export const M1_1 = defineLevel('m1-1', [
       ['Adults pay ten dollars.', '어른은 10달러를 낸다.'],
       ['An adult should help the child.', '어른이 그 아이를 도와야 한다.'],
       ['She became an adult last year.', '그녀는 작년에 성인이 되었다.'],
+    ]},
+  ]},
+  { w: 'affordable', p: 'adj.', s: [
+    { m: '저렴하게 구할 수 있는, (가격이) 알맞은, 합리적인, 적당한 가격의', syn: [], ex: [
+      ['The shop sells affordable clothes.', '그 가게는 값이 알맞은 옷을 판다.'],
+      ['We need affordable housing for young people.', '젊은 사람들을 위한 값싼 집이 필요하다.'],
+      ['This laptop is powerful and affordable.', '이 노트북은 성능이 좋고 값도 알맞다.'],
     ]},
   ]},
   { w: 'airplane', p: 'n.', s: [
@@ -362,6 +418,13 @@ export const M1_1 = defineLevel('m1-1', [
       ['The area around the lake is beautiful.', '호수 주변 지역은 아름답다.'],
     ]},
   ]},
+  { w: 'argument', p: 'n.', s: [
+    { m: '논증, 주장, 논쟁, 논거', syn: ['debate'], ex: [
+      ['Her argument was clear and well supported.', '그녀의 주장은 분명하고 근거가 탄탄했다.'],
+      ['They had an argument about the rules.', '그들은 규칙을 두고 말다툼을 했다.'],
+      ['He gave three arguments for his plan.', '그는 자기 계획에 대한 근거를 셋 들었다.'],
+    ]},
+  ]},
   { w: 'arm', p: 'n.', s: [
     { m: '팔', syn: [], ex: [
       ['My arm hurts after the game.', '경기가 끝나고 팔이 아프다.'],
@@ -433,6 +496,13 @@ export const M1_1 = defineLevel('m1-1', [
       ['He asked for a glass of water.', '그는 물 한 잔을 달라고 했다.'],
       ['Do not be afraid to ask for help.', '도움을 청하는 것을 두려워하지 마라.'],
       ['She asked for more time to finish.', '그녀는 끝낼 시간을 더 달라고 했다.'],
+    ]},
+  ]},
+  { w: 'assessment', p: 'n.', s: [
+    { m: '평가, 심사', syn: [], ex: [
+      ['The teacher\'s assessment was fair.', '선생님의 평가는 공정했다.'],
+      ['We need an assessment of the damage.', '피해를 평가해야 한다.'],
+      ['Assessments take place twice a year.', '평가는 일 년에 두 번 이뤄진다.'],
     ]},
   ]},
   { w: 'at', p: 'prep.', s: [
@@ -907,6 +977,158 @@ export const M1_1 = defineLevel('m1-1', [
       ['I want to buy a new bag.', '나는 새 가방을 사고 싶다.'],
       ['She bought some fruit at the market.', '그녀는 시장에서 과일을 좀 샀다.'],
       ['He is buying tickets now.', '그는 지금 표를 사고 있다.'],
+    ]},
+  ]},
+  { w: 'combination', p: 'n.', s: [
+    { m: '조합, 결합', syn: ['mix'], ex: [
+      ['The dish is a combination of rice and beans.', '그 음식은 밥과 콩의 조합이다.'],
+      ['Try a different combination of colors.', '색을 다르게 조합해 보아라.'],
+      ['Success came from a combination of luck and work.', '성공은 운과 노력이 겹쳐 온 것이었다.'],
+    ]},
+  ]},
+  { w: 'comparison', p: 'n.', s: [
+    { m: '비교', syn: [], ex: [
+      ['This comparison shows which phone is cheaper.', '이 비교는 어느 전화기가 더 싼지 보여 준다.'],
+      ['In comparison with last year, sales went up.', '작년과 비교하면 판매가 늘었다.'],
+      ['She made a comparison between the two books.', '그녀는 두 책을 견주어 보았다.'],
+    ]},
+  ]},
+  { w: 'complicated', p: 'adj.', s: [
+    { m: '복잡한', syn: ['complex'], ex: [
+      ['The rules are too complicated for beginners.', '그 규칙은 처음 배우는 사람에게 너무 복잡하다.'],
+      ['It is a complicated problem with no easy answer.', '쉬운 답이 없는 복잡한 문제다.'],
+      ['He gave a complicated explanation.', '그는 복잡하게 설명했다.'],
+    ]},
+  ]},
+  { w: 'confusion', p: 'n.', s: [
+    { m: '혼란', syn: [], ex: [
+      ['There was confusion about the new rule.', '새 규칙을 두고 혼란이 있었다.'],
+      ['His answer only added to my confusion.', '그의 대답은 내 혼란을 키우기만 했다.'],
+      ['The sudden change caused confusion in class.', '갑작스러운 변화가 교실에 혼란을 일으켰다.'],
+    ]},
+  ]},
+  { w: 'constantly', p: 'adv.', s: [
+    { m: '끊임없이, 지속적으로', syn: [], ex: [
+      ['The phone rang constantly all morning.', '아침 내내 전화가 끊임없이 울렸다.'],
+      ['Technology is constantly changing.', '기술은 끊임없이 바뀐다.'],
+      ['He constantly checks the weather.', '그는 날씨를 계속 확인한다.'],
+    ]},
+  ]},
+  { w: 'conversely', p: 'adv.', s: [
+    { m: '반대로', syn: [], ex: [
+      ['Some plants need shade; conversely, others need sun.', '그늘이 필요한 식물이 있고, 반대로 볕이 필요한 것도 있다.'],
+      ['Prices fell; conversely, sales rose.', '값이 내렸고, 반대로 판매는 늘었다.'],
+      ['He talks little. Conversely, his brother never stops.', '그는 말이 적다. 반대로 그의 형은 쉬지 않는다.'],
+    ]},
+  ]},
+  { w: 'definition', p: 'n.', s: [
+    { m: '정의', syn: [], ex: [
+      ['Look up the definition of this word.', '이 낱말의 정의를 찾아봐라.'],
+      ['The dictionary gives three definitions.', '그 사전에는 정의가 세 개 실려 있다.'],
+      ['His definition of success is simple.', '그가 내리는 성공의 정의는 단순하다.'],
+    ]},
+  ]},
+  { w: 'eagerly', p: 'adv.', s: [
+    { m: '열심히, 간절히, 잔뜩 기대하며, 열정적으로', syn: [], ex: [
+      ['The children waited eagerly for the bus.', '아이들이 버스를 잔뜩 기대하며 기다렸다.'],
+      ['He eagerly opened the letter.', '그는 편지를 급히 뜯어보았다.'],
+      ['She eagerly joined the new club.', '그녀는 새 동아리에 신나서 들어갔다.'],
+    ]},
+  ]},
+  { w: 'engagement', p: 'n.', s: [
+    { m: '참여, 관여, 개입, 약속, 계약', syn: [], ex: [
+      ['Student engagement improved this term.', '이번 학기에 학생 참여가 좋아졌다.'],
+      ['She has an engagement on Friday evening.', '그녀는 금요일 저녁에 약속이 있다.'],
+      ['The teacher measured engagement in class.', '선생님이 수업 참여도를 재 보았다.'],
+    ]},
+  ]},
+  { w: 'exposure', p: 'n.', s: [
+    { m: '노출, 접촉, 접함', syn: [], ex: [
+      ['Long exposure to the sun can burn your skin.', '볕에 오래 노출되면 살갗이 탄다.'],
+      ['Early exposure to music helps children.', '어릴 때 음악을 접하면 아이에게 도움이 된다.'],
+      ['The film needs less exposure to light.', '그 필름은 빛에 덜 노출되어야 한다.'],
+    ]},
+  ]},
+  { w: 'frustration', p: 'n.', s: [
+    { m: '좌절, 좌절감', syn: [], ex: [
+      ['He shouted in frustration.', '그는 답답해서 소리쳤다.'],
+      ['Her frustration grew as the wait continued.', '기다림이 길어지자 그녀의 답답함이 커졌다.'],
+      ['Learning a language brings joy and frustration.', '언어를 배우면 기쁨도 좌절도 온다.'],
+    ]},
+  ]},
+  { w: 'infinite', p: 'adj.', s: [
+    { m: '무한한', syn: ['endless'], ex: [
+      ['Space seems infinite to us.', '우주는 우리에게 끝이 없어 보인다.'],
+      ['She showed infinite patience with the children.', '그녀는 아이들에게 한없는 참을성을 보였다.'],
+      ['There are infinite ways to solve this.', '이것을 푸는 방법은 무한히 많다.'],
+    ]},
+  ]},
+  { w: 'introduction', p: 'n.', s: [
+    { m: '유입, 소개, 도입, 입문', syn: [], ex: [
+      ['The introduction of the new rule caused debate.', '새 규칙의 도입이 논쟁을 불렀다.'],
+      ['Read the introduction before chapter one.', '1장 앞에 있는 머리말을 읽어라.'],
+      ['He gave a short introduction to the topic.', '그는 그 주제를 짧게 소개했다.'],
+    ]},
+  ]},
+  { w: 'maintenance', p: 'n.', s: [
+    { m: '유지 관리, 보수, 정비', syn: [], ex: [
+      ['The car needs regular maintenance.', '그 차는 정기 정비가 필요하다.'],
+      ['Building maintenance costs went up.', '건물 유지비가 올랐다.'],
+      ['Maintenance work closes the pool on Monday.', '보수 작업으로 월요일에 수영장이 닫는다.'],
+    ]},
+  ]},
+  { w: 'occasionally', p: 'adv.', s: [
+    { m: '가끔, 이따금, 때때로', syn: ['sometimes'], ex: [
+      ['We occasionally eat out on weekends.', '우리는 주말에 가끔 밖에서 먹는다.'],
+      ['He occasionally forgets his keys.', '그는 이따금 열쇠를 잊는다.'],
+      ['It occasionally snows here in April.', '여기는 사월에도 가끔 눈이 온다.'],
+    ]},
+  ]},
+  { w: 'possession', p: 'n.', s: [
+    { m: '(보통 복수로) 소유물, 소유품, 소유', syn: [], ex: [
+      ['She packed her few possessions.', '그녀는 몇 안 되는 소유물을 챙겼다.'],
+      ['The book is his most valued possession.', '그 책은 그가 가장 아끼는 물건이다.'],
+      ['Possession of the ball changed twice.', '공의 소유가 두 번 바뀌었다.'],
+    ]},
+  ]},
+  { w: 'productivity', p: 'n.', s: [
+    { m: '생산성', syn: [], ex: [
+      ['Short breaks raise productivity.', '짧은 휴식이 생산성을 높인다.'],
+      ['Farm productivity doubled in a decade.', '십 년 만에 농장 생산성이 두 배가 됐다.'],
+      ['Noise hurts productivity at work.', '소음은 일터의 생산성을 해친다.'],
+    ]},
+  ]},
+  { w: 'refund', p: 'v.', s: [
+    { m: '환불하다', syn: [], ex: [
+      ['The store will refund your money.', '그 가게가 돈을 환불해 줄 것이다.'],
+      ['They refunded the ticket price.', '그들은 표값을 환불해 주었다.'],
+      ['We cannot refund used items.', '쓴 물건은 환불해 드릴 수 없습니다.'],
+    ]},
+    { m: '환불(금)', syn: [], ex: [
+      ['She asked for a refund.', '그녀는 환불을 요청했다.'],
+      ['The refund arrived a week later.', '환불금이 일주일 뒤에 들어왔다.'],
+      ['Keep the receipt for a refund.', '환불하려면 영수증을 갖고 계세요.'],
+    ]},
+  ]},
+  { w: 'resident', p: 'n.', s: [
+    { m: '주민, 거주민[거주자]', syn: [], ex: [
+      ['Residents complained about the noise.', '주민들이 소음에 대해 불평했다.'],
+      ['She has been a resident here for ten years.', '그녀는 여기 산 지 십 년 됐다.'],
+      ['The park is open to local residents.', '그 공원은 지역 주민에게 열려 있다.'],
+    ]},
+  ]},
+  { w: 'significance', p: 'n.', s: [
+    { m: '의미, 의의, 중요성, 중요한 것', syn: [], ex: [
+      ['The discovery has great significance.', '그 발견은 큰 의의가 있다.'],
+      ['He explained the significance of the date.', '그는 그 날짜의 의미를 설명했다.'],
+      ['The change has little practical significance.', '그 변화는 실질적 중요성이 거의 없다.'],
+    ]},
+  ]},
+  { w: 'unfold', p: 'v.', s: [
+    { m: '전개되다, 펼쳐지다, 펼쳐 보이다', syn: [], ex: [
+      ['The story unfolds slowly.', '그 이야기는 천천히 펼쳐진다.'],
+      ['She unfolded the map on the table.', '그녀는 탁자에 지도를 펼쳤다.'],
+      ['Events unfolded faster than expected.', '일이 생각보다 빨리 전개됐다.'],
     ]},
   ]},
 ], 'curriculum');

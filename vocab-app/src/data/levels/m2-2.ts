@@ -1,5 +1,5 @@
 /**
- * 중학교 2학년 레벨 2 — 수록 154 / 계획 137개.
+ * 중학교 2학년 레벨 2 — 수록 156 / 계획 137개.
  *
  * 난이도 층: 기초(초등 권장)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -9,6 +9,34 @@
 import { defineLevel } from '../define';
 
 export const M2_2 = defineLevel('m2-2', [
+  { w: 'attachment', p: 'n.', s: [
+    { m: '애착, 부착, 집착, 결합, 부속품', syn: [], ex: [
+      ['The child formed a strong attachment to the dog.', '그 아이는 개에게 깊은 애착을 갖게 됐다.'],
+      ['Please open the attachment in my email.', '제 메일의 첨부 파일을 열어 보세요.'],
+      ['His attachment to old habits slowed him down.', '옛 버릇에 대한 집착이 그를 더디게 했다.'],
+    ]},
+  ]},
+  { w: 'dominant', p: 'adj.', s: [
+    { m: '두드러진, 지배적인, 우위를 점하는, 우세한, 주된', syn: [], ex: [
+      ['Red is the dominant color in the painting.', '그 그림에서 빨강이 가장 두드러진 색이다.'],
+      ['English is the dominant language here.', '여기서는 영어가 주로 쓰인다.'],
+      ['The dominant view has changed.', '지배적인 견해가 바뀌었다.'],
+    ]},
+  ]},
+  { w: 'expansion', p: 'n.', s: [
+    { m: '확장, 확대, 팽창', syn: [], ex: [
+      ['The company announced its expansion into Asia.', '그 회사가 아시아로 넓혀 간다고 밝혔다.'],
+      ['Heat causes the expansion of metal.', '열은 금속을 팽창시킨다.'],
+      ['The library expansion took two years.', '도서관 확장에 두 해가 걸렸다.'],
+    ]},
+  ]},
+  { w: 'frequently', p: 'adv.', s: [
+    { m: '자주, 흔히, 빈번하게, 빈번히', syn: ['often'], ex: [
+      ['He frequently visits his grandmother.', '그는 할머니를 자주 찾아뵌다.'],
+      ['This word appears frequently in the text.', '이 낱말은 글에 자주 나온다.'],
+      ['Buses run frequently on weekdays.', '평일에는 버스가 자주 다닌다.'],
+    ]},
+  ]},
   { w: 'go back', p: 'phr.', s: [
     { m: '돌아가다', syn: ['return'], ex: [
       ['I want to go back home.', '나는 집에 돌아가고 싶다.'],
@@ -126,6 +154,74 @@ export const M2_2 = defineLevel('m2-2', [
       ['Be more careful in the future.', '앞으로는 더 조심해라.'],
       ['In the future cars may fly.', '미래에는 차가 날지도 모른다.'],
       ['She wants to be a vet in the future.', '그녀는 앞으로 수의사가 되고 싶어 한다.'],
+    ]},
+  ]},
+  { w: 'inequality', p: 'n.', s: [
+    { m: '불평등', syn: [], ex: [
+      ['The report studies income inequality.', '그 보고서는 소득 불평등을 다룬다.'],
+      ['Education can reduce inequality.', '교육은 불평등을 줄일 수 있다.'],
+      ['Inequality between the two regions has grown.', '두 지역 사이의 불평등이 커졌다.'],
+    ]},
+  ]},
+  { w: 'interaction', p: 'n.', s: [
+    { m: '상호 작용', syn: [], ex: [
+      ['Interaction between students helps learning.', '학생들 사이의 상호 작용이 배움을 돕는다.'],
+      ['The app records every interaction.', '그 앱은 모든 주고받음을 기록한다.'],
+      ['Social interaction is important for children.', '아이에게는 사람들과 어울리는 것이 중요하다.'],
+    ]},
+  ]},
+  { w: 'loyalty', p: 'n.', s: [
+    { m: '충성(심), 충성도', syn: [], ex: [
+      ['His loyalty to his friends never changed.', '친구에 대한 그의 의리는 변하지 않았다.'],
+      ['Customer loyalty keeps the shop alive.', '단골의 충성도가 그 가게를 지탱한다.'],
+      ['She showed great loyalty to the team.', '그녀는 팀에 큰 충성을 보였다.'],
+    ]},
+  ]},
+  { w: 'navigate', p: 'v.', s: [
+    { m: '길을 찾다, 방향을 읽다, (길을) 안내하다, 헤쳐 나가다, 항행[항해]하다', syn: [], ex: [
+      ['Sailors once used stars to navigate.', '뱃사람들은 한때 별로 길을 찾았다.'],
+      ['She navigated the busy streets on foot.', '그녀는 붐비는 거리를 걸어서 헤쳐 나갔다.'],
+      ['This app helps you navigate the subway.', '이 앱은 지하철에서 길을 찾도록 도와준다.'],
+    ]},
+  ]},
+  { w: 'permanently', p: 'adv.', s: [
+    { m: '영구적으로', syn: [], ex: [
+      ['The shop closed permanently last year.', '그 가게는 작년에 아주 문을 닫았다.'],
+      ['The mark stayed on the wall permanently.', '그 자국은 벽에 영영 남았다.'],
+      ['She moved permanently to another city.', '그녀는 다른 도시로 아주 옮겨 갔다.'],
+    ]},
+  ]},
+  { w: 'primary', p: 'adj.', s: [
+    { m: '주요한, 주된, 가장 중요한, 일차적인, 위주의', syn: [], ex: [
+      ['Safety is our primary concern.', '안전이 우리의 가장 중요한 관심사다.'],
+      ['The primary cause was human error.', '주된 원인은 사람의 실수였다.'],
+      ['Water is the primary ingredient.', '물이 주된 재료다.'],
+    ]},
+  ]},
+  { w: 'recall', p: 'v.', s: [
+    { m: '기억해 내다, 회상하다, 기억을 떠올리다', syn: ['remember'], ex: [
+      ['I cannot recall his name.', '나는 그의 이름이 생각나지 않는다.'],
+      ['She recalled the day clearly.', '그녀는 그날을 또렷이 떠올렸다.'],
+      ['Try to recall what you ate yesterday.', '어제 무엇을 먹었는지 떠올려 보아라.'],
+    ]},
+    { m: '기억력, 기억, 회상, 리콜, 회수', syn: [], ex: [
+      ['His recall of numbers is remarkable.', '그의 숫자 기억력은 놀랍다.'],
+      ['The company issued a recall of the toy.', '그 회사가 그 장난감을 회수했다.'],
+      ['Memory recall becomes slower with age.', '나이가 들면 기억을 떠올리는 속도가 느려진다.'],
+    ]},
+  ]},
+  { w: 'reliable', p: 'adj.', s: [
+    { m: '확실한, 신뢰할 수 있는, 믿을 수 있는, 의지할 수 있는', syn: [], ex: [
+      ['He is a reliable friend.', '그는 믿을 수 있는 친구다.'],
+      ['We need reliable information.', '우리는 확실한 정보가 필요하다.'],
+      ['The old car is still reliable.', '그 낡은 차는 아직 잘 달린다.'],
+    ]},
+  ]},
+  { w: 'semester', p: 'n.', s: [
+    { m: '학기', syn: ['term'], ex: [
+      ['The new semester starts in March.', '새 학기가 3월에 시작한다.'],
+      ['She took five classes last semester.', '그녀는 지난 학기에 다섯 과목을 들었다.'],
+      ['Exams are held at the end of each semester.', '시험은 학기마다 끝에 치러진다.'],
     ]},
   ]},
   { w: 'service', p: 'n.', s: [
@@ -991,6 +1087,13 @@ export const M2_2 = defineLevel('m2-2', [
     { m: '훈련하다, 훈련시키다', syn: ['practice'], ex: [
       ['He trains every day for the race.', '그는 경주를 위해 매일 훈련한다.'],
       ['She trained her dog well.', '그녀는 개를 잘 훈련시켰다.'],
+    ]},
+  ]},
+  { w: 'trait', p: 'n.', s: [
+    { m: '특성, 형질, 특징', syn: [], ex: [
+      ['Patience is a useful trait.', '참을성은 쓸모 있는 특성이다.'],
+      ['Eye color is an inherited trait.', '눈 색깔은 물려받는 형질이다.'],
+      ['The two brothers share several traits.', '그 두 형제는 몇 가지 특징이 같다.'],
     ]},
   ]},
   { w: 'trash', p: 'n.', s: [

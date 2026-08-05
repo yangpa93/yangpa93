@@ -1,5 +1,5 @@
 /**
- * 고등학교 1학년 레벨 3 — 수록 154 / 계획 137개.
+ * 고등학교 1학년 레벨 3 — 수록 159 / 계획 137개.
  *
  * 난이도 층: 중급(중학 권장)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -9,6 +9,20 @@
 import { defineLevel } from '../define';
 
 export const H1_3 = defineLevel('h1-3', [
+  { w: 'attainment', p: 'n.', s: [
+    { m: '달성, 도달, 성취, 성과', syn: [], ex: [
+      ['The attainment of the goal took years.', '그 목표를 이루는 데 여러 해가 걸렸다.'],
+      ['Her academic attainment is impressive.', '그녀의 학업 성취는 훌륭하다.'],
+      ['Attainment of fluency requires practice.', '유창함에 이르려면 연습이 필요하다.'],
+    ]},
+  ]},
+  { w: 'distinctive', p: 'adj.', s: [
+    { m: '독특한, 특징적인, 두드러지는, 특유한, 뚜렷이 구별되는', syn: [], ex: [
+      ['The bird has a distinctive call.', '그 새는 독특한 울음소리를 낸다.'],
+      ['Her writing has a distinctive style.', '그녀의 글에는 특유의 문체가 있다.'],
+      ['The building\'s distinctive roof is red.', '그 건물의 두드러진 지붕은 빨갛다.'],
+    ]},
+  ]},
   { w: 'escape from', p: 'phr.', s: [
     { m: '~에서 탈출하다, 벗어나다', syn: [], ex: [
       ['The bird escaped from its cage.', '새가 새장에서 탈출했다.'],
@@ -16,8 +30,15 @@ export const H1_3 = defineLevel('h1-3', [
       ['He wanted to escape from city life.', '그는 도시 생활에서 벗어나고 싶었다.'],
     ]},
   ]},
+  { w: 'ethical', p: 'adj.', s: [
+    { m: '윤리적인', syn: [], ex: [
+      ['The study raised ethical questions.', '그 연구는 윤리적 물음을 낳았다.'],
+      ['She made an ethical choice.', '그녀는 윤리적인 선택을 했다.'],
+      ['Ethical rules guide their work.', '윤리 규칙이 그들의 일을 이끈다.'],
+    ]},
+  ]},
   { w: 'figure out', p: 'phr.', s: [
-    { m: '알아내다, 이해하다', syn: ['work out'], ex: [
+    { m: '~을 알아내다, ~을 생각해 내다', syn: ['work out'], ex: [
       ['I cannot figure out this puzzle.', '나는 이 퍼즐을 못 풀겠다.'],
       ['She figured out the answer quickly.', '그녀는 재빨리 답을 알아냈다.'],
       ['We figured out how it works.', '우리는 그것이 어떻게 작동하는지 알아냈다.'],
@@ -128,6 +149,13 @@ export const H1_3 = defineLevel('h1-3', [
       ['He handed out invitations to everyone.', '그는 모두에게 초대장을 나눠 주었다.'],
     ]},
   ]},
+  { w: 'participant', p: 'n.', s: [
+    { m: '참가자', syn: [], ex: [
+      ['Every participant received a small gift.', '참가자마다 작은 선물을 받았다.'],
+      ['The study had thirty participants.', '그 연구에는 참가자가 서른 명이었다.'],
+      ['Participants must register before Friday.', '참가자는 금요일 전에 등록해야 한다.'],
+    ]},
+  ]},
   { w: 'shelter', p: 'n.', s: [
     { m: '보호소, 대피처', syn: [], ex: [
       ['We found shelter from the rain.', '우리는 비를 피할 곳을 찾았다.'],
@@ -216,7 +244,7 @@ export const H1_3 = defineLevel('h1-3', [
     ]},
   ]},
   { w: 'significant', p: 'adj.', s: [
-    { m: '중요한, 상당한', syn: ['important', 'considerable'], ex: [
+    { m: '중요한, 상당한, 유의미한', syn: ['important', 'considerable'], ex: [
       ['There was a significant difference.', '상당한 차이가 있었다.'],
       ['This is a significant discovery.', '이것은 중요한 발견이다.'],
       ['Sales rose by a significant amount.', '매출이 상당한 액수만큼 올랐다.'],
@@ -474,7 +502,7 @@ export const H1_3 = defineLevel('h1-3', [
     ]},
   ]},
   { w: 'species', p: 'n.', s: [
-    { m: '종', syn: [], ex: [
+    { m: '종(種)', syn: [], ex: [
       ['This species is endangered.', '이 종은 멸종 위기다.'],
       ['Many species live in the forest.', '많은 종이 숲에 산다.'],
       ['A new species was found.', '새로운 종이 발견되었다.'],
@@ -581,7 +609,7 @@ export const H1_3 = defineLevel('h1-3', [
     ]},
   ]},
   { w: 'stable', p: 'adj.', s: [
-    { m: '안정된', syn: ['steady', 'secure'], ex: [
+    { m: '안정적인, 안정된', syn: ['steady', 'secure'], ex: [
       ['Prices have been stable this year.', '올해 물가는 안정적이었다.'],
       ['He is in stable condition.', '그는 상태가 안정적이다.'],
       ['We need a stable internet connection.', '우리는 안정적인 인터넷 연결이 필요하다.'],
@@ -627,6 +655,18 @@ export const H1_3 = defineLevel('h1-3', [
       ['The house is in poor state.', '그 집은 상태가 나쁘다.'],
       ['Each state has its own law.', '각 주는 고유한 법이 있다.'],
       ['Her state of mind improved.', '그녀의 마음 상태가 나아졌다.'],
+    ]},
+  ]},
+  { w: 'statement', p: 'n.', s: [
+    { m: '진술, 말, 언급', syn: ['remark'], ex: [
+      ['The witness gave a clear statement.', '목격자가 분명한 진술을 했다.'],
+      ['His statement surprised everyone.', '그의 말이 모두를 놀라게 했다.'],
+      ['She made a short statement to the press.', '그녀는 언론에 짧게 한마디 했다.'],
+    ]},
+    { m: '명세표, 보고서, 성명', syn: [], ex: [
+      ['The bank sends a statement every month.', '은행이 매달 명세표를 보낸다.'],
+      ['The company released an official statement.', '그 회사가 공식 성명을 냈다.'],
+      ['Check your statement for any errors.', '명세표에 잘못이 없는지 확인해라.'],
     ]},
   ]},
   { w: 'station', p: 'n.', s: [
@@ -731,7 +771,7 @@ export const H1_3 = defineLevel('h1-3', [
     ]},
   ]},
   { w: 'strategy', p: 'n.', s: [
-    { m: '전략', syn: ['approach'], ex: [
+    { m: '전략, 계획, 술수', syn: ['approach'], ex: [
       ['We need a better strategy.', '우리는 더 나은 전략이 필요하다.'],
       ['Her study strategy really works.', '그녀의 공부 전략은 정말 효과가 있다.'],
       ['The team changed its strategy at halftime.', '그 팀은 하프타임에 전략을 바꿨다.'],
@@ -853,7 +893,7 @@ export const H1_3 = defineLevel('h1-3', [
     ]},
   ]},
   { w: 'sufficient', p: 'adj.', s: [
-    { m: '충분한', syn: ['enough', 'adequate'], ex: [
+    { m: '충분한, (~하기에) 족한', syn: ['enough', 'adequate'], ex: [
       ['We have sufficient supplies.', '우리는 충분한 물자를 가지고 있다.'],
       ['Is one hour sufficient?', '한 시간이면 충분하니?'],
       ['There was not sufficient evidence.', '충분한 증거가 없었다.'],
@@ -1010,7 +1050,7 @@ export const H1_3 = defineLevel('h1-3', [
     ]},
   ]},
   { w: 'take place', p: 'phr.', s: [
-    { m: '일어나다, 개최되다', syn: ['happen', 'be held'], ex: [
+    { m: '일어나다, 열리다, 개최되다, 실시되다', syn: ['happen', 'be held'], ex: [
       ['The festival takes place in May.', '그 축제는 5월에 열린다.'],
       ['The meeting took place last Friday.', '그 회의는 지난 금요일에 열렸다.'],
       ['Great changes took place after the war.', '전쟁 후에 큰 변화가 일어났다.'],

@@ -1,5 +1,5 @@
 /**
- * 중학교 1학년 레벨 3 — 수록 154 / 계획 137개.
+ * 중학교 1학년 레벨 3 — 수록 157 / 계획 137개.
  *
  * 난이도 층: 기초(초등 권장)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -9,6 +9,34 @@
 import { defineLevel } from '../define';
 
 export const M1_3 = defineLevel('m1-3', [
+  { w: 'admission', p: 'n.', s: [
+    { m: '입학, 입장(료)', syn: [], ex: [
+      ['Admission to the museum is free on Sunday.', '그 박물관은 일요일에 입장료가 없다.'],
+      ['She got admission to her first-choice school.', '그녀는 가고 싶던 학교에 입학했다.'],
+      ['The ticket includes admission to all rooms.', '그 표에는 모든 방의 입장이 들어 있다.'],
+    ]},
+  ]},
+  { w: 'aggressive', p: 'adj.', s: [
+    { m: '공격적인, 공세적인, 지나치게 적극적인', syn: [], ex: [
+      ['The dog became aggressive when strangers came.', '그 개는 낯선 사람이 오자 사나워졌다.'],
+      ['His aggressive tone upset the class.', '그의 공격적인 말투가 반 아이들을 언짢게 했다.'],
+      ['The company took an aggressive approach.', '그 회사는 공세적인 방식을 택했다.'],
+    ]},
+  ]},
+  { w: 'artificial', p: 'adj.', s: [
+    { m: '인공적인, 인공의, 인위적인', syn: ['man-made'], ex: [
+      ['The drink contains artificial colors.', '그 음료에는 인공 색소가 들어 있다.'],
+      ['They built an artificial lake in the park.', '그들은 공원에 인공 호수를 만들었다.'],
+      ['Artificial light is not the same as sunlight.', '인공 불빛은 햇빛과 같지 않다.'],
+    ]},
+  ]},
+  { w: 'assistance', p: 'n.', s: [
+    { m: '도움, 원조, 지원, 보조', syn: ['help'], ex: [
+      ['She asked for assistance with her bags.', '그녀는 가방을 들어 달라고 도움을 청했다.'],
+      ['The team offers assistance to new students.', '그 모둠은 새 학생들에게 도움을 준다.'],
+      ['Medical assistance arrived within minutes.', '의료 지원이 몇 분 만에 도착했다.'],
+    ]},
+  ]},
   { w: 'be similar to', p: 'phr.', s: [
     { m: '~와 비슷하다', syn: [], ex: [
       ['Her voice is similar to her mother\'s.', '그녀의 목소리는 어머니의 것과 비슷하다.'],
@@ -128,11 +156,79 @@ export const M1_3 = defineLevel('m1-3', [
       ['She catches a cold every winter.', '그녀는 겨울마다 감기에 걸린다.'],
     ]},
   ]},
+  { w: 'classification', p: 'n.', s: [
+    { m: '분류', syn: [], ex: [
+      ['The classification of animals follows clear rules.', '동물의 분류는 분명한 규칙을 따른다.'],
+      ['Books are shelved by classification.', '책은 분류에 따라 꽂힌다.'],
+      ['Scientists changed the classification of that plant.', '과학자들이 그 식물의 분류를 바꿨다.'],
+    ]},
+  ]},
+  { w: 'commercial', p: 'adj.', s: [
+    { m: '상업의, 상업적인', syn: [], ex: [
+      ['The building is used for commercial purposes.', '그 건물은 상업 용도로 쓰인다.'],
+      ['Commercial fishing is limited in this bay.', '이 만에서는 상업적 어업이 제한된다.'],
+      ['The film was a commercial success.', '그 영화는 상업적으로 성공했다.'],
+    ]},
+    { m: '광고', syn: [], ex: [
+      ['We watched a funny commercial on TV.', '우리는 텔레비전에서 재미있는 광고를 봤다.'],
+      ['The commercial lasted thirty seconds.', '그 광고는 삼십 초 동안 나왔다.'],
+      ['She appeared in a shampoo commercial.', '그녀는 샴푸 광고에 나왔다.'],
+    ]},
+  ]},
+  { w: 'competitive', p: 'adj.', s: [
+    { m: '경쟁적인, 경쟁력 있는', syn: [], ex: [
+      ['The market is highly competitive.', '그 시장은 경쟁이 아주 심하다.'],
+      ['He is competitive in every game he plays.', '그는 어떤 경기를 하든 지기 싫어한다.'],
+      ['Our prices are competitive.', '우리 값은 경쟁력이 있다.'],
+    ]},
+  ]},
+  { w: 'confidence', p: 'n.', s: [
+    { m: '자신(감), 확신', syn: [], ex: [
+      ['She spoke with confidence.', '그녀는 자신 있게 말했다.'],
+      ['Practice will build your confidence.', '연습하면 자신감이 생긴다.'],
+      ['I have confidence in your judgment.', '나는 네 판단을 믿는다.'],
+    ]},
+  ]},
+  { w: 'consistently', p: 'adv.', s: [
+    { m: '일관되게, 지속적으로, 계속', syn: [], ex: [
+      ['He consistently arrives on time.', '그는 늘 제시간에 온다.'],
+      ['The team played consistently well all season.', '그 팀은 한 시즌 내내 꾸준히 잘했다.'],
+      ['Her grades improved consistently.', '그녀의 성적은 꾸준히 올랐다.'],
+    ]},
+  ]},
+  { w: 'contribution', p: 'n.', s: [
+    { m: '기여, 이바지, 공헌, 원인 제공', syn: [], ex: [
+      ['Her contribution to the project was huge.', '그 과제에 대한 그녀의 기여는 컸다.'],
+      ['Small contributions add up.', '작은 보탬이 쌓인다.'],
+      ['He made a lasting contribution to science.', '그는 과학에 오래 남을 공헌을 했다.'],
+    ]},
+  ]},
+  { w: 'countless', p: 'adj.', s: [
+    { m: '셀 수 없이 많은, 수많은, 무수히 많은', syn: [], ex: [
+      ['Countless stars filled the night sky.', '셀 수 없이 많은 별이 밤하늘을 채웠다.'],
+      ['She has read this book countless times.', '그녀는 이 책을 수없이 읽었다.'],
+      ['Countless people use this bridge every day.', '수많은 사람이 날마다 이 다리를 건넌다.'],
+    ]},
+  ]},
+  { w: 'distribution', p: 'n.', s: [
+    { m: '분포, 분배, 유통, 배열, 배포', syn: [], ex: [
+      ['The distribution of rainfall varies by season.', '비의 분포는 계절마다 다르다.'],
+      ['Fair distribution of work matters.', '일을 고르게 나누는 것이 중요하다.'],
+      ['The company handles distribution to shops.', '그 회사가 가게로 가는 유통을 맡는다.'],
+    ]},
+  ]},
   { w: 'eat', p: 'v.', s: [
     { m: '먹다', syn: ['have'], ex: [
       ['We eat lunch at noon.', '우리는 정오에 점심을 먹는다.'],
       ['She ate two apples.', '그녀는 사과 두 개를 먹었다.'],
       ['He is eating breakfast now.', '그는 지금 아침을 먹고 있다.'],
+    ]},
+  ]},
+  { w: 'efficiency', p: 'n.', s: [
+    { m: '효율(성), 능력, 유효성', syn: [], ex: [
+      ['The new engine improved efficiency.', '새 엔진이 효율을 높였다.'],
+      ['We work on energy efficiency at home.', '우리는 집에서 에너지 효율에 힘쓴다.'],
+      ['Her efficiency saved the team hours.', '그녀의 능률이 팀의 시간을 아꼈다.'],
     ]},
   ]},
   { w: 'end', p: 'n.', s: [
@@ -188,6 +284,13 @@ export const M1_3 = defineLevel('m1-3', [
       ['I like fruit, especially apples.', '나는 과일, 특히 사과를 좋아한다.'],
       ['It is cold, especially at night.', '춥다, 특히 밤에는.'],
       ['This rule is important, especially for beginners.', '이 규칙은 특히 초보자에게 중요하다.'],
+    ]},
+  ]},
+  { w: 'evaluation', p: 'n.', s: [
+    { m: '평가', syn: [], ex: [
+      ['The teacher wrote an evaluation of the project.', '선생님이 그 과제에 대한 평가를 적었다.'],
+      ['The plan needs careful evaluation.', '그 계획은 꼼꼼한 평가가 필요하다.'],
+      ['Evaluations are sent home twice a year.', '평가서는 일 년에 두 번 집으로 간다.'],
     ]},
   ]},
   { w: 'evening', p: 'n.', s: [
@@ -445,6 +548,13 @@ export const M1_3 = defineLevel('m1-3', [
     { m: '(날짜·장소를) 정하다', syn: ['set', 'arrange'], ex: [
       ['We fixed the meeting for Friday.', '우리는 회의를 금요일로 정했다.'],
       ['The price is fixed.', '가격은 정해져 있다.'],
+    ]},
+  ]},
+  { w: 'flexibility', p: 'n.', s: [
+    { m: '유연성, 융통성', syn: [], ex: [
+      ['Stretching improves flexibility.', '스트레칭은 유연성을 길러 준다.'],
+      ['The schedule allows some flexibility.', '그 일정에는 융통성이 조금 있다.'],
+      ['We value flexibility in our team.', '우리 모둠은 융통성을 중요하게 본다.'],
     ]},
   ]},
   { w: 'floor', p: 'n.', s: [
@@ -966,6 +1076,81 @@ export const M1_3 = defineLevel('m1-3', [
       ['There is a small hill behind my house.', '우리 집 뒤에 작은 언덕이 있다.'],
       ['We ran up the hill together.', '우리는 함께 언덕을 뛰어 올라갔다.'],
       ['The hills are green in spring.', '봄에는 언덕이 푸르다.'],
+    ]},
+  ]},
+  { w: 'illusion', p: 'n.', s: [
+    { m: '착각, 착시, 환상, 환영', syn: [], ex: [
+      ['The drawing creates an optical illusion.', '그 그림은 착시를 일으킨다.'],
+      ['He had no illusions about the difficulty.', '그는 그 어려움에 대해 헛된 기대가 없었다.'],
+      ['Water on a hot road is often an illusion.', '뜨거운 길 위의 물은 흔히 착시다.'],
+    ]},
+  ]},
+  { w: 'instruction', p: 'n.', s: [
+    { m: '지도, (컴퓨터의 작동) 명령, 지시, 설명, 가르침', syn: [], ex: [
+      ['Follow the instructions carefully.', '설명을 잘 따르세요.'],
+      ['She gave clear instruction to the class.', '그녀는 반에 분명하게 지도했다.'],
+      ['The instruction manual is in the box.', '설명서는 상자 안에 있다.'],
+    ]},
+  ]},
+  { w: 'involvement', p: 'n.', s: [
+    { m: '개입, 참여, 포함, 연루, 관여', syn: [], ex: [
+      ['Parent involvement improves results.', '학부모 참여가 결과를 좋게 한다.'],
+      ['His involvement in the club grew.', '그의 동아리 참여가 늘었다.'],
+      ['She denied any involvement in the plan.', '그녀는 그 계획에 관여하지 않았다고 했다.'],
+    ]},
+  ]},
+  { w: 'material', p: 'n.', s: [
+    { m: '자료, 제재, 재료', syn: [], ex: [
+      ['We collected material for the report.', '우리는 보고서에 쓸 자료를 모았다.'],
+      ['This jacket is made of soft material.', '이 웃옷은 부드러운 천으로 만들었다.'],
+      ['The teacher prepared reading material.', '선생님이 읽을거리를 준비했다.'],
+    ]},
+    { m: '물질적인', syn: [], ex: [
+      ['Money brings material comfort, not happiness.', '돈은 물질적 편안함을 줄 뿐 행복을 주지는 않는다.'],
+      ['They value ideas over material things.', '그들은 물건보다 생각을 소중히 여긴다.'],
+      ['Material wealth was never his goal.', '물질적 부는 그의 목표가 아니었다.'],
+    ]},
+  ]},
+  { w: 'original', p: 'adj.', s: [
+    { m: '독창적인, 원래의, 최초의', syn: [], ex: [
+      ['Her idea was completely original.', '그녀의 생각은 아주 독창적이었다.'],
+      ['The original plan was much simpler.', '원래 계획은 훨씬 단순했다.'],
+      ['We kept the original color of the wall.', '우리는 벽의 원래 색을 그대로 두었다.'],
+    ]},
+  ]},
+  { w: 'preference', p: 'n.', s: [
+    { m: '선호(도), 선호되는 것', syn: [], ex: [
+      ['She has a preference for quiet places.', '그녀는 조용한 곳을 좋아한다.'],
+      ['Please state your preference on the form.', '신청서에 원하는 것을 적어 주세요.'],
+      ['Preferences differ from person to person.', '선호는 사람마다 다르다.'],
+    ]},
+  ]},
+  { w: 'readily', p: 'adv.', s: [
+    { m: '쉽게, 선뜻, 손쉽게', syn: [], ex: [
+      ['The book is readily available online.', '그 책은 인터넷에서 쉽게 구할 수 있다.'],
+      ['He readily agreed to help.', '그는 선뜻 돕겠다고 했다.'],
+      ['Information is readily found these days.', '요즘은 정보를 손쉽게 찾는다.'],
+    ]},
+  ]},
+  { w: 'regulation', p: 'n.', s: [
+    { m: '규정, 조절, 규제', syn: [], ex: [
+      ['School regulations forbid running here.', '학교 규정은 여기서 뛰는 것을 막는다.'],
+      ['New regulations protect the river.', '새 규제가 그 강을 지킨다.'],
+      ['Body temperature regulation happens automatically.', '체온 조절은 저절로 일어난다.'],
+    ]},
+  ]},
+  { w: 'retailer', p: 'n.', s: [
+    { m: '소매업체, 소매업자, 소매상', syn: [], ex: [
+      ['The retailer lowered its prices.', '그 소매업체가 값을 내렸다.'],
+      ['Online retailers deliver within a day.', '온라인 소매점은 하루 안에 배달한다.'],
+      ['She works for a clothing retailer.', '그녀는 옷 소매업체에서 일한다.'],
+    ]},
+  ]},
+  { w: 'tendency', p: 'n.', s: [
+    { m: '성향, 경향, 풍조, 추세', syn: [], ex: [
+      ['He has a tendency to arrive late.', '그는 늦게 오는 버릇이 있다.'],
+      ['There is a tendency toward shorter books.', '책이 짧아지는 경향이 있다.'],
+      ['Prices show an upward tendency.', '값이 오르는 추세를 보인다.'],
     ]},
   ]},
 ], 'curriculum');

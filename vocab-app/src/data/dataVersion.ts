@@ -32,7 +32,7 @@
  */
 
 /** 지금 이 묶음에 들어 있는 어휘 판. 맨 앞 항목의 version 과 같아야 한다. */
-export const DATA_VERSION = '2026.08.04-2';
+export const DATA_VERSION = '2026.08.05';
 
 export interface DataRelease {
   /** `yyyy.mm.dd` — 하루에 두 번이면 `yyyy.mm.dd-2` */
@@ -65,6 +65,17 @@ export interface DataRelease {
 
 /** 새 판이 맨 앞. 화면도 이 순서 그대로 보여준다. */
 export const DATA_RELEASES: DataRelease[] = [
+  {
+    version: '2026.08.05',
+    date: '2026-08-05',
+    en: 224,
+    ko: 0,
+    daily: 0,
+    note: "2027 수능 빈출 어휘(빈도4) 에서 224개를 더했습니다",
+    totalEn: 3806,
+    totalKo: 1282,
+    totalDaily: 80,
+  },
   {
     version: '2026.08.04-2',
     date: '2026-08-04',

@@ -1,5 +1,5 @@
 /**
- * 중학교 3학년 레벨 1 — 수록 154 / 계획 137개.
+ * 중학교 3학년 레벨 1 — 수록 160 / 계획 137개.
  *
  * 난이도 층: 중급(중학 권장)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -9,6 +9,18 @@
 import { defineLevel } from '../define';
 
 export const M3_1 = defineLevel('m3-1', [
+  { w: 'application', p: 'n.', s: [
+    { m: '적용, 응용, 앱', syn: [], ex: [
+      ['The application of this rule is simple.', '이 규칙의 적용은 간단하다.'],
+      ['I downloaded a new application on my phone.', '나는 전화기에 새 앱을 내려받았다.'],
+      ['Science has many practical applications.', '과학에는 실용적인 응용이 많다.'],
+    ]},
+    { m: '신청, 지원, 지원서', syn: [], ex: [
+      ['She sent her application to the college.', '그녀는 대학에 지원서를 보냈다.'],
+      ['The application must arrive by Friday.', '신청서는 금요일까지 도착해야 한다.'],
+      ['He filled out the application carefully.', '그는 지원서를 꼼꼼히 작성했다.'],
+    ]},
+  ]},
   { w: 'century', p: 'n.', s: [
     { m: '세기, 100년', syn: [], ex: [
       ['We live in the twenty-first century.', '우리는 21세기에 산다.'],
@@ -87,7 +99,7 @@ export const M3_1 = defineLevel('m3-1', [
     ]},
   ]},
   { w: 'chase', p: 'v.', s: [
-    { m: '쫓다, 추격하다', syn: ['pursue'], ex: [
+    { m: '추구하다, 쫓아가다, 추적하다', syn: ['pursue'], ex: [
       ['The cat chased a mouse.', '고양이가 쥐를 쫓았다.'],
       ['Police chased the car for miles.', '경찰이 그 차를 한참 추격했다.'],
       ['He is chasing his dream.', '그는 자기 꿈을 좇고 있다.'],
@@ -290,7 +302,7 @@ export const M3_1 = defineLevel('m3-1', [
     ]},
   ]},
   { w: 'come up with', p: 'phr.', s: [
-    { m: '(생각을) 떠올리다, 내놓다', syn: ['think of', 'produce'], ex: [
+    { m: '~을 생각해 내다, ~을 떠올리다, 제시하다', syn: ['think of', 'produce'], ex: [
       ['She came up with a great idea.', '그녀는 훌륭한 생각을 떠올렸다.'],
       ['Can you come up with a better title?', '더 나은 제목을 생각해 낼 수 있니?'],
       ['They came up with a simple solution.', '그들은 간단한 해결책을 내놓았다.'],
@@ -329,6 +341,13 @@ export const M3_1 = defineLevel('m3-1', [
       ['Commerce grew in this city.', '이 도시에서 상업이 발전했다.'],
       ['The internet changed commerce.', '인터넷이 상업을 바꿔 놓았다.'],
       ['Commerce brings people together.', '상업은 사람들을 이어 준다.'],
+    ]},
+  ]},
+  { w: 'commitment', p: 'n.', s: [
+    { m: '전념, 헌신, 책무, 몰입, 몰두', syn: [], ex: [
+      ['Her commitment to the team never wavered.', '팀에 대한 그녀의 헌신은 흔들리지 않았다.'],
+      ['Joining the club is a big commitment.', '그 동아리에 드는 것은 큰 책무다.'],
+      ['He made a commitment to study daily.', '그는 날마다 공부하기로 다짐했다.'],
     ]},
   ]},
   { w: 'committee', p: 'n.', s: [
@@ -432,7 +451,7 @@ export const M3_1 = defineLevel('m3-1', [
     ]},
   ]},
   { w: 'concern', p: 'n.', s: [
-    { m: '걱정, 관심사', syn: ['worry'], ex: [
+    { m: '관심, 관심사, 우려, 걱정, 염려', syn: ['worry'], ex: [
       ['Her health is my main concern.', '그녀의 건강이 내 주된 걱정이다.'],
       ['He showed concern for the poor.', '그는 가난한 이들에게 관심을 보였다.'],
       ['That is not your concern.', '그것은 네가 상관할 일이 아니다.'],
@@ -446,7 +465,7 @@ export const M3_1 = defineLevel('m3-1', [
     ]},
   ]},
   { w: 'confirm', p: 'v.', s: [
-    { m: '확인하다, 확정하다', syn: ['verify'], ex: [
+    { m: '입증[확증]하다, 확인하다, 확정하다', syn: ['verify'], ex: [
       ['Please confirm your booking.', '예약을 확인해 주세요.'],
       ['He confirmed the time by phone.', '그는 전화로 시간을 확인했다.'],
       ['The test confirmed our idea.', '그 실험이 우리 생각을 확인해 주었다.'],
@@ -474,7 +493,7 @@ export const M3_1 = defineLevel('m3-1', [
     ]},
   ]},
   { w: 'conscious', p: 'adj.', s: [
-    { m: '의식하는, 깨어 있는', syn: ['aware'], ex: [
+    { m: '의식적인, 의식의', syn: ['aware'], ex: [
       ['She was conscious after the fall.', '그녀는 넘어진 뒤에도 의식이 있었다.'],
       ['He is conscious of his mistakes.', '그는 자기 실수를 의식하고 있다.'],
       ['Be conscious of your health.', '건강을 의식해라.'],
@@ -498,7 +517,7 @@ export const M3_1 = defineLevel('m3-1', [
     ]},
   ]},
   { w: 'constant', p: 'adj.', s: [
-    { m: '끊임없는, 일정한', syn: ['continual'], ex: [
+    { m: '일정한, 계속되는, 끊임없는, 지속적인, 변함없는', syn: ['continual'], ex: [
       ['There was constant noise outside.', '밖에서 끊임없이 소음이 났다.'],
       ['Keep the water at a constant temperature.', '물을 일정한 온도로 유지해라.'],
       ['Her constant help saved me.', '그녀의 끊임없는 도움이 나를 살렸다.'],
@@ -519,7 +538,7 @@ export const M3_1 = defineLevel('m3-1', [
     ]},
   ]},
   { w: 'contain', p: 'v.', s: [
-    { m: '포함하다, 담고 있다', syn: ['include', 'hold'], ex: [
+    { m: '포함하다, (~이) 들어 있다, 담다', syn: ['include', 'hold'], ex: [
       ['This drink contains sugar.', '이 음료는 설탕을 함유하고 있다.'],
       ['The box contained old letters.', '그 상자에는 오래된 편지들이 들어 있었다.'],
       ['Does this food contain nuts?', '이 음식에 견과류가 들어 있나요?'],
@@ -540,7 +559,7 @@ export const M3_1 = defineLevel('m3-1', [
     ]},
   ]},
   { w: 'context', p: 'n.', s: [
-    { m: '문맥, 상황', syn: [], ex: [
+    { m: '맥락, 상황, 환경', syn: [], ex: [
       ['Guess the meaning from the context.', '문맥에서 뜻을 추측해라.'],
       ['In this context, the word is different.', '이 문맥에서는 그 단어가 다르다.'],
       ['Context helps us understand.', '문맥은 이해를 돕는다.'],
@@ -585,7 +604,7 @@ export const M3_1 = defineLevel('m3-1', [
     ]},
   ]},
   { w: 'convince', p: 'v.', s: [
-    { m: '설득하다, 확신시키다', syn: ['persuade', 'assure'], ex: [
+    { m: '납득시키다, 확신시키다, 설득하다', syn: ['persuade', 'assure'], ex: [
       ['He convinced me to join.', '그는 내가 참여하도록 설득했다.'],
       ['She convinced them that it was safe.', '그녀는 그것이 안전하다고 그들을 납득시켰다.'],
       ['I am not convinced by his argument.', '나는 그의 주장에 설득되지 않는다.'],
@@ -917,7 +936,7 @@ export const M3_1 = defineLevel('m3-1', [
     ]},
   ]},
   { w: 'demonstrate', p: 'v.', s: [
-    { m: '보여 주다, 입증하다', syn: ['show', 'prove'], ex: [
+    { m: '보여주다, 증명하다, 입증하다, 실증하다, 보여주다', syn: ['show', 'prove'], ex: [
       ['The data demonstrate a clear trend.', '그 자료는 뚜렷한 경향을 보여 준다.'],
       ['He demonstrated how to use the tool.', '그는 그 도구 사용법을 보여 주었다.'],
       ['Her work demonstrates real talent.', '그녀의 작품은 진짜 재능을 입증한다.'],
@@ -986,6 +1005,13 @@ export const M3_1 = defineLevel('m3-1', [
       ['The situation grew desperate.', '상황이 절박해졌다.'],
     ]},
   ]},
+  { w: 'diversity', p: 'n.', s: [
+    { m: '다양성', syn: ['variety'], ex: [
+      ['Our school celebrates cultural diversity.', '우리 학교는 문화의 다양성을 기린다.'],
+      ['The forest has a great diversity of plants.', '그 숲은 식물의 다양성이 크다.'],
+      ['Diversity of opinion makes a group stronger.', '의견의 다양성이 모둠을 더 튼튼하게 한다.'],
+    ]},
+  ]},
   { w: 'one of', p: 'phr.', s: [
     { m: '~ 중 하나', syn: [], ex: [
       ['He is one of my closest friends.', '그는 내 가장 친한 친구 중 하나다.'],
@@ -1026,6 +1052,13 @@ export const M3_1 = defineLevel('m3-1', [
       ['She is preparing for the exam.', '그녀는 시험을 준비하고 있다.'],
       ['We prepared for the worst.', '우리는 최악의 경우를 대비했다.'],
       ['They prepared for winter early.', '그들은 일찍부터 겨울을 준비했다.'],
+    ]},
+  ]},
+  { w: 'psychological', p: 'adj.', s: [
+    { m: '심리적인', syn: [], ex: [
+      ['The injury had psychological effects too.', '그 부상은 심리적인 영향도 있었다.'],
+      ['She studies psychological research methods.', '그녀는 심리 연구 방법을 배운다.'],
+      ['Stress is a psychological burden.', '스트레스는 심리적 짐이다.'],
     ]},
   ]},
   { w: 'put away', p: 'phr.', s: [
@@ -1103,6 +1136,20 @@ export const M3_1 = defineLevel('m3-1', [
       ['They set up a tent in the yard.', '그들은 마당에 텐트를 쳤다.'],
       ['She set up her own business.', '그녀는 자기 사업을 시작했다.'],
       ['We set up a meeting for Monday.', '우리는 월요일에 회의를 잡았다.'],
+    ]},
+  ]},
+  { w: 'subsequently', p: 'adv.', s: [
+    { m: '이후에, 나중에, 그 뒤에, 뒤이어, 이어서', syn: [], ex: [
+      ['He subsequently apologized.', '그는 나중에 사과했다.'],
+      ['The plan was subsequently changed.', '그 계획은 뒤에 바뀌었다.'],
+      ['She subsequently moved to another city.', '그녀는 그 뒤 다른 도시로 옮겼다.'],
+    ]},
+  ]},
+  { w: 'wetland', p: 'n.', s: [
+    { m: '습지', syn: [], ex: [
+      ['Many birds nest in the wetland.', '많은 새가 그 습지에 둥지를 튼다.'],
+      ['The wetland filters water naturally.', '습지는 물을 자연스럽게 거른다.'],
+      ['They are working to protect the wetlands.', '그들은 습지를 지키려고 애쓰고 있다.'],
     ]},
   ]},
 ], 'curriculum');

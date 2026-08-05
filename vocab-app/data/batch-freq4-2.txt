@@ -1,0 +1,87 @@
+# 빈도4 새 낱말 2차 — 기초(초등 권장) 층.
+#
+# 뜻은 review/2027_영어_단어.xlsx [빈도4_595개] 시트 것이다. 다만 여섯 개를
+# 넘게 늘어놓은 것은 **앞 네댓 개만** 남겼다. 뜻 하나가 4지선다 보기로 나오는
+# 자리가 있어(primaryMeaning), 열 개를 늘어놓으면 보기 한 줄이 화면을 넘친다.
+# 잘라 낸 뜻은 빈도4 시트에 그대로 남아 있다.
+#
+# 갈래가 `;` 로 나뉜 것은 갈래마다 예문을 따로 붙였다.
+
+abundant|adj.|많은, 풍부한, 수많은, 남아도는|plentiful|Water is abundant in this region.::이 지역에는 물이 풍부하다.|The forest has abundant wildlife.::그 숲에는 야생 동물이 많다.|Fresh fruit was abundant at the market.::시장에 신선한 과일이 넘쳐 났다.
+accessible|adj.|접근하기 쉬운, 이용[접근] 가능한||The library is accessible by bus.::그 도서관은 버스로 가기 쉽다.|We made the building accessible to wheelchairs.::우리는 그 건물을 휠체어로 다닐 수 있게 만들었다.|The information is accessible to everyone.::그 정보는 누구나 볼 수 있다.
+accommodation|n.|숙박, 숙소, 순응, 적응||The school arranged accommodation for the trip.::학교가 여행 숙소를 마련했다.|Cheap accommodation is hard to find here.::여기서는 값싼 숙소를 찾기 어렵다.|The price includes meals and accommodation.::그 값에는 식사와 숙박이 들어 있다.
+activate|v.|활성화하다||Press this button to activate the alarm.::경보를 켜려면 이 단추를 누르세요.|Sunlight activates the sensor.::햇빛이 그 감지기를 작동시킨다.|The card is activated after you sign it.::그 카드는 서명한 뒤에 쓸 수 있게 된다.
+admission|n.|입학, 입장(료)||Admission to the museum is free on Sunday.::그 박물관은 일요일에 입장료가 없다.|She got admission to her first-choice school.::그녀는 가고 싶던 학교에 입학했다.|The ticket includes admission to all rooms.::그 표에는 모든 방의 입장이 들어 있다.
+affordable|adj.|저렴하게 구할 수 있는, (가격이) 알맞은, 합리적인, 적당한 가격의||The shop sells affordable clothes.::그 가게는 값이 알맞은 옷을 판다.|We need affordable housing for young people.::젊은 사람들을 위한 값싼 집이 필요하다.|This laptop is powerful and affordable.::이 노트북은 성능이 좋고 값도 알맞다.
+aggressive|adj.|공격적인, 공세적인, 지나치게 적극적인||The dog became aggressive when strangers came.::그 개는 낯선 사람이 오자 사나워졌다.|His aggressive tone upset the class.::그의 공격적인 말투가 반 아이들을 언짢게 했다.|The company took an aggressive approach.::그 회사는 공세적인 방식을 택했다.
+argument|n.|논증, 주장, 논쟁, 논거|debate|Her argument was clear and well supported.::그녀의 주장은 분명하고 근거가 탄탄했다.|They had an argument about the rules.::그들은 규칙을 두고 말다툼을 했다.|He gave three arguments for his plan.::그는 자기 계획에 대한 근거를 셋 들었다.
+artificial|adj.|인공적인, 인공의, 인위적인|man-made|The drink contains artificial colors.::그 음료에는 인공 색소가 들어 있다.|They built an artificial lake in the park.::그들은 공원에 인공 호수를 만들었다.|Artificial light is not the same as sunlight.::인공 불빛은 햇빛과 같지 않다.
+assistance|n.|도움, 원조, 지원, 보조|help|She asked for assistance with her bags.::그녀는 가방을 들어 달라고 도움을 청했다.|The team offers assistance to new students.::그 모둠은 새 학생들에게 도움을 준다.|Medical assistance arrived within minutes.::의료 지원이 몇 분 만에 도착했다.
+classification|n.|분류||The classification of animals follows clear rules.::동물의 분류는 분명한 규칙을 따른다.|Books are shelved by classification.::책은 분류에 따라 꽂힌다.|Scientists changed the classification of that plant.::과학자들이 그 식물의 분류를 바꿨다.
+combination|n.|조합, 결합|mix|The dish is a combination of rice and beans.::그 음식은 밥과 콩의 조합이다.|Try a different combination of colors.::색을 다르게 조합해 보아라.|Success came from a combination of luck and work.::성공은 운과 노력이 겹쳐 온 것이었다.
+commercial|adj.|상업의, 상업적인||The building is used for commercial purposes.::그 건물은 상업 용도로 쓰인다.|Commercial fishing is limited in this bay.::이 만에서는 상업적 어업이 제한된다.|The film was a commercial success.::그 영화는 상업적으로 성공했다.
+commercial|n.|광고||We watched a funny commercial on TV.::우리는 텔레비전에서 재미있는 광고를 봤다.|The commercial lasted thirty seconds.::그 광고는 삼십 초 동안 나왔다.|She appeared in a shampoo commercial.::그녀는 샴푸 광고에 나왔다.
+competitive|adj.|경쟁적인, 경쟁력 있는||The market is highly competitive.::그 시장은 경쟁이 아주 심하다.|He is competitive in every game he plays.::그는 어떤 경기를 하든 지기 싫어한다.|Our prices are competitive.::우리 값은 경쟁력이 있다.
+complicated|adj.|복잡한|complex|The rules are too complicated for beginners.::그 규칙은 처음 배우는 사람에게 너무 복잡하다.|It is a complicated problem with no easy answer.::쉬운 답이 없는 복잡한 문제다.|He gave a complicated explanation.::그는 복잡하게 설명했다.
+confidence|n.|자신(감), 확신||She spoke with confidence.::그녀는 자신 있게 말했다.|Practice will build your confidence.::연습하면 자신감이 생긴다.|I have confidence in your judgment.::나는 네 판단을 믿는다.
+consciously|adv.|의식적으로||He consciously chose the harder path.::그는 의식적으로 더 어려운 길을 골랐다.|She consciously slowed her breathing.::그녀는 일부러 숨을 천천히 쉬었다.|We rarely consciously notice our own habits.::우리는 자기 버릇을 의식하는 일이 드물다.
+consistently|adv.|일관되게, 지속적으로, 계속||He consistently arrives on time.::그는 늘 제시간에 온다.|The team played consistently well all season.::그 팀은 한 시즌 내내 꾸준히 잘했다.|Her grades improved consistently.::그녀의 성적은 꾸준히 올랐다.
+constantly|adv.|끊임없이, 지속적으로||The phone rang constantly all morning.::아침 내내 전화가 끊임없이 울렸다.|Technology is constantly changing.::기술은 끊임없이 바뀐다.|He constantly checks the weather.::그는 날씨를 계속 확인한다.
+consumption|n.|섭취, 소비||Reduce your consumption of sugar.::설탕 섭취를 줄여라.|Energy consumption rose last winter.::지난겨울 에너지 소비가 늘었다.|The report measures water consumption.::그 보고서는 물 소비량을 잰다.
+conversely|adv.|반대로||Some plants need shade; conversely, others need sun.::그늘이 필요한 식물이 있고, 반대로 볕이 필요한 것도 있다.|Prices fell; conversely, sales rose.::값이 내렸고, 반대로 판매는 늘었다.|He talks little. Conversely, his brother never stops.::그는 말이 적다. 반대로 그의 형은 쉬지 않는다.
+countless|adj.|셀 수 없이 많은, 수많은, 무수히 많은||Countless stars filled the night sky.::셀 수 없이 많은 별이 밤하늘을 채웠다.|She has read this book countless times.::그녀는 이 책을 수없이 읽었다.|Countless people use this bridge every day.::수많은 사람이 날마다 이 다리를 건넌다.
+dramatically|adv.|매우, 극적으로||Prices rose dramatically this year.::올해 값이 크게 올랐다.|The view changed dramatically after the rain.::비가 온 뒤 풍경이 확 달라졌다.|Her health improved dramatically.::그녀의 건강이 눈에 띄게 좋아졌다.
+eagerly|adv.|열심히, 간절히, 잔뜩 기대하며, 열정적으로||The children waited eagerly for the bus.::아이들이 버스를 잔뜩 기대하며 기다렸다.|He eagerly opened the letter.::그는 편지를 급히 뜯어보았다.|She eagerly joined the new club.::그녀는 새 동아리에 신나서 들어갔다.
+effectively|adv.|사실상, 실질적으로, 효과적으로||She explained the rule effectively.::그녀는 그 규칙을 잘 알아듣게 설명했다.|The medicine works effectively against colds.::그 약은 감기에 잘 듣는다.|The road was effectively closed by the snow.::눈 때문에 그 길은 사실상 막혔다.
+evaluation|n.|평가||The teacher wrote an evaluation of the project.::선생님이 그 과제에 대한 평가를 적었다.|The plan needs careful evaluation.::그 계획은 꼼꼼한 평가가 필요하다.|Evaluations are sent home twice a year.::평가서는 일 년에 두 번 집으로 간다.
+exhibition|n.|전시(회)||We visited a photo exhibition downtown.::우리는 시내에서 사진 전시회를 봤다.|Her paintings are on exhibition this month.::그녀의 그림이 이달에 전시되고 있다.|The exhibition closes on Sunday.::그 전시회는 일요일에 끝난다.
+existence|n.|존재, 생활, 삶, 생존||No one doubts the existence of the problem.::그 문제가 있다는 것을 의심하는 사람은 없다.|The village came into existence a century ago.::그 마을은 백 년 전에 생겼다.|They lead a quiet existence in the mountains.::그들은 산에서 조용한 삶을 산다.
+expansion|n.|확장, 확대, 팽창||The company announced its expansion into Asia.::그 회사가 아시아로 넓혀 간다고 밝혔다.|Heat causes the expansion of metal.::열은 금속을 팽창시킨다.|The library expansion took two years.::도서관 확장에 두 해가 걸렸다.
+exposure|n.|노출, 접촉, 접함||Long exposure to the sun can burn your skin.::볕에 오래 노출되면 살갗이 탄다.|Early exposure to music helps children.::어릴 때 음악을 접하면 아이에게 도움이 된다.|The film needs less exposure to light.::그 필름은 빛에 덜 노출되어야 한다.
+flexibility|n.|유연성, 융통성||Stretching improves flexibility.::스트레칭은 유연성을 길러 준다.|The schedule allows some flexibility.::그 일정에는 융통성이 조금 있다.|We value flexibility in our team.::우리 모둠은 융통성을 중요하게 본다.
+frequently|adv.|자주, 흔히, 빈번하게, 빈번히|often|He frequently visits his grandmother.::그는 할머니를 자주 찾아뵌다.|This word appears frequently in the text.::이 낱말은 글에 자주 나온다.|Buses run frequently on weekdays.::평일에는 버스가 자주 다닌다.
+frustration|n.|좌절, 좌절감||He shouted in frustration.::그는 답답해서 소리쳤다.|Her frustration grew as the wait continued.::기다림이 길어지자 그녀의 답답함이 커졌다.|Learning a language brings joy and frustration.::언어를 배우면 기쁨도 좌절도 온다.
+gratitude|n.|고마움, 감사|thanks|She expressed her gratitude in a letter.::그녀는 편지로 고마움을 전했다.|He felt deep gratitude toward his teacher.::그는 선생님께 깊이 감사했다.|A small gift can show gratitude.::작은 선물로도 고마움을 나타낼 수 있다.
+illusion|n.|착각, 착시, 환상, 환영||The drawing creates an optical illusion.::그 그림은 착시를 일으킨다.|He had no illusions about the difficulty.::그는 그 어려움에 대해 헛된 기대가 없었다.|Water on a hot road is often an illusion.::뜨거운 길 위의 물은 흔히 착시다.
+impression|n.|느낌, 인상||She made a good impression on the teacher.::그녀는 선생님께 좋은 인상을 남겼다.|My first impression of the city was noise.::그 도시의 첫인상은 시끄러움이었다.|I had the impression that he was tired.::나는 그가 피곤하다는 느낌을 받았다.
+inequality|n.|불평등||The report studies income inequality.::그 보고서는 소득 불평등을 다룬다.|Education can reduce inequality.::교육은 불평등을 줄일 수 있다.|Inequality between the two regions has grown.::두 지역 사이의 불평등이 커졌다.
+infinite|adj.|무한한|endless|Space seems infinite to us.::우주는 우리에게 끝이 없어 보인다.|She showed infinite patience with the children.::그녀는 아이들에게 한없는 참을성을 보였다.|There are infinite ways to solve this.::이것을 푸는 방법은 무한히 많다.
+initially|adv.|처음에, 초기에|at first|Initially, the plan seemed simple.::처음에는 그 계획이 단순해 보였다.|She initially refused the offer.::그녀는 처음에 그 제안을 거절했다.|The class was initially held online.::그 수업은 처음에 온라인으로 열렸다.
+instructor|n.|강사, 교사, 지도자|teacher|Our swimming instructor is very patient.::우리 수영 강사는 참을성이 많다.|The instructor showed us the safety rules.::강사가 우리에게 안전 규칙을 알려 줬다.|She works as a driving instructor.::그녀는 운전 강사로 일한다.
+intensity|n.|강렬함, 강도, 격렬함, 세기||The intensity of the light hurt my eyes.::빛의 세기가 너무 세서 눈이 아팠다.|He trains with great intensity.::그는 아주 세게 훈련한다.|The storm grew in intensity overnight.::밤사이 폭풍이 거세졌다.
+introduction|n.|유입, 소개, 도입, 입문||The introduction of the new rule caused debate.::새 규칙의 도입이 논쟁을 불렀다.|Read the introduction before chapter one.::1장 앞에 있는 머리말을 읽어라.|He gave a short introduction to the topic.::그는 그 주제를 짧게 소개했다.
+invisible|adj.|보이지 않는, 눈에 띄지 않는||Air is invisible but we breathe it.::공기는 보이지 않지만 우리는 그것을 마신다.|The stain became invisible after washing.::그 얼룩은 빨고 나니 안 보였다.|She felt invisible in the crowd.::그녀는 사람들 속에서 없는 사람 같았다.
+massive|adj.|막대한, 거대한, 대대적인, 엄청난|huge|A massive rock blocked the road.::거대한 바위가 길을 막았다.|The event drew a massive crowd.::그 행사에 엄청난 사람들이 몰렸다.|They spent a massive amount of money.::그들은 막대한 돈을 썼다.
+material|n.|자료, 제재, 재료||We collected material for the report.::우리는 보고서에 쓸 자료를 모았다.|This jacket is made of soft material.::이 웃옷은 부드러운 천으로 만들었다.|The teacher prepared reading material.::선생님이 읽을거리를 준비했다.
+material|adj.|물질적인||Money brings material comfort, not happiness.::돈은 물질적 편안함을 줄 뿐 행복을 주지는 않는다.|They value ideas over material things.::그들은 물건보다 생각을 소중히 여긴다.|Material wealth was never his goal.::물질적 부는 그의 목표가 아니었다.
+means|n.|수단, 방법|way|A bicycle is his only means of transport.::자전거가 그의 유일한 이동 수단이다.|We found a means to solve the problem.::우리는 그 문제를 풀 방법을 찾았다.|Language is a means of sharing thought.::언어는 생각을 나누는 수단이다.
+morality|n.|도덕성||The story raises questions about morality.::그 이야기는 도덕성에 대한 물음을 던진다.|He wrote about the morality of war.::그는 전쟁의 도덕성에 대해 썼다.|Morality is not the same as law.::도덕성은 법과 같지 않다.
+navigate|v.|길을 찾다, 방향을 읽다, (길을) 안내하다, 헤쳐 나가다||Sailors once used stars to navigate.::뱃사람들은 한때 별로 길을 찾았다.|She navigated the busy streets on foot.::그녀는 붐비는 거리를 걸어서 헤쳐 나갔다.|This app helps you navigate the subway.::이 앱은 지하철에서 길을 찾도록 도와준다.
+nutrient|n.|영양분, 영양소||Vegetables are rich in nutrients.::채소에는 영양분이 많다.|The soil lost its nutrients after years of farming.::여러 해 농사를 지어 땅의 영양분이 빠졌다.|Milk provides nutrients for growing children.::우유는 자라는 아이에게 영양분을 준다.
+occasionally|adv.|가끔, 이따금, 때때로|sometimes|We occasionally eat out on weekends.::우리는 주말에 가끔 밖에서 먹는다.|He occasionally forgets his keys.::그는 이따금 열쇠를 잊는다.|It occasionally snows here in April.::여기는 사월에도 가끔 눈이 온다.
+organism|n.|생물, 유기체, 생명체||A single organism can contain many cells.::생물 하나가 많은 세포를 지닐 수 있다.|Scientists study organisms in the deep sea.::과학자들이 깊은 바다의 생물을 연구한다.|Every organism needs energy to live.::모든 생물은 살아가는 데 에너지가 필요하다.
+original|adj.|독창적인, 원래의, 최초의||Her idea was completely original.::그녀의 생각은 아주 독창적이었다.|The original plan was much simpler.::원래 계획은 훨씬 단순했다.|We kept the original color of the wall.::우리는 벽의 원래 색을 그대로 두었다.
+passive|adj.|수동적인, 수동의||He stayed passive during the discussion.::그는 토론 내내 가만히 있었다.|Passive learning is less effective than doing.::수동적으로 배우는 것은 해 보는 것보다 덜 효과적이다.|The plant uses passive cooling.::그 건물은 수동적인 방식으로 열을 식힌다.
+permanently|adv.|영구적으로||The shop closed permanently last year.::그 가게는 작년에 아주 문을 닫았다.|The mark stayed on the wall permanently.::그 자국은 벽에 영영 남았다.|She moved permanently to another city.::그녀는 다른 도시로 아주 옮겨 갔다.
+precisely|adv.|정확하게, 바로, 정밀하게|exactly|Tell me precisely what happened.::무슨 일이 있었는지 정확히 말해라.|The train left at precisely six o'clock.::기차는 정확히 여섯 시에 떠났다.|That is precisely what I meant.::그게 바로 내가 말하려던 것이다.
+previously|adv.|이전의, 이전에는, 이전에, 사전에|before|She had previously worked as a nurse.::그녀는 이전에 간호사로 일했다.|The road was previously closed for repairs.::그 길은 이전에 수리로 막혀 있었다.|We had not previously met.::우리는 전에 만난 적이 없었다.
+readily|adv.|쉽게, 선뜻, 손쉽게||The book is readily available online.::그 책은 인터넷에서 쉽게 구할 수 있다.|He readily agreed to help.::그는 선뜻 돕겠다고 했다.|Information is readily found these days.::요즘은 정보를 손쉽게 찾는다.
+reasonable|adj.|합리적인, 타당한, 괜찮은, 적당한||The price seems reasonable to me.::그 값은 내게 적당해 보인다.|She made a reasonable request.::그녀는 타당한 부탁을 했다.|It is reasonable to ask for more time.::시간을 더 달라고 하는 것은 합리적이다.
+recall|v.|기억해 내다, 회상하다, 기억을 떠올리다|remember|I cannot recall his name.::나는 그의 이름이 생각나지 않는다.|She recalled the day clearly.::그녀는 그날을 또렷이 떠올렸다.|Try to recall what you ate yesterday.::어제 무엇을 먹었는지 떠올려 보아라.
+recall|n.|기억력, 기억, 회상, 리콜, 회수||His recall of numbers is remarkable.::그의 숫자 기억력은 놀랍다.|The company issued a recall of the toy.::그 회사가 그 장난감을 회수했다.|Memory recall becomes slower with age.::나이가 들면 기억을 떠올리는 속도가 느려진다.
+refund|v.|환불하다||The store will refund your money.::그 가게가 돈을 환불해 줄 것이다.|They refunded the ticket price.::그들은 표값을 환불해 주었다.|We cannot refund used items.::쓴 물건은 환불해 드릴 수 없습니다.
+refund|n.|환불(금)||She asked for a refund.::그녀는 환불을 요청했다.|The refund arrived a week later.::환불금이 일주일 뒤에 들어왔다.|Keep the receipt for a refund.::환불하려면 영수증을 갖고 계세요.
+registration|n.|등록||Registration for the class opens Monday.::그 수업 등록은 월요일에 시작한다.|Bring your registration form.::등록 신청서를 가져오세요.|Registration closes at the end of the month.::등록은 이달 말에 끝난다.
+regulation|n.|규정, 조절, 규제||School regulations forbid running here.::학교 규정은 여기서 뛰는 것을 막는다.|New regulations protect the river.::새 규제가 그 강을 지킨다.|Body temperature regulation happens automatically.::체온 조절은 저절로 일어난다.
+relatively|adv.|비교적, 상대적으로||The test was relatively easy.::그 시험은 비교적 쉬웠다.|Winters here are relatively mild.::여기 겨울은 비교적 포근하다.|She is relatively new to the job.::그녀는 그 일에 비교적 새내기다.
+resident|n.|주민, 거주민[거주자]||Residents complained about the noise.::주민들이 소음에 대해 불평했다.|She has been a resident here for ten years.::그녀는 여기 산 지 십 년 됐다.|The park is open to local residents.::그 공원은 지역 주민에게 열려 있다.
+retailer|n.|소매업체, 소매업자, 소매상||The retailer lowered its prices.::그 소매업체가 값을 내렸다.|Online retailers deliver within a day.::온라인 소매점은 하루 안에 배달한다.|She works for a clothing retailer.::그녀는 옷 소매업체에서 일한다.
+sculpture|n.|조각, 조각품||A stone sculpture stands in the square.::광장에 돌 조각품이 서 있다.|He studies sculpture at art school.::그는 미술 학교에서 조각을 배운다.|The museum bought two new sculptures.::박물관이 새 조각품 두 점을 샀다.
+settlement|n.|정착(지), 합의금, 합의||The early settlement stood by the river.::초기 정착지는 강가에 있었다.|They reached a settlement after long talks.::그들은 긴 이야기 끝에 합의에 이르렀다.|The settlement was paid in full.::합의금은 전액 지급되었다.
+signal|v.|신호를 보내다, 알리다, 나타내다||He signaled the car to stop.::그는 차에게 서라고 신호를 보냈다.|She signaled that she was ready.::그녀는 준비됐다고 알렸다.|Falling leaves signal the end of summer.::지는 잎은 여름이 끝났음을 알린다.
+signal|n.|신호||The traffic signal turned green.::신호등이 초록으로 바뀌었다.|My phone has no signal here.::여기서는 전화가 안 터진다.|Wait for my signal before you start.::시작하기 전에 내 신호를 기다려라.
+tension|n.|갈등, 긴장 상태, 흥분||There was tension between the two teams.::두 팀 사이에 긴장이 있었다.|The rope broke under tension.::줄이 팽팽해지다가 끊어졌다.|Music helped release the tension.::음악이 긴장을 푸는 데 도움이 됐다.
+textile|n.|옷감, 직물||The city is known for its textile industry.::그 도시는 직물 산업으로 알려져 있다.|She designs textiles for furniture.::그녀는 가구에 쓰는 옷감을 만든다.|Cotton is a common textile.::면은 흔한 직물이다.
+transportation|n.|교통수단, 배송, 운송, 수송, 교통||Public transportation is cheap in this city.::이 도시는 대중교통이 싸다.|The school arranges transportation for trips.::학교가 여행에 쓸 교통편을 마련한다.|Transportation costs went up last year.::지난해 운송비가 올랐다.
+typical|adj.|전형적인, 평범한||It was a typical winter morning.::평범한 겨울 아침이었다.|This is a typical example of his writing.::이것은 그의 글의 전형적인 보기다.|Typical of him, he arrived early.::그답게 그는 일찍 왔다.
+wetland|n.|습지||Many birds nest in the wetland.::많은 새가 그 습지에 둥지를 튼다.|The wetland filters water naturally.::습지는 물을 자연스럽게 거른다.|They are working to protect the wetlands.::그들은 습지를 지키려고 애쓰고 있다.

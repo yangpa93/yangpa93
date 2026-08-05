@@ -1,5 +1,5 @@
 /**
- * 고등학교 3학년 레벨 4 — 수록 152 / 계획 136개.
+ * 고등학교 3학년 레벨 4 — 수록 159 / 계획 136개.
  *
  * 난이도 층: 고급(고등)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -9,11 +9,53 @@
 import { defineLevel } from '../define';
 
 export const H3_4 = defineLevel('h3-4', [
+  { w: 'anthropologist', p: 'n.', s: [
+    { m: '인류학자', syn: [], ex: [
+      ['The anthropologist lived in the village for a year.', '그 인류학자는 그 마을에서 한 해를 살았다.'],
+      ['Anthropologists study how people live together.', '인류학자들은 사람들이 어떻게 어울려 사는지 연구한다.'],
+      ['She became an anthropologist after college.', '그녀는 대학을 마치고 인류학자가 됐다.'],
+    ]},
+  ]},
+  { w: 'biodiversity', p: 'n.', s: [
+    { m: '생물 다양성', syn: [], ex: [
+      ['Rainforests protect global biodiversity.', '열대우림이 지구의 생물 다양성을 지킨다.'],
+      ['Farming can reduce biodiversity in an area.', '농사는 한 지역의 생물 다양성을 줄일 수 있다.'],
+      ['Scientists measure biodiversity in the river.', '과학자들이 그 강의 생물 다양성을 잰다.'],
+    ]},
+  ]},
+  { w: 'embody', p: 'v.', s: [
+    { m: '구현하다, 나타내다, 체화하다, ~에 형체를 주다, 상징하다', syn: [], ex: [
+      ['She embodies the spirit of the team.', '그녀는 그 팀의 정신을 그대로 보여 준다.'],
+      ['The law embodies a simple idea.', '그 법은 단순한 생각을 담고 있다.'],
+      ['The building embodies the city\'s history.', '그 건물은 도시의 역사를 담고 있다.'],
+    ]},
+  ]},
+  { w: 'innate', p: 'adj.', s: [
+    { m: '타고난, 선천적인, 내재적인', syn: [], ex: [
+      ['Babies have an innate ability to learn language.', '아기에게는 언어를 배우는 타고난 능력이 있다.'],
+      ['Curiosity seems innate in children.', '호기심은 아이에게 타고난 듯하다.'],
+      ['The response is innate, not learned.', '그 반응은 배운 것이 아니라 타고난 것이다.'],
+    ]},
+  ]},
+  { w: 'overwhelming', p: 'adj.', s: [
+    { m: '압도적인, 대응하기 힘든, 감당하기 힘든', syn: [], ex: [
+      ['The response was overwhelming.', '반응이 압도적이었다.'],
+      ['She felt overwhelming relief.', '그녀는 벅찬 안도감을 느꼈다.'],
+      ['The workload became overwhelming.', '일의 양이 감당하기 힘들어졌다.'],
+    ]},
+  ]},
   { w: 'refrain from', p: 'phr.', s: [
     { m: '~을 삼가다', syn: [], ex: [
       ['Please refrain from smoking here.', '여기서는 흡연을 삼가 주세요.'],
       ['He refrained from commenting.', '그는 언급을 삼갔다.'],
       ['She refrained from laughing.', '그녀는 웃음을 참았다.'],
+    ]},
+  ]},
+  { w: 'regularity', p: 'n.', s: [
+    { m: '규칙성, 규칙적임', syn: [], ex: [
+      ['The regularity of the pattern is striking.', '그 무늬의 규칙성은 눈에 띈다.'],
+      ['He exercises with regularity.', '그는 규칙적으로 운동한다.'],
+      ['Scientists look for regularity in the data.', '과학자들은 자료에서 규칙성을 찾는다.'],
     ]},
   ]},
   { w: 'resort to', p: 'phr.', s: [
@@ -65,6 +107,13 @@ export const H3_4 = defineLevel('h3-4', [
       ['That does not stand to reason.', '그것은 이치에 맞지 않는다.'],
     ]},
   ]},
+  { w: 'subjective', p: 'adj.', s: [
+    { m: '주관적인', syn: [], ex: [
+      ['Beauty is a subjective matter.', '아름다움은 주관적인 문제다.'],
+      ['His account was highly subjective.', '그의 설명은 매우 주관적이었다.'],
+      ['Try to separate subjective feeling from fact.', '주관적 느낌과 사실을 갈라 보아라.'],
+    ]},
+  ]},
   { w: 'subscribe to', p: 'phr.', s: [
     { m: '구독하다; (의견에) 동의하다', syn: [], ex: [
       ['We subscribe to two newspapers.', '우리는 신문 두 종을 구독한다.'],
@@ -108,7 +157,7 @@ export const H3_4 = defineLevel('h3-4', [
     ]},
   ]},
   { w: 'sustain', p: 'v.', s: [
-    { m: '지속하다, 유지하다', syn: ['maintain', 'keep up'], ex: [
+    { m: '지속하게 하다, 지속시키다, 유지하다, 유지시키다, (피해 등을) 당하다[입다]', syn: ['maintain', 'keep up'], ex: [
       ['He could not sustain the pace.', '그는 그 속도를 유지할 수 없었다.'],
       ['The forest sustains many species.', '그 숲은 많은 종을 지탱한다.'],
       ['Can we sustain this growth?', '우리가 이 성장을 지속할 수 있을까?'],
@@ -326,7 +375,7 @@ export const H3_4 = defineLevel('h3-4', [
     ]},
   ]},
   { w: 'territory', p: 'n.', s: [
-    { m: '영토, 영역', syn: [], ex: [
+    { m: '영토, 지역, 영역', syn: [], ex: [
       ['The bird defends its territory.', '그 새는 자기 영역을 지킨다.'],
       ['The island is national territory.', '그 섬은 국가의 영토다.'],
       ['New territories were added later.', '새 영토가 나중에 더해졌다.'],
@@ -354,7 +403,7 @@ export const H3_4 = defineLevel('h3-4', [
     ]},
   ]},
   { w: 'thorough', p: 'adj.', s: [
-    { m: '철저한, 꼼꼼한', syn: ['complete'], ex: [
+    { m: '철저한, 면밀한', syn: ['complete'], ex: [
       ['She gave the room a thorough clean.', '그녀는 방을 철저히 청소했다.'],
       ['We need a thorough check.', '우리는 꼼꼼한 점검이 필요하다.'],
       ['His thorough notes helped everyone.', '그의 꼼꼼한 필기가 모두에게 도움이 되었다.'],
@@ -481,7 +530,7 @@ export const H3_4 = defineLevel('h3-4', [
     ]},
   ]},
   { w: 'transform', p: 'v.', s: [
-    { m: '완전히 바꾸다, 변형시키다', syn: ['change', 'convert'], ex: [
+    { m: '변형[변화]시키다, 바꾸다, 변모시키다, 전환시키다, 탈바꿈시키다', syn: ['change', 'convert'], ex: [
       ['The internet transformed learning.', '인터넷은 학습을 완전히 바꿔 놓았다.'],
       ['The old factory was transformed into a museum.', '그 낡은 공장은 박물관으로 바뀌었다.'],
       ['Exercise transformed his health.', '운동이 그의 건강을 바꿔 놓았다.'],
@@ -495,14 +544,14 @@ export const H3_4 = defineLevel('h3-4', [
     ]},
   ]},
   { w: 'translate', p: 'v.', s: [
-    { m: '번역하다, 옮기다', syn: ['interpret'], ex: [
+    { m: '통역하다, 번역하다, 바꾸다', syn: ['interpret'], ex: [
       ['She translated the poem into Korean.', '그녀는 그 시를 한국어로 번역했다.'],
       ['Can you translate this sentence?', '이 문장을 번역해 줄 수 있니?'],
       ['Words do not always translate well.', '말이 늘 잘 옮겨지지는 않는다.'],
     ]},
   ]},
   { w: 'transmit', p: 'v.', s: [
-    { m: '전달하다, 전송하다', syn: ['send'], ex: [
+    { m: '전송하다, 방송하다, 전달하다, 전수하다', syn: ['send'], ex: [
       ['Radios transmit sound waves.', '라디오는 음파를 전송한다.'],
       ['The disease transmits through water.', '그 병은 물을 통해 전해진다.'],
       ['The station transmitted the news live.', '그 방송국은 소식을 생중계로 내보냈다.'],
@@ -593,7 +642,7 @@ export const H3_4 = defineLevel('h3-4', [
     ]},
   ]},
   { w: 'ultimate', p: 'adj.', s: [
-    { m: '궁극적인, 최고의', syn: ['final'], ex: [
+    { m: '최종적인, 궁극적인, 최고의', syn: ['final'], ex: [
       ['Her ultimate goal is medicine.', '그녀의 궁극적인 목표는 의학이다.'],
       ['This is the ultimate test.', '이것이 최종 시험이다.'],
       ['Health is the ultimate reward.', '건강이 최고의 보상이다.'],
@@ -614,7 +663,7 @@ export const H3_4 = defineLevel('h3-4', [
     ]},
   ]},
   { w: 'underlying', p: 'adj.', s: [
-    { m: '근본적인, 기저에 있는', syn: ['basic', 'fundamental'], ex: [
+    { m: '근본적인, 기저에 있는, 밑에 있는, 기본적인', syn: ['basic', 'fundamental'], ex: [
       ['We must find the underlying cause.', '우리는 근본 원인을 찾아야 한다.'],
       ['There is an underlying assumption here.', '여기에는 기저에 깔린 가정이 있다.'],
       ['The underlying problem was money.', '근본적인 문제는 돈이었다.'],
@@ -642,7 +691,7 @@ export const H3_4 = defineLevel('h3-4', [
     ]},
   ]},
   { w: 'unique', p: 'adj.', s: [
-    { m: '독특한, 유일한', syn: ['special'], ex: [
+    { m: '특별한, 고유한, 다른, 독창적인, 훌륭한', syn: ['special'], ex: [
       ['Every person is unique.', '모든 사람은 저마다 독특하다.'],
       ['This building has a unique shape.', '이 건물은 독특한 모양을 하고 있다.'],
       ['Her voice is truly unique.', '그녀의 목소리는 정말 독특하다.'],
@@ -684,7 +733,7 @@ export const H3_4 = defineLevel('h3-4', [
     ]},
   ]},
   { w: 'urban', p: 'adj.', s: [
-    { m: '도시의', syn: [], ex: [
+    { m: '도시의, 도시에 사는', syn: [], ex: [
       ['Urban life can be noisy.', '도시 생활은 시끄러울 수 있다.'],
       ['Urban parks give people rest.', '도시 공원은 사람들에게 쉼을 준다.'],
       ['She studies urban planning.', '그녀는 도시 계획을 공부한다.'],
@@ -705,7 +754,7 @@ export const H3_4 = defineLevel('h3-4', [
     ]},
   ]},
   { w: 'utilize', p: 'v.', s: [
-    { m: '활용하다, 이용하다', syn: ['use', 'make use of'], ex: [
+    { m: '활용하다, 사용하다, 이용하다', syn: ['use', 'make use of'], ex: [
       ['We should utilize every resource.', '우리는 모든 자원을 활용해야 한다.'],
       ['The app utilizes your location.', '그 앱은 너의 위치 정보를 이용한다.'],
       ['Farmers utilize modern machines.', '농부들은 현대적 기계를 활용한다.'],
@@ -740,7 +789,7 @@ export const H3_4 = defineLevel('h3-4', [
     ]},
   ]},
   { w: 'vague', p: 'adj.', s: [
-    { m: '모호한, 희미한', syn: ['unclear'], ex: [
+    { m: '모호한, 어렴풋한, 막연한, 애매한', syn: ['unclear'], ex: [
       ['His answer was vague.', '그의 답은 모호했다.'],
       ['I have a vague memory of that day.', '나는 그날의 희미한 기억이 있다.'],
       ['Vague plans lead to trouble.', '모호한 계획은 문제를 낳는다.'],
@@ -831,7 +880,7 @@ export const H3_4 = defineLevel('h3-4', [
     ]},
   ]},
   { w: 'via', p: 'prep.', s: [
-    { m: '~를 거쳐, ~를 통해', syn: ['through'], ex: [
+    { m: '~을 통하여, ~을 통해', syn: ['through'], ex: [
       ['We flew to Rome via Paris.', '우리는 파리를 거쳐 로마로 갔다.'],
       ['Send the file via email.', '그 파일을 전자우편으로 보내라.'],
       ['He came home via the park.', '그는 공원을 거쳐 집에 왔다.'],
@@ -887,7 +936,7 @@ export const H3_4 = defineLevel('h3-4', [
     ]},
   ]},
   { w: 'visible', p: 'adj.', s: [
-    { m: '눈에 보이는, 뚜렷한', syn: [], ex: [
+    { m: '보이는, 가시적인, 눈에 보이는, 눈에 띄는', syn: [], ex: [
       ['The moon is visible tonight.', '오늘 밤에는 달이 보인다.'],
       ['There was a visible change.', '뚜렷한 변화가 있었다.'],
       ['The sign is visible from far away.', '그 표지판은 멀리서도 보인다.'],
@@ -901,7 +950,7 @@ export const H3_4 = defineLevel('h3-4', [
     ]},
   ]},
   { w: 'vital', p: 'adj.', s: [
-    { m: '필수적인, 매우 중요한', syn: ['essential', 'crucial'], ex: [
+    { m: '필수적인, 지극히 중요한, 생명 유지와 관련된', syn: ['essential', 'crucial'], ex: [
       ['Sleep is vital for health.', '잠은 건강에 필수적이다.'],
       ['She played a vital role in the team.', '그녀는 팀에서 매우 중요한 역할을 했다.'],
       ['Clean water is vital to survival.', '깨끗한 물은 생존에 필수적이다.'],
@@ -1034,14 +1083,14 @@ export const H3_4 = defineLevel('h3-4', [
     ]},
   ]},
   { w: 'with regard to', p: 'phr.', s: [
-    { m: '~에 관하여', syn: ['concerning', 'about'], ex: [
+    { m: '~에 있어서[관해서]', syn: ['concerning', 'about'], ex: [
       ['With regard to your question, I agree.', '당신 질문에 관해서는 동의합니다.'],
       ['Nothing changed with regard to the rules.', '규칙에 관해서는 아무것도 바뀌지 않았다.'],
       ['He wrote with regard to the new policy.', '그는 새 정책에 관해 편지를 썼다.'],
     ]},
   ]},
   { w: 'with respect to', p: 'phr.', s: [
-    { m: '~에 관하여', syn: ['regarding', 'concerning'], ex: [
+    { m: '~에 관하여, ~과 관련하여', syn: ['regarding', 'concerning'], ex: [
       ['With respect to cost, we have concerns.', '비용에 관하여 우리는 우려가 있다.'],
       ['He said nothing with respect to the delay.', '그는 지연에 관해 아무 말도 하지 않았다.'],
       ['With respect to safety, the rules are strict.', '안전에 관해서는 규칙이 엄격하다.'],

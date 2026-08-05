@@ -1,5 +1,5 @@
 /**
- * 중학교 1학년 레벨 4 — 수록 154 / 계획 137개.
+ * 중학교 1학년 레벨 4 — 수록 157 / 계획 137개.
  *
  * 난이도 층: 기초(초등 권장)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -65,6 +65,13 @@ export const M1_4 = defineLevel('m1-4', [
       ['She counts on her friends when things are hard.', '그녀는 힘들 때 친구들에게 의지한다.'],
     ]},
   ]},
+  { w: 'critical', p: 'adj.', s: [
+    { m: '비판적인, 중대한, 대단히 중요한, 결정적인, 비평의', syn: [], ex: [
+      ['Sleep is critical for health.', '잠은 건강에 대단히 중요하다.'],
+      ['She took a critical view of the plan.', '그녀는 그 계획을 비판적으로 보았다.'],
+      ['This is a critical moment for the team.', '지금이 그 팀에게 결정적인 순간이다.'],
+    ]},
+  ]},
   { w: 'cut down', p: 'phr.', s: [
     { m: '베어 넘어뜨리다; 줄이다', syn: ['reduce'], ex: [
       ['They cut down the old tree.', '그들은 오래된 나무를 베어 냈다.'],
@@ -91,6 +98,13 @@ export const M1_4 = defineLevel('m1-4', [
       ['We eat out on Fridays.', '우리는 금요일에 외식한다.'],
       ['They decided to eat out tonight.', '그들은 오늘 밤 외식하기로 했다.'],
       ['Eating out every day is expensive.', '매일 외식하는 것은 비싸다.'],
+    ]},
+  ]},
+  { w: 'exhibition', p: 'n.', s: [
+    { m: '전시(회)', syn: [], ex: [
+      ['We visited a photo exhibition downtown.', '우리는 시내에서 사진 전시회를 봤다.'],
+      ['Her paintings are on exhibition this month.', '그녀의 그림이 이달에 전시되고 있다.'],
+      ['The exhibition closes on Sunday.', '그 전시회는 일요일에 끝난다.'],
     ]},
   ]},
   { w: 'fall asleep', p: 'phr.', s: [
@@ -126,6 +140,13 @@ export const M1_4 = defineLevel('m1-4', [
       ['Focus on one thing at a time.', '한 번에 한 가지에 집중해라.'],
       ['The report focuses on climate change.', '그 보고서는 기후 변화에 초점을 맞춘다.'],
       ['She focused on her studies this year.', '그녀는 올해 공부에 집중했다.'],
+    ]},
+  ]},
+  { w: 'foundation', p: 'n.', s: [
+    { m: '기반, 토대, 기초, 재단, 협회', syn: [], ex: [
+      ['Reading is the foundation of learning.', '읽기는 배움의 토대다.'],
+      ['The house has a strong foundation.', '그 집은 기초가 튼튼하다.'],
+      ['A foundation funds the scholarship.', '한 재단이 그 장학금을 댄다.'],
     ]},
   ]},
   { w: 'history', p: 'n.', s: [
@@ -306,6 +327,13 @@ export const M1_4 = defineLevel('m1-4', [
       ['It is important to keep promises.', '약속을 지키는 것은 중요하다.'],
     ]},
   ]},
+  { w: 'impression', p: 'n.', s: [
+    { m: '느낌, 인상', syn: [], ex: [
+      ['She made a good impression on the teacher.', '그녀는 선생님께 좋은 인상을 남겼다.'],
+      ['My first impression of the city was noise.', '그 도시의 첫인상은 시끄러움이었다.'],
+      ['I had the impression that he was tired.', '나는 그가 피곤하다는 느낌을 받았다.'],
+    ]},
+  ]},
   { w: 'in', p: 'prep.', s: [
     { m: '~ 안에', syn: [], ex: [
       ['The book is in my bag.', '책은 내 가방 안에 있다.'],
@@ -346,6 +374,13 @@ export const M1_4 = defineLevel('m1-4', [
       ['I drank water instead of soda.', '나는 탄산음료 대신 물을 마셨다.'],
       ['Walk instead of taking the bus.', '버스를 타는 대신 걸어라.'],
       ['She sent an email instead of calling.', '그녀는 전화 대신 이메일을 보냈다.'],
+    ]},
+  ]},
+  { w: 'instructor', p: 'n.', s: [
+    { m: '강사, 교사, 지도자', syn: ['teacher'], ex: [
+      ['Our swimming instructor is very patient.', '우리 수영 강사는 참을성이 많다.'],
+      ['The instructor showed us the safety rules.', '강사가 우리에게 안전 규칙을 알려 줬다.'],
+      ['She works as a driving instructor.', '그녀는 운전 강사로 일한다.'],
     ]},
   ]},
   { w: 'interesting', p: 'adj.', s: [
@@ -856,6 +891,13 @@ export const M1_4 = defineLevel('m1-4', [
       ['You may leave now.', '이제 가도 좋다.'],
     ]},
   ]},
+  { w: 'means', p: 'n.', s: [
+    { m: '수단, 방법', syn: ['way'], ex: [
+      ['A bicycle is his only means of transport.', '자전거가 그의 유일한 이동 수단이다.'],
+      ['We found a means to solve the problem.', '우리는 그 문제를 풀 방법을 찾았다.'],
+      ['Language is a means of sharing thought.', '언어는 생각을 나누는 수단이다.'],
+    ]},
+  ]},
   { w: 'meat', p: 'n.', s: [
     { m: '고기', syn: [], ex: [
       ['She does not eat meat.', '그녀는 고기를 먹지 않는다.'],
@@ -1051,6 +1093,53 @@ export const M1_4 = defineLevel('m1-4', [
       ['The school is near my house.', '학교는 우리 집 가까이에 있다.'],
       ['Do not sit near the door.', '문 가까이에 앉지 마라.'],
       ['We stayed near the beach.', '우리는 해변 가까이에 묵었다.'],
+    ]},
+  ]},
+  { w: 'passive', p: 'adj.', s: [
+    { m: '수동적인, 수동의', syn: [], ex: [
+      ['He stayed passive during the discussion.', '그는 토론 내내 가만히 있었다.'],
+      ['Passive learning is less effective than doing.', '수동적으로 배우는 것은 해 보는 것보다 덜 효과적이다.'],
+      ['The plant uses passive cooling.', '그 건물은 수동적인 방식으로 열을 식힌다.'],
+    ]},
+  ]},
+  { w: 'previously', p: 'adv.', s: [
+    { m: '이전의, 이전에는, 이전에, 사전에', syn: ['before'], ex: [
+      ['She had previously worked as a nurse.', '그녀는 이전에 간호사로 일했다.'],
+      ['The road was previously closed for repairs.', '그 길은 이전에 수리로 막혀 있었다.'],
+      ['We had not previously met.', '우리는 전에 만난 적이 없었다.'],
+    ]},
+  ]},
+  { w: 'relative', p: 'adj.', s: [
+    { m: '상대적인', syn: [], ex: [
+      ['The relative size of the two rooms differs.', '두 방의 상대적인 크기가 다르다.'],
+      ['Success is a relative term.', '성공은 상대적인 말이다.'],
+      ['We live in relative comfort.', '우리는 비교적 편안하게 산다.'],
+    ]},
+    { m: '친족, 친척', syn: [], ex: [
+      ['We visited our relatives last weekend.', '우리는 지난 주말에 친척을 찾아뵀다.'],
+      ['She is a distant relative of mine.', '그녀는 나의 먼 친척이다.'],
+      ['All his relatives came to the wedding.', '그의 친척이 모두 결혼식에 왔다.'],
+    ]},
+  ]},
+  { w: 'sculpture', p: 'n.', s: [
+    { m: '조각, 조각품', syn: [], ex: [
+      ['A stone sculpture stands in the square.', '광장에 돌 조각품이 서 있다.'],
+      ['He studies sculpture at art school.', '그는 미술 학교에서 조각을 배운다.'],
+      ['The museum bought two new sculptures.', '박물관이 새 조각품 두 점을 샀다.'],
+    ]},
+  ]},
+  { w: 'tension', p: 'n.', s: [
+    { m: '갈등, 긴장 상태, 흥분', syn: [], ex: [
+      ['There was tension between the two teams.', '두 팀 사이에 긴장이 있었다.'],
+      ['The rope broke under tension.', '줄이 팽팽해지다가 끊어졌다.'],
+      ['Music helped release the tension.', '음악이 긴장을 푸는 데 도움이 됐다.'],
+    ]},
+  ]},
+  { w: 'well-being', p: 'n.', s: [
+    { m: '(건강과) 행복, 복지, 풍요', syn: [], ex: [
+      ['Exercise improves mental well-being.', '운동은 마음의 안녕을 좋게 한다.'],
+      ['The school cares about student well-being.', '그 학교는 학생의 안녕을 살핀다.'],
+      ['Sleep is essential to well-being.', '잠은 안녕에 꼭 필요하다.'],
     ]},
   ]},
 ], 'curriculum');

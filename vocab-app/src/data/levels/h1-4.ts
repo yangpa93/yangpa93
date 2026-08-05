@@ -1,5 +1,5 @@
 /**
- * 고등학교 1학년 레벨 4 — 수록 154 / 계획 137개.
+ * 고등학교 1학년 레벨 4 — 수록 159 / 계획 137개.
  *
  * 난이도 층: 중급(중학 권장), 고급(고등)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -10,7 +10,7 @@ import { defineLevel } from '../define';
 
 export const H1_4 = defineLevel('h1-4', [
   { w: 'abandon', p: 'v.', s: [
-    { m: '버리다, 포기하다', syn: ['give up'], ex: [
+    { m: '버리다, 포기하다, 폐지[폐기]하다, 그만두다', syn: ['give up'], ex: [
       ['They abandoned the old plan.', '그들은 옛 계획을 포기했다.'],
       ['The building was abandoned years ago.', '그 건물은 몇 년 전에 버려졌다.'],
       ['He abandoned his dream of acting.', '그는 연기의 꿈을 포기했다.'],
@@ -87,7 +87,7 @@ export const H1_4 = defineLevel('h1-4', [
     ]},
   ]},
   { w: 'accelerate', p: 'v.', s: [
-    { m: '가속하다, 빨라지다', syn: ['speed up'], ex: [
+    { m: '속도가 높아지다, 가속하다, 가속화되다', syn: ['speed up'], ex: [
       ['The car accelerated quickly.', '차가 빠르게 가속했다.'],
       ['Growth accelerated last year.', '작년에 성장이 빨라졌다.'],
       ['Heat accelerates the change.', '열이 그 변화를 가속한다.'],
@@ -104,7 +104,7 @@ export const H1_4 = defineLevel('h1-4', [
     ]},
   ]},
   { w: 'accompany', p: 'v.', s: [
-    { m: '동행하다, 함께 가다', syn: ['go with'], ex: [
+    { m: '동반하다, 동행하다, 수행하다, 수반하다, (~의) 반주를 하다', syn: ['go with'], ex: [
       ['She accompanied me to the store.', '그녀는 나와 함께 가게에 갔다.'],
       ['Music accompanied the dance.', '음악이 춤과 함께했다.'],
       ['He accompanied his mother home.', '그는 어머니를 집까지 모셔다드렸다.'],
@@ -132,7 +132,7 @@ export const H1_4 = defineLevel('h1-4', [
     ]},
   ]},
   { w: 'accumulate', p: 'v.', s: [
-    { m: '축적하다, 모으다', syn: ['build up', 'pile up'], ex: [
+    { m: '축적하다, 축적되다, 쌓다, 쌓이다, 모으다', syn: ['build up', 'pile up'], ex: [
       ['Dust accumulated on the shelf.', '선반에 먼지가 쌓였다.'],
       ['He accumulated wealth over decades.', '그는 수십 년에 걸쳐 부를 축적했다.'],
       ['Evidence has accumulated against the theory.', '그 이론에 반하는 증거가 쌓였다.'],
@@ -143,6 +143,20 @@ export const H1_4 = defineLevel('h1-4', [
       ['We need accurate data.', '우리는 정확한 자료가 필요하다.'],
       ['His description was surprisingly accurate.', '그의 묘사는 놀라울 만큼 정확했다.'],
       ['The clock is not accurate.', '그 시계는 정확하지 않다.'],
+    ]},
+  ]},
+  { w: 'awareness', p: 'n.', s: [
+    { m: '인식, 의식, 자각', syn: ['consciousness'], ex: [
+      ['The campaign raised awareness of the problem.', '그 운동이 문제에 대한 인식을 높였다.'],
+      ['He had no awareness of the danger.', '그는 위험을 전혀 자각하지 못했다.'],
+      ['Public awareness about recycling has grown.', '재활용에 대한 대중의 인식이 커졌다.'],
+    ]},
+  ]},
+  { w: 'distraction', p: 'n.', s: [
+    { m: '집중을 방해하는 것, 주의산만, 머리를 식혀 주는 것, 기분 전환', syn: [], ex: [
+      ['The noise was a constant distraction.', '그 소음이 계속 집중을 흐트러뜨렸다.'],
+      ['He turns off his phone to avoid distraction.', '그는 방해받지 않으려고 전화를 끈다.'],
+      ['Music can be a pleasant distraction.', '음악은 기분 좋은 기분 전환이 될 수 있다.'],
     ]},
   ]},
   { w: 'hand over', p: 'phr.', s: [
@@ -166,6 +180,13 @@ export const H1_4 = defineLevel('h1-4', [
       ['Do not hold back your opinion.', '의견을 숨기지 마라.'],
     ]},
   ]},
+  { w: 'identification', p: 'n.', s: [
+    { m: '동일시, 식별, (실체를) 밝힘, 검증, 확인', syn: [], ex: [
+      ['Identification of the plant took an expert.', '그 식물을 알아보는 데 전문가가 필요했다.'],
+      ['Please show identification at the door.', '문에서 신분증을 보여 주세요.'],
+      ['Early identification of the problem helped.', '문제를 일찍 알아낸 것이 도움이 됐다.'],
+    ]},
+  ]},
   { w: 'insist on', p: 'phr.', s: [
     { m: '~을 고집하다, 주장하다', syn: [], ex: [
       ['He insisted on paying the bill.', '그는 계산을 하겠다고 고집했다.'],
@@ -174,7 +195,7 @@ export const H1_4 = defineLevel('h1-4', [
     ]},
   ]},
   { w: 'interfere with', p: 'phr.', s: [
-    { m: '~을 방해하다', syn: [], ex: [
+    { m: '~을 저해[방해]하다', syn: [], ex: [
       ['Noise interferes with my sleep.', '소음이 내 잠을 방해한다.'],
       ['Do not interfere with their work.', '그들의 일을 방해하지 마라.'],
       ['The weather interfered with the plan.', '날씨가 계획을 방해했다.'],
@@ -262,6 +283,20 @@ export const H1_4 = defineLevel('h1-4', [
       ['I could not make out his writing.', '나는 그의 글씨를 알아볼 수 없었다.'],
       ['She made out a figure in the fog.', '그녀는 안개 속에서 형체를 알아보았다.'],
       ['Can you make out what he is saying?', '그가 무슨 말을 하는지 알아듣겠니?'],
+    ]},
+  ]},
+  { w: 'preservation', p: 'n.', s: [
+    { m: '보존, 저장, 보호, 보관', syn: [], ex: [
+      ['The preservation of old buildings matters.', '옛 건물의 보존은 중요하다.'],
+      ['Salt was used for food preservation.', '소금은 음식 저장에 쓰였다.'],
+      ['They work on the preservation of forests.', '그들은 숲 보존에 힘쓴다.'],
+    ]},
+  ]},
+  { w: 'straightforward', p: 'adj.', s: [
+    { m: '단순명료한, 간단한, 단순한, 직접적인, 확실한', syn: [], ex: [
+      ['The instructions are straightforward.', '그 설명은 단순명료하다.'],
+      ['She gave a straightforward answer.', '그녀는 딱 부러지게 답했다.'],
+      ['The task looked straightforward at first.', '그 일은 처음에는 간단해 보였다.'],
     ]},
   ]},
   { w: 'term', p: 'n.', s: [
@@ -776,7 +811,7 @@ export const H1_4 = defineLevel('h1-4', [
     ]},
   ]},
   { w: 'vary', p: 'v.', s: [
-    { m: '다르다, 다양하다', syn: ['differ', 'change'], ex: [
+    { m: '다양하다, 각기 다르다, (상황에 따라) 달라지다', syn: ['differ', 'change'], ex: [
       ['Prices vary from shop to shop.', '가격은 가게마다 다르다.'],
       ['Opinions vary widely on this issue.', '이 문제에 대한 의견은 매우 다양하다.'],
       ['The weather varies by season.', '날씨는 계절에 따라 다르다.'],

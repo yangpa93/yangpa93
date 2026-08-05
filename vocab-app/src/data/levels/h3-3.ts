@@ -1,5 +1,5 @@
 /**
- * 고등학교 3학년 레벨 3 — 수록 152 / 계획 136개.
+ * 고등학교 3학년 레벨 3 — 수록 160 / 계획 136개.
  *
  * 난이도 층: 고급(고등)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -9,6 +9,34 @@
 import { defineLevel } from '../define';
 
 export const H3_3 = defineLevel('h3-3', [
+  { w: 'adaptive', p: 'adj.', s: [
+    { m: '적응의, 적응성이 있는, 순응하는, 적응적인, 적응하는', syn: [], ex: [
+      ['Thick fur is an adaptive trait in cold places.', '두꺼운 털은 추운 곳에 맞춘 적응적 형질이다.'],
+      ['The system is adaptive to user habits.', '그 체계는 사용자 습관에 맞춰 바뀐다.'],
+      ['Adaptive behavior helps animals survive.', '적응 행동이 동물의 생존을 돕는다.'],
+    ]},
+  ]},
+  { w: 'assertion', p: 'n.', s: [
+    { m: '단언, 주장', syn: [], ex: [
+      ['His assertion was not supported by evidence.', '그의 주장은 증거로 뒷받침되지 않았다.'],
+      ['She made a bold assertion in the essay.', '그녀는 그 글에서 대담한 단언을 했다.'],
+      ['The assertion turned out to be false.', '그 주장은 사실이 아닌 것으로 드러났다.'],
+    ]},
+  ]},
+  { w: 'distortion', p: 'n.', s: [
+    { m: '왜곡, 곡해', syn: [], ex: [
+      ['The report contained a distortion of the facts.', '그 보도에는 사실의 왜곡이 있었다.'],
+      ['Cheap lenses cause distortion.', '값싼 렌즈는 상을 일그러뜨린다.'],
+      ['Memory is subject to distortion over time.', '기억은 시간이 지나면 뒤틀리기 쉽다.'],
+    ]},
+  ]},
+  { w: 'informed', p: 'adj.', s: [
+    { m: '정보에 근거한, 사실 이해에 입각한, 깊이 있게 아는, 학식이 풍부한, 견문이 넓은', syn: [], ex: [
+      ['Make an informed decision.', '정보에 근거해 결정해라.'],
+      ['She gave an informed opinion.', '그녀는 잘 알고 하는 의견을 냈다.'],
+      ['Informed readers noticed the error.', '잘 아는 독자들이 그 잘못을 알아챘다.'],
+    ]},
+  ]},
   { w: 'look back on', p: 'phr.', s: [
     { m: '되돌아보다', syn: [], ex: [
       ['She looks back on those days fondly.', '그녀는 그 시절을 정겹게 되돌아본다.'],
@@ -79,6 +107,13 @@ export const H3_3 = defineLevel('h3-3', [
       ['He was on the verge of laughing.', '그는 막 웃음이 터지려던 참이었다.'],
     ]},
   ]},
+  { w: 'orientation', p: 'n.', s: [
+    { m: '방향(성), 지향(성)', syn: [], ex: [
+      ['New students attend an orientation.', '신입생은 오리엔테이션에 참석한다.'],
+      ['The building\'s orientation catches morning sun.', '그 건물의 방향은 아침 볕을 받는다.'],
+      ['Her political orientation is well known.', '그녀의 정치적 지향은 잘 알려져 있다.'],
+    ]},
+  ]},
   { w: 'out of the question', p: 'phr.', s: [
     { m: '불가능한, 논의할 가치도 없는', syn: [], ex: [
       ['Going out tonight is out of the question.', '오늘 밤 외출은 불가능하다.'],
@@ -121,6 +156,13 @@ export const H3_3 = defineLevel('h3-3', [
       ['New rules put an end to the practice.', '새 규칙이 그 관행을 끝냈다.'],
     ]},
   ]},
+  { w: 'reflective', p: 'adj.', s: [
+    { m: '숙고하는, 성찰적인, 반영하는, 사색하는', syn: [], ex: [
+      ['He is a quiet, reflective person.', '그는 조용하고 사색적인 사람이다.'],
+      ['The essay is reflective in tone.', '그 글은 성찰하는 어조다.'],
+      ['Reflective surfaces bounce light back.', '반사하는 면은 빛을 되돌려 보낸다.'],
+    ]},
+  ]},
   { w: 'regulate', p: 'v.', s: [
     { m: '규제하다, 조절하다', syn: ['control'], ex: [
       ['Laws regulate factory smoke.', '법이 공장 매연을 규제한다.'],
@@ -143,7 +185,7 @@ export const H3_3 = defineLevel('h3-3', [
     ]},
   ]},
   { w: 'relevant', p: 'adj.', s: [
-    { m: '관련 있는, 적절한', syn: ['related', 'applicable'], ex: [
+    { m: '관련 있는, 유의미한, 적절한', syn: ['related', 'applicable'], ex: [
       ['Give only relevant examples.', '관련 있는 예만 들어라.'],
       ['That fact is not relevant here.', '그 사실은 여기서 관련이 없다.'],
       ['Please attach all relevant documents.', '관련 서류를 모두 첨부해 주세요.'],
@@ -241,7 +283,7 @@ export const H3_3 = defineLevel('h3-3', [
     ]},
   ]},
   { w: 'resolve', p: 'v.', s: [
-    { m: '해결하다, 결심하다', syn: ['settle'], ex: [
+    { m: '해결하다, 용해하다', syn: ['settle'], ex: [
       ['They resolved the argument calmly.', '그들은 다툼을 차분히 해결했다.'],
       ['I resolved to study harder.', '나는 더 열심히 공부하기로 결심했다.'],
       ['The problem resolved itself.', '그 문제는 저절로 풀렸다.'],
@@ -273,7 +315,7 @@ export const H3_3 = defineLevel('h3-3', [
     ]},
   ]},
   { w: 'restrict', p: 'v.', s: [
-    { m: '제한하다', syn: ['limit', 'control'], ex: [
+    { m: '제한하다, 한정하다', syn: ['limit', 'control'], ex: [
       ['The rule restricts phone use.', '그 규칙은 휴대폰 사용을 제한한다.'],
       ['Access is restricted to members.', '출입은 회원으로 제한된다.'],
       ['They restricted the number of visitors.', '그들은 방문객 수를 제한했다.'],
@@ -294,7 +336,7 @@ export const H3_3 = defineLevel('h3-3', [
     ]},
   ]},
   { w: 'retain', p: 'v.', s: [
-    { m: '유지하다, 간직하다', syn: ['keep', 'hold on to'], ex: [
+    { m: '유지하다, 간직하다, 보존하다, 기억해 두다, 보유하다', syn: ['keep', 'hold on to'], ex: [
       ['We retain what we practice.', '우리는 연습한 것을 기억에 남긴다.'],
       ['The soil retains water well.', '그 흙은 물을 잘 머금는다.'],
       ['She retained her calm throughout.', '그녀는 내내 침착함을 유지했다.'],
@@ -308,7 +350,7 @@ export const H3_3 = defineLevel('h3-3', [
     ]},
   ]},
   { w: 'reveal', p: 'v.', s: [
-    { m: '드러내다, 밝히다', syn: ['show', 'disclose'], ex: [
+    { m: '밝히다, 드러내다, 나타내다, 보여주다, 폭로하다', syn: ['show', 'disclose'], ex: [
       ['The study revealed a surprising fact.', '그 연구는 놀라운 사실을 밝혔다.'],
       ['She refused to reveal her source.', '그녀는 출처 밝히기를 거부했다.'],
       ['The curtain opened to reveal the stage.', '커튼이 열리며 무대가 드러났다.'],
@@ -854,7 +896,7 @@ export const H3_3 = defineLevel('h3-3', [
     ]},
   ]},
   { w: 'status', p: 'n.', s: [
-    { m: '지위, 상태', syn: ['position'], ex: [
+    { m: '상태, 지위, 성향, 신분', syn: ['position'], ex: [
       ['Check the status of your order.', '주문 상태를 확인하세요.'],
       ['Her status in the team rose.', '팀 안에서 그녀의 위상이 올라갔다.'],
       ['Social status matters less now.', '사회적 지위는 이제 덜 중요하다.'],
@@ -897,6 +939,13 @@ export const H3_3 = defineLevel('h3-3', [
       ['Reading stimulates the imagination.', '독서는 상상력을 자극한다.'],
       ['The policy stimulated the economy.', '그 정책은 경제를 활성화했다.'],
       ['Good questions stimulate discussion.', '좋은 질문은 토론을 촉진한다.'],
+    ]},
+  ]},
+  { w: 'stimulus', p: 'n.', s: [
+    { m: '자극(pl. stimuli)', syn: [], ex: [
+      ['Light acts as a stimulus for the plant.', '빛은 그 식물에 자극이 된다.'],
+      ['The prize was a stimulus to work harder.', '그 상은 더 열심히 하게 하는 자극이 됐다.'],
+      ['The body reacts to a painful stimulus.', '몸은 아픈 자극에 반응한다.'],
     ]},
   ]},
   { w: 'stitch', p: 'n.', s: [
@@ -978,14 +1027,14 @@ export const H3_3 = defineLevel('h3-3', [
     ]},
   ]},
   { w: 'subsequent', p: 'adj.', s: [
-    { m: '그 이후의, 다음의', syn: ['following', 'later'], ex: [
+    { m: '후속의, 그다음의, 그 이후의, 연이은, 그에 따른', syn: ['following', 'later'], ex: [
       ['Subsequent tests confirmed the result.', '이후의 검사가 그 결과를 확인해 주었다.'],
       ['In subsequent years, sales grew.', '이후 몇 년간 매출이 늘었다.'],
       ['The subsequent chapter explains why.', '다음 장이 그 이유를 설명한다.'],
     ]},
   ]},
   { w: 'substance', p: 'n.', s: [
-    { m: '물질, 실체', syn: ['material'], ex: [
+    { m: '물질, 본질, 내용, 실체', syn: ['material'], ex: [
       ['Water is a simple substance.', '물은 단순한 물질이다.'],
       ['The powder is a harmless substance.', '그 가루는 해롭지 않은 물질이다.'],
       ['His speech had little substance.', '그의 연설은 알맹이가 적었다.'],
@@ -1069,7 +1118,7 @@ export const H3_3 = defineLevel('h3-3', [
     ]},
   ]},
   { w: 'superior', p: 'adj.', s: [
-    { m: '우수한, 더 나은', syn: ['better'], ex: [
+    { m: '우세한, 뛰어난, 우월한, 더 우수한', syn: ['better'], ex: [
       ['This cloth is superior to that one.', '이 천이 저것보다 낫다.'],
       ['She has superior skills.', '그녀는 뛰어난 기술을 가지고 있다.'],
       ['Superior products cost more.', '더 나은 제품은 값이 더 나간다.'],
@@ -1094,6 +1143,13 @@ export const H3_3 = defineLevel('h3-3', [
       ['She suppressed a laugh.', '그녀는 웃음을 참았다.'],
       ['The government suppressed the report.', '정부가 그 보고서를 덮었다.'],
       ['He could not suppress his anger.', '그는 분노를 억누를 수 없었다.'],
+    ]},
+  ]},
+  { w: 'virtual', p: 'adj.', s: [
+    { m: '(컴퓨터를 이용한) 가상의, 사실상의', syn: [], ex: [
+      ['We had a virtual meeting.', '우리는 화상 회의를 했다.'],
+      ['The museum offers a virtual tour.', '그 박물관은 가상 관람을 제공한다.'],
+      ['He is the virtual leader of the group.', '그는 사실상 그 모임의 지도자다.'],
     ]},
   ]},
 ], 'csat');

@@ -1,5 +1,5 @@
 /**
- * 중학교 2학년 레벨 1 — 수록 153 / 계획 137개.
+ * 중학교 2학년 레벨 1 — 수록 157 / 계획 137개.
  *
  * 난이도 층: 기초(초등 권장)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -9,6 +9,34 @@
 import { defineLevel } from '../define';
 
 export const M2_1 = defineLevel('m2-1', [
+  { w: 'critically', p: 'adv.', s: [
+    { m: '비판적으로, 중요하게, 결정적으로', syn: [], ex: [
+      ['Read the article critically.', '그 글을 비판적으로 읽어라.'],
+      ['The outcome depends critically on timing.', '결과는 시점에 결정적으로 달려 있다.'],
+      ['He was critically injured in the fall.', '그는 넘어져 크게 다쳤다.'],
+    ]},
+  ]},
+  { w: 'dramatically', p: 'adv.', s: [
+    { m: '매우, 극적으로', syn: [], ex: [
+      ['Prices rose dramatically this year.', '올해 값이 크게 올랐다.'],
+      ['The view changed dramatically after the rain.', '비가 온 뒤 풍경이 확 달라졌다.'],
+      ['Her health improved dramatically.', '그녀의 건강이 눈에 띄게 좋아졌다.'],
+    ]},
+  ]},
+  { w: 'empathy', p: 'n.', s: [
+    { m: '공감, 감정 이입', syn: [], ex: [
+      ['She listened with empathy.', '그녀는 공감하며 들어 주었다.'],
+      ['Stories build empathy for others.', '이야기는 남에 대한 공감을 길러 준다.'],
+      ['His empathy made him a good friend.', '그의 공감 능력이 그를 좋은 친구로 만들었다.'],
+    ]},
+  ]},
+  { w: 'existence', p: 'n.', s: [
+    { m: '존재, 생활, 삶, 생존', syn: [], ex: [
+      ['No one doubts the existence of the problem.', '그 문제가 있다는 것을 의심하는 사람은 없다.'],
+      ['The village came into existence a century ago.', '그 마을은 백 년 전에 생겼다.'],
+      ['They lead a quiet existence in the mountains.', '그들은 산에서 조용한 삶을 산다.'],
+    ]},
+  ]},
   { w: 'for a long time', p: 'phr.', s: [
     { m: '오랫동안', syn: [], ex: [
       ['We waited for a long time.', '우리는 오랫동안 기다렸다.'],
@@ -35,6 +63,13 @@ export const M2_1 = defineLevel('m2-1', [
       ['I saw the sea for the first time.', '나는 처음으로 바다를 보았다.'],
       ['She spoke in public for the first time.', '그녀는 처음으로 사람들 앞에서 말했다.'],
       ['He cooked for the first time yesterday.', '그는 어제 처음으로 요리를 했다.'],
+    ]},
+  ]},
+  { w: 'frequency', p: 'n.', s: [
+    { m: '(발생) 빈도, 주파수, 진동수', syn: [], ex: [
+      ['The frequency of storms has risen.', '폭풍의 빈도가 늘었다.'],
+      ['Radio waves have different frequencies.', '전파는 주파수가 서로 다르다.'],
+      ['Reduce the frequency of your visits.', '방문 횟수를 줄이세요.'],
     ]},
   ]},
   { w: 'from now on', p: 'phr.', s: [
@@ -126,6 +161,34 @@ export const M2_1 = defineLevel('m2-1', [
       ['The pain went away after an hour.', '통증이 한 시간 뒤에 사라졌다.'],
       ['Go away and leave me alone.', '저리 가서 나를 좀 내버려 둬.'],
       ['The clouds went away by noon.', '구름은 정오쯤 걷혔다.'],
+    ]},
+  ]},
+  { w: 'indication', p: 'n.', s: [
+    { m: '표시, 지표, 암시, 증거, 조짐', syn: [], ex: [
+      ['There was no indication of trouble.', '문제가 있다는 낌새는 없었다.'],
+      ['Dark clouds are an indication of rain.', '검은 구름은 비가 올 표시다.'],
+      ['He gave no indication of his plans.', '그는 자기 계획을 전혀 내비치지 않았다.'],
+    ]},
+  ]},
+  { w: 'intensity', p: 'n.', s: [
+    { m: '강렬함, 강도, 격렬함, 세기', syn: [], ex: [
+      ['The intensity of the light hurt my eyes.', '빛의 세기가 너무 세서 눈이 아팠다.'],
+      ['He trains with great intensity.', '그는 아주 세게 훈련한다.'],
+      ['The storm grew in intensity overnight.', '밤사이 폭풍이 거세졌다.'],
+    ]},
+  ]},
+  { w: 'isolated', p: 'adj.', s: [
+    { m: '고립된, 유리된, 분리된, 격리된', syn: [], ex: [
+      ['The village is isolated in winter.', '그 마을은 겨울에 고립된다.'],
+      ['He felt isolated in the new school.', '그는 새 학교에서 외따로 있는 느낌이었다.'],
+      ['This was an isolated incident.', '이것은 따로 떨어진 하나의 사건이었다.'],
+    ]},
+  ]},
+  { w: 'location', p: 'n.', s: [
+    { m: '장소, 위치', syn: ['place', 'spot'], ex: [
+      ['The map shows the location of the museum.', '지도가 박물관의 위치를 보여 준다.'],
+      ['We changed the location of the meeting.', '우리는 모임 장소를 바꿨다.'],
+      ['My phone shows my exact location.', '내 전화기가 내 정확한 위치를 보여 준다.'],
     ]},
   ]},
   { w: 'neck', p: 'n.', s: [
@@ -470,6 +533,13 @@ export const M2_1 = defineLevel('m2-1', [
       ['Some people prefer tea.', '어떤 사람들은 차를 더 좋아한다.'],
     ]},
   ]},
+  { w: 'performance', p: 'n.', s: [
+    { m: '성과, 행위, 수행, 실행, 운영', syn: [], ex: [
+      ['Her performance improved this term.', '이번 학기에 그녀의 성적이 올랐다.'],
+      ['The band gave a great performance.', '그 밴드는 멋진 공연을 했다.'],
+      ['We review team performance monthly.', '우리는 달마다 팀 성과를 살핀다.'],
+    ]},
+  ]},
   { w: 'phone', p: 'n.', s: [
     { m: '전화, 휴대폰', syn: ['telephone'], ex: [
       ['My phone is out of battery.', '내 휴대폰은 배터리가 없다.'],
@@ -628,6 +698,13 @@ export const M2_1 = defineLevel('m2-1', [
       ['The garden looks pretty in spring.', '정원은 봄에 예뻐 보인다.'],
     ]},
   ]},
+  { w: 'primarily', p: 'adv.', s: [
+    { m: '주로, 기본적으로', syn: ['mainly'], ex: [
+      ['The book is primarily for beginners.', '그 책은 주로 초보자를 위한 것이다.'],
+      ['We eat primarily vegetables.', '우리는 주로 채소를 먹는다.'],
+      ['The delay was primarily due to weather.', '지연은 주로 날씨 때문이었다.'],
+    ]},
+  ]},
   { w: 'prince', p: 'n.', s: [
     { m: '왕자', syn: [], ex: [
       ['The prince lived in a castle.', '왕자는 성에 살았다.'],
@@ -768,6 +845,13 @@ export const M2_1 = defineLevel('m2-1', [
       ['She was ready for the test.', '그녀는 시험 준비가 되어 있었다.'],
     ]},
   ]},
+  { w: 'reasonable', p: 'adj.', s: [
+    { m: '합리적인, 타당한, 괜찮은, 적당한, 합당한', syn: [], ex: [
+      ['The price seems reasonable to me.', '그 값은 내게 적당해 보인다.'],
+      ['She made a reasonable request.', '그녀는 타당한 부탁을 했다.'],
+      ['It is reasonable to ask for more time.', '시간을 더 달라고 하는 것은 합리적이다.'],
+    ]},
+  ]},
   { w: 'recreation', p: 'n.', s: [
     { m: '여가, 오락', syn: ['leisure'], ex: [
       ['Sports are good recreation.', '운동은 좋은 여가 활동이다.'],
@@ -780,6 +864,13 @@ export const M2_1 = defineLevel('m2-1', [
       ['They have a good relationship.', '그들은 좋은 관계이다.'],
       ['There is a close relationship between sleep and health.', '수면과 건강 사이에는 밀접한 관계가 있다.'],
       ['A good relationship needs trust.', '좋은 관계에는 신뢰가 필요하다.'],
+    ]},
+  ]},
+  { w: 'relatively', p: 'adv.', s: [
+    { m: '비교적, 상대적으로', syn: [], ex: [
+      ['The test was relatively easy.', '그 시험은 비교적 쉬웠다.'],
+      ['Winters here are relatively mild.', '여기 겨울은 비교적 포근하다.'],
+      ['She is relatively new to the job.', '그녀는 그 일에 비교적 새내기다.'],
     ]},
   ]},
   { w: 'remember', p: 'v.', s: [
@@ -1037,6 +1128,13 @@ export const M2_1 = defineLevel('m2-1', [
       ['Read the second sentence.', '두 번째 문장을 읽어라.'],
     ]},
   ]},
+  { w: 'security', p: 'n.', s: [
+    { m: '안전(성), 안전 관리, 보안 (검색), 안보', syn: [], ex: [
+      ['Airport security took twenty minutes.', '공항 보안 검색에 이십 분 걸렸다.'],
+      ['The job gives him a sense of security.', '그 일은 그에게 안정감을 준다.'],
+      ['Security cameras watch the entrance.', '보안 카메라가 입구를 지켜본다.'],
+    ]},
+  ]},
   { w: 'see', p: 'v.', s: [
     { m: '보다', syn: [], ex: [
       ['I can see the mountain.', '나는 산이 보인다.'],
@@ -1056,6 +1154,13 @@ export const M2_1 = defineLevel('m2-1', [
       ['I will send you a message tonight.', '오늘 밤에 메시지를 보낼게.'],
       ['She sent a card to her teacher.', '그녀는 선생님께 카드를 보냈다.'],
       ['He is sending the package now.', '그는 지금 소포를 보내고 있다.'],
+    ]},
+  ]},
+  { w: 'textile', p: 'n.', s: [
+    { m: '옷감, 직물', syn: [], ex: [
+      ['The city is known for its textile industry.', '그 도시는 직물 산업으로 알려져 있다.'],
+      ['She designs textiles for furniture.', '그녀는 가구에 쓰는 옷감을 만든다.'],
+      ['Cotton is a common textile.', '면은 흔한 직물이다.'],
     ]},
   ]},
 ], 'curriculum');

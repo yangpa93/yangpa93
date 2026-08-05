@@ -1,5 +1,5 @@
 /**
- * 고등학교 2학년 레벨 4 — 수록 154 / 계획 137개.
+ * 고등학교 2학년 레벨 4 — 수록 160 / 계획 137개.
  *
  * 난이도 층: 고급(고등)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -107,6 +107,13 @@ export const H2_4 = defineLevel('h2-4', [
       ['We must finish it by all means.', '우리는 어떻게 해서든 그것을 끝내야 한다.'],
     ]},
   ]},
+  { w: 'consciousness', p: 'n.', s: [
+    { m: '의식', syn: ['awareness'], ex: [
+      ['He lost consciousness after the fall.', '그는 넘어진 뒤 의식을 잃었다.'],
+      ['She slowly regained consciousness.', '그녀는 천천히 의식을 되찾았다.'],
+      ['The idea entered public consciousness.', '그 생각이 대중의 의식 속으로 들어왔다.'],
+    ]},
+  ]},
   { w: 'flaw', p: 'n.', s: [
     { m: '결함, 흠', syn: ['defect'], ex: [
       ['The plan has one flaw.', '그 계획에는 결함이 하나 있다.'],
@@ -129,7 +136,7 @@ export const H2_4 = defineLevel('h2-4', [
     ]},
   ]},
   { w: 'flexible', p: 'adj.', s: [
-    { m: '유연한, 융통성 있는', syn: [], ex: [
+    { m: '유연한, 탄력의, 융통성이 있는', syn: [], ex: [
       ['The rule is flexible.', '그 규칙은 융통성이 있다.'],
       ['Her body is very flexible.', '그녀의 몸은 아주 유연하다.'],
       ['We need a flexible plan.', '우리는 유연한 계획이 필요하다.'],
@@ -199,7 +206,7 @@ export const H2_4 = defineLevel('h2-4', [
     ]},
   ]},
   { w: 'format', p: 'n.', s: [
-    { m: '형식, 구성', syn: ['layout'], ex: [
+    { m: '형식, (전체) 구성, 포맷', syn: ['layout'], ex: [
       ['Use the same format.', '같은 형식을 써라.'],
       ['The file format is old.', '그 파일 형식은 낡았다.'],
       ['She changed the format.', '그녀는 형식을 바꿨다.'],
@@ -220,7 +227,7 @@ export const H2_4 = defineLevel('h2-4', [
     ]},
   ]},
   { w: 'foster', p: 'v.', s: [
-    { m: '조성하다, 기르다', syn: ['encourage', 'nurture'], ex: [
+    { m: '촉진하다, 기르다, 조성하다, 함양하다, 육성하다', syn: ['encourage', 'nurture'], ex: [
       ['Schools should foster creativity.', '학교는 창의성을 길러야 한다.'],
       ['The program fosters teamwork.', '그 프로그램은 협동심을 기른다.'],
       ['They fostered a sense of belonging.', '그들은 소속감을 길러 주었다.'],
@@ -280,6 +287,13 @@ export const H2_4 = defineLevel('h2-4', [
       ['She fulfilled her promise.', '그녀는 약속을 지켰다.'],
       ['He fulfilled his duty.', '그는 임무를 다했다.'],
       ['The trip fulfilled a dream.', '그 여행이 꿈을 이뤄 주었다.'],
+    ]},
+  ]},
+  { w: 'fulfillment', p: 'n.', s: [
+    { m: '충족감, 충족, 이행, 만족감, 성취', syn: [], ex: [
+      ['She found fulfillment in teaching.', '그녀는 가르치는 일에서 보람을 찾았다.'],
+      ['The job brought little fulfillment.', '그 일은 만족감을 별로 주지 않았다.'],
+      ['Fulfillment of the promise took years.', '그 약속의 이행에 여러 해가 걸렸다.'],
     ]},
   ]},
   { w: 'fundamental', p: 'adj.', s: [
@@ -381,7 +395,7 @@ export const H2_4 = defineLevel('h2-4', [
     ]},
   ]},
   { w: 'generate', p: 'v.', s: [
-    { m: '만들어 내다, 발생시키다', syn: ['produce', 'create'], ex: [
+    { m: '발생시키다, 생성하다, 만들어 내다, 창출하다, 일으키다', syn: ['produce', 'create'], ex: [
       ['Wind turbines generate power.', '풍력 발전기는 전기를 만들어 낸다.'],
       ['The film generated a lot of interest.', '그 영화는 많은 관심을 불러일으켰다.'],
       ['Solar panels generate clean energy.', '태양광 패널은 청정 에너지를 만든다.'],
@@ -608,7 +622,7 @@ export const H2_4 = defineLevel('h2-4', [
     ]},
   ]},
   { w: 'harsh', p: 'adj.', s: [
-    { m: '가혹한, 거친', syn: ['severe'], ex: [
+    { m: '혹독한, 가혹한', syn: ['severe'], ex: [
       ['The winter was harsh.', '그 겨울은 혹독했다.'],
       ['Do not use harsh words.', '거친 말을 쓰지 마라.'],
       ['Harsh light hurts the eyes.', '강한 빛은 눈에 해롭다.'],
@@ -748,7 +762,7 @@ export const H2_4 = defineLevel('h2-4', [
     ]},
   ]},
   { w: 'hypothesis', p: 'n.', s: [
-    { m: '가설', syn: ['assumption'], ex: [
+    { m: '가설, 가정, 추정', syn: ['assumption'], ex: [
       ['The hypothesis was tested twice.', '그 가설은 두 번 검증되었다.'],
       ['Scientists formed a new hypothesis.', '과학자들이 새로운 가설을 세웠다.'],
       ['The data did not support the hypothesis.', '자료는 그 가설을 뒷받침하지 않았다.'],
@@ -818,7 +832,7 @@ export const H2_4 = defineLevel('h2-4', [
     ]},
   ]},
   { w: 'impact', p: 'n.', s: [
-    { m: '영향, 충격', syn: ['effect', 'influence'], ex: [
+    { m: '영향', syn: ['effect', 'influence'], ex: [
       ['The news had a big impact.', '그 소식은 큰 영향을 미쳤다.'],
       ['Plastic has a serious impact on the ocean.', '플라스틱은 바다에 심각한 영향을 준다.'],
       ['Her speech made a strong impact on us.', '그녀의 연설은 우리에게 강한 인상을 주었다.'],
@@ -839,14 +853,14 @@ export const H2_4 = defineLevel('h2-4', [
     ]},
   ]},
   { w: 'implement', p: 'v.', s: [
-    { m: '시행하다, 실행하다', syn: ['carry out', 'put into practice'], ex: [
+    { m: '이행하다, 실시하다, 실행[시행]하다', syn: ['carry out', 'put into practice'], ex: [
       ['The city implemented a new policy.', '시는 새 정책을 시행했다.'],
       ['We will implement the plan next month.', '우리는 다음 달에 그 계획을 실행할 것이다.'],
       ['The rules were implemented immediately.', '그 규칙은 즉시 시행되었다.'],
     ]},
   ]},
   { w: 'implication', p: 'n.', s: [
-    { m: '함의, 영향', syn: ['consequence', 'significance'], ex: [
+    { m: '의미, 함축, 함의, 영향, 내포된 의미', syn: ['consequence', 'significance'], ex: [
       ['The findings have serious implications.', '그 발견은 심각한 함의를 지닌다.'],
       ['Consider the implications before deciding.', '결정하기 전에 그 영향을 생각해 보아라.'],
       ['He understood the implication of her silence.', '그는 그녀의 침묵이 뜻하는 바를 이해했다.'],
@@ -860,7 +874,7 @@ export const H2_4 = defineLevel('h2-4', [
     ]},
   ]},
   { w: 'imply', p: 'v.', s: [
-    { m: '암시하다, 함축하다', syn: ['suggest', 'hint'], ex: [
+    { m: '함축[암시]하다, 의미하다, 내포하다, 수반하다, 넌지시 비추다', syn: ['suggest', 'hint'], ex: [
       ['His silence implied disagreement.', '그의 침묵은 반대를 암시했다.'],
       ['What does this sentence imply?', '이 문장은 무엇을 암시하니?'],
       ['She implied that she might leave.', '그녀는 떠날지도 모른다고 암시했다.'],
@@ -874,7 +888,7 @@ export const H2_4 = defineLevel('h2-4', [
     ]},
   ]},
   { w: 'impose', p: 'v.', s: [
-    { m: '부과하다, 강요하다', syn: ['force', 'place on'], ex: [
+    { m: '부과하다, 강제하다, 강요하다, 도입하다, 부여하다', syn: ['force', 'place on'], ex: [
       ['The city imposed a new tax.', '시는 새 세금을 부과했다.'],
       ['Do not impose your views on others.', '네 견해를 남에게 강요하지 마라.'],
       ['Strict limits were imposed on visitors.', '방문객에게 엄격한 제한이 부과되었다.'],
@@ -923,7 +937,7 @@ export const H2_4 = defineLevel('h2-4', [
     ]},
   ]},
   { w: 'incorporate', p: 'v.', s: [
-    { m: '포함하다, 통합하다', syn: ['include'], ex: [
+    { m: '포함하다, 통합하다, 혼합하다', syn: ['include'], ex: [
       ['The plan incorporates her idea.', '그 계획은 그녀의 생각을 포함한다.'],
       ['They incorporated new rules.', '그들은 새 규칙을 통합했다.'],
       ['Incorporate the data into the report.', '자료를 보고서에 넣어라.'],
@@ -944,7 +958,7 @@ export const H2_4 = defineLevel('h2-4', [
     ]},
   ]},
   { w: 'induce', p: 'v.', s: [
-    { m: '유발하다, 유도하다', syn: ['cause', 'bring on'], ex: [
+    { m: '유도하다, 유발하다', syn: ['cause', 'bring on'], ex: [
       ['The drug induces sleep.', '그 약은 잠을 유도한다.'],
       ['Nothing could induce him to change.', '어떤 것도 그를 바꾸도록 설득하지 못했다.'],
       ['Stress can induce headaches.', '스트레스는 두통을 유발할 수 있다.'],
@@ -972,7 +986,7 @@ export const H2_4 = defineLevel('h2-4', [
     ]},
   ]},
   { w: 'inference', p: 'n.', s: [
-    { m: '추론', syn: ['conclusion', 'deduction'], ex: [
+    { m: '추론, 추리', syn: ['conclusion', 'deduction'], ex: [
       ['That is a reasonable inference.', '그것은 합리적인 추론이다.'],
       ['Draw an inference from the passage.', '그 지문에서 추론을 이끌어 내라.'],
       ['His inference proved wrong.', '그의 추론은 틀린 것으로 드러났다.'],
@@ -993,21 +1007,21 @@ export const H2_4 = defineLevel('h2-4', [
     ]},
   ]},
   { w: 'ingredient', p: 'n.', s: [
-    { m: '재료, 성분', syn: ['component'], ex: [
+    { m: '(요리 등의) 재료, (성분의) 구성 요소, 원료, 요인', syn: ['component'], ex: [
       ['Read the ingredient list.', '성분표를 읽어라.'],
       ['Flour is the main ingredient.', '밀가루가 주재료다.'],
       ['One ingredient was missing.', '재료 하나가 빠져 있었다.'],
     ]},
   ]},
   { w: 'inhabit', p: 'v.', s: [
-    { m: '살다, 서식하다', syn: ['live in'], ex: [
+    { m: '서식하다, (특정 지역에) 거주하다, 살다, ~에 깃들다', syn: ['live in'], ex: [
       ['Birds inhabit this forest.', '새들이 이 숲에 산다.'],
       ['Few people inhabit the island.', '그 섬에는 사람이 거의 살지 않는다.'],
       ['Fish inhabit the deep sea.', '물고기가 심해에 서식한다.'],
     ]},
   ]},
   { w: 'inherent', p: 'adj.', s: [
-    { m: '내재하는, 본질적인', syn: ['built-in', 'natural'], ex: [
+    { m: '내재하는, 본질적인, 선천적인, 타고난, 본래의', syn: ['built-in', 'natural'], ex: [
       ['There are inherent risks in the sport.', '그 스포츠에는 내재된 위험이 있다.'],
       ['Curiosity is inherent in children.', '호기심은 아이들에게 본래 있는 것이다.'],
       ['The problem is inherent in the design.', '그 문제는 설계 자체에 내재해 있다.'],
@@ -1067,6 +1081,34 @@ export const H2_4 = defineLevel('h2-4', [
       ['She inquired about the job.', '그녀는 그 일자리에 대해 문의했다.'],
       ['He inquired after my family.', '그는 우리 가족 안부를 물었다.'],
       ['Please inquire at the office.', '사무실에 문의해 주세요.'],
+    ]},
+  ]},
+  { w: 'metaphor', p: 'n.', s: [
+    { m: '은유, 비유, 은유(법)', syn: [], ex: [
+      ['"Time is money" is a metaphor.', '「시간은 돈이다」는 은유다.'],
+      ['The poem uses a metaphor of a river.', '그 시는 강의 비유를 쓴다.'],
+      ['She explained the metaphor to the class.', '그녀는 반에 그 비유를 설명했다.'],
+    ]},
+  ]},
+  { w: 'precision', p: 'n.', s: [
+    { m: '정밀성, 정밀도, 정확성', syn: [], ex: [
+      ['The parts are made with great precision.', '그 부품들은 아주 정밀하게 만들어진다.'],
+      ['She spoke with precision.', '그녀는 정확하게 말했다.'],
+      ['Precision matters more than speed here.', '여기서는 속도보다 정밀함이 중요하다.'],
+    ]},
+  ]},
+  { w: 'sophisticated', p: 'adj.', s: [
+    { m: '정교한, 복잡한', syn: [], ex: [
+      ['The machine uses sophisticated software.', '그 기계는 정교한 소프트웨어를 쓴다.'],
+      ['She has sophisticated taste in music.', '그녀는 음악 취향이 세련되었다.'],
+      ['The argument is more sophisticated than it looks.', '그 논증은 보기보다 정교하다.'],
+    ]},
+  ]},
+  { w: 'ultimately', p: 'adv.', s: [
+    { m: '결국, 궁극적으로, 근본적으로, 본질적으로', syn: ['finally', 'eventually'], ex: [
+      ['The choice is ultimately yours.', '그 선택은 결국 네 몫이다.'],
+      ['Ultimately, hard work matters more than luck.', '결국 노력이 운보다 더 중요하다.'],
+      ['The plan ultimately failed.', '그 계획은 결국 실패했다.'],
     ]},
   ]},
   { w: 'wear out', p: 'phr.', s: [

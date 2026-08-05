@@ -1,5 +1,5 @@
 /**
- * 중학교 3학년 레벨 4 — 수록 154 / 계획 137개.
+ * 중학교 3학년 레벨 4 — 수록 159 / 계획 137개.
  *
  * 난이도 층: 중급(중학 권장)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -21,6 +21,13 @@ export const M3_4 = defineLevel('m3-4', [
       ['Her parents approve of the marriage.', '그녀의 부모는 그 결혼을 찬성한다.'],
       ['He does not approve of smoking.', '그는 흡연을 좋게 여기지 않는다.'],
       ['The teacher approved of our plan.', '선생님은 우리 계획을 찬성하셨다.'],
+    ]},
+  ]},
+  { w: 'architecture', p: 'n.', s: [
+    { m: '건축, (시스템) 설계 구조, 구조, 체계', syn: [], ex: [
+      ['She studies architecture at university.', '그녀는 대학에서 건축을 배운다.'],
+      ['The city is famous for its old architecture.', '그 도시는 옛 건축으로 유명하다.'],
+      ['The architecture of the system is simple.', '그 체계의 구조는 단순하다.'],
     ]},
   ]},
   { w: 'be aware of', p: 'phr.', s: [
@@ -126,6 +133,27 @@ export const M3_4 = defineLevel('m3-4', [
       ['We are satisfied with the result.', '우리는 그 결과에 만족한다.'],
       ['She was not satisfied with her score.', '그녀는 자기 점수에 만족하지 못했다.'],
       ['He seems satisfied with the answer.', '그는 그 답에 만족한 듯하다.'],
+    ]},
+  ]},
+  { w: 'convention', p: 'n.', s: [
+    { m: '관습, 관례, 관행, 약속', syn: [], ex: [
+      ['Shaking hands is a social convention.', '악수는 사회적 관습이다.'],
+      ['The book breaks with literary convention.', '그 책은 문학의 관례를 깬다.'],
+      ['By convention, the host speaks first.', '관례상 주최자가 먼저 말한다.'],
+    ]},
+  ]},
+  { w: 'emergence', p: 'n.', s: [
+    { m: '출현, 등장', syn: [], ex: [
+      ['The emergence of new species takes time.', '새 종의 출현에는 시간이 걸린다.'],
+      ['We watched the emergence of a new style.', '우리는 새 양식의 등장을 지켜봤다.'],
+      ['The emergence of the internet changed reading.', '인터넷의 등장이 읽기를 바꿨다.'],
+    ]},
+  ]},
+  { w: 'interpretation', p: 'n.', s: [
+    { m: '해석, 이해, 설명, 판단', syn: [], ex: [
+      ['Her interpretation of the poem was new.', '그 시에 대한 그녀의 해석은 새로웠다.'],
+      ['The law allows more than one interpretation.', '그 법은 해석이 하나로 정해지지 않는다.'],
+      ['We disagreed on the interpretation of the data.', '우리는 그 자료의 해석에서 뜻이 갈렸다.'],
     ]},
   ]},
   { w: 'joke', p: 'n., v.', s: [
@@ -471,7 +499,7 @@ export const M3_4 = defineLevel('m3-4', [
     ]},
   ]},
   { w: 'locate', p: 'v.', s: [
-    { m: '위치를 찾다, 두다', syn: ['find'], ex: [
+    { m: '찾다, 위치를 정하다', syn: ['find'], ex: [
       ['We could not locate the file.', '우리는 그 파일을 찾을 수 없었다.'],
       ['The school is located near the park.', '학교는 공원 근처에 있다.'],
       ['They located the missing dog.', '그들은 잃어버린 개를 찾았다.'],
@@ -558,7 +586,7 @@ export const M3_4 = defineLevel('m3-4', [
     ]},
   ]},
   { w: 'maintain', p: 'v.', s: [
-    { m: '유지하다', syn: ['keep', 'preserve'], ex: [
+    { m: '유지하다, 주장하다', syn: ['keep', 'preserve'], ex: [
       ['Try to maintain a healthy diet.', '건강한 식단을 유지하도록 해라.'],
       ['They maintained the old building well.', '그들은 그 오래된 건물을 잘 관리했다.'],
       ['He maintained his position for years.', '그는 여러 해 동안 그 자리를 유지했다.'],
@@ -745,7 +773,7 @@ export const M3_4 = defineLevel('m3-4', [
     ]},
   ]},
   { w: 'mention', p: 'v.', s: [
-    { m: '언급하다', syn: ['refer to'], ex: [
+    { m: '언급하다, 말하다', syn: ['refer to'], ex: [
       ['She mentioned your name.', '그녀가 네 이름을 언급했다.'],
       ['Do not mention this to anyone.', '이것을 아무에게도 말하지 마라.'],
       ['He mentioned the problem briefly.', '그는 그 문제를 짧게 언급했다.'],
@@ -1109,6 +1137,20 @@ export const M3_4 = defineLevel('m3-4', [
       ['A strange object lay there.', '이상한 물건이 거기 놓여 있었다.'],
       ['The object of the game is simple.', '그 게임의 목적은 단순하다.'],
       ['She drew a round object.', '그녀는 둥근 물체를 그렸다.'],
+    ]},
+  ]},
+  { w: 'realm', p: 'n.', s: [
+    { m: '영역, 범위', syn: [], ex: [
+      ['That question belongs to the realm of science.', '그 물음은 과학의 영역에 든다.'],
+      ['She works in the realm of design.', '그녀는 디자인 영역에서 일한다.'],
+      ['Such a change is beyond the realm of possibility.', '그런 변화는 가능한 범위를 넘는다.'],
+    ]},
+  ]},
+  { w: 'relevance', p: 'n.', s: [
+    { m: '관련성, 연관성, 적절성, 타당성', syn: [], ex: [
+      ['The question has no relevance to our topic.', '그 물음은 우리 주제와 관련이 없다.'],
+      ['He explained the relevance of the example.', '그는 그 보기의 적절성을 설명했다.'],
+      ['The old rule has lost its relevance.', '그 낡은 규칙은 이제 맞지 않는다.'],
     ]},
   ]},
 ], 'curriculum');

@@ -1,5 +1,5 @@
 /**
- * 고등학교 2학년 레벨 1 — 수록 154 / 계획 137개.
+ * 고등학교 2학년 레벨 1 — 수록 160 / 계획 137개.
  *
  * 난이도 층: 고급(고등)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -24,21 +24,21 @@ export const H2_1 = defineLevel('h2-1', [
     ]},
   ]},
   { w: 'acknowledge', p: 'v.', s: [
-    { m: '인정하다', syn: ['admit'], ex: [
+    { m: '인정하다, 감사하다', syn: ['admit'], ex: [
       ['He acknowledged his error.', '그는 자기 잘못을 인정했다.'],
       ['The company acknowledged the mistake publicly.', '그 회사는 실수를 공개적으로 인정했다.'],
       ['They acknowledge the problem now.', '그들은 이제 그 문제를 인정한다.'],
     ]},
   ]},
   { w: 'acquire', p: 'v.', s: [
-    { m: '얻다, 습득하다', syn: ['gain', 'obtain'], ex: [
+    { m: '얻다, 획득하다, 습득하다', syn: ['gain', 'obtain'], ex: [
       ['Children acquire language naturally.', '아이들은 언어를 자연스럽게 습득한다.'],
       ['He acquired new skills at work.', '그는 직장에서 새로운 기술을 습득했다.'],
       ['The museum acquired a rare painting.', '그 박물관은 희귀한 그림을 입수했다.'],
     ]},
   ]},
   { w: 'acquisition', p: 'n.', s: [
-    { m: '습득, 획득', syn: [], ex: [
+    { m: '습득, 획득, 매입', syn: [], ex: [
       ['Language acquisition begins early.', '언어 습득은 일찍 시작된다.'],
       ['The acquisition of good habits takes time.', '좋은 습관을 익히는 데는 시간이 걸린다.'],
       ['Knowledge acquisition needs practice.', '지식 습득에는 연습이 필요하다.'],
@@ -52,7 +52,7 @@ export const H2_1 = defineLevel('h2-1', [
     ]},
   ]},
   { w: 'adequate', p: 'adj.', s: [
-    { m: '적절한, 충분한', syn: ['sufficient', 'enough'], ex: [
+    { m: '적절한, 충분한, 적당한, 적정한', syn: ['sufficient', 'enough'], ex: [
       ['The room has adequate light.', '그 방은 충분한 빛이 든다.'],
       ['His answer was adequate but not impressive.', '그의 대답은 무난했지만 인상적이지는 않았다.'],
       ['We lack adequate funding.', '우리는 충분한 자금이 부족하다.'],
@@ -118,7 +118,7 @@ export const H2_1 = defineLevel('h2-1', [
     ]},
   ]},
   { w: 'agency', p: 'n.', s: [
-    { m: '기관, 대행사', syn: [], ex: [
+    { m: '주체성, 힘, 대행사, 작용', syn: [], ex: [
       ['She works at a travel agency.', '그녀는 여행사에서 일한다.'],
       ['The agency helps new workers.', '그 기관은 신입 근로자를 돕는다.'],
       ['A news agency reported it.', '한 통신사가 그것을 보도했다.'],
@@ -153,7 +153,7 @@ export const H2_1 = defineLevel('h2-1', [
     ]},
   ]},
   { w: 'alert', p: 'adj.', s: [
-    { m: '경계하는, 기민한', syn: ['watchful'], ex: [
+    { m: '정신이 초롱초롱한, 정신이 또렷한, 기민한, 경계하는, 조심하는', syn: ['watchful'], ex: [
       ['Stay alert while driving.', '운전 중에는 경계해라.'],
       ['The guard was alert all night.', '경비원은 밤새 기민했다.'],
       ['An alert student noticed it.', '한 기민한 학생이 그것을 알아챘다.'],
@@ -209,7 +209,7 @@ export const H2_1 = defineLevel('h2-1', [
     ]},
   ]},
   { w: 'alternative', p: 'n., adj.', s: [
-    { m: '대안; 대체의', syn: ['option', 'substitute'], ex: [
+    { m: '대안, 대체물, 대체품, 대안적인, 다른', syn: ['option', 'substitute'], ex: [
       ['We had no alternative but to wait.', '우리는 기다리는 것 말고는 대안이 없었다.'],
       ['Solar power is an alternative energy source.', '태양광은 대체 에너지원이다.'],
       ['Is there an alternative route?', '다른 경로가 있나요?'],
@@ -286,7 +286,7 @@ export const H2_1 = defineLevel('h2-1', [
     ]},
   ]},
   { w: 'anticipate', p: 'v.', s: [
-    { m: '예상하다, 기대하다', syn: ['expect', 'foresee'], ex: [
+    { m: '예상하다, 기대하다, 예측하다, 예견하다, 내다보다', syn: ['expect', 'foresee'], ex: [
       ['We anticipate heavy traffic tonight.', '우리는 오늘 밤 극심한 교통 체증을 예상한다.'],
       ['She anticipated the question and prepared.', '그녀는 그 질문을 예상하고 준비했다.'],
       ['Nobody anticipated such a result.', '아무도 그런 결과를 예상하지 못했다.'],
@@ -307,7 +307,7 @@ export const H2_1 = defineLevel('h2-1', [
     ]},
   ]},
   { w: 'apparent', p: 'adj.', s: [
-    { m: '분명한, 명백한', syn: ['obvious', 'evident'], ex: [
+    { m: '명백한, 분명한, 겉으로 보이는, 외형[외견]상의, 뚜렷한', syn: ['obvious', 'evident'], ex: [
       ['It became apparent that he lied.', '그가 거짓말했다는 것이 분명해졌다.'],
       ['The reason was apparent to everyone.', '그 이유는 모두에게 분명했다.'],
       ['There was no apparent damage.', '눈에 띄는 손상은 없었다.'],
@@ -352,7 +352,7 @@ export const H2_1 = defineLevel('h2-1', [
     ]},
   ]},
   { w: 'arise', p: 'v.', s: [
-    { m: '생기다, 일어나다', syn: ['occur'], ex: [
+    { m: '발생하다, 생겨나다, 생기다, 일어나다', syn: ['occur'], ex: [
       ['Problems arise every day.', '문제는 매일 생긴다.'],
       ['A question arose in class.', '수업에서 의문이 하나 생겼다.'],
       ['New chances are arising.', '새 기회가 생기고 있다.'],
@@ -415,7 +415,7 @@ export const H2_1 = defineLevel('h2-1', [
     ]},
   ]},
   { w: 'assert', p: 'v.', s: [
-    { m: '주장하다', syn: ['declare'], ex: [
+    { m: '주장하다, 단언하다, 확고히 하다, (권리·권한 등을) 행사하다', syn: ['declare'], ex: [
       ['She asserted her opinion clearly.', '그녀는 자기 의견을 분명히 주장했다.'],
       ['He asserts that he is innocent.', '그는 자기가 무죄라고 주장한다.'],
       ['They asserted their rights.', '그들은 자기 권리를 주장했다.'],
@@ -443,14 +443,14 @@ export const H2_1 = defineLevel('h2-1', [
     ]},
   ]},
   { w: 'at the expense of', p: 'phr.', s: [
-    { m: '~을 희생하여', syn: ['at the cost of'], ex: [
+    { m: '~을 대가로, ~을 희생하여', syn: ['at the cost of'], ex: [
       ['He succeeded at the expense of his health.', '그는 건강을 희생하고 성공했다.'],
       ['Speed came at the expense of accuracy.', '속도는 정확성을 희생한 대가였다.'],
       ['Growth should not come at the expense of nature.', '성장이 자연을 희생해서는 안 된다.'],
     ]},
   ]},
   { w: 'athlete', p: 'n.', s: [
-    { m: '운동선수', syn: [], ex: [
+    { m: '운동선수, 육상 선수[경기자]', syn: [], ex: [
       ['She is a famous athlete.', '그녀는 유명한 운동선수다.'],
       ['Athletes train every day.', '운동선수는 매일 훈련한다.'],
       ['The athlete broke a record.', '그 선수는 기록을 깼다.'],
@@ -677,7 +677,7 @@ export const H2_1 = defineLevel('h2-1', [
     ]},
   ]},
   { w: 'boundary', p: 'n.', s: [
-    { m: '경계, 한계', syn: ['limit'], ex: [
+    { m: '경계(선), 한계(선), 영역', syn: ['limit'], ex: [
       ['The river forms a boundary.', '그 강이 경계를 이룬다.'],
       ['He pushed the boundary of science.', '그는 과학의 한계를 밀어붙였다.'],
       ['Know your own boundary.', '자기 한계를 알아라.'],
@@ -796,7 +796,7 @@ export const H2_1 = defineLevel('h2-1', [
     ]},
   ]},
   { w: 'capture', p: 'v.', s: [
-    { m: '붙잡다, 포착하다', syn: ['catch'], ex: [
+    { m: '포착[포집]하다, 담아내다, 획득하다, 손에 넣다, 사로잡다', syn: ['catch'], ex: [
       ['The police captured the thief.', '경찰이 도둑을 붙잡았다.'],
       ['The photo captured the moment.', '그 사진이 그 순간을 담았다.'],
       ['They captured the castle.', '그들은 성을 함락했다.'],
@@ -821,6 +821,13 @@ export const H2_1 = defineLevel('h2-1', [
       ['They raise cattle on the farm.', '그들은 농장에서 소를 기른다.'],
       ['The cattle drank from the stream.', '소들이 시내에서 물을 마셨다.'],
       ['Cattle need wide fields.', '소는 넓은 들판이 필요하다.'],
+    ]},
+  ]},
+  { w: 'causal', p: 'adj.', s: [
+    { m: '인과 관계의, 인과적인, 원인이 되는', syn: [], ex: [
+      ['The study found no causal link.', '그 연구는 인과 관계를 찾지 못했다.'],
+      ['A causal explanation requires evidence.', '인과적 설명에는 증거가 필요하다.'],
+      ['Correlation is not the same as a causal relation.', '상관은 인과 관계와 같지 않다.'],
     ]},
   ]},
   { w: 'caution', p: 'n.', s: [
@@ -852,7 +859,7 @@ export const H2_1 = defineLevel('h2-1', [
     ]},
   ]},
   { w: 'celebrity', p: 'n.', s: [
-    { m: '유명 인사', syn: [], ex: [
+    { m: '유명인, (유명) 연예인', syn: [], ex: [
       ['A celebrity visited our school.', '유명 인사가 우리 학교를 방문했다.'],
       ['She became a celebrity overnight.', '그녀는 하룻밤 사이에 유명해졌다.'],
       ['Celebrity life is not easy.', '유명인의 삶은 쉽지 않다.'],
@@ -887,7 +894,7 @@ export const H2_1 = defineLevel('h2-1', [
     ]},
   ]},
   { w: 'charity', p: 'n.', s: [
-    { m: '자선, 자선 단체', syn: [], ex: [
+    { m: '자선 (단체)', syn: [], ex: [
       ['She gives to charity every month.', '그녀는 매달 자선 단체에 기부한다.'],
       ['The charity helps children.', '그 자선 단체는 아이들을 돕는다.'],
       ['Charity begins at home.', '자선은 가정에서 시작한다.'],
@@ -977,6 +984,20 @@ export const H2_1 = defineLevel('h2-1', [
       ['A sentence may have two clauses.', '한 문장에 절이 둘 있을 수 있다.'],
     ]},
   ]},
+  { w: 'emerging', p: 'adj.', s: [
+    { m: '등장하기 시작하는, 새로 만들어진, 새로 나타나는, 새로 등장하는, 최근 생겨난', syn: [], ex: [
+      ['Emerging technologies change quickly.', '새로 등장하는 기술은 빠르게 바뀐다.'],
+      ['She writes about emerging artists.', '그녀는 새로 나타나는 예술가들에 대해 쓴다.'],
+      ['An emerging pattern caught their attention.', '새로 드러나는 흐름이 그들의 눈길을 끌었다.'],
+    ]},
+  ]},
+  { w: 'invaluable', p: 'adj.', s: [
+    { m: '매우 귀중한, 매우 유용한', syn: [], ex: [
+      ['Her advice was invaluable.', '그녀의 조언은 매우 귀중했다.'],
+      ['The old map proved invaluable.', '그 낡은 지도가 아주 요긴했다.'],
+      ['Volunteers gave invaluable help.', '자원봉사자들이 더없이 값진 도움을 주었다.'],
+    ]},
+  ]},
   { w: 'make sense', p: 'phr.', s: [
     { m: '말이 되다, 이치에 맞다', syn: [], ex: [
       ['Your explanation makes sense.', '네 설명은 말이 된다.'],
@@ -1003,6 +1024,18 @@ export const H2_1 = defineLevel('h2-1', [
       ['She participated in the contest.', '그녀는 그 대회에 참가했다.'],
       ['All students participate in the festival.', '모든 학생이 축제에 참가한다.'],
       ['He participated in the discussion.', '그는 토론에 참여했다.'],
+    ]},
+  ]},
+  { w: 'partition', p: 'v.', s: [
+    { m: '구역을 나누다, 분할하다, 나누다', syn: [], ex: [
+      ['They partitioned the room into two.', '그들은 그 방을 둘로 나눴다.'],
+      ['The country was partitioned after the war.', '그 나라는 전쟁 뒤에 나뉘었다.'],
+      ['We partitioned the data into groups.', '우리는 자료를 무리로 나눴다.'],
+    ]},
+    { m: '칸막이', syn: [], ex: [
+      ['A thin partition separates the desks.', '얇은 칸막이가 책상들을 가른다.'],
+      ['They put up a glass partition.', '그들은 유리 칸막이를 세웠다.'],
+      ['Sound passes through the partition.', '소리가 칸막이를 지나 들린다.'],
     ]},
   ]},
   { w: 'pass away', p: 'phr.', s: [
@@ -1069,7 +1102,7 @@ export const H2_1 = defineLevel('h2-1', [
     ]},
   ]},
   { w: 'refer to', p: 'phr.', s: [
-    { m: '언급하다; 참조하다', syn: [], ex: [
+    { m: '~을 언급하다, ~을 의미하다, ~을 가리키다, ~을 일컫다, ~을 지칭하다', syn: [], ex: [
       ['He referred to the accident briefly.', '그는 그 사고를 짧게 언급했다.'],
       ['Please refer to page ten.', '10쪽을 참조하세요.'],
       ['She referred to her notes.', '그녀는 자기 필기를 참조했다.'],
@@ -1094,6 +1127,20 @@ export const H2_1 = defineLevel('h2-1', [
       ['This song reminds me of summer.', '이 노래는 나에게 여름을 떠올리게 한다.'],
       ['She reminds me of my aunt.', '그녀는 내 이모를 생각나게 한다.'],
       ['The smell reminded him of home.', '그 냄새는 그에게 집을 떠올리게 했다.'],
+    ]},
+  ]},
+  { w: 'repertoire', p: 'n.', s: [
+    { m: '레퍼토리, 수행 목록, (할 수 있는) 목록[모든 것], 연주 곡목[목록]', syn: [], ex: [
+      ['The band expanded its repertoire.', '그 밴드는 연주 목록을 넓혔다.'],
+      ['Her repertoire includes ten songs.', '그녀의 레퍼토리에는 노래 열 곡이 있다.'],
+      ['He added a new trick to his repertoire.', '그는 자기 목록에 새 기술을 더했다.'],
+    ]},
+  ]},
+  { w: 'sustainable', p: 'adj.', s: [
+    { m: '지속 가능한, 유지할 수 있는', syn: [], ex: [
+      ['We need sustainable ways to grow food.', '우리는 식량을 기르는 지속 가능한 방법이 필요하다.'],
+      ['The city built a sustainable energy system.', '그 도시는 지속 가능한 에너지 체계를 세웠다.'],
+      ['Cheap production is not always sustainable.', '값싼 생산이 늘 지속 가능한 것은 아니다.'],
     ]},
   ]},
 ], 'csat');

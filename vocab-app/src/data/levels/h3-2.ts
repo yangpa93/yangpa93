@@ -1,5 +1,5 @@
 /**
- * 고등학교 3학년 레벨 2 — 수록 153 / 계획 137개.
+ * 고등학교 3학년 레벨 2 — 수록 160 / 계획 137개.
  *
  * 난이도 층: 고급(고등)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -9,6 +9,20 @@
 import { defineLevel } from '../define';
 
 export const H3_2 = defineLevel('h3-2', [
+  { w: 'aspiration', p: 'n.', s: [
+    { m: '염원, 목표, 열망, 포부, 호흡', syn: [], ex: [
+      ['Her aspiration is to become a doctor.', '그녀의 꿈은 의사가 되는 것이다.'],
+      ['The speech spoke to the aspirations of young people.', '그 연설은 젊은이들의 열망을 건드렸다.'],
+      ['He never gave up his aspiration to write.', '그는 글을 쓰겠다는 포부를 버리지 않았다.'],
+    ]},
+  ]},
+  { w: 'discern', p: 'v.', s: [
+    { m: '분간하다, 식별하다, 알아내다, 포착하다, 구분하다', syn: [], ex: [
+      ['I could barely discern the path in the dark.', '어둠 속에서 길을 겨우 분간했다.'],
+      ['She discerned a change in his tone.', '그녀는 그의 말투가 달라진 것을 알아챘다.'],
+      ['It is hard to discern fact from opinion.', '사실과 의견을 가려내기는 어렵다.'],
+    ]},
+  ]},
   { w: 'in need of', p: 'phr.', s: [
     { m: '~을 필요로 하는', syn: [], ex: [
       ['The house is in need of repair.', '그 집은 수리가 필요하다.'],
@@ -100,6 +114,13 @@ export const H3_2 = defineLevel('h3-2', [
       ['In view of the cost, we chose another way.', '비용을 고려해 우리는 다른 길을 택했다.'],
     ]},
   ]},
+  { w: 'inevitably', p: 'adv.', s: [
+    { m: '반드시, 필연적으로, 불가피하게', syn: [], ex: [
+      ['Prices inevitably rise when oil costs more.', '기름값이 오르면 물가도 필연적으로 오른다.'],
+      ['Such a plan inevitably takes time.', '그런 계획은 불가피하게 시간이 걸린다.'],
+      ['Mistakes inevitably happen when we rush.', '서두르면 실수는 반드시 일어난다.'],
+    ]},
+  ]},
   { w: 'keep abreast of', p: 'phr.', s: [
     { m: '~에 뒤지지 않고 알고 있다', syn: [], ex: [
       ['She keeps abreast of the news.', '그녀는 소식에 뒤지지 않고 있다.'],
@@ -121,6 +142,13 @@ export const H3_2 = defineLevel('h3-2', [
       ['He tried to live up to their hopes.', '그는 그들의 기대에 부응하려 애썼다.'],
     ]},
   ]},
+  { w: 'mutually', p: 'adv.', s: [
+    { m: '상호 간에, 서로, 상호적으로', syn: [], ex: [
+      ['The two goals are mutually supportive.', '그 두 목표는 서로를 받쳐 준다.'],
+      ['They reached a mutually agreeable plan.', '그들은 서로 받아들일 만한 계획에 이르렀다.'],
+      ['The terms are mutually exclusive.', '그 두 조건은 서로 양립할 수 없다.'],
+    ]},
+  ]},
   { w: 'obsess', p: 'v.', s: [
     { m: '사로잡다, 집착하게 하다', syn: ['preoccupy'], ex: [
       ['He is obsessed with soccer.', '그는 축구에 푹 빠져 있다.'],
@@ -136,7 +164,7 @@ export const H3_2 = defineLevel('h3-2', [
     ]},
   ]},
   { w: 'obtain', p: 'v.', s: [
-    { m: '얻다, 획득하다', syn: ['get', 'acquire'], ex: [
+    { m: '얻다, 획득하다, 성립하다, 적용되다, 취득하다', syn: ['get', 'acquire'], ex: [
       ['She obtained a scholarship.', '그녀는 장학금을 받았다.'],
       ['You must obtain permission first.', '먼저 허가를 받아야 한다.'],
       ['The data were obtained from a survey.', '그 자료는 설문 조사에서 얻었다.'],
@@ -224,7 +252,7 @@ export const H3_2 = defineLevel('h3-2', [
     ]},
   ]},
   { w: 'organize', p: 'v.', s: [
-    { m: '조직하다, 정리하다', syn: ['arrange'], ex: [
+    { m: '구성하다, 조직하다, 구조화하다, (특정한 순서로) 정리하다, 준비하다', syn: ['arrange'], ex: [
       ['We organized a book fair.', '우리는 도서 축제를 열었다.'],
       ['She organized her desk neatly.', '그녀는 책상을 깔끔하게 정리했다.'],
       ['Students organized a school festival.', '학생들이 학교 축제를 준비했다.'],
@@ -245,7 +273,7 @@ export const H3_2 = defineLevel('h3-2', [
     ]},
   ]},
   { w: 'outcome', p: 'n.', s: [
-    { m: '결과', syn: ['result'], ex: [
+    { m: '결과, 성과', syn: ['result'], ex: [
       ['The outcome surprised everyone.', '그 결과는 모두를 놀라게 했다.'],
       ['We waited for the outcome of the vote.', '우리는 투표 결과를 기다렸다.'],
       ['A good plan improves the outcome.', '좋은 계획은 결과를 낫게 한다.'],
@@ -273,14 +301,14 @@ export const H3_2 = defineLevel('h3-2', [
     ]},
   ]},
   { w: 'outstanding', p: 'adj.', s: [
-    { m: '뛰어난, 눈에 띄는', syn: ['excellent'], ex: [
+    { m: '뛰어난, 중요한, 눈에 띄는, 우수한', syn: ['excellent'], ex: [
       ['Her grades are outstanding.', '그녀의 성적은 뛰어나다.'],
       ['He gave an outstanding performance.', '그는 뛰어난 연기를 보여 주었다.'],
       ['The team had an outstanding season.', '그 팀은 눈부신 시즌을 보냈다.'],
     ]},
   ]},
   { w: 'overcome', p: 'v.', s: [
-    { m: '극복하다, 이겨 내다', syn: ['get over', 'conquer'], ex: [
+    { m: '극복하다', syn: ['get over', 'conquer'], ex: [
       ['She overcame her fear of water.', '그녀는 물에 대한 두려움을 극복했다.'],
       ['They overcame many difficulties.', '그들은 많은 어려움을 이겨 냈다.'],
       ['Hard work can overcome bad luck.', '노력은 불운을 이겨 낼 수 있다.'],
@@ -294,7 +322,7 @@ export const H3_2 = defineLevel('h3-2', [
     ]},
   ]},
   { w: 'overlap', p: 'v.', s: [
-    { m: '겹치다', syn: ['coincide'], ex: [
+    { m: '겹치다, 겹치게 하다, 중첩되다', syn: ['coincide'], ex: [
       ['The two classes overlap on Friday.', '두 수업이 금요일에 겹친다.'],
       ['Their duties overlapped a little.', '그들의 업무는 조금 겹쳤다.'],
       ['Do not let the papers overlap.', '종이가 겹치지 않게 해라.'],
@@ -382,7 +410,7 @@ export const H3_2 = defineLevel('h3-2', [
     ]},
   ]},
   { w: 'paradigm', p: 'n.', s: [
-    { m: '패러다임, 인식 틀', syn: ['model', 'framework'], ex: [
+    { m: '패러다임, 인식틀, 전형적인 예, 사고 체계', syn: ['model', 'framework'], ex: [
       ['The discovery caused a paradigm shift.', '그 발견은 패러다임 전환을 가져왔다.'],
       ['We work within an old paradigm.', '우리는 낡은 인식 틀 안에서 일한다.'],
       ['A new paradigm replaced the old one.', '새 패러다임이 옛것을 대체했다.'],
@@ -512,7 +540,7 @@ export const H3_2 = defineLevel('h3-2', [
     ]},
   ]},
   { w: 'perceive', p: 'v.', s: [
-    { m: '인식하다, 지각하다', syn: ['notice', 'see'], ex: [
+    { m: '인식[인지]하다, 지각하다', syn: ['notice', 'see'], ex: [
       ['People perceive colors differently.', '사람들은 색을 다르게 인식한다.'],
       ['He perceived a change in her voice.', '그는 그녀의 목소리 변화를 알아챘다.'],
       ['Risk is often perceived as larger than it is.', '위험은 종종 실제보다 크게 인식된다.'],
@@ -540,14 +568,14 @@ export const H3_2 = defineLevel('h3-2', [
     ]},
   ]},
   { w: 'persist', p: 'v.', s: [
-    { m: '계속되다, 지속하다', syn: ['continue', 'keep on'], ex: [
+    { m: '유지하다, 지속[계속]되다, 끈질기게 계속하다, 고집하다, 우기다', syn: ['continue', 'keep on'], ex: [
       ['The problem persists despite repairs.', '수리에도 그 문제는 계속된다.'],
       ['She persisted until she succeeded.', '그녀는 성공할 때까지 계속했다.'],
       ['The rain persisted all week.', '비가 일주일 내내 계속되었다.'],
     ]},
   ]},
   { w: 'perspective', p: 'n.', s: [
-    { m: '관점, 시각', syn: ['viewpoint', 'point of view'], ex: [
+    { m: '관점, 시각, 견해, 원근법, 전망', syn: ['viewpoint', 'point of view'], ex: [
       ['Try to see it from her perspective.', '그것을 그녀의 관점에서 보려고 해라.'],
       ['Travel gives you a new perspective.', '여행은 새로운 시각을 준다.'],
       ['From a historical perspective, this is normal.', '역사적 관점에서 이것은 정상이다.'],
@@ -744,7 +772,7 @@ export const H3_2 = defineLevel('h3-2', [
     ]},
   ]},
   { w: 'predator', p: 'n.', s: [
-    { m: '포식자, 천적', syn: [], ex: [
+    { m: '포식자', syn: [], ex: [
       ['The lion is a strong predator.', '사자는 강한 포식자다.'],
       ['Small birds hide from predators.', '작은 새들은 천적을 피해 숨는다.'],
       ['Predators keep the balance of nature.', '포식자는 자연의 균형을 지킨다.'],
@@ -786,7 +814,7 @@ export const H3_2 = defineLevel('h3-2', [
     ]},
   ]},
   { w: 'preserve', p: 'v.', s: [
-    { m: '보존하다, 지키다', syn: ['protect', 'conserve'], ex: [
+    { m: '보존하다, 지키다, 유지하다', syn: ['protect', 'conserve'], ex: [
       ['We must preserve our forests.', '우리는 숲을 보존해야 한다.'],
       ['Salt was used to preserve food.', '소금은 음식을 보존하는 데 쓰였다.'],
       ['They preserved the old temple.', '그들은 그 오래된 사찰을 보존했다.'],
@@ -920,7 +948,7 @@ export const H3_2 = defineLevel('h3-2', [
     ]},
   ]},
   { w: 'prospect', p: 'n.', s: [
-    { m: '전망, 가능성', syn: ['outlook'], ex: [
+    { m: '가능성, 가망, 전망', syn: ['outlook'], ex: [
       ['The prospect of rain worried us.', '비가 올 전망이 우리를 걱정시켰다.'],
       ['Job prospects are good this year.', '올해 취업 전망이 좋다.'],
       ['There is little prospect of change.', '변화의 가능성은 거의 없다.'],
@@ -1056,6 +1084,13 @@ export const H3_2 = defineLevel('h3-2', [
       ['The farmer rears sheep.', '그 농부는 양을 기른다.'],
     ]},
   ]},
+  { w: 'reasoning', p: 'n.', s: [
+    { m: '추론, 논증', syn: [], ex: [
+      ['Her reasoning was clear and careful.', '그녀의 추론은 분명하고 꼼꼼했다.'],
+      ['Explain the reasoning behind your answer.', '네 답의 근거를 설명해라.'],
+      ['The reasoning has a flaw.', '그 논증에는 허점이 있다.'],
+    ]},
+  ]},
   { w: 'rebel', p: 'v.', s: [
     { m: '반항하다, 반란을 일으키다', syn: ['revolt'], ex: [
       ['Teenagers sometimes rebel against rules.', '십 대는 때때로 규칙에 반항한다.'],
@@ -1117,6 +1152,25 @@ export const H3_2 = defineLevel('h3-2', [
       ['I regret nothing.', '나는 아무것도 후회하지 않는다.'],
       ['She regretted her hasty words.', '그녀는 성급한 말을 후회했다.'],
       ['He regrets leaving so early.', '그는 그렇게 일찍 떠난 것을 후회한다.'],
+    ]},
+  ]},
+  { w: 'stakeholder', p: 'n.', s: [
+    { m: '이해관계자, 이해 당사자', syn: [], ex: [
+      ['Every stakeholder was invited to the meeting.', '모든 이해관계자가 그 모임에 초대됐다.'],
+      ['Students are stakeholders in school policy.', '학생은 학교 정책의 이해 당사자다.'],
+      ['The plan considers all stakeholders.', '그 계획은 모든 이해관계자를 고려한다.'],
+    ]},
+  ]},
+  { w: 'variable', p: 'n.', s: [
+    { m: '변수, 변인', syn: [], ex: [
+      ['Temperature is the main variable here.', '여기서는 온도가 주된 변수다.'],
+      ['The study controlled for other variables.', '그 연구는 다른 변인을 통제했다.'],
+      ['Change one variable at a time.', '변수를 한 번에 하나씩 바꿔라.'],
+    ]},
+    { m: '가변적인, 변동이 심한', syn: [], ex: [
+      ['The weather is variable in spring.', '봄 날씨는 변덕스럽다.'],
+      ['His mood is variable.', '그의 기분은 오락가락한다.'],
+      ['Prices are variable across regions.', '값은 지역마다 다르다.'],
     ]},
   ]},
 ], 'csat');

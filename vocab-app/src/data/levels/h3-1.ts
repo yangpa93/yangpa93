@@ -1,5 +1,5 @@
 /**
- * 고등학교 3학년 레벨 1 — 수록 154 / 계획 137개.
+ * 고등학교 3학년 레벨 1 — 수록 160 / 계획 137개.
  *
  * 난이도 층: 고급(고등)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -21,6 +21,13 @@ export const H3_1 = defineLevel('h3-1', [
       ['He came to terms with his loss.', '그는 자기 상실을 받아들였다.'],
       ['She came to terms with the change.', '그녀는 그 변화를 받아들였다.'],
       ['It took years to come to terms with it.', '그것을 받아들이는 데 여러 해가 걸렸다.'],
+    ]},
+  ]},
+  { w: 'coordination', p: 'n.', s: [
+    { m: '조화, 조정, (신체) 조정력, 협응, 협조', syn: [], ex: [
+      ['The dance requires good coordination.', '그 춤은 몸의 조정력이 좋아야 한다.'],
+      ['Coordination between the two teams improved.', '두 팀 사이의 조율이 나아졌다.'],
+      ['Poor coordination made him drop the ball.', '협응이 잘 안 돼 그는 공을 놓쳤다.'],
     ]},
   ]},
   { w: 'cut back on', p: 'phr.', s: [
@@ -56,6 +63,13 @@ export const H3_1 = defineLevel('h3-1', [
       ['Sales fell short of our target.', '매출이 목표에 못 미쳤다.'],
       ['The result fell short of expectations.', '결과는 기대에 못 미쳤다.'],
       ['His answer fell short of the truth.', '그의 답은 진실에 못 미쳤다.'],
+    ]},
+  ]},
+  { w: 'fundamentally', p: 'adv.', s: [
+    { m: '본질적으로, 기본적으로, 근본적으로', syn: [], ex: [
+      ['The two plans are fundamentally different.', '그 두 계획은 근본적으로 다르다.'],
+      ['He fundamentally disagreed with the idea.', '그는 그 생각에 근본적으로 반대했다.'],
+      ['The city has fundamentally changed.', '그 도시는 본질적으로 달라졌다.'],
     ]},
   ]},
   { w: 'give way to', p: 'phr.', s: [
@@ -143,14 +157,14 @@ export const H3_1 = defineLevel('h3-1', [
     ]},
   ]},
   { w: 'insight', p: 'n.', s: [
-    { m: '통찰, 깊은 이해', syn: ['understanding'], ex: [
+    { m: '통찰(력), 식견', syn: ['understanding'], ex: [
       ['The book gave me new insight.', '그 책은 내게 새로운 통찰을 주었다.'],
       ['Her insight into people is amazing.', '사람을 보는 그녀의 통찰력은 놀랍다.'],
       ['We gained insight from the experiment.', '우리는 그 실험에서 깊은 이해를 얻었다.'],
     ]},
   ]},
   { w: 'inspire', p: 'v.', s: [
-    { m: '영감을 주다, 북돋우다', syn: ['encourage'], ex: [
+    { m: '영감을 주다, ~할 마음을 가지게 하다, 고무하다, 자극하다, 고취하다', syn: ['encourage'], ex: [
       ['The teacher inspired her students.', '그 선생님은 학생들에게 영감을 주었다.'],
       ['His story inspires many people.', '그의 이야기는 많은 사람에게 용기를 준다.'],
       ['Music can inspire us to work harder.', '음악은 우리가 더 열심히 하도록 북돋운다.'],
@@ -164,7 +178,7 @@ export const H3_1 = defineLevel('h3-1', [
     ]},
   ]},
   { w: 'instinct', p: 'n.', s: [
-    { m: '본능, 직감', syn: ['intuition'], ex: [
+    { m: '본능, 직감, 직관', syn: ['intuition'], ex: [
       ['Animals hunt by instinct.', '동물은 본능으로 사냥한다.'],
       ['My instinct told me to stop.', '내 직감은 멈추라고 말했다.'],
       ['Birds build nests by instinct.', '새는 본능적으로 둥지를 짓는다.'],
@@ -251,7 +265,7 @@ export const H3_1 = defineLevel('h3-1', [
     ]},
   ]},
   { w: 'intimate', p: 'adj.', s: [
-    { m: '친밀한, 가까운', syn: ['close'], ex: [
+    { m: '친밀한, 밀접한, (지식이) 정통한', syn: ['close'], ex: [
       ['They are intimate friends.', '그들은 아주 가까운 친구다.'],
       ['We had an intimate talk on the roof.', '우리는 옥상에서 친밀한 대화를 나눴다.'],
       ['The small room felt intimate.', '그 작은 방은 아늑했다.'],
@@ -398,7 +412,7 @@ export const H3_1 = defineLevel('h3-1', [
     ]},
   ]},
   { w: 'landscape', p: 'n.', s: [
-    { m: '풍경, 경치', syn: ['scenery'], ex: [
+    { m: '경관, 풍경, 지형, 전망', syn: ['scenery'], ex: [
       ['The landscape was covered with snow.', '그 풍경은 눈으로 덮여 있었다.'],
       ['She paints landscapes in oil.', '그녀는 유화로 풍경을 그린다.'],
       ['We stopped to enjoy the landscape.', '우리는 경치를 즐기려고 멈췄다.'],
@@ -419,7 +433,7 @@ export const H3_1 = defineLevel('h3-1', [
     ]},
   ]},
   { w: 'launch', p: 'v.', s: [
-    { m: '시작하다, 발사하다', syn: ['start'], ex: [
+    { m: '출시하다, 일으키다, 착수[시작]하다, 개시하다, 진출하다', syn: ['start'], ex: [
       ['They launched a new website.', '그들은 새 웹사이트를 열었다.'],
       ['The rocket launched at dawn.', '로켓이 새벽에 발사되었다.'],
       ['Our school launched a reading program.', '우리 학교는 독서 프로그램을 시작했다.'],
@@ -531,7 +545,7 @@ export const H3_1 = defineLevel('h3-1', [
     ]},
   ]},
   { w: 'literature', p: 'n.', s: [
-    { m: '문학', syn: [], ex: [
+    { m: '(연구) 문헌, 문학, 인쇄물', syn: [], ex: [
       ['She studies English literature.', '그녀는 영문학을 공부한다.'],
       ['Korean literature is rich and old.', '한국 문학은 풍부하고 오래되었다.'],
       ['We read classic literature in class.', '우리는 수업에서 고전 문학을 읽는다.'],
@@ -601,7 +615,7 @@ export const H3_1 = defineLevel('h3-1', [
     ]},
   ]},
   { w: 'manipulate', p: 'v.', s: [
-    { m: '조작하다, 교묘히 다루다', syn: ['control', 'influence'], ex: [
+    { m: '(능숙하게) 조작하다, 조정하다, 다루다', syn: ['control', 'influence'], ex: [
       ['They manipulated the data.', '그들은 자료를 조작했다.'],
       ['Advertisements manipulate our desires.', '광고는 우리의 욕구를 조종한다.'],
       ['He manipulated the machine skillfully.', '그는 능숙하게 기계를 조작했다.'],
@@ -650,7 +664,7 @@ export const H3_1 = defineLevel('h3-1', [
     ]},
   ]},
   { w: 'mechanism', p: 'n.', s: [
-    { m: '기제, 작동 원리', syn: ['system'], ex: [
+    { m: '기제, 방법, 메커니즘(사물의 작용 원리나 구조), 구조, 기법', syn: ['system'], ex: [
       ['Scientists studied the mechanism.', '과학자들이 그 작동 원리를 연구했다.'],
       ['The body has a defense mechanism.', '몸에는 방어 기제가 있다.'],
       ['We need a mechanism for feedback.', '우리는 피드백을 위한 장치가 필요하다.'],
@@ -782,6 +796,13 @@ export const H3_1 = defineLevel('h3-1', [
       ['She believes in small miracles.', '그녀는 작은 기적을 믿는다.'],
     ]},
   ]},
+  { w: 'misleading', p: 'adj.', s: [
+    { m: '오해의 소지가 있는, (사실을) 오도[호도]하는', syn: [], ex: [
+      ['The title is misleading.', '그 제목은 오해를 살 만하다.'],
+      ['He removed the misleading chart.', '그는 오해를 부르는 그래프를 뺐다.'],
+      ['Misleading advertising is against the law.', '오해를 부르는 광고는 법에 어긋난다.'],
+    ]},
+  ]},
   { w: 'missile', p: 'n.', s: [
     { m: '미사일', syn: [], ex: [
       ['The missile was never fired.', '그 미사일은 발사되지 않았다.'],
@@ -832,7 +853,7 @@ export const H3_1 = defineLevel('h3-1', [
     ]},
   ]},
   { w: 'modify', p: 'v.', s: [
-    { m: '수정하다, 변경하다', syn: ['change', 'adjust'], ex: [
+    { m: '수정하다, 개조[변형]하다, 바꾸다', syn: ['change', 'adjust'], ex: [
       ['We modified the design.', '우리는 디자인을 수정했다.'],
       ['The rules were slightly modified.', '규칙이 약간 수정되었다.'],
       ['You may modify the recipe as you like.', '원하는 대로 조리법을 바꿔도 된다.'],
@@ -881,7 +902,7 @@ export const H3_1 = defineLevel('h3-1', [
     ]},
   ]},
   { w: 'multiple', p: 'adj.', s: [
-    { m: '많은, 여러 개의', syn: ['many'], ex: [
+    { m: '다양한, 다수[복수]의, 여러 개의, 많은, 복합적인', syn: ['many'], ex: [
       ['She made multiple mistakes.', '그녀는 여러 번 실수했다.'],
       ['The test has multiple choices.', '그 시험은 선택지가 여러 개다.'],
       ['We tried multiple ways to fix it.', '우리는 그것을 고치려고 여러 방법을 시도했다.'],
@@ -895,7 +916,7 @@ export const H3_1 = defineLevel('h3-1', [
     ]},
   ]},
   { w: 'mutual', p: 'adj.', s: [
-    { m: '상호간의, 서로의', syn: ['shared', 'reciprocal'], ex: [
+    { m: '서로의, 상호적인, 상호간의', syn: ['shared', 'reciprocal'], ex: [
       ['They have mutual respect.', '그들은 서로를 존중한다.'],
       ['We reached a mutual agreement.', '우리는 상호 합의에 도달했다.'],
       ['They share a mutual friend.', '그들은 공통의 친구가 있다.'],
@@ -979,7 +1000,7 @@ export const H3_1 = defineLevel('h3-1', [
     ]},
   ]},
   { w: 'neutral', p: 'adj.', s: [
-    { m: '중립의, 중간의', syn: ['impartial'], ex: [
+    { m: '중립의, 중립적인', syn: ['impartial'], ex: [
       ['The judge stayed neutral.', '심판은 중립을 지켰다.'],
       ['Choose a neutral color for the wall.', '벽에는 무난한 색을 골라라.'],
       ['Our country remained neutral.', '우리나라는 중립을 지켰다.'],
@@ -1028,14 +1049,14 @@ export const H3_1 = defineLevel('h3-1', [
     ]},
   ]},
   { w: 'norm', p: 'n.', s: [
-    { m: '규범, 표준', syn: ['standard', 'convention'], ex: [
+    { m: '규범, 일반적인 것, 표준, 기준', syn: ['standard', 'convention'], ex: [
       ['Social norms differ by culture.', '사회 규범은 문화마다 다르다.'],
       ['Working from home became the norm.', '재택근무가 표준이 되었다.'],
       ['He broke the norms of his time.', '그는 그 시대의 규범을 깼다.'],
     ]},
   ]},
   { w: 'notion', p: 'n.', s: [
-    { m: '개념, 생각', syn: ['idea', 'concept'], ex: [
+    { m: '개념, 생각, 관념', syn: ['idea', 'concept'], ex: [
       ['He rejected the notion entirely.', '그는 그 생각을 완전히 거부했다.'],
       ['The notion of fairness varies.', '공정함의 개념은 저마다 다르다.'],
       ['She had no notion of the danger.', '그녀는 그 위험을 전혀 몰랐다.'],
@@ -1056,7 +1077,7 @@ export const H3_1 = defineLevel('h3-1', [
     ]},
   ]},
   { w: 'numerous', p: 'adj.', s: [
-    { m: '많은, 수많은', syn: ['many'], ex: [
+    { m: '많은, 수많은, 다수의', syn: ['many'], ex: [
       ['She has numerous friends.', '그녀에게는 친구가 아주 많다.'],
       ['Numerous birds gathered on the roof.', '수많은 새가 지붕에 모였다.'],
       ['We tried numerous times.', '우리는 수없이 시도했다.'],
@@ -1091,6 +1112,32 @@ export const H3_1 = defineLevel('h3-1', [
     { m: '가리다, 흐리게 하다', syn: ['hide', 'block'], ex: [
       ['Clouds obscured the moon.', '구름이 달을 가렸다.'],
       ['Jargon obscures the real message.', '전문 용어가 진짜 메시지를 가린다.'],
+    ]},
+  ]},
+  { w: 'proposition', p: 'n.', s: [
+    { m: '명제, 제안, 일, 문제, 가치 제안', syn: [], ex: [
+      ['The proposition sounds reasonable.', '그 제안은 그럴듯하게 들린다.'],
+      ['He tested the truth of the proposition.', '그는 그 명제가 참인지 따져 봤다.'],
+      ['Running a shop is a risky proposition.', '가게를 하는 것은 위험한 일이다.'],
+    ]},
+  ]},
+  { w: 'spatial', p: 'adj.', s: [
+    { m: '공간적인, 공간의', syn: [], ex: [
+      ['Maps train spatial thinking.', '지도는 공간 사고를 길러 준다.'],
+      ['The design has a strong spatial sense.', '그 설계는 공간 감각이 뛰어나다.'],
+      ['Spatial memory helps us find our way.', '공간 기억이 길을 찾도록 돕는다.'],
+    ]},
+  ]},
+  { w: 'universal', p: 'adj.', s: [
+    { m: '보편적인, 일반적인', syn: [], ex: [
+      ['Music is often called a universal language.', '음악은 흔히 보편적인 언어라 불린다.'],
+      ['The rule is universal in this school.', '그 규칙은 이 학교에서 두루 적용된다.'],
+      ['Laughter seems universal among people.', '웃음은 사람에게 두루 있는 듯하다.'],
+    ]},
+    { m: '보편적인 것', syn: [], ex: [
+      ['Kindness is close to a universal.', '친절은 보편적인 것에 가깝다.'],
+      ['Philosophers argue about universals.', '철학자들은 보편적인 것을 두고 논쟁한다.'],
+      ['The story touches on human universals.', '그 이야기는 인간의 보편적인 것을 건드린다.'],
     ]},
   ]},
 ], 'csat');

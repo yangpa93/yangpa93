@@ -1,5 +1,5 @@
 /**
- * 중학교 3학년 레벨 3 — 수록 154 / 계획 137개.
+ * 중학교 3학년 레벨 3 — 수록 159 / 계획 137개.
  *
  * 난이도 층: 중급(중학 권장)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -28,6 +28,27 @@ export const M3_3 = defineLevel('m3-3', [
       ['He applied for the job last week.', '그는 지난주에 그 일자리에 지원했다.'],
       ['She applied for a scholarship.', '그녀는 장학금을 신청했다.'],
       ['You must apply for a visa first.', '먼저 비자를 신청해야 한다.'],
+    ]},
+  ]},
+  { w: 'approximately', p: 'adv.', s: [
+    { m: '약, 대략, 거의', syn: ['about'], ex: [
+      ['The trip takes approximately two hours.', '그 여행은 대략 두 시간 걸린다.'],
+      ['Approximately thirty people came.', '서른 명쯤 왔다.'],
+      ['The box weighs approximately five kilograms.', '그 상자는 약 오 킬로그램 나간다.'],
+    ]},
+  ]},
+  { w: 'constraint', p: 'n.', s: [
+    { m: '제약, 제한, 구속, 압박, 억제', syn: [], ex: [
+      ['Time was the main constraint.', '시간이 가장 큰 제약이었다.'],
+      ['We worked under tight budget constraints.', '우리는 빠듯한 예산 제약 속에서 일했다.'],
+      ['Space constraints limited the design.', '공간의 제약이 설계를 제한했다.'],
+    ]},
+  ]},
+  { w: 'ecosystem', p: 'n.', s: [
+    { m: '생태계', syn: [], ex: [
+      ['Pollution damages the ocean ecosystem.', '오염이 바다 생태계를 해친다.'],
+      ['Every animal has a role in the ecosystem.', '모든 동물은 생태계에서 맡은 역할이 있다.'],
+      ['A forest ecosystem takes years to recover.', '숲 생태계는 회복하는 데 여러 해가 걸린다.'],
     ]},
   ]},
   { w: 'fold', p: 'v.', s: [
@@ -237,7 +258,7 @@ export const M3_3 = defineLevel('m3-3', [
     ]},
   ]},
   { w: 'generation', p: 'n.', s: [
-    { m: '세대', syn: [], ex: [
+    { m: '세대, 발전, 생성', syn: [], ex: [
       ['Each generation has its own music.', '각 세대는 자기만의 음악이 있다.'],
       ['This tradition passed down through generations.', '이 전통은 여러 세대를 거쳐 전해졌다.'],
       ['The younger generation uses new apps.', '젊은 세대는 새로운 앱을 사용한다.'],
@@ -656,21 +677,21 @@ export const M3_3 = defineLevel('m3-3', [
     ]},
   ]},
   { w: 'identify', p: 'v.', s: [
-    { m: '확인하다, 알아보다', syn: ['recognize', 'spot'], ex: [
+    { m: '파악하다, 확인하다, 식별하다, 알아내다, 인식하다', syn: ['recognize', 'spot'], ex: [
       ['Can you identify the problem?', '문제를 파악할 수 있니?'],
       ['She identified the bird by its song.', '그녀는 새를 울음소리로 알아봤다.'],
       ['Police identified the driver.', '경찰이 운전자의 신원을 확인했다.'],
     ]},
   ]},
   { w: 'identity', p: 'n.', s: [
-    { m: '신원, 정체성', syn: [], ex: [
+    { m: '정체성', syn: [], ex: [
       ['The police checked his identity.', '경찰이 그의 신원을 확인했다.'],
       ['Language is part of identity.', '언어는 정체성의 일부다.'],
       ['She kept her identity secret.', '그녀는 신원을 비밀로 했다.'],
     ]},
   ]},
   { w: 'ignore', p: 'v.', s: [
-    { m: '무시하다', syn: ['pay no attention to', 'overlook'], ex: [
+    { m: '무시하다, 간과하다', syn: ['pay no attention to', 'overlook'], ex: [
       ['Do not ignore the warning.', '그 경고를 무시하지 마라.'],
       ['She ignored my message.', '그녀는 내 메시지를 무시했다.'],
       ['We cannot ignore this problem any longer.', '우리는 더 이상 이 문제를 무시할 수 없다.'],
@@ -684,7 +705,7 @@ export const M3_3 = defineLevel('m3-3', [
     ]},
   ]},
   { w: 'illustrate', p: 'v.', s: [
-    { m: '설명하다, 예시하다', syn: ['show', 'demonstrate'], ex: [
+    { m: '(예를 들어) 설명하다, 예시하다, 분명히 보여주다, 그려 넣다', syn: ['show', 'demonstrate'], ex: [
       ['This example illustrates the point.', '이 예가 그 요점을 잘 보여 준다.'],
       ['Let me illustrate with a story.', '이야기로 설명해 볼게.'],
       ['The graph illustrates the change well.', '그 그래프는 변화를 잘 보여 준다.'],
@@ -698,7 +719,7 @@ export const M3_3 = defineLevel('m3-3', [
     ]},
   ]},
   { w: 'immediate', p: 'adj.', s: [
-    { m: '즉각적인', syn: ['instant'], ex: [
+    { m: '즉각적인, 인접한, 당장의, 아주 가까이의, 눈앞에 있는', syn: ['instant'], ex: [
       ['We need an immediate answer.', '우리는 즉각적인 답이 필요하다.'],
       ['The medicine had an immediate effect.', '그 약은 즉각 효과가 있었다.'],
       ['Her immediate reaction was surprise.', '그녀의 즉각적인 반응은 놀람이었다.'],
@@ -733,7 +754,7 @@ export const M3_3 = defineLevel('m3-3', [
     ]},
   ]},
   { w: 'in terms of', p: 'phr.', s: [
-    { m: '~의 관점에서, ~ 면에서', syn: ['regarding', 'with respect to'], ex: [
+    { m: '~라는 측면에서,   ~과 관련하여', syn: ['regarding', 'with respect to'], ex: [
       ['In terms of cost, it is better.', '비용의 관점에서 그것이 더 낫다.'],
       ['In terms of size, they are similar.', '크기 면에서 그들은 비슷하다.'],
       ['Think in terms of long-term results.', '장기적인 결과의 관점에서 생각해라.'],
@@ -768,7 +789,7 @@ export const M3_3 = defineLevel('m3-3', [
     ]},
   ]},
   { w: 'indicate', p: 'v.', s: [
-    { m: '나타내다, 가리키다', syn: ['show', 'point to'], ex: [
+    { m: '보여주다, 나타내다, 가리키다, 표시하다', syn: ['show', 'point to'], ex: [
       ['The sign indicates the exit.', '그 표지판은 출구를 가리킨다.'],
       ['The results indicate a clear trend.', '그 결과는 뚜렷한 경향을 나타낸다.'],
       ['Red usually indicates danger.', '빨간색은 보통 위험을 나타낸다.'],
@@ -831,7 +852,7 @@ export const M3_3 = defineLevel('m3-3', [
     ]},
   ]},
   { w: 'insist', p: 'v.', s: [
-    { m: '주장하다, 고집하다', syn: ['demand'], ex: [
+    { m: '고집하다, 주장하다', syn: ['demand'], ex: [
       ['She insisted on paying.', '그녀는 자기가 내겠다고 고집했다.'],
       ['He insists that he is right.', '그는 자기가 옳다고 주장한다.'],
       ['They insisted on the truth.', '그들은 진실을 주장했다.'],
@@ -866,7 +887,7 @@ export const M3_3 = defineLevel('m3-3', [
     ]},
   ]},
   { w: 'institution', p: 'n.', s: [
-    { m: '기관, 단체', syn: ['organization', 'establishment'], ex: [
+    { m: '시설, 기관, 제도, 관습, 관례', syn: ['organization', 'establishment'], ex: [
       ['Schools are social institutions.', '학교는 사회적 기관이다.'],
       ['He works at a research institution.', '그는 연구 기관에서 일한다.'],
       ['Financial institutions lend money.', '금융 기관은 돈을 빌려준다.'],
@@ -901,7 +922,7 @@ export const M3_3 = defineLevel('m3-3', [
     ]},
   ]},
   { w: 'intense', p: 'adj.', s: [
-    { m: '강렬한, 극심한', syn: ['extreme', 'strong'], ex: [
+    { m: '강렬한, 열정적인, 격렬한, 치열한, 격심한', syn: ['extreme', 'strong'], ex: [
       ['The heat was intense.', '더위가 극심했다.'],
       ['She felt intense pressure before the final.', '그녀는 결승 전에 극심한 압박을 느꼈다.'],
       ['The competition was intense.', '경쟁이 치열했다.'],
@@ -914,6 +935,13 @@ export const M3_3 = defineLevel('m3-3', [
       ['She acted with clear intent.', '그녀는 분명한 의도로 행동했다.'],
     ]},
   ]},
+  { w: 'intention', p: 'n.', s: [
+    { m: '의도, 의지', syn: ['purpose', 'aim'], ex: [
+      ['I had no intention of hurting you.', '나는 너를 다치게 할 의도가 없었다.'],
+      ['Her intention was to help, not to judge.', '그녀의 의도는 돕는 것이지 따지는 것이 아니었다.'],
+      ['He announced his intention to run again.', '그는 다시 나서겠다는 뜻을 밝혔다.'],
+    ]},
+  ]},
   { w: 'interest', p: 'n.', s: [
     { m: '관심, 흥미', syn: [], ex: [
       ['She has an interest in science.', '그녀는 과학에 관심이 있다.'],
@@ -922,14 +950,14 @@ export const M3_3 = defineLevel('m3-3', [
     ]},
   ]},
   { w: 'internal', p: 'adj.', s: [
-    { m: '내부의', syn: ['inner'], ex: [
+    { m: '내면의, 내적인, 내부의, 체내의', syn: ['inner'], ex: [
       ['The internal walls are white.', '내부 벽은 흰색이다.'],
       ['This is an internal matter.', '이것은 내부 문제다.'],
       ['Internal damage is hard to see.', '내부 손상은 보기 어렵다.'],
     ]},
   ]},
   { w: 'interrupt', p: 'v.', s: [
-    { m: '방해하다, 끼어들다', syn: [], ex: [
+    { m: '중단하다, 중단시키다, 방해하다, 끼어들다, 가로막다', syn: [], ex: [
       ['Do not interrupt the speaker.', '발표자를 방해하지 마라.'],
       ['She interrupted our conversation.', '그녀가 우리 대화에 끼어들었다.'],
       ['Rain interrupted the game.', '비가 경기를 중단시켰다.'],
@@ -950,14 +978,14 @@ export const M3_3 = defineLevel('m3-3', [
     ]},
   ]},
   { w: 'investigate', p: 'v.', s: [
-    { m: '조사하다, 수사하다', syn: ['examine', 'look into'], ex: [
+    { m: '연구하다, 조사하다', syn: ['examine', 'look into'], ex: [
       ['Police investigated the case.', '경찰이 그 사건을 조사했다.'],
       ['Scientists are investigating the cause.', '과학자들이 원인을 조사하고 있다.'],
       ['We should investigate this further.', '우리는 이것을 더 조사해야 한다.'],
     ]},
   ]},
   { w: 'involve', p: 'v.', s: [
-    { m: '포함하다, 관련시키다', syn: ['include'], ex: [
+    { m: '수반하다, 관련되다, 포함하다', syn: ['include'], ex: [
       ['The job involves travel.', '그 일은 출장을 포함한다.'],
       ['Do not involve her in this.', '그녀를 이 일에 끌어들이지 마라.'],
       ['The plan involves three steps.', '그 계획은 세 단계를 포함한다.'],
@@ -996,6 +1024,13 @@ export const M3_3 = defineLevel('m3-3', [
       ['She wore blue jeans.', '그녀는 청바지를 입었다.'],
       ['My jeans are too tight.', '내 청바지가 너무 조인다.'],
       ['He bought new jeans.', '그는 새 청바지를 샀다.'],
+    ]},
+  ]},
+  { w: 'reflection', p: 'n.', s: [
+    { m: '성찰, 숙고, 생각, (물이나 거울에 비친) 모습, 반사', syn: [], ex: [
+      ['She saw her reflection in the window.', '그녀는 창에 비친 자기 모습을 보았다.'],
+      ['After reflection, he changed his mind.', '곰곰이 생각한 뒤 그는 마음을 바꿨다.'],
+      ['The essay is a reflection on friendship.', '그 글은 우정에 대한 성찰이다.'],
     ]},
   ]},
   { w: 'take out', p: 'phr.', s: [
@@ -1073,6 +1108,13 @@ export const M3_3 = defineLevel('m3-3', [
       ['He turned up an hour late.', '그는 한 시간 늦게 나타났다.'],
       ['Turn up the volume, please.', '소리를 키워 주세요.'],
       ['The lost ring turned up in the garden.', '잃어버린 반지가 정원에서 나왔다.'],
+    ]},
+  ]},
+  { w: 'variation', p: 'n.', s: [
+    { m: '차이, 변형, 변화, 변동, 변이', syn: [], ex: [
+      ['There is wide variation in test scores.', '시험 점수에 차이가 크다.'],
+      ['The song has several variations.', '그 노래에는 여러 변주가 있다.'],
+      ['Seasonal variation affects prices.', '계절 변동이 값에 영향을 준다.'],
     ]},
   ]},
   { w: 'warm up', p: 'phr.', s: [

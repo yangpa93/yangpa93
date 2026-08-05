@@ -1,5 +1,5 @@
 /**
- * 중학교 3학년 레벨 2 — 수록 154 / 계획 137개.
+ * 중학교 3학년 레벨 2 — 수록 160 / 계획 137개.
  *
  * 난이도 층: 중급(중학 권장)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -9,6 +9,13 @@
 import { defineLevel } from '../define';
 
 export const M3_2 = defineLevel('m3-2', [
+  { w: 'consist of', p: 'phr.', s: [
+    { m: '~로 구성되다', syn: [], ex: [
+      ['The team consists of five members.', '그 팀은 다섯 명으로 이루어져 있다.'],
+      ['Water consists of hydrogen and oxygen.', '물은 수소와 산소로 이루어진다.'],
+      ['The book consists of twelve chapters.', '그 책은 열두 장으로 되어 있다.'],
+    ]},
+  ]},
   { w: 'despite', p: 'prep.', s: [
     { m: '~에도 불구하고', syn: ['in spite of'], ex: [
       ['Despite the rain, we went out.', '비에도 불구하고 우리는 나갔다.'],
@@ -118,7 +125,7 @@ export const M3_2 = defineLevel('m3-2', [
     ]},
   ]},
   { w: 'discipline', p: 'n.', s: [
-    { m: '규율, 훈련', syn: [], ex: [
+    { m: '학문 분야, 학과, 부문, 규율, 수련', syn: [], ex: [
       ['Good discipline helps a team.', '좋은 규율은 팀에 도움이 된다.'],
       ['She learned discipline from sports.', '그녀는 운동에서 규율을 배웠다.'],
       ['Discipline is not punishment.', '규율은 벌이 아니다.'],
@@ -302,6 +309,13 @@ export const M3_2 = defineLevel('m3-2', [
       ['Ease of use matters most.', '쓰기 쉬운 것이 가장 중요하다.'],
     ]},
   ]},
+  { w: 'ecological', p: 'adj.', s: [
+    { m: '생태의, 생태계[학]의', syn: [], ex: [
+      ['The dam had ecological effects.', '그 댐은 생태에 영향을 주었다.'],
+      ['They study ecological balance in the lake.', '그들은 호수의 생태 균형을 연구한다.'],
+      ['Ecological damage takes years to repair.', '생태 피해는 되돌리는 데 여러 해가 걸린다.'],
+    ]},
+  ]},
   { w: 'economy', p: 'n.', s: [
     { m: '경제', syn: [], ex: [
       ['The economy is growing.', '경제가 성장하고 있다.'],
@@ -373,7 +387,7 @@ export const M3_2 = defineLevel('m3-2', [
     ]},
   ]},
   { w: 'element', p: 'n.', s: [
-    { m: '요소, 성분', syn: ['component'], ex: [
+    { m: '(구성) 요소', syn: ['component'], ex: [
       ['Water has two elements.', '물은 두 원소로 되어 있다.'],
       ['Trust is a key element of friendship.', '신뢰는 우정의 핵심 요소다.'],
       ['Each element plays a role.', '각 요소가 역할을 한다.'],
@@ -415,7 +429,7 @@ export const M3_2 = defineLevel('m3-2', [
     ]},
   ]},
   { w: 'employ', p: 'v.', s: [
-    { m: '고용하다', syn: ['hire'], ex: [
+    { m: '이용하다, 쓰다, 활용하다, 사용하다, 고용하다', syn: ['hire'], ex: [
       ['The company employs many people.', '그 회사는 많은 사람을 고용한다.'],
       ['They employed her last month.', '그들은 지난달에 그녀를 고용했다.'],
       ['We employ new methods.', '우리는 새 방법을 쓴다.'],
@@ -429,7 +443,7 @@ export const M3_2 = defineLevel('m3-2', [
     ]},
   ]},
   { w: 'encourage', p: 'v.', s: [
-    { m: '격려하다, 장려하다', syn: [], ex: [
+    { m: '장려하다, 격려하다, 조장하다, 부추기다, 촉진하다', syn: [], ex: [
       ['My teacher encouraged me.', '선생님이 나를 격려해 주셨다.'],
       ['The school encourages reading.', '학교는 독서를 장려한다.'],
       ['Her success encouraged others to try.', '그녀의 성공은 다른 이들이 시도하도록 북돋웠다.'],
@@ -523,7 +537,7 @@ export const M3_2 = defineLevel('m3-2', [
     ]},
   ]},
   { w: 'essential', p: 'adj.', s: [
-    { m: '필수적인, 본질적인', syn: ['necessary', 'vital'], ex: [
+    { m: '필수적인, 중요한, 본질적인, 극히 중요한', syn: ['necessary', 'vital'], ex: [
       ['Water is essential to life.', '물은 생명에 필수적이다.'],
       ['Practice is essential for progress.', '연습은 발전에 필수적이다.'],
       ['It is essential to arrive on time.', '제시간에 도착하는 것이 필수적이다.'],
@@ -568,7 +582,7 @@ export const M3_2 = defineLevel('m3-2', [
     ]},
   ]},
   { w: 'evidence', p: 'n.', s: [
-    { m: '증거', syn: ['proof', 'sign'], ex: [
+    { m: '증거, 증명', syn: ['proof', 'sign'], ex: [
       ['There is no evidence for that claim.', '그 주장에 대한 증거가 없다.'],
       ['New evidence changed the case.', '새 증거가 사건을 바꿔 놓았다.'],
       ['The evidence strongly supports the theory.', '그 증거는 이 이론을 강하게 뒷받침한다.'],
@@ -645,7 +659,7 @@ export const M3_2 = defineLevel('m3-2', [
     ]},
   ]},
   { w: 'expand', p: 'v.', s: [
-    { m: '확장하다, 넓히다', syn: ['grow', 'extend'], ex: [
+    { m: '확장하다, 넓히다, 늘어나다, 확대하다', syn: ['grow', 'extend'], ex: [
       ['The company expanded overseas.', '그 회사는 해외로 확장했다.'],
       ['Metal expands when heated.', '금속은 가열하면 팽창한다.'],
       ['Reading expands your vocabulary.', '독서는 어휘를 넓혀 준다.'],
@@ -708,7 +722,7 @@ export const M3_2 = defineLevel('m3-2', [
     ]},
   ]},
   { w: 'extend', p: 'v.', s: [
-    { m: '늘리다, 연장하다', syn: [], ex: [
+    { m: '확장[확대]하다, 뻗치다, 연장하다, 연장되다, 늘리다', syn: [], ex: [
       ['They extended the deadline.', '그들은 기한을 연장했다.'],
       ['The road extends to the sea.', '그 길은 바다까지 이어진다.'],
       ['She extended her hand to me.', '그녀는 나에게 손을 내밀었다.'],
@@ -980,6 +994,27 @@ export const M3_2 = defineLevel('m3-2', [
       ['We could not drive in the fog.', '우리는 안개 속에서 운전할 수 없었다.'],
     ]},
   ]},
+  { w: 'insufficient', p: 'adj.', s: [
+    { m: '불충분한, 부족한', syn: [], ex: [
+      ['The evidence was insufficient.', '증거가 불충분했다.'],
+      ['Insufficient sleep affects memory.', '잠이 모자라면 기억에 영향을 준다.'],
+      ['We had insufficient time to finish.', '끝낼 시간이 부족했다.'],
+    ]},
+  ]},
+  { w: 'morality', p: 'n.', s: [
+    { m: '도덕성', syn: [], ex: [
+      ['The story raises questions about morality.', '그 이야기는 도덕성에 대한 물음을 던진다.'],
+      ['He wrote about the morality of war.', '그는 전쟁의 도덕성에 대해 썼다.'],
+      ['Morality is not the same as law.', '도덕성은 법과 같지 않다.'],
+    ]},
+  ]},
+  { w: 'pursuit', p: 'n.', s: [
+    { m: '추구, 일, 연구, 활동', syn: [], ex: [
+      ['The pursuit of knowledge never ends.', '지식의 추구는 끝이 없다.'],
+      ['Reading is his favorite pursuit.', '읽기는 그가 가장 좋아하는 일이다.'],
+      ['They left in pursuit of a better life.', '그들은 더 나은 삶을 찾아 떠났다.'],
+    ]},
+  ]},
   { w: 'show up', p: 'phr.', s: [
     { m: '나타나다, 모습을 보이다', syn: ['appear', 'turn up'], ex: [
       ['He did not show up at the party.', '그는 파티에 나타나지 않았다.'],
@@ -1097,6 +1132,13 @@ export const M3_2 = defineLevel('m3-2', [
       ['I take back what I said.', '내가 한 말을 취소한다.'],
       ['She took back the book she lent me.', '그녀는 나에게 빌려준 책을 되가져갔다.'],
       ['He took the shirt back to the store.', '그는 셔츠를 가게에 반품했다.'],
+    ]},
+  ]},
+  { w: 'transformation', p: 'n.', s: [
+    { m: '변형, 변화, 전환, 탈바꿈, 변신', syn: [], ex: [
+      ['The town went through a transformation.', '그 마을은 큰 변화를 겪었다.'],
+      ['Her transformation as a player was clear.', '선수로서 그녀의 변신은 뚜렷했다.'],
+      ['Heat causes a transformation in the metal.', '열이 그 금속에 변화를 일으킨다.'],
     ]},
   ]},
 ], 'curriculum');

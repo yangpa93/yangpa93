@@ -1,5 +1,5 @@
 /**
- * 중학교 1학년 레벨 2 — 수록 154 / 계획 137개.
+ * 중학교 1학년 레벨 2 — 수록 157 / 계획 137개.
  *
  * 난이도 층: 기초(초등 권장)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -548,6 +548,13 @@ export const M1_2 = defineLevel('m1-2', [
       ['They came to congratulate the winner.', '그들은 우승자를 축하하러 왔다.'],
     ]},
   ]},
+  { w: 'consumption', p: 'n.', s: [
+    { m: '섭취, 소비', syn: [], ex: [
+      ['Reduce your consumption of sugar.', '설탕 섭취를 줄여라.'],
+      ['Energy consumption rose last winter.', '지난겨울 에너지 소비가 늘었다.'],
+      ['The report measures water consumption.', '그 보고서는 물 소비량을 잰다.'],
+    ]},
+  ]},
   { w: 'control', p: 'v.', s: [
     { m: '통제하다, 조절하다', syn: ['manage'], ex: [
       ['You should control your anger.', '너는 화를 다스려야 한다.'],
@@ -570,6 +577,13 @@ export const M1_2 = defineLevel('m1-2', [
     { m: '멋진', syn: ['great'], ex: [
       ['That is a cool idea.', '그거 멋진 생각이다.'],
       ['He wore a cool jacket to school.', '그는 멋진 재킷을 입고 학교에 왔다.'],
+    ]},
+  ]},
+  { w: 'cooperation', p: 'n.', s: [
+    { m: '협력, 협동, 협업, 협조', syn: [], ex: [
+      ['The project needs cooperation between schools.', '그 과제는 학교들 사이의 협력이 필요하다.'],
+      ['Thank you for your cooperation.', '협조해 주셔서 고맙습니다.'],
+      ['Cooperation beats competition here.', '여기서는 협동이 경쟁보다 낫다.'],
     ]},
   ]},
   { w: 'corner', p: 'n.', s: [
@@ -1013,6 +1027,104 @@ export const M1_2 = defineLevel('m1-2', [
       ['The test was easy.', '시험은 쉬웠다.'],
       ['This game is easy to learn.', '이 게임은 배우기 쉽다.'],
       ['It is not easy to speak English well.', '영어를 잘 말하기는 쉽지 않다.'],
+    ]},
+  ]},
+  { w: 'effectively', p: 'adv.', s: [
+    { m: '사실상, 실질적으로, 효과적으로', syn: [], ex: [
+      ['She explained the rule effectively.', '그녀는 그 규칙을 잘 알아듣게 설명했다.'],
+      ['The medicine works effectively against colds.', '그 약은 감기에 잘 듣는다.'],
+      ['The road was effectively closed by the snow.', '눈 때문에 그 길은 사실상 막혔다.'],
+    ]},
+  ]},
+  { w: 'equipment', p: 'n.', s: [
+    { m: '장비, 장치, 설비', syn: ['gear'], ex: [
+      ['The school bought new sports equipment.', '학교가 새 운동 장비를 샀다.'],
+      ['Safety equipment must be worn here.', '여기서는 안전 장비를 착용해야 한다.'],
+      ['The lab has expensive equipment.', '그 실험실에는 값비싼 장비가 있다.'],
+    ]},
+  ]},
+  { w: 'extensive', p: 'adj.', s: [
+    { m: '광범위한, 많은, 대규모의, 광대한, 폭넓은', syn: [], ex: [
+      ['The damage was extensive.', '피해가 광범위했다.'],
+      ['She has extensive knowledge of birds.', '그녀는 새에 대해 폭넓게 안다.'],
+      ['They did extensive research first.', '그들은 먼저 대규모 연구를 했다.'],
+    ]},
+  ]},
+  { w: 'gratitude', p: 'n.', s: [
+    { m: '고마움, 감사', syn: ['thanks'], ex: [
+      ['She expressed her gratitude in a letter.', '그녀는 편지로 고마움을 전했다.'],
+      ['He felt deep gratitude toward his teacher.', '그는 선생님께 깊이 감사했다.'],
+      ['A small gift can show gratitude.', '작은 선물로도 고마움을 나타낼 수 있다.'],
+    ]},
+  ]},
+  { w: 'initially', p: 'adv.', s: [
+    { m: '처음에, 초기에', syn: ['at first'], ex: [
+      ['Initially, the plan seemed simple.', '처음에는 그 계획이 단순해 보였다.'],
+      ['She initially refused the offer.', '그녀는 처음에 그 제안을 거절했다.'],
+      ['The class was initially held online.', '그 수업은 처음에 온라인으로 열렸다.'],
+    ]},
+  ]},
+  { w: 'invisible', p: 'adj.', s: [
+    { m: '보이지 않는, 눈에 띄지 않는', syn: [], ex: [
+      ['Air is invisible but we breathe it.', '공기는 보이지 않지만 우리는 그것을 마신다.'],
+      ['The stain became invisible after washing.', '그 얼룩은 빨고 나니 안 보였다.'],
+      ['She felt invisible in the crowd.', '그녀는 사람들 속에서 없는 사람 같았다.'],
+    ]},
+  ]},
+  { w: 'massive', p: 'adj.', s: [
+    { m: '막대한, 거대한, 대대적인, 엄청난, 대량의', syn: ['huge'], ex: [
+      ['A massive rock blocked the road.', '거대한 바위가 길을 막았다.'],
+      ['The event drew a massive crowd.', '그 행사에 엄청난 사람들이 몰렸다.'],
+      ['They spent a massive amount of money.', '그들은 막대한 돈을 썼다.'],
+    ]},
+  ]},
+  { w: 'organism', p: 'n.', s: [
+    { m: '생물, 유기체, 생명체', syn: [], ex: [
+      ['A single organism can contain many cells.', '생물 하나가 많은 세포를 지닐 수 있다.'],
+      ['Scientists study organisms in the deep sea.', '과학자들이 깊은 바다의 생물을 연구한다.'],
+      ['Every organism needs energy to live.', '모든 생물은 살아가는 데 에너지가 필요하다.'],
+    ]},
+  ]},
+  { w: 'precisely', p: 'adv.', s: [
+    { m: '정확하게, 바로, 정밀하게', syn: ['exactly'], ex: [
+      ['Tell me precisely what happened.', '무슨 일이 있었는지 정확히 말해라.'],
+      ['The train left at precisely six o\'clock.', '기차는 정확히 여섯 시에 떠났다.'],
+      ['That is precisely what I meant.', '그게 바로 내가 말하려던 것이다.'],
+    ]},
+  ]},
+  { w: 'promotion', p: 'n.', s: [
+    { m: '증진, 승진, 홍보[판촉] (활동)', syn: [], ex: [
+      ['He received a promotion last month.', '그는 지난달에 승진했다.'],
+      ['The shop is running a promotion.', '그 가게가 판촉 행사를 하고 있다.'],
+      ['Health promotion is part of the class.', '건강 증진이 그 수업의 한 부분이다.'],
+    ]},
+  ]},
+  { w: 'registration', p: 'n.', s: [
+    { m: '등록', syn: [], ex: [
+      ['Registration for the class opens Monday.', '그 수업 등록은 월요일에 시작한다.'],
+      ['Bring your registration form.', '등록 신청서를 가져오세요.'],
+      ['Registration closes at the end of the month.', '등록은 이달 말에 끝난다.'],
+    ]},
+  ]},
+  { w: 'resolution', p: 'n.', s: [
+    { m: '해결(책), 결심, 해상도, 선명도', syn: [], ex: [
+      ['They reached a resolution after talks.', '그들은 이야기 끝에 해결에 이르렀다.'],
+      ['My New Year\'s resolution is to read more.', '내 새해 결심은 책을 더 읽는 것이다.'],
+      ['The screen has high resolution.', '그 화면은 해상도가 높다.'],
+    ]},
+  ]},
+  { w: 'submission', p: 'n.', s: [
+    { m: '출품(작), 제출(물), 복종', syn: [], ex: [
+      ['The deadline for submission is Friday.', '제출 마감은 금요일이다.'],
+      ['Her submission won first prize.', '그녀의 출품작이 일등을 했다.'],
+      ['Late submissions are not accepted.', '늦은 제출물은 받지 않는다.'],
+    ]},
+  ]},
+  { w: 'utility', p: 'n.', s: [
+    { m: '유용성, 공공 시설, (가스, 수도, 전화, 전기 등의) 공익 사업, 효용', syn: [], ex: [
+      ['The tool has limited utility.', '그 도구는 쓸모가 제한적이다.'],
+      ['Utility bills rise in winter.', '겨울에는 공공요금이 오른다.'],
+      ['They questioned the utility of the rule.', '그들은 그 규칙의 쓸모를 의심했다.'],
     ]},
   ]},
 ], 'curriculum');

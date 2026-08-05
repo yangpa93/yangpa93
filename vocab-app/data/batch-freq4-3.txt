@@ -1,0 +1,83 @@
+# 빈도4 새 낱말 2차 — 중급(중학 권장) 층.
+# 뜻이 여섯 개를 넘는 것은 앞 네댓 개만 남겼다. batch-freq4-2.txt 머리말 참고.
+
+acceptance|n.|인정, 수용, 받아들임||His acceptance of the offer surprised us.::그가 그 제안을 받아들여 우리는 놀랐다.|She waited for acceptance into the program.::그녀는 그 과정에 붙기를 기다렸다.|Acceptance of the new rule took time.::새 규칙을 받아들이는 데 시간이 걸렸다.
+accuracy|n.|정확도, 정확성||The accuracy of the map is impressive.::그 지도의 정확도는 놀랍다.|Check your answers for accuracy.::답이 정확한지 확인해라.|Speed matters less than accuracy here.::여기서는 속도보다 정확도가 중요하다.
+appreciation|n.|이해, 감상, 감사, 올바른 인식||He showed his appreciation with a note.::그는 쪽지로 고마움을 나타냈다.|The class deepened her appreciation of poetry.::그 수업으로 그녀의 시 감상이 깊어졌다.|They gained an appreciation of the problem.::그들은 그 문제를 제대로 이해하게 됐다.
+approximately|adv.|약, 대략, 거의|about|The trip takes approximately two hours.::그 여행은 대략 두 시간 걸린다.|Approximately thirty people came.::서른 명쯤 왔다.|The box weighs approximately five kilograms.::그 상자는 약 오 킬로그램 나간다.
+as opposed to|phr.|~과 반대로, ~과는 달리, ~과는 다르게, ~과는 대조적으로||He prefers walking as opposed to driving.::그는 운전과 달리 걷기를 좋아한다.|We use fresh fruit as opposed to canned.::우리는 통조림과 달리 신선한 과일을 쓴다.|She studies at night as opposed to morning.::그녀는 아침과 달리 밤에 공부한다.
+assessment|n.|평가, 심사||The teacher's assessment was fair.::선생님의 평가는 공정했다.|We need an assessment of the damage.::피해를 평가해야 한다.|Assessments take place twice a year.::평가는 일 년에 두 번 이뤄진다.
+associated with|phr.|~과 관련된, ~과 연관된||Smoking is associated with many diseases.::흡연은 여러 병과 관련이 있다.|The name is associated with great music.::그 이름은 훌륭한 음악과 연관되어 있다.|Costs associated with the trip were high.::그 여행에 딸린 비용이 컸다.
+attachment|n.|애착, 부착, 집착, 결합||The child formed a strong attachment to the dog.::그 아이는 개에게 깊은 애착을 갖게 됐다.|Please open the attachment in my email.::제 메일의 첨부 파일을 열어 보세요.|His attachment to old habits slowed him down.::옛 버릇에 대한 집착이 그를 더디게 했다.
+attainment|n.|달성, 도달, 성취, 성과||The attainment of the goal took years.::그 목표를 이루는 데 여러 해가 걸렸다.|Her academic attainment is impressive.::그녀의 학업 성취는 훌륭하다.|Attainment of fluency requires practice.::유창함에 이르려면 연습이 필요하다.
+commitment|n.|전념, 헌신, 책무, 몰입||Her commitment to the team never wavered.::팀에 대한 그녀의 헌신은 흔들리지 않았다.|Joining the club is a big commitment.::그 동아리에 드는 것은 큰 책무다.|He made a commitment to study daily.::그는 날마다 공부하기로 다짐했다.
+consist of|phr.|~로 구성되다||The team consists of five members.::그 팀은 다섯 명으로 이루어져 있다.|Water consists of hydrogen and oxygen.::물은 수소와 산소로 이루어진다.|The book consists of twelve chapters.::그 책은 열두 장으로 되어 있다.
+constraint|n.|제약, 제한, 구속, 압박, 억제||Time was the main constraint.::시간이 가장 큰 제약이었다.|We worked under tight budget constraints.::우리는 빠듯한 예산 제약 속에서 일했다.|Space constraints limited the design.::공간의 제약이 설계를 제한했다.
+contribution|n.|기여, 이바지, 공헌, 원인 제공||Her contribution to the project was huge.::그 과제에 대한 그녀의 기여는 컸다.|Small contributions add up.::작은 보탬이 쌓인다.|He made a lasting contribution to science.::그는 과학에 오래 남을 공헌을 했다.
+convention|n.|관습, 관례, 관행, 약속||Shaking hands is a social convention.::악수는 사회적 관습이다.|The book breaks with literary convention.::그 책은 문학의 관례를 깬다.|By convention, the host speaks first.::관례상 주최자가 먼저 말한다.
+cooperation|n.|협력, 협동, 협업, 협조||The project needs cooperation between schools.::그 과제는 학교들 사이의 협력이 필요하다.|Thank you for your cooperation.::협조해 주셔서 고맙습니다.|Cooperation beats competition here.::여기서는 협동이 경쟁보다 낫다.
+critical|adj.|비판적인, 중대한, 대단히 중요한, 결정적인||Sleep is critical for health.::잠은 건강에 대단히 중요하다.|She took a critical view of the plan.::그녀는 그 계획을 비판적으로 보았다.|This is a critical moment for the team.::지금이 그 팀에게 결정적인 순간이다.
+critically|adv.|비판적으로, 중요하게, 결정적으로||Read the article critically.::그 글을 비판적으로 읽어라.|The outcome depends critically on timing.::결과는 시점에 결정적으로 달려 있다.|He was critically injured in the fall.::그는 넘어져 크게 다쳤다.
+density|n.|밀도, 농도, 밀집 상태||The density of the forest blocked the light.::숲이 빽빽해 빛이 들지 않았다.|Ice has a lower density than water.::얼음은 물보다 밀도가 낮다.|Population density is highest downtown.::인구 밀도는 도심에서 가장 높다.
+differentiate|v.|차별화시키다, 구별하다, 분화하다, 식별하다||Can you differentiate the two sounds?::그 두 소리를 구별할 수 있니?|Good service differentiates this shop.::좋은 서비스가 이 가게를 남다르게 한다.|Cells differentiate as the body grows.::몸이 자라면서 세포가 분화한다.
+discrimination|n.|차별, 구별, 식별||The law forbids discrimination at work.::법은 직장에서의 차별을 금한다.|She showed fine discrimination in taste.::그녀는 맛을 섬세하게 구별했다.|Discrimination based on age is unfair.::나이에 따른 차별은 부당하다.
+distinctive|adj.|독특한, 특징적인, 두드러지는, 특유한||The bird has a distinctive call.::그 새는 독특한 울음소리를 낸다.|Her writing has a distinctive style.::그녀의 글에는 특유의 문체가 있다.|The building's distinctive roof is red.::그 건물의 두드러진 지붕은 빨갛다.
+distraction|n.|집중을 방해하는 것, 주의산만, 머리를 식혀 주는 것, 기분 전환||The noise was a constant distraction.::그 소음이 계속 집중을 흐트러뜨렸다.|He turns off his phone to avoid distraction.::그는 방해받지 않으려고 전화를 끈다.|Music can be a pleasant distraction.::음악은 기분 좋은 기분 전환이 될 수 있다.
+distribution|n.|분포, 분배, 유통, 배열||The distribution of rainfall varies by season.::비의 분포는 계절마다 다르다.|Fair distribution of work matters.::일을 고르게 나누는 것이 중요하다.|The company handles distribution to shops.::그 회사가 가게로 가는 유통을 맡는다.
+dominant|adj.|두드러진, 지배적인, 우세한, 주된||Red is the dominant color in the painting.::그 그림에서 빨강이 가장 두드러진 색이다.|English is the dominant language here.::여기서는 영어가 주로 쓰인다.|The dominant view has changed.::지배적인 견해가 바뀌었다.
+ecological|adj.|생태의, 생태계[학]의||The dam had ecological effects.::그 댐은 생태에 영향을 주었다.|They study ecological balance in the lake.::그들은 호수의 생태 균형을 연구한다.|Ecological damage takes years to repair.::생태 피해는 되돌리는 데 여러 해가 걸린다.
+efficiency|n.|효율(성), 능력, 유효성||The new engine improved efficiency.::새 엔진이 효율을 높였다.|We work on energy efficiency at home.::우리는 집에서 에너지 효율에 힘쓴다.|Her efficiency saved the team hours.::그녀의 능률이 팀의 시간을 아꼈다.
+emergence|n.|출현, 등장||The emergence of new species takes time.::새 종의 출현에는 시간이 걸린다.|We watched the emergence of a new style.::우리는 새 양식의 등장을 지켜봤다.|The emergence of the internet changed reading.::인터넷의 등장이 읽기를 바꿨다.
+empathy|n.|공감, 감정 이입||She listened with empathy.::그녀는 공감하며 들어 주었다.|Stories build empathy for others.::이야기는 남에 대한 공감을 길러 준다.|His empathy made him a good friend.::그의 공감 능력이 그를 좋은 친구로 만들었다.
+engagement|n.|참여, 관여, 개입, 약속||Student engagement improved this term.::이번 학기에 학생 참여가 좋아졌다.|She has an engagement on Friday evening.::그녀는 금요일 저녁에 약속이 있다.|The teacher measured engagement in class.::선생님이 수업 참여도를 재 보았다.
+enrich|v.|풍요롭게 하다, 풍부하게 하다, 강화하다, 향상시키다||Travel enriches our understanding.::여행은 우리 이해를 넓혀 준다.|Compost enriches the soil.::퇴비가 흙을 기름지게 한다.|Music can enrich daily life.::음악은 일상을 풍요롭게 할 수 있다.
+entity|n.|실체, 존재, 독립체||The company is a separate legal entity.::그 회사는 법적으로 따로 있는 존재다.|Each school is treated as one entity.::학교마다 하나의 독립된 단위로 다뤄진다.|The two departments became a single entity.::두 부서가 한 조직이 됐다.
+ethical|adj.|윤리적인||The study raised ethical questions.::그 연구는 윤리적 물음을 낳았다.|She made an ethical choice.::그녀는 윤리적인 선택을 했다.|Ethical rules guide their work.::윤리 규칙이 그들의 일을 이끈다.
+extensive|adj.|광범위한, 많은, 대규모의, 광대한, 폭넓은||The damage was extensive.::피해가 광범위했다.|She has extensive knowledge of birds.::그녀는 새에 대해 폭넓게 안다.|They did extensive research first.::그들은 먼저 대규모 연구를 했다.
+foundation|n.|기반, 토대, 기초, 재단, 협회||Reading is the foundation of learning.::읽기는 배움의 토대다.|The house has a strong foundation.::그 집은 기초가 튼튼하다.|A foundation funds the scholarship.::한 재단이 그 장학금을 댄다.
+frequency|n.|(발생) 빈도, 주파수, 진동수||The frequency of storms has risen.::폭풍의 빈도가 늘었다.|Radio waves have different frequencies.::전파는 주파수가 서로 다르다.|Reduce the frequency of your visits.::방문 횟수를 줄이세요.
+identification|n.|동일시, 식별, (실체를) 밝힘, 검증, 확인||Identification of the plant took an expert.::그 식물을 알아보는 데 전문가가 필요했다.|Please show identification at the door.::문에서 신분증을 보여 주세요.|Early identification of the problem helped.::문제를 일찍 알아낸 것이 도움이 됐다.
+indication|n.|표시, 지표, 암시, 증거||There was no indication of trouble.::문제가 있다는 낌새는 없었다.|Dark clouds are an indication of rain.::검은 구름은 비가 올 표시다.|He gave no indication of his plans.::그는 자기 계획을 전혀 내비치지 않았다.
+infrastructure|n.|사회[공공] 기반 시설, 인프라||The city improved its infrastructure.::그 도시가 기반 시설을 손봤다.|Roads and bridges are basic infrastructure.::길과 다리는 기본 기반 시설이다.|Poor infrastructure slows growth.::기반 시설이 나쁘면 성장이 더디다.
+insufficient|adj.|불충분한, 부족한||The evidence was insufficient.::증거가 불충분했다.|Insufficient sleep affects memory.::잠이 모자라면 기억에 영향을 준다.|We had insufficient time to finish.::끝낼 시간이 부족했다.
+instruction|n.|지도, 지시, 설명, 가르침||Follow the instructions carefully.::설명을 잘 따르세요.|She gave clear instruction to the class.::그녀는 반에 분명하게 지도했다.|The instruction manual is in the box.::설명서는 상자 안에 있다.
+interaction|n.|상호 작용||Interaction between students helps learning.::학생들 사이의 상호 작용이 배움을 돕는다.|The app records every interaction.::그 앱은 모든 주고받음을 기록한다.|Social interaction is important for children.::아이에게는 사람들과 어울리는 것이 중요하다.
+intervention|n.|개입, 중재, 조정, 간섭||Early intervention helped the student.::이른 개입이 그 학생에게 도움이 됐다.|The teacher's intervention stopped the fight.::선생님의 중재가 싸움을 멈췄다.|Medical intervention saved his life.::의학적 처치가 그의 목숨을 구했다.
+involvement|n.|개입, 참여, 포함, 연루, 관여||Parent involvement improves results.::학부모 참여가 결과를 좋게 한다.|His involvement in the club grew.::그의 동아리 참여가 늘었다.|She denied any involvement in the plan.::그녀는 그 계획에 관여하지 않았다고 했다.
+isolated|adj.|고립된, 유리된, 분리된, 격리된||The village is isolated in winter.::그 마을은 겨울에 고립된다.|He felt isolated in the new school.::그는 새 학교에서 외따로 있는 느낌이었다.|This was an isolated incident.::이것은 따로 떨어진 하나의 사건이었다.
+literary|adj.|문학의, 문학적인, 문헌의||She won a literary prize.::그녀는 문학상을 받았다.|The essay uses literary devices.::그 글은 문학적 장치를 쓴다.|He joined a literary club at school.::그는 학교 문학 동아리에 들었다.
+loyalty|n.|충성(심), 충성도||His loyalty to his friends never changed.::친구에 대한 그의 의리는 변하지 않았다.|Customer loyalty keeps the shop alive.::단골의 충성도가 그 가게를 지탱한다.|She showed great loyalty to the team.::그녀는 팀에 큰 충성을 보였다.
+maintenance|n.|유지 관리, 보수, 정비||The car needs regular maintenance.::그 차는 정기 정비가 필요하다.|Building maintenance costs went up.::건물 유지비가 올랐다.|Maintenance work closes the pool on Monday.::보수 작업으로 월요일에 수영장이 닫는다.
+performance|n.|성과, 행위, 수행, 실행||Her performance improved this term.::이번 학기에 그녀의 성적이 올랐다.|The band gave a great performance.::그 밴드는 멋진 공연을 했다.|We review team performance monthly.::우리는 달마다 팀 성과를 살핀다.
+population|n.|개체군, 개체 수, (모)집단, 인구 (집단)||The population of the city is growing.::그 도시의 인구가 늘고 있다.|The deer population doubled in ten years.::십 년 만에 사슴 개체 수가 두 배가 됐다.|They surveyed a small population of students.::그들은 적은 수의 학생 집단을 조사했다.
+possession|n.|(보통 복수로) 소유물, 소유품, 소유||She packed her few possessions.::그녀는 몇 안 되는 소유물을 챙겼다.|The book is his most valued possession.::그 책은 그가 가장 아끼는 물건이다.|Possession of the ball changed twice.::공의 소유가 두 번 바뀌었다.
+preference|n.|선호(도), 선호되는 것||She has a preference for quiet places.::그녀는 조용한 곳을 좋아한다.|Please state your preference on the form.::신청서에 원하는 것을 적어 주세요.|Preferences differ from person to person.::선호는 사람마다 다르다.
+preservation|n.|보존, 저장, 보호, 보관||The preservation of old buildings matters.::옛 건물의 보존은 중요하다.|Salt was used for food preservation.::소금은 음식 저장에 쓰였다.|They work on the preservation of forests.::그들은 숲 보존에 힘쓴다.
+primarily|adv.|주로, 기본적으로|mainly|The book is primarily for beginners.::그 책은 주로 초보자를 위한 것이다.|We eat primarily vegetables.::우리는 주로 채소를 먹는다.|The delay was primarily due to weather.::지연은 주로 날씨 때문이었다.
+primary|adj.|주요한, 주된, 가장 중요한, 일차적인||Safety is our primary concern.::안전이 우리의 가장 중요한 관심사다.|The primary cause was human error.::주된 원인은 사람의 실수였다.|Water is the primary ingredient.::물이 주된 재료다.
+probability|n.|확률, 개연성, 가능성||The probability of rain is low today.::오늘 비 올 확률은 낮다.|We calculated the probability of winning.::우리는 이길 확률을 계산했다.|There is a high probability of delay.::늦어질 가능성이 높다.
+productivity|n.|생산성||Short breaks raise productivity.::짧은 휴식이 생산성을 높인다.|Farm productivity doubled in a decade.::십 년 만에 농장 생산성이 두 배가 됐다.|Noise hurts productivity at work.::소음은 일터의 생산성을 해친다.
+promotion|n.|증진, 승진, 홍보[판촉] (활동)||He received a promotion last month.::그는 지난달에 승진했다.|The shop is running a promotion.::그 가게가 판촉 행사를 하고 있다.|Health promotion is part of the class.::건강 증진이 그 수업의 한 부분이다.
+psychological|adj.|심리적인||The injury had psychological effects too.::그 부상은 심리적인 영향도 있었다.|She studies psychological research methods.::그녀는 심리 연구 방법을 배운다.|Stress is a psychological burden.::스트레스는 심리적 짐이다.
+pursuit|n.|추구, 일, 연구, 활동||The pursuit of knowledge never ends.::지식의 추구는 끝이 없다.|Reading is his favorite pursuit.::읽기는 그가 가장 좋아하는 일이다.|They left in pursuit of a better life.::그들은 더 나은 삶을 찾아 떠났다.
+realm|n.|영역, 범위||That question belongs to the realm of science.::그 물음은 과학의 영역에 든다.|She works in the realm of design.::그녀는 디자인 영역에서 일한다.|Such a change is beyond the realm of possibility.::그런 변화는 가능한 범위를 넘는다.
+recognition|n.|인식, 인지, 인정, 알아봄||He received recognition for his work.::그는 자기 일로 인정을 받았다.|Face recognition unlocks the phone.::얼굴 인식으로 전화가 열린다.|Recognition of the problem came late.::그 문제를 알아차린 것은 늦었다.
+reflection|n.|성찰, 숙고, 생각, 반사||She saw her reflection in the window.::그녀는 창에 비친 자기 모습을 보았다.|After reflection, he changed his mind.::곰곰이 생각한 뒤 그는 마음을 바꿨다.|The essay is a reflection on friendship.::그 글은 우정에 대한 성찰이다.
+reliable|adj.|확실한, 신뢰할 수 있는, 믿을 수 있는, 의지할 수 있는||He is a reliable friend.::그는 믿을 수 있는 친구다.|We need reliable information.::우리는 확실한 정보가 필요하다.|The old car is still reliable.::그 낡은 차는 아직 잘 달린다.
+remarkable|adj.|놀라운, 훌륭한, 주목할 만한, 뛰어난, 대단한||She made a remarkable recovery.::그녀는 놀랍게 회복했다.|The view from the hill is remarkable.::언덕에서 보는 경치는 대단하다.|He has a remarkable memory.::그는 기억력이 뛰어나다.
+repetitive|adj.|반복적인||The work is simple but repetitive.::그 일은 단순하지만 반복적이다.|Repetitive practice builds skill.::반복 연습이 실력을 만든다.|He hurt his wrist from repetitive motion.::그는 같은 동작을 되풀이하다 손목을 다쳤다.
+reproduction|n.|번식, 복제, 재생산||Plant reproduction depends on insects.::식물의 번식은 곤충에 기댄다.|This is a reproduction of a famous painting.::이것은 유명한 그림의 복제품이다.|The book explains animal reproduction.::그 책은 동물의 번식을 설명한다.
+resolution|n.|해결(책), 결심, 해상도, 선명도||They reached a resolution after talks.::그들은 이야기 끝에 해결에 이르렀다.|My New Year's resolution is to read more.::내 새해 결심은 책을 더 읽는 것이다.|The screen has high resolution.::그 화면은 해상도가 높다.
+respondent|n.|응답자||Each respondent answered ten questions.::응답자마다 열 문항에 답했다.|Most respondents preferred the first design.::응답자 대부분이 첫 번째 디자인을 골랐다.|The survey had two hundred respondents.::그 조사에는 응답자가 이백 명이었다.
+security|n.|안전(성), 안전 관리, 보안 (검색), 안보||Airport security took twenty minutes.::공항 보안 검색에 이십 분 걸렸다.|The job gives him a sense of security.::그 일은 그에게 안정감을 준다.|Security cameras watch the entrance.::보안 카메라가 입구를 지켜본다.
+significance|n.|의미, 의의, 중요성, 중요한 것||The discovery has great significance.::그 발견은 큰 의의가 있다.|He explained the significance of the date.::그는 그 날짜의 의미를 설명했다.|The change has little practical significance.::그 변화는 실질적 중요성이 거의 없다.
+straightforward|adj.|단순명료한, 간단한, 단순한, 직접적인||The instructions are straightforward.::그 설명은 단순명료하다.|She gave a straightforward answer.::그녀는 딱 부러지게 답했다.|The task looked straightforward at first.::그 일은 처음에는 간단해 보였다.
+submission|n.|출품(작), 제출(물), 복종||The deadline for submission is Friday.::제출 마감은 금요일이다.|Her submission won first prize.::그녀의 출품작이 일등을 했다.|Late submissions are not accepted.::늦은 제출물은 받지 않는다.
+subsequently|adv.|이후에, 나중에, 그 뒤에, 뒤이어||He subsequently apologized.::그는 나중에 사과했다.|The plan was subsequently changed.::그 계획은 뒤에 바뀌었다.|She subsequently moved to another city.::그녀는 그 뒤 다른 도시로 옮겼다.
+tendency|n.|성향, 경향, 풍조, 추세||He has a tendency to arrive late.::그는 늦게 오는 버릇이 있다.|There is a tendency toward shorter books.::책이 짧아지는 경향이 있다.|Prices show an upward tendency.::값이 오르는 추세를 보인다.
+transformation|n.|변형, 변화, 전환, 탈바꿈, 변신||The town went through a transformation.::그 마을은 큰 변화를 겪었다.|Her transformation as a player was clear.::선수로서 그녀의 변신은 뚜렷했다.|Heat causes a transformation in the metal.::열이 그 금속에 변화를 일으킨다.
+trait|n.|특성, 형질, 특징||Patience is a useful trait.::참을성은 쓸모 있는 특성이다.|Eye color is an inherited trait.::눈 색깔은 물려받는 형질이다.|The two brothers share several traits.::그 두 형제는 몇 가지 특징이 같다.
+unfold|v.|전개되다, 펼쳐지다||The story unfolds slowly.::그 이야기는 천천히 펼쳐진다.|She unfolded the map on the table.::그녀는 탁자에 지도를 펼쳤다.|Events unfolded faster than expected.::일이 생각보다 빨리 전개됐다.
+utility|n.|유용성, 공공 시설, 효용||The tool has limited utility.::그 도구는 쓸모가 제한적이다.|Utility bills rise in winter.::겨울에는 공공요금이 오른다.|They questioned the utility of the rule.::그들은 그 규칙의 쓸모를 의심했다.
+variation|n.|차이, 변형, 변화, 변동||There is wide variation in test scores.::시험 점수에 차이가 크다.|The song has several variations.::그 노래에는 여러 변주가 있다.|Seasonal variation affects prices.::계절 변동이 값에 영향을 준다.
+well-being|n.|(건강과) 행복, 복지, 풍요||Exercise improves mental well-being.::운동은 마음의 안녕을 좋게 한다.|The school cares about student well-being.::그 학교는 학생의 안녕을 살핀다.|Sleep is essential to well-being.::잠은 안녕에 꼭 필요하다.

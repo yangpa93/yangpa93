@@ -1,5 +1,5 @@
 /**
- * 고등학교 2학년 레벨 2 — 수록 154 / 계획 137개.
+ * 고등학교 2학년 레벨 2 — 수록 160 / 계획 137개.
  *
  * 난이도 층: 고급(고등)
  * 어떤 단어가 이 레벨에 들어가는지는 data/plan.ts 가 정한다.
@@ -38,7 +38,7 @@ export const H2_2 = defineLevel('h2-2', [
     ]},
   ]},
   { w: 'cognitive', p: 'adj.', s: [
-    { m: '인지의, 인식의', syn: ['mental', 'intellectual'], ex: [
+    { m: '인지의, 인지적인, 인식의', syn: ['mental', 'intellectual'], ex: [
       ['Sleep affects cognitive ability.', '잠은 인지 능력에 영향을 미친다.'],
       ['Reading supports cognitive development.', '독서는 인지 발달을 돕는다.'],
       ['Aging brings cognitive changes.', '노화는 인지적 변화를 가져온다.'],
@@ -84,6 +84,18 @@ export const H2_2 = defineLevel('h2-2', [
       ['My colleague helped me.', '내 동료가 나를 도왔다.'],
       ['She met her old colleagues.', '그녀는 옛 동료들을 만났다.'],
       ['A colleague suggested the plan.', '한 동료가 그 계획을 제안했다.'],
+    ]},
+  ]},
+  { w: 'collective', p: 'adj.', s: [
+    { m: '집단적인, 공동의, 집단의', syn: [], ex: [
+      ['It was a collective decision.', '그것은 공동의 결정이었다.'],
+      ['Collective effort finished the work early.', '함께 힘써서 일을 일찍 끝냈다.'],
+      ['The class shares a collective memory of that day.', '그 반은 그날에 대한 집단적 기억을 갖고 있다.'],
+    ]},
+    { m: '공동체, 집단', syn: [], ex: [
+      ['The farmers formed a collective.', '농부들이 공동체를 만들었다.'],
+      ['The collective owns the land together.', '그 공동체가 땅을 함께 갖고 있다.'],
+      ['Artists in the collective share a studio.', '그 집단의 예술가들은 작업실을 함께 쓴다.'],
     ]},
   ]},
   { w: 'colony', p: 'n.', s: [
@@ -132,7 +144,7 @@ export const H2_2 = defineLevel('h2-2', [
     ]},
   ]},
   { w: 'companion', p: 'n.', s: [
-    { m: '동반자, 친구', syn: [], ex: [
+    { m: '동행, 동반자, 동료, 친구', syn: [], ex: [
       ['A dog is a good companion.', '개는 좋은 동반자다.'],
       ['She traveled without a companion.', '그녀는 동반자 없이 여행했다.'],
       ['He is my companion on the road.', '그는 여행길의 내 동무다.'],
@@ -331,7 +343,7 @@ export const H2_2 = defineLevel('h2-2', [
     ]},
   ]},
   { w: 'confront', p: 'v.', s: [
-    { m: '직면하다, 맞서다', syn: ['face', 'stand up to'], ex: [
+    { m: '직면하다, 마주하다, 직면하게 하다, 맞서다', syn: ['face', 'stand up to'], ex: [
       ['We must confront the truth.', '우리는 진실에 맞서야 한다.'],
       ['She confronted him about the lie.', '그녀는 그 거짓말에 대해 그와 맞섰다.'],
       ['The country confronts an aging population.', '그 나라는 고령화에 직면해 있다.'],
@@ -390,14 +402,14 @@ export const H2_2 = defineLevel('h2-2', [
     ]},
   ]},
   { w: 'constitute', p: 'v.', s: [
-    { m: '구성하다', syn: ['make up'], ex: [
+    { m: '~을 구성하다, 구성하다, 조직하다, (법령 등을) 제정하다, (단체 등을) 설립하다', syn: ['make up'], ex: [
       ['Women constitute half the class.', '여성이 그 반의 절반을 이룬다.'],
       ['These parts constitute the whole.', '이 부분들이 전체를 이룬다.'],
       ['That constitutes a serious problem.', '그것은 심각한 문제가 된다.'],
     ]},
   ]},
   { w: 'constrain', p: 'v.', s: [
-    { m: '제약하다, 억제하다', syn: ['limit', 'restrict'], ex: [
+    { m: '제한하다, 제약하다, 속박하다', syn: ['limit', 'restrict'], ex: [
       ['Budget constrains our choices.', '예산이 우리 선택을 제약한다.'],
       ['She felt constrained by the rules.', '그녀는 규칙에 얽매인다고 느꼈다.'],
       ['Strict rules constrain what teachers can do.', '엄격한 규칙이 교사가 할 수 있는 일을 제약한다.'],
@@ -481,7 +493,7 @@ export const H2_2 = defineLevel('h2-2', [
     ]},
   ]},
   { w: 'conventional', p: 'adj.', s: [
-    { m: '전통적인, 관습적인', syn: ['traditional', 'standard'], ex: [
+    { m: '전통적인, 관습적인, 관례의, 상투적인', syn: ['traditional', 'standard'], ex: [
       ['He prefers conventional methods.', '그는 전통적인 방법을 선호한다.'],
       ['Conventional wisdom is not always right.', '통념이 늘 옳은 것은 아니다.'],
       ['The design breaks conventional rules.', '그 디자인은 관습적 규칙을 깬다.'],
@@ -495,7 +507,7 @@ export const H2_2 = defineLevel('h2-2', [
     ]},
   ]},
   { w: 'convey', p: 'v.', s: [
-    { m: '전달하다, 표현하다', syn: ['express', 'communicate'], ex: [
+    { m: '전달하다, 운반하다', syn: ['express', 'communicate'], ex: [
       ['Words cannot convey my thanks.', '말로는 내 감사를 전할 수 없다.'],
       ['The painting conveys deep sadness.', '그 그림은 깊은 슬픔을 전한다.'],
       ['Please convey my regards to her.', '그녀에게 내 안부를 전해 주세요.'],
@@ -516,7 +528,7 @@ export const H2_2 = defineLevel('h2-2', [
     ]},
   ]},
   { w: 'coordinate', p: 'v.', s: [
-    { m: '조정하다, 조율하다', syn: ['organize'], ex: [
+    { m: '조정하다, 조율하다, 대등하게 하다, 조직화하다', syn: ['organize'], ex: [
       ['She coordinates the whole event.', '그녀가 행사 전체를 조율한다.'],
       ['They coordinated their plans.', '그들은 계획을 조율했다.'],
       ['Coordinate with your partner.', '짝과 조율해라.'],
@@ -600,7 +612,7 @@ export const H2_2 = defineLevel('h2-2', [
     ]},
   ]},
   { w: 'counterpart', p: 'n.', s: [
-    { m: '상대방, 대응물', syn: ['equivalent', 'match'], ex: [
+    { m: '상대(방), 대응 관계에 있는 사람[것], 대응물[자], (쌍을 이루는) 한 축, (~에) 상응하는 존재', syn: ['equivalent', 'match'], ex: [
       ['She met her Japanese counterpart.', '그녀는 일본 측 상대방을 만났다.'],
       ['Rural schools differ from their urban counterparts.', '시골 학교는 도시의 그것과 다르다.'],
       ['This word has no counterpart in Korean.', '이 단어는 한국어에 대응어가 없다.'],
@@ -684,7 +696,7 @@ export const H2_2 = defineLevel('h2-2', [
     ]},
   ]},
   { w: 'crucial', p: 'adj.', s: [
-    { m: '결정적인, 매우 중요한', syn: ['critical', 'vital'], ex: [
+    { m: '중요한, 매우 중요한, 결정적인', syn: ['critical', 'vital'], ex: [
       ['Timing is crucial in this game.', '이 경기에서는 타이밍이 결정적이다.'],
       ['Water is crucial for survival.', '물은 생존에 매우 중요하다.'],
       ['This is a crucial moment for the team.', '지금은 그 팀에게 결정적인 순간이다.'],
@@ -966,7 +978,7 @@ export const H2_2 = defineLevel('h2-2', [
     ]},
   ]},
   { w: 'depict', p: 'v.', s: [
-    { m: '묘사하다, 그리다', syn: ['portray', 'describe'], ex: [
+    { m: '묘사하다, 그리다, 설명하다', syn: ['portray', 'describe'], ex: [
       ['The novel depicts rural life.', '그 소설은 농촌 생활을 그린다.'],
       ['The painting depicts a winter scene.', '그 그림은 겨울 풍경을 묘사한다.'],
       ['Media often depict teens unfairly.', '언론은 종종 십 대를 부당하게 묘사한다.'],
@@ -984,6 +996,34 @@ export const H2_2 = defineLevel('h2-2', [
       ['War deprived them of a home.', '전쟁이 그들에게서 집을 빼앗았다.'],
       ['Do not deprive her of rest.', '그녀에게서 휴식을 빼앗지 마라.'],
       ['They were deprived of freedom.', '그들은 자유를 빼앗겼다.'],
+    ]},
+  ]},
+  { w: 'evolutionary', p: 'adj.', s: [
+    { m: '진화의, 진화(론)적인', syn: [], ex: [
+      ['Long necks gave an evolutionary advantage.', '긴 목은 진화에서 유리했다.'],
+      ['The change was evolutionary, not sudden.', '그 변화는 갑작스럽지 않고 점진적이었다.'],
+      ['He teaches evolutionary biology.', '그는 진화 생물학을 가르친다.'],
+    ]},
+  ]},
+  { w: 'justification', p: 'n.', s: [
+    { m: '정당화, 명분, 구실, 변명', syn: [], ex: [
+      ['There is no justification for such rudeness.', '그런 무례함에는 어떤 명분도 없다.'],
+      ['He offered a weak justification.', '그는 궁색한 변명을 내놓았다.'],
+      ['The report gives justification for the change.', '그 보고서는 변경의 근거를 댄다.'],
+    ]},
+  ]},
+  { w: 'perception', p: 'n.', s: [
+    { m: '지각, 인식, 인지', syn: ['awareness'], ex: [
+      ['Our perception of color changes with light.', '빛에 따라 색에 대한 지각이 달라진다.'],
+      ['Public perception of the issue has shifted.', '그 문제에 대한 대중의 인식이 바뀌었다.'],
+      ['Fear can distort our perception of risk.', '두려움은 위험에 대한 인식을 비틀 수 있다.'],
+    ]},
+  ]},
+  { w: 'representation', p: 'n.', s: [
+    { m: '표현, 표상, 대표성, 개념작용, 재현', syn: [], ex: [
+      ['The map is a representation of the city.', '그 지도는 도시를 나타낸 것이다.'],
+      ['Women\'s representation on the board grew.', '이사회의 여성 대표성이 늘었다.'],
+      ['The painting is a representation of grief.', '그 그림은 슬픔을 나타낸 것이다.'],
     ]},
   ]},
   { w: 'result from', p: 'phr.', s: [
@@ -1103,6 +1143,13 @@ export const H2_2 = defineLevel('h2-2', [
       ['Take advantage of this chance.', '이 기회를 활용해라.'],
       ['He took advantage of the good weather.', '그는 좋은 날씨를 잘 이용했다.'],
       ['They took advantage of her kindness.', '그들은 그녀의 친절을 이용했다.'],
+    ]},
+  ]},
+  { w: 'theoretical', p: 'adj.', s: [
+    { m: '이론적인, 이론의', syn: [], ex: [
+      ['The problem is theoretical, not practical.', '그 문제는 실제가 아니라 이론상의 것이다.'],
+      ['She works in theoretical physics.', '그녀는 이론 물리학을 한다.'],
+      ['The risk is only theoretical.', '그 위험은 이론에만 있다.'],
     ]},
   ]},
 ], 'csat');

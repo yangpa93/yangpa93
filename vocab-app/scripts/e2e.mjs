@@ -22,9 +22,24 @@
  */
 
 import { chromium } from 'playwright';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import jsQR from 'jsqr';
 import { PNG } from 'pngjs';
+
+/**
+ * 지금 어휘 판에 적힌 영어 낱말 수.
+ *
+ * **개수를 시험에 박아 두지 않으려고 읽어 온다.** 예전에는 '영어 3690개' 라고
+ * 적어 두었는데, 초등학교 수준 낱말 108개를 빼면서 3582 가 되자 그 줄만 조용히
+ * 빨개졌다. 낱말 수는 앞으로도 계속 바뀌는 값이다. 시험이 볼 것은 "몇 개인가"
+ * 가 아니라 **"화면이 어휘 판의 그 수를 보여 주는가"** 다.
+ */
+function latestTotalEn() {
+  const src = readFileSync('src/data/dataVersion.ts', 'utf8');
+  const m = src.match(/totalEn:\s*(\d+)/);
+  if (!m) throw new Error('dataVersion.ts 에서 totalEn 을 못 찾았습니다');
+  return Number(m[1]);
+}
 
 const BASE = process.env.E2E_BASE ?? 'http://localhost:8088';
 
@@ -645,7 +660,7 @@ console.log('  ⑧ 판 정보 — 앱과 낱말이 따로 세는가');
 await go(page, '/whats-new');
 ok('앱 판이 적혀 있다', await has(page, '📱 앱'));
 ok('낱말 판이 적혀 있다', await has(page, '📚 낱말'));
-ok('낱말 개수가 함께 나온다', await has(page, '영어 3690개'));
+ok('낱말 개수가 함께 나온다', await has(page, `영어 ${latestTotalEn()}개`));
 
 /*
  * **정식으로 열기 전에는 고치고 있는 것을 안 적는다.**

@@ -115,27 +115,41 @@ if (src.includes(`version: '${version}'`)) {
   version = `${version}-${n}`;
 }
 
-const entry = `  {
-    version: '${version}',
-    date: '${ymd.join('-')}',
-    en: ${added.en},
-    ko: ${added.ko},
-    daily: ${added.daily},
-    note: ${JSON.stringify(note)},
-    totalEn: ${now.en},
-    totalKo: ${now.ko},
-    totalDaily: ${now.daily},
-  },
-`;
+/*
+ * **줄 끝을 파일에 맞춘다.** 이 저장소의 .ts 는 CRLF 다. `'…[\n'` 으로 찾으면
+ * 실제 파일의 `[\r\n` 과 안 맞아 **아무 일도 안 일어난다.** 그런데 바로 위
+ * DATA_VERSION 은 정규식이라 성공하므로, 판 번호만 올라가고 목록에는 새 줄이
+ * 없는 어중간한 상태가 된다. 실제로 그랬다 — 시험이 잡아 주기는 했지만,
+ * 조용히 어긋나는 것은 도구 쪽 잘못이다.
+ */
+const EOL = src.includes('\r\n') ? '\r\n' : '\n';
+const entry =
+  [
+    '  {',
+    `    version: '${version}',`,
+    `    date: '${ymd.join('-')}',`,
+    `    en: ${added.en},`,
+    `    ko: ${added.ko},`,
+    `    daily: ${added.daily},`,
+    `    note: ${JSON.stringify(note)},`,
+    `    totalEn: ${now.en},`,
+    `    totalKo: ${now.ko},`,
+    `    totalDaily: ${now.daily},`,
+    '  },',
+  ].join(EOL) + EOL;
 
 let out = src.replace(
   /export const DATA_VERSION = '[^']*';/,
   `export const DATA_VERSION = '${version}';`,
 );
-out = out.replace(
-  'export const DATA_RELEASES: DataRelease[] = [\n',
-  `export const DATA_RELEASES: DataRelease[] = [\n${entry}`,
-);
+const head = /export const DATA_RELEASES: DataRelease\[\] = \[\r?\n/;
+if (!head.test(out)) {
+  console.log('  ❌ dataVersion.ts 에서 DATA_RELEASES 목록의 첫 줄을 못 찾았습니다.');
+  console.log('     파일 모양이 바뀌었는지 보세요. 아무것도 안 적었습니다.');
+  console.log('');
+  process.exit(1);
+}
+out = out.replace(head, (m) => m + entry);
 writeFileSync(FILE, out, 'utf8');
 
 console.log(`  ✅ 어휘 판 ${version} 을 만들었습니다.`);

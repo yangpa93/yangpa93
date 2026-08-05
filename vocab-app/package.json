@@ -63,6 +63,8 @@
     "data:korean": "node scripts/korean/update-korean.mjs",
     "apply-korean": "node scripts/korean/apply-review.mjs",
     "apply-english": "node scripts/apply-english.mjs",
+    "check-meanings": "node scripts/check-meanings.mjs",
+    "apply-meanings": "node scripts/apply-meanings.mjs",
     "data:import": "node scripts/import-csv.mjs",
     "preflight": "node scripts/preflight.mjs",
     "relink": "node scripts/relink-eas.mjs",

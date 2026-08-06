@@ -130,19 +130,26 @@ export interface VocabEntry {
  */
 export type KoCategory =
   | 'idiom' // 사자성어
+  | 'native' // 고유어 (순우리말)
   | 'concept' // 개념어 (문학·비문학)
   | 'classic' // 고전 문학 어휘
   | 'csat'; // 수능 필수 어휘
 
 export const KO_CATEGORY_LABEL: Record<KoCategory, string> = {
   idiom: '사자성어',
+  native: '고유어',
   concept: '개념어',
   classic: '고전',
   csat: '수능 어휘',
 };
 
-/** 갈래 순서. 하루치를 뽑을 때와 화면에 늘어놓을 때 이 순서를 쓴다. */
-export const KO_CATEGORY_ORDER: KoCategory[] = ['idiom', 'concept', 'classic', 'csat'];
+/**
+ * 갈래 순서. 하루치를 뽑을 때와 화면에 늘어놓을 때 이 순서를 쓴다.
+ *
+ * 고유어를 사자성어 다음에 둔다. 둘 다 **낱말 자체**를 익히는 것이고,
+ * 개념어·고전·수능은 글을 읽으려고 익히는 것이라 성격이 다르다.
+ */
+export const KO_CATEGORY_ORDER: KoCategory[] = ['idiom', 'native', 'concept', 'classic', 'csat'];
 
 export interface KoExample {
   /** 예문 한 줄, 또는 고전이면 원문 단락 */

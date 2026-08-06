@@ -7,7 +7,7 @@ import {
 } from '../src/srs/koSession';
 import { koCloze, koExample, wordForms } from '../src/data/korean/entry';
 import { KO_ENTRIES } from '../src/data/korean/levels';
-import { CardState, KoCategory, KoEntry } from '../src/types';
+import { CardState, KO_CATEGORY_ORDER, KoCategory, KoEntry } from '../src/types';
 
 function entry(over: Partial<KoEntry> = {}): KoEntry {
   return {
@@ -111,7 +111,14 @@ describe('splitByCategory', () => {
   });
 
   it('0을 넣으면 다 0', () => {
-    expect(splitByCategory(0, () => 0.9)).toEqual({ idiom: 0, concept: 0, classic: 0, csat: 0 });
+    /*
+     * 갈래 이름을 여기 적어 두지 않는다. 고유어를 더했을 때 이 줄만 빨개졌는데,
+     * 규칙("0을 넣으면 다 0")은 그대로이고 갈래 목록이 늘었을 뿐이었다.
+     * 시험은 갈래가 몇인지가 아니라 규칙을 봐야 한다.
+     */
+    const got = splitByCategory(0, () => 0.9);
+    expect(Object.values(got).every((n) => n === 0)).toBe(true);
+    expect(Object.keys(got).sort()).toEqual([...KO_CATEGORY_ORDER].sort());
   });
 });
 

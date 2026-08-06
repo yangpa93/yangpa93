@@ -10,9 +10,17 @@
   * 엑셀은 원본 그대로 두고 싶다. 손으로 고친 흔적이 JSON 쪽에 남으면
     무엇이 원본이고 무엇이 수정인지 diff 로 보인다.
 
-원본 엑셀은 korean/Korean_essential_voca.xlsx 하나면 된다.
+원본 엑셀은 둘이다.
+
+  Korean_essential_voca.xlsx   개념어 · 고전 · 수능
+  사자성어_고유어.xlsx          사자성어 · 고유어
+
+**사자성어는 뒤엣것이 원본이다.** 앞엣것에도 사자성어 시트가 있지만, 뜻과
+예문을 다시 손보고 115개를 더한 것이 뒤엣것이라 그쪽을 쓴다. 난이도(Level
+1~6)도 거기 매겨져 있어서, 레벨을 나눌 때 difficulty.json 보다 먼저 본다.
+
 CSAT_Korean_Essential_Vocabulary_800.xlsx 의 800개는 순번·어휘명까지
-이 파일 안에 그대로 들어 있음을 확인했다.
+Korean_essential_voca.xlsx 안에 그대로 들어 있음을 확인했다.
 
     python3 scripts/korean/xlsx-to-json.py
 """
@@ -28,15 +36,22 @@ except ImportError:
 
 ROOT = Path(__file__).resolve().parents[2]
 XLSX = ROOT / 'korean' / 'Korean_essential_voca.xlsx'
+IDIOM_XLSX = ROOT / 'korean' / '사자성어_고유어.xlsx'
 OUT = ROOT / 'korean' / 'source.json'
 
 # 시트마다 머리글 줄 위치와 열 순서가 제각각이라 여기에 적어 둔다.
 # (시트 이름, 머리글이 있는 줄, 뽑아 올 열 번호)
 SHEETS = {
-    'idiom': ('사자성어_300개', 0, {'no': 1, 'hanja': 2, 'word': 3, 'meaning': 4, 'example': 5}),
     'concept': ('개념어_200개', 1, {'no': 0, 'field': 1, 'word': 2, 'meaning': 3, 'example': 4}),
     'classic': ('고전문학 필수 어휘 150 개', 0, {'no': 0, 'word': 1, 'meaning': 2, 'field': 3, 'example': 4}),
 }
+
+# 사자성어·고유어는 파일이 따로다. 예문이 두 칸이라 열 이름도 다르다.
+IDIOM_SHEET = ('사자성어_300개_수정', 0,
+               {'level': 0, 'no': 1, 'hanja': 2, 'word': 3, 'meaning': 4, 'sim': 5,
+                'example': 6, 'example2': 7})
+NATIVE_SHEET = ('국어1등급어휘력_고유어', 0,
+                {'no': 0, 'word': 1, 'meaning': 2, 'example': 3})
 
 CSAT_SHEETS = [
     '수능 국어 필수 어휘 (1~200)',
@@ -65,9 +80,75 @@ def read(wb, sheet, header_row, cols):
     return out
 
 
+def clean(s):
+    """
+    예문 한 줄을 다듬는다.
+
+    엑셀에는 큰따옴표로 감싼 것이 271개 있다. 그대로 쓰면 화면에서 따옴표가
+    겹쳐 보인다. 그리고 마크다운 울타리(```)가 통째로 들어간 칸이 하나 있어서
+    (양상군자), 한글이 한 자도 없으면 예문이 아닌 것으로 보고 버린다.
+
+    **셀 안의 줄바꿈을 반드시 없앤다.** 엑셀 칸에서 Alt+Enter 로 줄을 나눈
+    것이 그대로 넘어오면, 레벨 파일(.ts)에 따옴표가 열린 채 줄이 바뀌어
+    **파일이 통째로 깨진다.** 실제로 사면초가 예문 하나 때문에 여섯 스위트가
+    컴파일조차 못 했다.
+    """
+    s = ' '.join(str(s).split())          # 줄바꿈·연속 공백을 한 칸으로
+    s = s.strip().strip('"').strip('“”').strip("'").strip()
+    if not any('가' <= ch <= '힣' for ch in s):
+        return ''
+    return s
+
+
+def read_idioms():
+    """
+    사자성어. **예문이 두 칸이라 목록으로 담는다.**
+
+    두 칸이 똑같은 것이 114개 있다(같은 문장을 복사해 두셨다). 그런 것은
+    하나로 줄인다 — 같은 문장을 두 번 보여 줄 까닭이 없다.
+
+    담는 모양은 `[{"t": "문장"}]` 이다. **글자 목록이 아니라 객체 목록이라야
+    한다** — build-levels 가 예문을 쓸 때 `e.t` 를 찾기 때문에, 글자를 그냥
+    넣으면 렌더링에서 통째로 걸러져 예문이 하나도 없는 어휘가 된다.
+    실제로 그렇게 만들었다가 416개가 빈 채로 나왔고 시험이 잡았다.
+    """
+    wb = openpyxl.load_workbook(IDIOM_XLSX, read_only=True, data_only=True)
+    sheet, hr, cols = IDIOM_SHEET
+    rows = read(wb, sheet, hr, cols)
+    natives = read(wb, *NATIVE_SHEET[:2], NATIVE_SHEET[2])
+    wb.close()
+
+    out = []
+    for r in rows:
+        if not r['word']:
+            continue
+        seen = []
+        for key in ('example', 'example2'):
+            t = clean(r.pop(key, ''))
+            if t and t not in seen:
+                seen.append(t)
+        r['examples'] = [{'t': t} for t in seen]
+        r['level'] = int(float(r['level'])) if r['level'] else 0
+        out.append(r)
+
+    nat = []
+    for r in natives:
+        if not r['word']:
+            continue
+        # 고유어 뜻은 「1. … 2. …」 로 줄이 나뉜 것이 있다. 한 줄로 잇는다.
+        r['meaning'] = ' '.join(r['meaning'].split())
+        t = clean(r.pop('example', ''))
+        r['examples'] = [{'t': t}] if t else []
+        nat.append(r)
+
+    return out, nat
+
+
 def main():
     if not XLSX.exists():
         sys.exit(f'원본 엑셀이 없습니다: {XLSX}')
+    if not IDIOM_XLSX.exists():
+        sys.exit(f'사자성어·고유어 엑셀이 없습니다: {IDIOM_XLSX}')
 
     wb = openpyxl.load_workbook(XLSX, read_only=True, data_only=True)
     data = {}
@@ -80,10 +161,7 @@ def main():
     data['csat'] = csat
     wb.close()
 
-    # 사자성어 용례는 엑셀에 큰따옴표로 감싸여 있다. 화면에 그대로 쓰면
-    # 따옴표가 겹쳐 보이므로 여기서 벗겨 둔다.
-    for r in data['idiom']:
-        r['example'] = r['example'].strip('"').strip('“”').strip()
+    data['idiom'], data['native'] = read_idioms()
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(

@@ -89,3 +89,6 @@ preview.log
 
 # 회원님이 검토하며 만드시는 작업 파일(2027보카 등). 앱 소스가 아니다.
 review/*.xlsx
+
+# fill-idiom-examples.mjs 가 돌 때마다 다시 만드는 목록
+korean/idiom-examples-todo.txt

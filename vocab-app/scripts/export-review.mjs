@@ -103,6 +103,7 @@ for (const file of files) {
 /** 화면에 쓰는 갈래 이름. 파일 안에서는 영어 낱말로 적혀 있다. */
 const KO_CATEGORY = {
   idiom: '사자성어',
+  native: '고유어',
   concept: '개념어',
   classic: '고전',
   csat: '수능 어휘',

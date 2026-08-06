@@ -17,15 +17,17 @@
  *     과학 → 예술 → 논리 → 문학 → 고급·기출 순으로 짜여 있어서, 순번이
  *     곧 난이도 오름차순이다.
  *   - 개념어: 엑셀 순번 그대로. 문학 100개가 앞, 비문학 100개가 뒤다.
- *   - 고전: 엑셀 순번 그대로.
- *   - 사자성어: 엑셀은 가나다순이라 난이도와 아무 상관이 없다. 레벨 1에
- *     가담항설·각주구검이 들어가면 안 된다. korean/difficulty.json 에
- *     적어 둔 순위를 쓰고, 거기 없는 것은 뒤로 보낸다.
+ *   - 고전·고유어: 엑셀 순번 그대로.
+ *   - 사자성어: **엑셀에 매겨 둔 Level(1~6) 이 먼저다.** 예전에는 엑셀이
+ *     가나다순이라 순번이 난이도와 무관해서 korean/difficulty.json 의
+ *     순위를 썼는데, 새 엑셀에는 사람이 직접 1~6 으로 나눠 두었다.
+ *     difficulty.json 은 같은 Level 안의 순서를 가르는 데만 쓴다.
  *
  * **3. 24레벨 배분.** 갈래마다 제 개수를 24등분한다. 갈래별로 나누지 않고
  * 전체를 한 줄로 세워 자르면, 한 레벨이 통째로 사자성어만 나오는 일이
- * 생긴다. 갈래를 고루 섞어야 하루치(사자성어 1~2 · 개념어 1 · 고전 0~1 ·
- * 수능 3)가 맞는다. 네 갈래가 동시에 끝나는 것도 이 방식이라야 된다.
+ * 생긴다. 갈래를 고루 섞어야 하루치(사자성어 1~2 · 고유어 0~1 · 개념어 1 ·
+ * 고전 0~1 · 수능 3)가 맞는다. 다섯 갈래가 동시에 끝나는 것도 이 방식이라야
+ * 된다.
  */
 
 import { mkdirSync, readFileSync, writeFileSync, readdirSync, rmSync } from 'node:fs';
@@ -36,6 +38,7 @@ const EXTRA = 'korean/csat-extra.json';
 const DIFF = 'korean/difficulty.json';
 const CORR = 'korean/corrections.json';
 const CLASSIC_EX = 'korean/classic-examples.json';
+const IDIOM_EX = 'korean/idiom-examples.json';
 const OUT_DIR = 'src/data/korean/levels';
 
 /** 갈래별 상수 이름 앞머리. m1-1 → M1_1 */
@@ -127,22 +130,28 @@ function applyCorrections(src, corrections, notes) {
 }
 
 /**
- * 표제어가 겹칠 때 어느 갈래를 남길지.
+ * 갈래 목록이자, **표제어가 겹칠 때 어느 갈래를 남길지**의 순서.
  *
  * 앞에 적힌 갈래가 이긴다.
  *   사자성어 — 주객전도·천편일률처럼 개념어/수능에도 실린 것이 있는데,
  *              사자성어로 배우는 편이 한자까지 같이 익혀 남는 게 많다.
+ *   고유어   — 순우리말. 한자어와 겹칠 일이 거의 없다.
  *   개념어   — 수능 시트와 34개가 겹친다. 개념어 쪽 뜻풀이가 더 자세하다.
  *   고전     — 다른 갈래와 겹치지 않는다.
  *   수능     — 마지막.
+ *
+ * 한 곳에 모아 둔다. 여기저기 적어 두면 갈래를 더할 때 반드시 한 곳을
+ * 빠뜨린다 — 고유어를 더하면서 실제로 다섯 군데를 고쳐야 했다.
  */
-const PRIORITY = ['idiom', 'concept', 'classic', 'csat'];
+const CATEGORIES = ['idiom', 'native', 'concept', 'classic', 'csat'];
 
-const LABEL = { idiom: '사자성어', concept: '개념어', classic: '고전', csat: '수능' };
+const PRIORITY = CATEGORIES;
+
+const LABEL = { idiom: '사자성어', native: '고유어', concept: '개념어', classic: '고전', csat: '수능' };
 
 function dedupe(src) {
   const notes = [];
-  const out = { idiom: [], concept: [], classic: [], csat: [] };
+  const out = { idiom: [], native: [], concept: [], classic: [], csat: [] };
 
   /** 이미 자리를 차지한 표제어 → 어느 갈래가 가져갔는지 */
   const owner = new Map();
@@ -200,18 +209,29 @@ function dedupe(src) {
 /* ------------------------------------------------------------------ */
 
 function sortByDifficulty(data, difficulty) {
-  // 사자성어만 따로 순위를 매긴다. 나머지는 엑셀 순번이 곧 난이도다.
+  /*
+   * 사자성어는 **엑셀의 Level(1~6) 이 먼저다.**
+   *
+   * 예전에는 difficulty.json 의 순위만 썼다. 엑셀이 가나다순이라 순번이
+   * 난이도와 아무 상관이 없었기 때문이다. 그런데 새 엑셀에는 회원님이 직접
+   * 1~6 으로 나눠 두셨다. 사람이 매긴 난이도가 우리가 뒤늦게 세운 순위보다
+   * 낫다. difficulty.json 은 **같은 Level 안에서** 순서를 가르는 데 쓴다.
+   */
   const rank = new Map(difficulty.idiom.map((w, i) => [w, i]));
   const missing = data.idiom.filter((r) => !rank.has(r.word)).map((r) => r.word);
 
   data.idiom.sort((a, b) => {
+    // Level 이 없는 것(엑셀에서 빠졌지만 앱에 남긴 것)은 맨 뒤로.
+    const la = a.level || 99;
+    const lb = b.level || 99;
+    if (la !== lb) return la - lb;
     const ra = rank.has(a.word) ? rank.get(a.word) : Number.MAX_SAFE_INTEGER;
     const rb = rank.has(b.word) ? rank.get(b.word) : Number.MAX_SAFE_INTEGER;
     // 순위가 같으면(둘 다 미등재) 엑셀 순번으로 갈라 순서를 고정한다.
     return ra - rb || a.no - b.no;
   });
 
-  for (const key of ['concept', 'classic', 'csat']) {
+  for (const key of ['native', 'concept', 'classic', 'csat']) {
     data[key].sort((a, b) => a.no - b.no);
   }
 
@@ -245,7 +265,17 @@ function chunk(list, n) {
 /* 파일로 쓰기                                                          */
 /* ------------------------------------------------------------------ */
 
-const q = (s) => `'${String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`;
+/**
+ * 따옴표 안에 넣을 수 있게 감싼다.
+ *
+ * **줄바꿈을 한 칸으로 눌러 둔다.** 원본 엑셀 칸에 Alt+Enter 로 나눈 줄이
+ * 들어 있으면, 그대로 적을 때 따옴표가 열린 채 줄이 바뀌어 .ts 파일이 통째로
+ * 깨진다. 예문 하나 때문에 여섯 스위트가 컴파일도 못 한 적이 있다.
+ * 원본을 다루는 쪽(xlsx-to-json.py)에서도 막지만, 적는 쪽에서도 막는다 —
+ * 여기를 지나가는 글은 사전에서 받아 온 것도 있어서 어디서 올지 모른다.
+ */
+const q = (s) =>
+  `'${String(s).replace(/\s+/g, ' ').replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`;
 
 function renderRow(r, category) {
   const parts = [`w: ${q(r.word)}`];
@@ -272,6 +302,7 @@ function renderRow(r, category) {
 
 const CATEGORY_COMMENT = {
   idiom: '사자성어',
+  native: '고유어',
   concept: '개념어',
   classic: '고전',
   csat: '수능 어휘',
@@ -367,6 +398,35 @@ function main() {
     // 없으면 엑셀 예문만 쓴다.
   }
 
+  /*
+   * 사자성어에 **두 번째 예문**을 얹는다.
+   *
+   * 엑셀 예문 칸이 둘인데 123개는 한 칸만 차 있거나 두 칸에 같은 문장이
+   * 들어 있다. 예문이 하나뿐이면 그 성어를 다시 만날 때마다 같은 문장만
+   * 나온다(entry.ts 의 exposure 가 예문을 돌려 쓴다).
+   *
+   * 출처(s)가 붙은 것은 표준국어대사전 용례이고, 안 붙은 것은 우리가 지은
+   * 일상 문장이다. **수능 기출은 넣지 않았다** — 지문을 그대로 옮겨 올 길이
+   * 없어서, 기억으로 적으면 기출이 아닌 문장을 기출인 것처럼 넣게 된다.
+   */
+  try {
+    const extra = JSON.parse(readFileSync(IDIOM_EX, 'utf8'));
+    let n = 0;
+    for (const r of corrected.idiom) {
+      const found = extra[r.word];
+      if (!found?.length) continue;
+      const now = r.examples ?? (r.example ? [{ t: r.example }] : []);
+      const seen = new Set(now.map((e) => e.t));
+      const fresh = found.filter((e) => !seen.has(e.t));
+      if (!fresh.length) continue;
+      r.examples = [...now, ...fresh];
+      n += fresh.length;
+    }
+    if (n) console.log(`  사자성어 예문 ${n}개를 더 붙였습니다\n`);
+  } catch {
+    // 없으면 엑셀 예문만 쓴다.
+  }
+
   const data = dedupe(corrected);
   data.notes = [...fixNotes, ...data.notes];
 
@@ -379,14 +439,14 @@ function main() {
    * 조용히 빼면 왜 안 나오는지 알 수 없으므로 개수를 찍어 둔다.
    */
   const held = {};
-  for (const c of ['idiom', 'concept', 'classic', 'csat']) {
+  for (const c of CATEGORIES) {
     const before = data[c].length;
     data[c] = data[c].filter((r) => r.examples.length > 0);
     if (before !== data[c].length) held[c] = before - data[c].length;
   }
   const missing = sortByDifficulty(data, difficulty);
 
-  const categories = ['idiom', 'concept', 'classic', 'csat'];
+  const categories = CATEGORIES;
   const chunks = Object.fromEntries(
     categories.map((c) => [c, chunk(data[c], LEVEL_ORDER.length)]),
   );
@@ -447,10 +507,20 @@ ${LEVEL_ORDER.map((l) => `  ...KO_${constName(l)},`).join('\n')}
     const sum = categories.reduce((a, c) => a + buckets[c].length, 0);
     console.log(`    ${level.padEnd(6)}${n}   = ${sum}`);
   }
-  if (missing.length) {
+  /*
+   * difficulty.json 에 없는 성어는 **엑셀 Level 안에서만** 뒤로 간다.
+   * 예전에는 순위가 전부여서 없으면 맨 뒤 레벨로 밀렸는데, 지금은 Level 이
+   * 먼저라 제 난이도 자리를 지킨다. 그래서 경고가 아니라 알림으로 적는다.
+   */
+  const noLevel = missing.filter((w) => !(data.idiom.find((r) => r.word === w)?.level));
+  if (noLevel.length) {
     console.log();
-    console.log(`  ⚠ 난이도 순위에 없는 사자성어 ${missing.length}개 — 뒤쪽 레벨로 밀림`);
-    console.log(`    ${missing.slice(0, 12).join(', ')}${missing.length > 12 ? ' …' : ''}`);
+    console.log(`  ⚠ 엑셀 Level 도 순위도 없는 사자성어 ${noLevel.length}개 — 맨 뒤 레벨로 밀림`);
+    console.log(`    ${noLevel.slice(0, 12).join(', ')}${noLevel.length > 12 ? ' …' : ''}`);
+  } else if (missing.length) {
+    console.log();
+    console.log(`  · 난이도 순위(difficulty.json)에 없는 사자성어 ${missing.length}개`);
+    console.log('    엑셀 Level 이 있어 제자리에 들어갑니다. 같은 Level 안에서만 뒤로 갑니다.');
   }
   const heldTotal = Object.values(held).reduce((a, b) => a + b, 0);
   if (heldTotal) {

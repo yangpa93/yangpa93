@@ -32,7 +32,7 @@
  */
 
 /** 지금 이 묶음에 들어 있는 어휘 판. 맨 앞 항목의 version 과 같아야 한다. */
-export const DATA_VERSION = '2026.08.05';
+export const DATA_VERSION = '2026.08.06';
 
 export interface DataRelease {
   /** `yyyy.mm.dd` — 하루에 두 번이면 `yyyy.mm.dd-2` */
@@ -65,6 +65,17 @@ export interface DataRelease {
 
 /** 새 판이 맨 앞. 화면도 이 순서 그대로 보여준다. */
 export const DATA_RELEASES: DataRelease[] = [
+  {
+    version: '2026.08.06',
+    date: '2026-08-06',
+    en: 0,
+    ko: 241,
+    daily: 0,
+    note: "사자성어 104개와 고유어 138개를 더하고, 사자성어 뜻과 예문을 다듬었습니다",
+    totalEn: 3806,
+    totalKo: 1523,
+    totalDaily: 80,
+  },
   {
     version: '2026.08.05',
     date: '2026-08-05',

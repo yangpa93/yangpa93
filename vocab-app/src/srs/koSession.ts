@@ -33,21 +33,25 @@ export interface KoSessionItem {
 /**
  * 하루치 갈래 배분.
  *
- * 사자성어 1~2 · 개념어 1 · 고전 0~1 · 수능 3 을 말한 것인데, 소수점으로
- * 두면 날마다 갈래가 미묘하게 달라져 오히려 자연스럽다. 정수로 못 박으면
- * 고전(145개)이 절반쯤에서 바닥나고 사자성어만 남는다.
+ * 사자성어 1~2 · 고유어 0~1 · 개념어 1 · 고전 0~1 · 수능 3 을 말한 것인데,
+ * 소수점으로 두면 날마다 갈래가 미묘하게 달라져 오히려 자연스럽다. 정수로
+ * 못 박으면 고전(145개)이 절반쯤에서 바닥나고 사자성어만 남는다.
  *
  * 값은 '섞을 때의 무게'다. 이 비율로 자리를 나눈다.
+ *
+ * **고유어 무게는 개수에 맞춰 정했다.** 139개로 고전(150개)과 비슷해서
+ * 그쪽과 같은 0.6 을 준다. 그래야 두 갈래가 비슷한 때에 바닥난다.
  */
 export const DAILY_MIX: Record<KoCategory, number> = {
   idiom: 1.3,
+  native: 0.6,
   concept: 0.9,
   classic: 0.6,
   csat: 3.2,
 };
 
 /** 갈래 순서. 자리를 나눌 때 앞의 갈래가 먼저 몫을 가져간다. */
-const ORDER: KoCategory[] = ['idiom', 'concept', 'classic', 'csat'];
+const ORDER: KoCategory[] = ['idiom', 'native', 'concept', 'classic', 'csat'];
 
 export interface BuildKoSessionArgs {
   entries: KoEntry[];
@@ -71,7 +75,7 @@ export function splitByCategory(total: number, rand: () => number = Math.random)
   const sum = ORDER.reduce((a, c) => a + DAILY_MIX[c], 0);
   const exact = ORDER.map((c) => ({ c, want: (DAILY_MIX[c] / sum) * total }));
 
-  const out = { idiom: 0, concept: 0, classic: 0, csat: 0 } as Record<KoCategory, number>;
+  const out = { idiom: 0, native: 0, concept: 0, classic: 0, csat: 0 } as Record<KoCategory, number>;
   for (const { c, want } of exact) out[c] = Math.floor(want);
 
   // 소수점 때문에 남은 자리. 나머지가 큰 갈래부터 하나씩 준다.

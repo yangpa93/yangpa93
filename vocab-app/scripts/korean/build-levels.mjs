@@ -115,10 +115,22 @@ function applyCorrections(src, corrections, notes) {
       row.meaning = meaning;
     }
 
+    /*
+     * 예문 교정.
+     *
+     * **`examples` 목록이 있으면 그쪽 첫 줄을 갈아야 한다.** 예전 원본은 예문을
+     * 글자 하나(`example`)로 주어서 그것만 바꾸면 됐는데, 새 엑셀은 두 칸이라
+     * 목록으로 온다. 목록이 있으면 `example` 은 아무도 안 보므로, 거기만 바꾸면
+     * **교정이 조용히 사라진다.** 실제로 파안대소 예문이 그렇게 안 먹었다.
+     */
     const example = c.example?.[row.word];
-    if (example && example !== row.example) {
-      notes.push(`사자성어 '${row.word}' 예문 바꿈`);
-      row.example = example;
+    if (example) {
+      const now = row.examples ?? (row.example ? [{ t: row.example }] : []);
+      if (now[0]?.t !== example) {
+        notes.push(`사자성어 '${row.word}' 예문 바꿈`);
+        row.examples = [{ t: example }, ...now.slice(1)];
+        row.example = example;
+      }
     }
 
     if (unverified.has(row.word)) row.hanjaVerified = false;

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { Body, Button, Card, Chip, EmptyState, H3, Muted, ProgressBar, Row, Screen } from '../src/components/ui';
+import { askConfirm } from '../src/lib/confirm';
 import { useApp } from '../src/store/AppProvider';
 import { ALL_ENTRIES } from '../src/data';
 import { levelProgress } from '../src/srs/progress';
@@ -9,7 +10,7 @@ import { loadProfileData } from '../src/store/storage';
 import { NudgeCard } from '../src/components/NudgeCard';
 import { SubjectPicker } from '../src/components/SubjectPicker';
 import { formatKo, todayKey } from '../src/lib/date';
-import { LEVEL_SHORT, ProfileData } from '../src/types';
+import { LEVEL_SHORT, Profile, ProfileData } from '../src/types';
 import { colors, font, radius, spacing } from '../src/theme';
 
 /**
@@ -26,11 +27,26 @@ import { colors, font, radius, spacing } from '../src/theme';
  * 둘을 한 목록에 놓는다. 부모 입장에서는 똑같이 '내 아이'다.
  */
 export default function ParentChildren() {
-  const { state, data } = useApp();
+  const { state, data, deleteProfile } = useApp();
   const today = todayKey();
   const [dataById, setDataById] = useState<Record<string, ProfileData>>({});
 
   const childProfiles = state.profiles.filter((p) => p.kind === 'child');
+
+  /**
+   * 프로필을 지운다. **되돌릴 수 없어서 반드시 한 번 묻는다.**
+   *
+   * askConfirm 을 쓴다 — Alert.alert 는 웹에서 조용히 아무 일도 안 해서,
+   * 노트북 미리보기로는 지워지는지 확인할 수가 없다.
+   */
+  function confirmDelete(p: Profile) {
+    askConfirm(
+      `${p.name} 프로필을 지울까요?`,
+      '학습 기록과 오답 노트가 모두 사라지고 되돌릴 수 없어요.',
+      () => void deleteProfile(p.id),
+      { confirmText: '삭제', destructive: true },
+    );
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -96,8 +112,9 @@ export default function ParentChildren() {
       ) : null}
 
       <Muted style={{ marginTop: spacing.md }}>
-        아이를 누르면 그 아이의 학습 기록과 설정이 나옵니다. 하루 분량 · 과목 ·
-        동기 부여 요청권 금액을 아이마다 다르게 정할 수 있어요.
+        아이를 누르면 그 아이의 학습 기록과 설정이 나옵니다. 학년·레벨 · 하루 분량 ·
+        과목 · 동기 부여 요청권 금액을 아이마다 다르게 정할 수 있어요.
+        {'\n'}지우려면 이름 옆 🗑️ 를 누르세요.
       </Muted>
 
       {childProfiles.map((p) => {
@@ -105,38 +122,60 @@ export default function ParentChildren() {
         const progress = pdata ? levelProgress(ALL_ENTRIES, pdata.cards, p.level) : null;
         const day = pdata?.days[today];
         return (
-          <Pressable
-            key={p.id}
-            onPress={() => router.push({ pathname: '/child-report', params: { profileId: p.id } })}
-            accessibilityRole="button"
-          >
-            <Card style={{ marginTop: spacing.md }}>
-              <Row style={{ alignItems: 'center' }}>
-                <Text style={{ fontSize: 34 }}>{p.avatar}</Text>
-                <View style={{ marginLeft: spacing.md, flex: 1 }}>
-                  <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Text style={s.name}>{p.name}</Text>
-                    <Chip
-                      label={
-                        day?.completed ? '오늘 다 했어요' : (day?.studied ?? 0) > 0 ? '오늘 하는 중' : '오늘 아직'
-                      }
-                      tone={day?.completed ? 'correct' : (day?.studied ?? 0) > 0 ? 'primary' : 'default'}
-                    />
-                  </Row>
-                  <Muted>
-                    {LEVEL_SHORT[p.level]} · 🔥 {p.streak}일 연속 ·{' '}
-                    {day ? `오늘 ${day.studied}/${day.goal}개` : '오늘 기록 없음'}
-                  </Muted>
-                  {progress ? (
-                    <View style={{ marginTop: spacing.sm }}>
-                      <ProgressBar value={progress.ratio} height={6} color={colors.accent} />
-                    </View>
-                  ) : null}
-                </View>
-                <Text style={s.chev}>›</Text>
-              </Row>
-            </Card>
-          </Pressable>
+          <Card key={p.id} style={{ marginTop: spacing.md }}>
+            <Row style={{ alignItems: 'center' }}>
+              <Pressable
+                onPress={() => router.push({ pathname: '/child-report', params: { profileId: p.id } })}
+                accessibilityRole="button"
+                style={{ flex: 1 }}
+              >
+                <Row style={{ alignItems: 'center' }}>
+                  <Text style={{ fontSize: 34 }}>{p.avatar}</Text>
+                  <View style={{ marginLeft: spacing.md, flex: 1 }}>
+                    <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Text style={s.name}>{p.name}</Text>
+                      <Chip
+                        label={
+                          day?.completed ? '오늘 다 했어요' : (day?.studied ?? 0) > 0 ? '오늘 하는 중' : '오늘 아직'
+                        }
+                        tone={day?.completed ? 'correct' : (day?.studied ?? 0) > 0 ? 'primary' : 'default'}
+                      />
+                    </Row>
+                    <Muted>
+                      {LEVEL_SHORT[p.level]} · 🔥 {p.streak}일 연속 ·{' '}
+                      {day ? `오늘 ${day.studied}/${day.goal}개` : '오늘 기록 없음'}
+                    </Muted>
+                    {progress ? (
+                      <View style={{ marginTop: spacing.sm }}>
+                        <ProgressBar value={progress.ratio} height={6} color={colors.accent} />
+                      </View>
+                    ) : null}
+                  </View>
+                  <Text style={s.chev}>›</Text>
+                </Row>
+              </Pressable>
+
+              {/*
+                **지우는 단추를 프로필 옆에 둔다.**
+
+                예전에는 아이 화면 맨 아래에만 있었다. 그 화면이 길어 끝까지
+                내려가 보지 않으면 안 보였고, "프로필 지우기가 어디 있는지 안
+                보인다" 는 말을 들었다. 목록에서 바로 지울 수 있어야 한다.
+
+                카드 전체가 아이 화면으로 가는 단추라, 이것은 **형제로** 둔다 —
+                안에 겹쳐 두면 누름이 바깥으로 새어 아이 화면이 열린다.
+              */}
+              <Pressable
+                onPress={() => confirmDelete(p)}
+                accessibilityRole="button"
+                accessibilityLabel={`${p.name} 프로필 삭제`}
+                hitSlop={8}
+                style={s.del}
+              >
+                <Text style={s.delText}>🗑️</Text>
+              </Pressable>
+            </Row>
+          </Card>
         );
       })}
 
@@ -196,4 +235,10 @@ export default function ParentChildren() {
 const s = StyleSheet.create({
   name: { fontSize: font.h3, fontWeight: '800', color: colors.text },
   chev: { fontSize: 24, color: colors.muted, marginLeft: spacing.sm },
+  del: {
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    marginLeft: spacing.xs,
+  },
+  delText: { fontSize: 20 },
 });

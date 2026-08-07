@@ -503,12 +503,25 @@ export default function ChildReport() {
         </Card>
       ) : null}
 
-      <Button
-        title={`${profile.name} 프로필 삭제`}
-        variant="danger"
-        onPress={confirmDelete}
-        style={{ marginTop: spacing.xl }}
-      />
+      {/*
+        **지우는 자리를 카드로 감싼다.**
+
+        예전에는 빨간 단추 하나가 화면 맨 끝에 덜렁 붙어 있었다. 이 화면이 길어
+        끝까지 내려가 보지 않으면 안 보였고, "프로필 지우기가 어디 있는지 안
+        보인다" 는 말을 들었다. 제목을 달아 두면 굴리다가 눈에 걸린다.
+      */}
+      <Card style={{ marginTop: spacing.xl, borderColor: colors.wrong }}>
+        <H3>프로필 지우기</H3>
+        <Muted style={{ marginTop: spacing.xs }}>
+          {profile.name}의 학습 기록과 오답 노트가 모두 사라지고 되돌릴 수 없어요.
+        </Muted>
+        <Button
+          title={`${profile.name} 프로필 삭제`}
+          variant="danger"
+          onPress={confirmDelete}
+          style={{ marginTop: spacing.md }}
+        />
+      </Card>
       <Button
         title="돌아가기"
         variant="ghost"

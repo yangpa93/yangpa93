@@ -49,8 +49,16 @@ export const KOREAN_LEVEL_AWARD = 10_000;
 
 /** 한 달을 하루도 빠짐없이 학습했을 때 (기본값) */
 export const PERFECT_MONTH_AWARD = 20_000;
-/** 아이가 "정말 잘했어요"라며 더 요구할 수 있는 금액 (기본값) */
-export const BONUS_AWARD = 10_000;
+/**
+ * 아이가 "정말 잘했어요" 라며 더 요구할 수 있는 금액.
+ *
+ * **지금은 0 이다 — 이 기능을 껐다.** 부모가 금액을 정하는 칸을 없앴고
+ * (AwardRatesEditor), 아이 화면의 「더 요구할래요」 도 이 값이 0 이면 안 뜬다.
+ *
+ * 값 자체는 남겨 둔다. 이미 신청해 둔 요청권에 그때 얹은 금액이 적혀 있어서,
+ * 칸을 통째로 지우면 지난 기록을 읽을 수 없게 된다.
+ */
+export const BONUS_AWARD = 0;
 
 /** 부모님이 아무것도 안 바꿨을 때 쓰는 금액표. */
 export const DEFAULT_AWARD_RATES: AwardRates = {
@@ -71,7 +79,12 @@ export function awardRates(rates?: Partial<AwardRates> | null): AwardRates {
     highLevel: clean(r.highLevel, HIGH_LEVEL_AWARD),
     koreanLevel: clean(r.koreanLevel, KOREAN_LEVEL_AWARD),
     perfectMonth: clean(r.perfectMonth, PERFECT_MONTH_AWARD),
-    bonus: clean(r.bonus, BONUS_AWARD),
+    /*
+     * **늘 0 이다.** 「더 요구하기」 를 껐다. 예전에 10,000 으로 저장해 둔
+     * 프로필이 있어서, 저장값을 그대로 쓰면 그 아이에게만 단추가 남는다.
+     * 정하는 칸을 없앴으니 되돌릴 길도 없다 — 여기서 눌러 둔다.
+     */
+    bonus: 0,
   };
 }
 

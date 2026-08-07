@@ -67,6 +67,23 @@ export default function ParentSettings() {
         무엇을 고치시려는지 먼저 고르세요.
       </Muted>
 
+      {/*
+        **아이별 설정을 맨 위에 둔다.**
+
+        레벨·하루 분량·요청권 금액을 고치는 자리이고, **프로필을 지우는 자리도
+        여기뿐이다.** 그런데 예전에는 「아이들 폰 설정」 안에 「아이별 설정 보기」
+        로 한 겹 더 들어가야 해서, 부모님 모드부터 세면 일곱 번을 눌러야 했다.
+        "프로필 지우기가 어디 있는지 안 보인다" 는 말을 들었다.
+      */}
+      {childCount > 0 ? (
+        <SettingsTile
+          icon="🧒"
+          title="아이별 설정"
+          hint={`아이 ${childCount}명 · 학년·레벨 · 하루 분량 · 과목 · 요청권 금액 · 프로필 삭제`}
+          onPress={() => router.push('/parent-children')}
+        />
+      ) : null}
+
       <SettingsTile
         icon="👧"
         title="아이들 폰 설정"

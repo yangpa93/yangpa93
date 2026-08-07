@@ -403,7 +403,17 @@ if (await codeBox.isVisible().catch(() => false)) {
  * 두 방향을 다 지원하던 것을 하나로 줄였다. 없앤 쪽의 입구가 어딘가 남아
  * 있으면 눌러 보고 멈추게 되므로, 남아 있지 않은 것까지 함께 본다.
  */
+/*
+ * 연결하는 자리는 `/parent-link` 로 옮겼다. 「아이들 폰 설정」 한 장에
+ * 연결·아이별 설정·금액이 모두 쌓여 있어서 어느 것을 누르면 무엇이 나오는지
+ * 알기 어려웠고, 그 화면은 이제 갈 곳을 고르는 세 단추만 둔다.
+ */
 await go(page, '/parent-child-devices');
+ok('갈 곳 세 단추가 있다 — 연결', await has(page, '아이 기기와 연결하기'));
+ok('갈 곳 세 단추가 있다 — 아이별 설정', await has(page, '아이별 설정 하기'));
+ok('갈 곳 세 단추가 있다 — 요청권', await has(page, '동기 부여 요청권'));
+
+await go(page, '/parent-link');
 ok('연결 카드에 코드 길이 있다', await has(page, '카메라가 안 되면 — 코드로 연결하기'));
 ok('아이 QR 찍기가 있다', await has(page, '아이 QR 찍기'));
 
@@ -640,11 +650,18 @@ await go(page, '/parent-home');
 ok('무엇을 얼마나 익혔나 카드는 없다', !(await has(page, '무엇을 얼마나 익혔나', 2000)));
 ok('내 학습 기록은 그대로 있다', await has(page, '내 학습 기록'));
 
-await go(page, '/parent-child-devices');
-ok('기본 동기 부여 요청권 금액 설정', await has(page, '기본 동기 부여 요청권 금액 설정'));
+// 금액을 정하는 자리도 제 화면으로 뺐다.
+await go(page, '/parent-awards-rates');
+ok('기본 동기 부여 요청권 금액', await has(page, '기본 동기 부여 요청권 금액'));
 ok('금액을 직접 적는 기타 칸이 있다', await has(page, '기타'));
 ok('84만원 합계 문구는 없앴다', !(await has(page, '84만원', 1500)));
 ok('요구권 이라는 옛말이 안 남아 있다', !(await has(page, '요구권', 1500)));
+/*
+ * 아이가 기본 금액 위에 한 칸 더 얹어 신청하던 것을 껐다. 정하는 칸이 남아
+ * 있으면 부모는 그것까지 정해야 하고, 아이 쪽에는 "더 달라고 해 볼까" 를
+ * 누르는 자리가 생긴다.
+ */
+ok('아이가 더 요구하는 금액 칸은 없앴다', !(await has(page, '아이가 더 요구할 수 있는 금액', 1500)));
 
 await seed(page, '부모님과 연결됨');
 await go(page, '/home');
@@ -883,8 +900,18 @@ console.log('  ⑨ 연결 — 아이가 띄우고 부모가 받는다 (창 두 �
  */
 /* ================================================================= */
 
-const childPage = await browser.newPage({ viewport: { width: 420, height: 900 } });
-const parentPage = await browser.newPage({ viewport: { width: 420, height: 900 } });
+/*
+ * **창이 아니라 자리를 따로 만든다.**
+ *
+ * newPage() 를 두 번 부르면 창은 둘이지만 저장소는 하나다. 그래서 아이 창에서
+ * 심은 것이 부모 창에도 그대로 있었고, "두 폰" 을 흉내 내지 못했다. 그런데도
+ * 이 시험은 통과하고 있었다 — 화면 제목으로 판단하고 있었기 때문이다.
+ * newContext() 라야 저장소가 갈린다.
+ */
+const childCtx = await browser.newContext({ viewport: { width: 420, height: 900 } });
+const parentCtx = await browser.newContext({ viewport: { width: 420, height: 900 } });
+const childPage = await childCtx.newPage();
+const parentPage = await parentCtx.newPage();
 childPage.on('pageerror', (e) => pageErrors.push(e.message));
 parentPage.on('pageerror', (e) => pageErrors.push(e.message));
 
@@ -974,14 +1001,25 @@ ok('아이 목록에 서준이 나타난다', await has(parentPage, '서준'));
  * 확인이 통째로 거짓말이 된다.
  */
 await go(childPage, '/parent-children');
+/*
+ * **「다른 폰의 아이」 구역이 있는지로 본다.**
+ *
+ * 이 줄은 두 번 틀렸다. 처음에는 화면 제목('아이별 설정')이 없는지로 봤는데,
+ * 제목은 언제든 바뀌는 말이라 제목을 고치자 저장소는 멀쩡한데 빨개졌다.
+ * 그다음에는 아이 이름('서준')으로 봤는데, **아이 창의 아이도 이름이 서준**
+ * 이라 자기 프로필을 보고 실패로 적었다.
+ *
+ * 볼 것은 부모가 QR 로 등록해 둔 목록(knownChildren)이다. 그것이 있으면
+ * 화면에 「다른 폰의 아이」 구역이 뜬다. 아이 창에는 있을 수 없는 것이다.
+ */
 ok(
-  '아이 창은 부모 창의 아이 목록을 갖지 않는다',
-  !(await has(childPage, '아이별 설정', 2000)),
+  '아이 창은 부모 창이 등록한 아이 목록을 갖지 않는다',
+  !(await has(childPage, '다른 폰의 아이', 2000)),
   '두 창이 저장소를 같이 쓰고 있다',
 );
 
-await childPage.close();
-await parentPage.close();
+await childCtx.close();
+await parentCtx.close();
 
 /* ================================================================= */
 

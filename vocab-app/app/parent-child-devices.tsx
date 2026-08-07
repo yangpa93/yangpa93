@@ -1,13 +1,11 @@
 import { Pressable, StyleSheet, Switch, Text, View } from 'react-native';
 import { router } from 'expo-router';
-import { Button, Card, H3, Muted, Row, Screen } from '../src/components/ui';
+import { Button, Card, H3, Muted, Row, Screen, SettingsTile } from '../src/components/ui';
 import { useApp } from '../src/store/AppProvider';
 import { awardRates } from '../src/features/awards';
 import { buildInfo, buildLabel } from '../src/features/build-info';
 import { FeedbackCard } from '../src/components/FeedbackCard';
 import { VersionButton } from '../src/components/VersionButton';
-import { AwardRatesEditor } from '../src/components/AwardRatesEditor';
-import { LinkChildCard } from '../src/components/LinkChildCard';
 import { colors, font, radius, spacing } from '../src/theme';
 import { parentLabels } from '../src/features/parentLinks';
 
@@ -30,8 +28,8 @@ import { parentLabels } from '../src/features/parentLinks';
  */
 export default function ParentChildDevices() {
   const { state, updateParent } = useApp();
-  const rates = awardRates(state.parent.awards);
   const build = buildInfo();
+  const childNames = state.profiles.filter((p) => p.kind === 'child').map((p) => p.name);
 
   return (
     <Screen>
@@ -82,24 +80,39 @@ export default function ParentChildDevices() {
         내 QR 을 띄우는 길. 제목이 똑같아 무엇이 다른지 알 수 없다는 말을
         들어서, 한 장 안에서 두 갈래로 갈랐다.
       */}
-      <LinkChildCard />
+      {/*
+        **갈 곳을 고르는 세 단추.**
 
-      {/* 기본 동기 부여 요청권 금액 */}
-      <Card style={{ marginTop: spacing.md }}>
-        <H3>기본 동기 부여 요청권 금액 설정</H3>
-        {/*
-          설명은 두 문장으로 줄였다. 예전에는 다섯 줄이 붙어 있었는데, 설정
-          화면에서 다섯 줄짜리 설명은 아무도 안 읽는다. 0원의 뜻은 금액 표에
-          '안 함' 이라고 그대로 적혀 있으니 여기서 또 말할 필요가 없다.
-        */}
-        <Muted style={{ marginTop: spacing.xs }}>
-          아이가 레벨 시험에 통과하거나 한 달을 개근하면 아래 금액을 부모에게 요청할 수
-          있도록 기본 금액을 설정합니다.
-          {'\n'}아이마다 금액을 달리 하려면 연결된 아이의 프로필 설정창에서 설정해 주세요.
-        </Muted>
+        예전에는 이 화면 한 장에 연결하기와 아이별 설정과 금액이 모두 쌓여
+        있었다. 「아이별 설정 보기」 가 연결 카드 안에 딸려 있어서, 어느 것을
+        누르면 무엇이 나오는지 알기 어려웠다 — "아이별 설정을 눌렀는데 학습
+        보고서가 나온다" 는 말을 들었다. 이제 갈 곳만 고르고, 실제 설정은
+        저마다 제 화면에서 한다.
+      */}
+      <SettingsTile
+        icon="🔗"
+        title="아이 기기와 연결하기"
+        hint={
+          childNames.length === 0
+            ? '아이 폰의 QR 을 찍어 연결합니다'
+            : `지금 연결된 아이 — ${childNames.join(' · ')}`
+        }
+        onPress={() => router.push('/parent-link')}
+      />
 
-        <AwardRatesEditor rates={rates} onChange={(next) => updateParent({ awards: next })} />
-      </Card>
+      <SettingsTile
+        icon="🧒"
+        title="아이별 설정 하기"
+        hint="학년·레벨 · 하루 공부할 양 · 과목 · 프로필 지우기"
+        onPress={() => router.push('/parent-children')}
+      />
+
+      <SettingsTile
+        icon="🎟️"
+        title="동기 부여 요청권"
+        hint="레벨 시험 통과 · 한 달 개근에 줄 기본 금액"
+        onPress={() => router.push('/parent-awards-rates')}
+      />
 
       {/* 아이 폰일 때만 뜻이 있는 스위치 */}
       {state.parentLinks.length > 0 ? (

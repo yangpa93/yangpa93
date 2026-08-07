@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
-import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChoiceGame, ChoiceGameId } from '../src/games/ChoiceGame';
@@ -17,6 +17,7 @@ import {
   Row,
   Screen,
 } from '../src/components/ui';
+import { askConfirm } from '../src/lib/confirm';
 import { useApp } from '../src/store/AppProvider';
 import { entriesOf } from '../src/data';
 import { senseExposure } from '../src/data/entry';
@@ -113,17 +114,15 @@ export default function Exam() {
   }
 
   function quit() {
-    Alert.alert('시험을 그만둘까요?', '지금까지 푼 것은 저장되지 않아요.', [
-      { text: '계속 풀기', style: 'cancel' },
-      {
-        text: '그만두기',
-        style: 'destructive',
-        onPress: () => {
+    askConfirm(
+      '시험을 그만둘까요?',
+      '지금까지 푼 것은 저장되지 않아요.',
+      () => {
           stopSpeaking();
           router.replace('/home');
-        },
       },
-    ]);
+      { confirmText: '그만두기', destructive: true },
+    );
   }
 
   if (!profile) return null;

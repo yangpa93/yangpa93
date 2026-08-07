@@ -2,11 +2,18 @@ import { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { Body, Button, Card, H3, Muted, Row, Screen } from '../src/components/ui';
+import { LevelPicker } from '../src/components/LevelPicker';
 import { useApp } from '../src/store/AppProvider';
+import { primaryParent } from '../src/features/parentLinks';
+import { sendSettingsChangedToParent } from '../src/features/push';
 import { childPlannedCount, DAILY_PER_DAY, KO_PER_DAY } from '../src/srs/childSession';
 import {
+  LevelId,
+  LEVEL_SHORT,
   moveSubject,
   orderedSubjects,
+  Profile,
+  ProfileSettings,
   SUBJECT_LABEL,
   SUBJECT_LONG,
   SUBJECT_ORDER,
@@ -17,6 +24,14 @@ import { colors, font, radius, spacing } from '../src/theme';
 
 /** 하루에 새로 만날 영어 단어 수. 아이가 고른다. */
 const NEW_PER_DAY = [5, 8, 10, 12, 15, 20];
+
+/**
+ * 하루에 새로 만날 국어 어휘 수.
+ *
+ * 영어보다 폭을 좁게 둔다 — 한 낱말이 뜻마다 문항으로 갈려서, 같은 숫자라도
+ * 실제로 푸는 문항은 영어보다 훨씬 많다.
+ */
+const KO_NEW_PER_DAY = [3, 5, 6, 8, 10];
 
 /**
  * 📚 내 공부 설정 — 무엇을 하루 몇 개씩 볼지.
@@ -37,7 +52,7 @@ const NEW_PER_DAY = [5, 8, 10, 12, 15, 20];
  * 어른 것이라기보다 그냥 자주 쓰는 말이고 아이가 배워서 나쁠 것이 없다.
  */
 export default function ChildSettingsStudy() {
-  const { profile, data, updateSettings } = useApp();
+  const { state, profile, data, updateSettings, updateProfile } = useApp();
   const [note, setNote] = useState('');
 
   const planned = useMemo(
@@ -48,6 +63,7 @@ export default function ChildSettingsStudy() {
   if (!profile) return null;
 
   const { subjects, newPerDay, reviewPerDay, rounds } = profile.settings;
+  const koPerDay = profile.settings.koNewPerDay ?? KO_PER_DAY;
   /** 켠 갈래를 푸는 차례. 하나뿐이면 줄 세울 것이 없다. */
   const order = orderedSubjects(profile.settings);
 
@@ -77,6 +93,29 @@ export default function ChildSettingsStudy() {
   const questions = planned * rounds;
   const minutes = Math.max(1, Math.round((questions * 10) / 60));
 
+  /**
+   * 설정을 바꾸고 **부모에게 알린다.**
+   *
+   * 부모가 정한 것이 기본값이고 아이는 거기서 옮겨 간다. 막지는 않는다 —
+   * 스스로 정하게 두는 것이 이 화면의 뜻이다. 다만 부모가 모르면 리포트만
+   * 갑자기 달라진 것으로 보이므로, 무엇을 바꿨는지 한 줄로 보낸다.
+   *
+   * 알림이 실패해도 바꾼 것은 그대로 둔다. 못 갔다고 되돌리면 아이는 자기가
+   * 뭘 잘못했는지 모른 채 다시 눌러야 한다.
+   */
+  function change(patch: Partial<ProfileSettings>, what: string, profilePatch?: Partial<Profile>) {
+    if (Object.keys(patch).length > 0) updateSettings(profile!.id, patch);
+    if (profilePatch) updateProfile(profile!.id, profilePatch);
+
+    const primary = primaryParent(state.parentLinks);
+    if (primary && profile!.kind === 'child') {
+      void sendSettingsChangedToParent(primary.token, {
+        childName: profile!.name,
+        what,
+      }).catch(() => {});
+    }
+  }
+
   function toggle(one: Subject) {
     const next = toggleSubject(subjects, one);
     if (!next) {
@@ -85,7 +124,8 @@ export default function ChildSettingsStudy() {
       return;
     }
     setNote('');
-    updateSettings(profile!.id, { subjects: next });
+    const on = !subjects.includes(one);
+    change({ subjects: next }, `${SUBJECT_LABEL[one]}를 ${on ? '켰어요' : '껐어요'}`);
   }
 
   return (
@@ -210,6 +250,78 @@ export default function ChildSettingsStudy() {
         </Card>
       ) : null}
 
+      {/*
+        국어 하루치. 영어와 따로 고른다.
+
+        국어는 한 낱말이 뜻마다 문항으로 갈려서, 6개로 못박아 두었을 때 한 판이
+        60문항 가까이 됐다. "한 번에 너무 많다" 는 말을 듣고 고를 수 있게 했다.
+      */}
+      {subjects.includes('ko') ? (
+        <Card style={{ marginTop: spacing.md }}>
+          <H3>하루에 새로 배울 국어 어휘</H3>
+          <Muted style={{ marginTop: spacing.xs }}>
+            국어는 한 낱말에 뜻이 여럿이라 문제가 더 나옵니다. 적게 잡아도 괜찮아요.
+          </Muted>
+          <Row style={{ gap: spacing.sm, marginTop: spacing.md, flexWrap: 'wrap' }}>
+            {KO_NEW_PER_DAY.map((n) => (
+              <Pressable
+                key={n}
+                onPress={() => change({ koNewPerDay: n }, `국어를 하루 ${n}개로 바꿨어요`)}
+                style={[s.chip, koPerDay === n && s.chipOn]}
+                accessibilityRole="button"
+                accessibilityState={{ selected: koPerDay === n }}
+              >
+                <Text style={[s.chipText, koPerDay === n && s.chipTextOn]}>{n}개</Text>
+              </Pressable>
+            ))}
+          </Row>
+        </Card>
+      ) : null}
+
+      {/*
+        **레벨을 아이가 고른다.**
+
+        예전에는 부모 폰에만 있었다. 그런데 부모 화면까지 네 번을 눌러 들어가야
+        해서, 아이가 "레벨을 못 바꾼다" 고 느꼈다. 스스로 정하게 두되 두 가지를
+        지킨다 —
+
+          · 바꾸면 **부모에게 알림이 간다**(막지는 않는다)
+          · 이미 끝낸 레벨을 다시 통과해도 **요청권은 다시 안 생긴다**
+            (AppProvider 의 levelUp). 쉬운 레벨을 오가며 돈을 받을 수 없다.
+      */}
+      <Card style={{ marginTop: spacing.md }}>
+        <H3>내 레벨</H3>
+        <Muted style={{ marginTop: spacing.xs }}>
+          보통은 레벨 시험에 통과하면 저절로 올라가요. 손으로 바꾸면 그 레벨 낱말부터
+          다시 시작합니다. 바꾸면 부모님께 알려 드려요.
+        </Muted>
+
+        <Text style={[s.levelLabel, { marginTop: spacing.lg }]}>영어</Text>
+        <View style={{ marginTop: spacing.sm }}>
+          <LevelPicker
+            value={profile.level}
+            onChange={(l: LevelId) =>
+              change({}, `영어 레벨을 ${LEVEL_SHORT[l]} 로 바꿨어요`, { level: l })
+            }
+          />
+        </View>
+
+        {subjects.includes('ko') ? (
+          <>
+            <Text style={[s.levelLabel, { marginTop: spacing.lg }]}>국어</Text>
+            <View style={{ marginTop: spacing.sm }}>
+              <LevelPicker
+                value={profile.koLevel}
+                onChange={(l: LevelId) =>
+                  change({}, `국어 레벨을 ${LEVEL_SHORT[l]} 로 바꿨어요`, { koLevel: l })
+                }
+                showCounts={false}
+              />
+            </View>
+          </>
+        ) : null}
+      </Card>
+
       <Card style={{ marginTop: spacing.md, backgroundColor: colors.bg }}>
         <H3>오늘은 이만큼이에요</H3>
         <Muted style={{ marginTop: spacing.xs }}>
@@ -301,4 +413,5 @@ const s = StyleSheet.create({
   chipOn: { backgroundColor: colors.primary, borderColor: colors.primary },
   chipText: { fontSize: font.small, fontWeight: '700', color: colors.subtext },
   chipTextOn: { color: '#fff' },
+  levelLabel: { fontSize: font.small, fontWeight: '800', color: colors.muted },
 });

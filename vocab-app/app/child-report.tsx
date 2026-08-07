@@ -12,6 +12,7 @@ import {
   Row,
   Screen,
 } from '../src/components/ui';
+import { askConfirm } from '../src/lib/confirm';
 import { useApp } from '../src/store/AppProvider';
 import { ALL_ENTRIES } from '../src/data';
 import { KO_ENTRIES } from '../src/data/korean/levels';
@@ -126,20 +127,18 @@ export default function ChildReport() {
 
   function confirmDelete() {
     if (!profile) return;
-    Alert.alert(
+    /*
+     * askConfirm 을 쓴다 — `Alert.alert` 는 react-native-web 에서 조용히
+     * 아무 일도 안 해서, 노트북 미리보기로는 **지우는 길이 있는지조차** 확인할
+     * 수가 없었다. 폰에서는 멀쩡히 떠서 더 헷갈렸다.
+     */
+    askConfirm(
       `${profile.name} 프로필을 지울까요?`,
       '학습 기록과 오답 노트가 모두 사라지고 되돌릴 수 없어요.',
-      [
-        { text: '취소', style: 'cancel' },
-        {
-          text: '삭제',
-          style: 'destructive',
-          onPress: async () => {
-            await deleteProfile(profile.id);
-            router.replace('/parent-children');
-          },
-        },
-      ],
+      () => {
+        void deleteProfile(profile.id).then(() => router.replace('/parent-children'));
+      },
+      { confirmText: '삭제', destructive: true },
     );
   }
 

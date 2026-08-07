@@ -22,7 +22,9 @@ import { ensureNotificationChannels } from './notifications';
 import {
   buildHelloBody,
   buildRewardAskBody,
+  buildSettingsChangedBody,
   RewardAskPayload,
+  SettingsChangedPayload,
   buildLinkBackBody,
   buildNudgeBody,
   buildUnlinkBody,
@@ -155,6 +157,19 @@ export async function sendRewardAskToParent(
   payload: RewardAskPayload,
 ): Promise<SendResult> {
   return sendPush(buildRewardAskBody(parentToken, payload));
+}
+
+/**
+ * 아이가 제 공부 설정을 바꿨다고 **주 부모에게만** 알린다.
+ *
+ * 요청권과 마찬가지로 실패해도 바꾼 것은 그대로 둔다. 알림이 못 갔다고
+ * 설정을 되돌리면 아이는 자기가 뭘 잘못했는지 모른 채 다시 눌러야 한다.
+ */
+export async function sendSettingsChangedToParent(
+  parentToken: string,
+  payload: SettingsChangedPayload,
+): Promise<SendResult> {
+  return sendPush(buildSettingsChangedBody(parentToken, payload));
 }
 
 /** 아이 기기가 연결하면서 자기 주소를 부모에게 알린다. */

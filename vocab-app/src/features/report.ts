@@ -31,6 +31,13 @@ export interface DailyReport {
   streak: number;
   levelLabel: string;
   levelRatio: number; // 0~1
+  /**
+   * 국어 레벨. **국어를 켠 아이에게만** 값이 있다.
+   *
+   * 영어와 국어는 레벨이 따로 올라가고 시험도 따로 본다. 리포트에 영어
+   * 레벨만 적으면 국어를 하는 아이가 지금 어디쯤인지 부모가 알 수 없다.
+   */
+  koLevelLabel: string | null;
   /** 오늘 틀린 단어 (많이 틀린 순) */
   todayMistakes: { word: string; meaning: string; count: number }[];
   /** 누적 기준 자주 틀리는 단어 */
@@ -82,6 +89,9 @@ export function buildDailyReport(
     streak: profile.streak,
     levelLabel: LEVEL_SHORT[profile.level],
     levelRatio: prog.ratio,
+    koLevelLabel: profile.settings.subjects.includes('ko')
+      ? LEVEL_SHORT[profile.koLevel]
+      : null,
     todayMistakes,
     chronicMistakes,
   };
@@ -122,15 +132,25 @@ export function buildWeeklySummary(
   };
 }
 
-/** 알림 본문처럼 짧게. 한 줄. */
+/**
+ * 알림 본문처럼 짧게. 한 줄.
+ *
+ * **레벨을 함께 적는다.** 정답률만 보이면 그 숫자가 어느 난이도에서 나온
+ * 것인지 알 수 없다. 레벨을 올린 날은 정답률이 떨어지는 것이 정상인데,
+ * 레벨이 안 보이면 그냥 못한 날로 읽힌다. 국어를 켠 아이는 국어 레벨도 붙는다.
+ */
+export function levelLine(r: DailyReport): string {
+  return r.koLevelLabel ? `${r.levelLabel} · 국어 ${r.koLevelLabel}` : r.levelLabel;
+}
+
 export function reportHeadline(r: DailyReport): string {
   if (r.studied === 0) {
     return `${r.profileName}(이)가 오늘 아직 학습을 시작하지 않았어요.`;
   }
   if (!r.completed) {
-    return `${r.profileName} · 오늘 ${r.studied}/${r.goal}개 (목표 미달) · 정답률 ${pct(r.accuracy)}`;
+    return `${r.profileName} · ${levelLine(r)} · 오늘 ${r.studied}/${r.goal}개 (목표 미달) · 정답률 ${pct(r.accuracy)}`;
   }
-  return `${r.profileName} · 오늘 목표 완료! ${r.studied}개 · 정답률 ${pct(r.accuracy)} · ${r.streak}일 연속`;
+  return `${r.profileName} · ${levelLine(r)} · 오늘 목표 완료! ${r.studied}개 · 정답률 ${pct(r.accuracy)} · ${r.streak}일 연속`;
 }
 
 /** 카카오톡·문자로 보내기 좋은 전체 리포트 텍스트. */
@@ -148,6 +168,8 @@ export function reportText(r: DailyReport, weekly?: WeeklySummary): string {
   }
 
   lines.push(`현재 레벨 ${r.levelLabel} · 진도 ${pct(r.levelRatio)}`);
+  // 국어를 켠 아이만. 레벨이 따로 올라가므로 함께 적어야 어디쯤인지 보인다.
+  if (r.koLevelLabel) lines.push(`국어 레벨 ${r.koLevelLabel}`);
 
   if (r.todayMistakes.length > 0) {
     lines.push('');

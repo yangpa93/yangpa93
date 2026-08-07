@@ -32,6 +32,7 @@ import {
   ReceivedReport,
   RewardRequest,
   RewardStatus,
+  Subject,
 } from '../types';
 import { ALL_ENTRIES, entriesOf } from '../data';
 import { DATA_VERSION } from '../data/dataVersion';
@@ -96,7 +97,13 @@ interface Ctx {
   /** 채점 결과 한 건을 반영한다. */
   recordAnswer(log: AnswerLog): void;
   /** 세션이 끝났을 때 하루 기록을 갱신한다. */
-  finishSession(args: { studied: number; seconds: number; reachedEnd: boolean }): void;
+  finishSession(args: {
+    studied: number;
+    seconds: number;
+    reachedEnd: boolean;
+    /** 이번에 푼 갈래. 켠 갈래가 다 모여야 하루가 끝난다. */
+    subject: Subject;
+  }): void;
 
   /** 영어 레벨업 확정. 다음 학년으로 올리고 보상 요청 자격을 준다. */
   levelUp(): void;
@@ -443,6 +450,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       studied,
       seconds,
       reachedEnd,
+      subject,
     }: {
       studied: number;
       seconds: number;
@@ -454,6 +462,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
        * 그만둬도 다 한 것으로 적혔다. 부른 쪽이 알고 있는 값을 받는다.
        */
       reachedEnd: boolean;
+      /**
+       * 이번에 푼 갈래.
+       *
+       * 갈래마다 따로 들어가 풀게 되면서 필요해졌다. **켠 갈래가 다 모여야**
+       * 하루가 끝나므로, 어느 갈래를 끝냈는지 적어 두어야 한다.
+       */
+      subject: Subject;
     }) => {
       const { data, state } = ref.current;
       const active = state.profiles.find((p) => p.id === state.activeProfileId);
@@ -463,7 +478,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       const day = data.days[today] ?? emptyDay(today, profileGoal(state, data));
       const wasCompleted = day.completed;
 
-      const closed = closeSession(day, { studied, seconds, reachedEnd });
+      const closed = closeSession(day, {
+        studied,
+        seconds,
+        reachedEnd,
+        subject,
+        required: active.settings.subjects,
+      });
       const completed = closed.completed;
 
       const nextData: ProfileData = {
@@ -548,6 +569,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const next = nextLevel(active.koLevel);
     if (!next) return;
 
+    // 영어와 같은 규칙 — 한 레벨에 요청권은 한 번뿐이다. levelUp 주석 참고.
+    const already = (active.koClearedLevels ?? []).includes(active.koLevel);
+
     persistState({
       ...state,
       profiles: state.profiles.map((p) =>
@@ -555,9 +579,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           ? {
               ...p,
               koLevel: next,
-              koClearedLevels: [...(p.koClearedLevels ?? []), active.koLevel],
-              // 끝낸 레벨마다 동기 부여 요청권이 하나 생긴다. 국어는 1만원.
-              koPendingLevelUps: [...(p.koPendingLevelUps ?? []), active.koLevel],
+              koClearedLevels: already
+                ? (p.koClearedLevels ?? [])
+                : [...(p.koClearedLevels ?? []), active.koLevel],
+              koPendingLevelUps: already
+                ? (p.koPendingLevelUps ?? [])
+                : [...(p.koPendingLevelUps ?? []), active.koLevel],
             }
           : p,
       ),
@@ -571,6 +598,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const next = nextLevel(active.level);
     if (!next) return;
 
+    /*
+     * **한 레벨에 요청권은 한 번뿐이다.**
+     *
+     * 아이가 자기 레벨을 고를 수 있게 되면서 생긴 규칙이다. 이미 끝낸 레벨로
+     * 되돌아가 시험을 다시 보면 요청권이 또 생겼는데, 그러면 쉬운 레벨을
+     * 오가며 돈을 계속 받을 수 있다. 되돌아가 복습하는 것 자체는 좋은 일이라
+     * 막지 않고, **돈만 한 번으로 묶는다.**
+     */
+    const already = active.clearedLevels.includes(active.level);
+
     persistState({
       ...state,
       profiles: state.profiles.map((p) =>
@@ -578,9 +615,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           ? {
               ...p,
               level: next,
-              clearedLevels: [...p.clearedLevels, active.level],
-              // 클리어한 레벨마다 보상 요청권이 하나 생긴다.
-              pendingLevelUps: [...p.pendingLevelUps, active.level],
+              clearedLevels: already ? p.clearedLevels : [...p.clearedLevels, active.level],
+              pendingLevelUps: already
+                ? p.pendingLevelUps
+                : [...p.pendingLevelUps, active.level],
             }
           : p,
       ),

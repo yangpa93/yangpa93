@@ -118,13 +118,20 @@ function pick({ profile, cards, today, rand }: BuildChildQueueArgs) {
       })
     : [];
 
+  /*
+   * 국어 하루치는 **아이가 고른다.**
+   *
+   * 한 낱말이 뜻마다 문항으로 갈려서, 6개로 못박아 두었더니 한 판이 60문항
+   * 가까이 됐다. 안 골랐으면 예전 값(KO_PER_DAY) 그대로 간다.
+   */
+  const koPerDay = profile.settings.koNewPerDay ?? KO_PER_DAY;
   const ko = subjects.includes('ko')
     ? buildKoSession({
         entries: KO_ENTRIES,
         cards,
         level: profile.koLevel,
-        newPerDay: KO_PER_DAY,
-        reviewPerDay: KO_PER_DAY,
+        newPerDay: koPerDay,
+        reviewPerDay: koPerDay,
         today,
         rand,
       })

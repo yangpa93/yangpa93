@@ -19,7 +19,7 @@
  * 이 규칙이 화면 안에 있으면 기기 없이 확인할 수가 없어서 여기로 옮겼다.
  */
 
-import type { DailyRecord } from '../types';
+import type { DailyRecord, Subject } from '../types';
 
 /** 그날 처음 문제를 풀 때 만드는 빈 기록. */
 export function emptyDay(date: string, goal: number): DailyRecord {
@@ -70,44 +70,60 @@ export function addAnswer(day: DailyRecord, entryId: string, correct: boolean): 
 /**
  * 오늘 다 했다고 볼 수 있는지.
  *
- * 세 가지가 모두 맞아야 한다.
+ * **켠 갈래를 전부 끝까지 풀어야 한다.**
  *
- *   1. 이미 다 한 날이면 그대로 둔다 — 다 하고 한 번 더 하다 그만둔 것이
- *      취소되면 안 된다.
- *   2. 목표만큼 만났어야 한다.
- *   3. **끝까지 갔어야 한다.** 중간에 그만두면 아무리 많이 풀었어도 아니다.
+ * 예전에는 켠 갈래를 한 줄로 이어 붙여 한 판에 다 풀게 했고, 그래서 "끝까지
+ * 갔는지" 하나만 보면 됐다. 그런데 영어와 국어를 둘 다 켜면 한 번에 78문제가
+ * 되어 앉은자리에서 다 해야 했고, 영어를 끝내고 쉬면 국어는 시작도 못 한 채
+ * 하루가 갔다.
  *
- * 3번이 이번에 더해진 것이다. 왜 개수만으로 안 되는지는 파일 첫머리에 적었다.
+ * 지금은 갈래마다 따로 들어가 푼다. 그래서 "오늘 다 했는지" 도 갈래마다 세고
+ * **전부 모여야** 완료로 친다.
+ *
+ * 이미 다 한 날은 그대로 둔다 — 다 하고 한 번 더 하다 그만둔 것이 취소되면
+ * 안 된다.
  */
 export function isDayComplete(args: {
   wasCompleted: boolean;
-  studiedTotal: number;
-  goal: number;
-  reachedEnd: boolean;
+  doneSubjects: Subject[];
+  /** 오늘 켜 둔 갈래 전부. 비어 있으면 오늘 할 것이 없었다는 뜻이다. */
+  required: Subject[];
 }): boolean {
   if (args.wasCompleted) return true;
-  if (!args.reachedEnd) return false;
-  // 목표가 0 이면 오늘 할 것이 없었다는 뜻이다. 없는 것을 다 했다고 하지 않는다.
-  if (args.goal <= 0) return false;
-  return args.studiedTotal >= args.goal;
+  if (args.required.length === 0) return false;
+  return args.required.every((s) => args.doneSubjects.includes(s));
 }
 
-/** 한 판이 끝났을 때 하루 기록을 닫는다. */
+/**
+ * 한 판이 끝났을 때 하루 기록을 닫는다.
+ *
+ * `subject` 는 이번에 푼 갈래, `required` 는 오늘 켜 둔 갈래 전부다.
+ * 끝까지 갔으면 그 갈래를 다 한 것으로 적고, 켠 갈래가 다 모였는지 본다.
+ */
 export function closeSession(
   day: DailyRecord,
-  args: { studied: number; seconds: number; reachedEnd: boolean },
+  args: {
+    studied: number;
+    seconds: number;
+    reachedEnd: boolean;
+    subject: Subject;
+    required: Subject[];
+  },
 ): DailyRecord {
   const base = withDefaults(day);
-  const studiedTotal = base.studied + args.studied;
+  const done = base.doneSubjects ?? [];
+  const doneSubjects =
+    args.reachedEnd && !done.includes(args.subject) ? [...done, args.subject] : done;
+
   return {
     ...base,
-    studied: studiedTotal,
+    studied: base.studied + args.studied,
     seconds: base.seconds + args.seconds,
+    doneSubjects,
     completed: isDayComplete({
       wasCompleted: base.completed,
-      studiedTotal,
-      goal: base.goal,
-      reachedEnd: args.reachedEnd,
+      doneSubjects,
+      required: args.required,
     }),
   };
 }

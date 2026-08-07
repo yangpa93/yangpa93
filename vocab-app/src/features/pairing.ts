@@ -648,6 +648,45 @@ export function buildRewardAskBody(parentToken: string, payload: RewardAskPayloa
   };
 }
 
+/**
+ * 아이가 **제 공부 설정을 바꿨을 때** 주 부모에게 보내는 알림.
+ *
+ * 아이가 자기 레벨과 과목을 고를 수 있게 되면서 생겼다. 부모가 정한 것이
+ * 기본값이고 아이는 거기서 옮겨 가는 것인데, 부모가 그것을 모르면 리포트만
+ * 갑자기 달라진 것으로 보인다. **막지 않고 알리기만 한다** — 스스로 정하게
+ * 두는 것이 이 앱의 방식이고, 부모는 알고 나서 이야기하면 된다.
+ *
+ * 요청권 신청과 같이 **주 부모에게만** 간다. 엄마와 아빠가 같은 알림을 각각
+ * 받으면 둘 다 아이에게 물어보게 된다.
+ */
+export interface SettingsChangedPayload {
+  childName: string;
+  /** 화면에 그대로 쓰는 한 줄. 예: '영어 레벨을 중1-2 로 바꿨어요' */
+  what: string;
+}
+
+export function buildSettingsChangedBody(parentToken: string, payload: SettingsChangedPayload) {
+  return {
+    to: parentToken,
+    title: '⚙️ 아이가 공부 설정을 바꿨어요',
+    body: `${payload.childName} — ${payload.what}`,
+    sound: 'default' as const,
+    priority: 'high' as const,
+    channelId: 'parent-report',
+    data: { kind: 'settings-changed', ...payload },
+  };
+}
+
+/** 받은 푸시에서 설정 변경 알림을 꺼낸다. 우리 형식이 아니면 null. */
+export function parseSettingsChanged(data: unknown): SettingsChangedPayload | null {
+  if (!data || typeof data !== 'object') return null;
+  const d = data as Record<string, unknown>;
+  if (d.kind !== 'settings-changed') return null;
+  if (typeof d.childName !== 'string' || !d.childName.trim()) return null;
+  if (typeof d.what !== 'string' || !d.what.trim()) return null;
+  return { childName: d.childName, what: d.what };
+}
+
 /** 받은 푸시에서 요청권 신청을 꺼낸다. 우리 형식이 아니면 null. */
 export function parseRewardAsk(data: unknown): RewardAskPayload | null {
   if (!data || typeof data !== 'object') return null;

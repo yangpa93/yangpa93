@@ -14,7 +14,7 @@ import {
   studiedToday,
   withDefaults,
 } from '../src/features/dayRecord';
-import type { DailyRecord } from '../src/types';
+import type { DailyRecord, Subject } from '../src/types';
 
 const day = (patch: Partial<DailyRecord> = {}): DailyRecord => ({
   ...emptyDay('2026-08-02', 10),
@@ -22,49 +22,96 @@ const day = (patch: Partial<DailyRecord> = {}): DailyRecord => ({
 });
 
 describe('isDayComplete', () => {
-  it('끝까지 갔고 목표를 채웠으면 다 한 것', () => {
-    expect(isDayComplete({ wasCompleted: false, studiedTotal: 10, goal: 10, reachedEnd: true })).toBe(true);
+  it('켠 갈래를 다 끝냈으면 다 한 것', () => {
+    expect(
+      isDayComplete({ wasCompleted: false, doneSubjects: ['en', 'ko'], required: ['en', 'ko'] }),
+    ).toBe(true);
   });
 
-  it('중간에 그만두면 개수가 차도 아니다', () => {
+  it('영어만 끝내고 국어가 남았으면 아직 아니다', () => {
     /*
-     * 이게 이번에 고친 것이다. 한 낱말이 하루에 세 바퀴 나오므로 첫 바퀴만
-     * 돌아도 '만난 낱말의 가짓수' 는 이미 목표와 같아진다. 개수만 보면
-     * 세 바퀴를 돌게 해 놓고 한 바퀴에 도장을 찍어 주게 된다.
+     * 이게 이번에 고친 것이다. 갈래마다 따로 들어가 풀게 되면서, 영어만
+     * 끝내고 하루를 마치는 일이 생겼다. 한 갈래를 끝냈다고 도장을 찍어 주면
+     * 국어는 영영 안 하게 된다.
      */
-    expect(isDayComplete({ wasCompleted: false, studiedTotal: 10, goal: 10, reachedEnd: false })).toBe(false);
-    expect(isDayComplete({ wasCompleted: false, studiedTotal: 99, goal: 10, reachedEnd: false })).toBe(false);
+    expect(isDayComplete({ wasCompleted: false, doneSubjects: ['en'], required: ['en', 'ko'] })).toBe(
+      false,
+    );
   });
 
-  it('끝까지 갔어도 목표에 모자라면 아니다', () => {
-    expect(isDayComplete({ wasCompleted: false, studiedTotal: 4, goal: 10, reachedEnd: true })).toBe(false);
+  it('안 켠 갈래는 안 따진다', () => {
+    // 영어만 켠 아이는 영어만 끝내면 하루가 끝난다.
+    expect(isDayComplete({ wasCompleted: false, doneSubjects: ['en'], required: ['en'] })).toBe(true);
   });
 
   it('이미 다 한 날은 그대로 둔다', () => {
     // 다 하고 한 번 더 하다 그만둔 것이 취소되면 안 된다.
-    expect(isDayComplete({ wasCompleted: true, studiedTotal: 0, goal: 10, reachedEnd: false })).toBe(true);
+    expect(isDayComplete({ wasCompleted: true, doneSubjects: [], required: ['en', 'ko'] })).toBe(true);
   });
 
   it('오늘 할 것이 없었으면 다 했다고 하지 않는다', () => {
-    expect(isDayComplete({ wasCompleted: false, studiedTotal: 0, goal: 0, reachedEnd: true })).toBe(false);
+    expect(isDayComplete({ wasCompleted: false, doneSubjects: [], required: [] })).toBe(false);
   });
 });
 
 describe('closeSession', () => {
+  const both: Subject[] = ['en', 'ko'];
+
   it('그만두면 푼 것은 남기고 완료는 안 찍는다', () => {
-    const got = closeSession(day({ goal: 10 }), { studied: 10, seconds: 60, reachedEnd: false });
+    const got = closeSession(day({ goal: 10 }), {
+      studied: 10,
+      seconds: 60,
+      reachedEnd: false,
+      subject: 'en',
+      required: both,
+    });
     expect(got.studied).toBe(10);
     expect(got.seconds).toBe(60);
     expect(got.completed).toBe(false);
+    expect(got.doneSubjects).toEqual([]);
   });
 
-  it('두 판에 나눠 해도 마지막에 끝까지 가면 완료', () => {
-    const first = closeSession(day({ goal: 10 }), { studied: 6, seconds: 40, reachedEnd: false });
+  it('영어를 끝내도 국어가 남았으면 완료가 아니다', () => {
+    const first = closeSession(day({ goal: 10 }), {
+      studied: 6,
+      seconds: 40,
+      reachedEnd: true,
+      subject: 'en',
+      required: both,
+    });
+    expect(first.doneSubjects).toEqual(['en']);
     expect(first.completed).toBe(false);
-    const second = closeSession(first, { studied: 4, seconds: 30, reachedEnd: true });
+
+    const second = closeSession(first, {
+      studied: 4,
+      seconds: 30,
+      reachedEnd: true,
+      subject: 'ko',
+      required: both,
+    });
     expect(second.studied).toBe(10);
     expect(second.seconds).toBe(70);
+    expect(second.doneSubjects).toEqual(['en', 'ko']);
     expect(second.completed).toBe(true);
+  });
+
+  it('같은 갈래를 두 번 끝내도 한 번만 센다', () => {
+    const first = closeSession(day({ goal: 10 }), {
+      studied: 6,
+      seconds: 40,
+      reachedEnd: true,
+      subject: 'en',
+      required: both,
+    });
+    const again = closeSession(first, {
+      studied: 2,
+      seconds: 10,
+      reachedEnd: true,
+      subject: 'en',
+      required: both,
+    });
+    expect(again.doneSubjects).toEqual(['en']);
+    expect(again.completed).toBe(false);
   });
 });
 

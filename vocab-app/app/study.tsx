@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
-import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
-import { router } from 'expo-router';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { router, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChoiceGame, ChoiceGameId } from '../src/games/ChoiceGame';
 import { ClozeGame } from '../src/games/ClozeGame';
@@ -17,8 +17,9 @@ import { SessionItem } from '../src/srs/session';
 import { buildParentQueue } from '../src/srs/parentSession';
 import { buildChildQueue, ChildQueueItem, childPool, isChildKo } from '../src/srs/childSession';
 import { DAILY_ENTRIES, dailyTheme } from '../src/data/daily';
+import { askConfirm } from '../src/lib/confirm';
 import { soundCorrect, soundWrong, tapCorrect, tapWrong, stopSpeaking } from '../src/lib/feedback';
-import { GAME_LABEL, STAGE_LABEL, SUBJECT_LABEL } from '../src/types';
+import { GAME_LABEL, STAGE_LABEL, Subject, SUBJECT_LABEL } from '../src/types';
 import { colors, font, radius, spacing } from '../src/theme';
 
 /**
@@ -43,6 +44,20 @@ interface Feedback {
 
 export default function Study() {
   const { profile, data, recordAnswer, finishSession } = useApp();
+
+  /**
+   * 어느 갈래를 풀러 들어왔는지. 홈이 `/study?track=ko` 처럼 넘긴다.
+   *
+   * **없으면 켠 것 전부**다 — 부모 공부와 옛 링크가 그렇게 들어온다.
+   * 아이 홈은 갈래마다 단추를 따로 두어 늘 하나만 넘긴다. 예전에는 영어와
+   * 국어를 한 줄로 이어 붙여 한 판에 78문제를 다 풀게 했는데, 앉은자리에서
+   * 다 해야 하는 데다 영어를 끝내고 쉬면 국어는 시작도 못 했다.
+   */
+  const params = useLocalSearchParams<{ track?: string }>();
+  const only: Subject | null =
+    params.track === 'en' || params.track === 'ko' || params.track === 'daily'
+      ? params.track
+      : null;
 
   const startedAt = useRef(Date.now());
   const questionStartedAt = useRef(Date.now());
@@ -80,7 +95,8 @@ export default function Study() {
      * 를 셀 때 같은 것을 봐야 하는데, 예전에는 여기서 만들고 홈에서 따로
      * 세느라 둘이 어긋났다 — 국어만 켠 아이에게 홈의 숫자가 거짓말을 했다.
      */
-    return buildChildQueue({ profile, cards: data.cards });
+    const all = buildChildQueue({ profile, cards: data.cards });
+    return only ? all.filter((i) => i.track === only) : all;
   });
 
   const [index, setIndex] = useState(0);
@@ -125,6 +141,15 @@ export default function Study() {
 
   /** 공부를 그만두거나 마쳤을 때 돌아갈 곳. 사람마다 홈이 다르다. */
   const homePath = profile?.kind === 'parent' ? '/parent-home' : '/home';
+
+  /**
+   * 이번 판이 **어느 갈래를 끝낸 것으로 세어질지.**
+   *
+   * 홈에서 갈래를 집어 들어왔으면 그것이고, 안 집었으면(부모 공부·옛 링크)
+   * 큐 맨 앞의 갈래로 본다. 켠 갈래를 다 모아야 하루가 끝나므로 이 값이
+   * 하루 기록에 그대로 적힌다.
+   */
+  const doneSubject: Subject = only ?? queue[0]?.track ?? 'en';
 
   const current = queue[index];
 
@@ -185,7 +210,12 @@ export default function Study() {
     if (index + 1 >= queue.length) {
       const seconds = Math.round((Date.now() - startedAt.current) / 1000);
       // 큐를 끝까지 다 봤다. 이때만 '오늘 다 했다' 로 적힌다.
-      finishSession({ studied: studiedIds.current.size, seconds, reachedEnd: true });
+      finishSession({
+        studied: studiedIds.current.size,
+        seconds,
+        reachedEnd: true,
+        subject: doneSubject,
+      });
       router.replace({
         pathname: '/result',
         params: {
@@ -203,12 +233,10 @@ export default function Study() {
   }, [index, queue.length, stats, finishSession]);
 
   function quit() {
-    Alert.alert('학습을 그만할까요?', '지금까지 푼 문제는 저장돼요. 다만 오늘 공부는 아직 안 끝난 것으로 남습니다.', [
-      { text: '계속하기', style: 'cancel' },
-      {
-        text: '그만하기',
-        style: 'destructive',
-        onPress: () => {
+    askConfirm(
+      '학습을 그만할까요?',
+      '지금까지 푼 문제는 저장돼요. 다만 오늘 공부는 아직 안 끝난 것으로 남습니다.',
+      () => {
           stopSpeaking();
           /*
            * 중간에 그만뒀다. 푼 것은 저장하되 **다 한 것으로는 안 적는다.**
@@ -221,11 +249,12 @@ export default function Study() {
             studied: studiedIds.current.size,
             seconds: Math.round((Date.now() - startedAt.current) / 1000),
             reachedEnd: false,
+            subject: doneSubject,
           });
           router.replace(homePath);
-        },
       },
-    ]);
+      { confirmText: '그만하기', destructive: true },
+    );
   }
 
   if (!profile || queue.length === 0 || !current) {

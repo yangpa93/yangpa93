@@ -24,7 +24,14 @@ import {
 import { buildInfo, buildLabel } from '../src/features/build-info';
 import { scheduleDailyReport } from '../src/features/notifications';
 import { loadProfileData } from '../src/store/storage';
-import { LEVEL_LABEL, LEVEL_SHORT } from '../src/types';
+import {
+  LEVEL_LABEL,
+  LEVEL_SHORT,
+  orderedSubjects,
+  Subject,
+  SUBJECT_LABEL,
+  SUBJECT_ORDER,
+} from '../src/types';
 import { lastNDays, todayKey } from '../src/lib/date';
 import { colors, radius, spacing } from '../src/theme';
 
@@ -78,6 +85,21 @@ export default function Home() {
   // 다의어는 문항이 여럿이라 단어 수로 센다.
   const reviewCount = new Set(session.filter((i) => i.mode === 'review').map((i) => i.entryId)).size;
   const newCount = new Set(session.filter((i) => i.mode === 'new').map((i) => i.entryId)).size;
+
+  /**
+   * 갈래마다 오늘 몇 개인지. 단추에 그대로 적는다.
+   *
+   * "영어 단어 학습하기 시작하기 (20개)" 처럼 보이려면 갈래별 수가 필요하다.
+   * 합계만 보이면 어느 쪽이 얼마나 남았는지 알 수 없어서, 국어를 켠 아이는
+   * 영어를 끝내고도 몇 개가 남았는지 모른 채 단추를 누르게 된다.
+   */
+  const perSubject = useMemo(() => {
+    const out: Partial<Record<Subject, number>> = {};
+    for (const sub of SUBJECT_ORDER) {
+      out[sub] = new Set(session.filter((i) => i.subject === sub).map((i) => i.entryId)).size;
+    }
+    return out;
+  }, [session]);
 
   const doneToday = day?.studied ?? 0;
   // 오늘 뽑힌 단어 수가 곧 오늘의 목표다.
@@ -216,12 +238,35 @@ export default function Home() {
             이 레벨의 단어를 모두 익혔어요! 🎉
           </Body>
         ) : (
-          <Button
-            title={finished ? '한 번 더 공부하기' : '공부 시작하기'}
-            onPress={() => router.push('/study')}
-            variant={finished ? 'secondary' : 'primary'}
-            style={{ marginTop: spacing.lg }}
-          />
+          /*
+           * **갈래마다 단추를 따로 둔다.**
+           *
+           * 예전에는 「공부 시작하기」 하나로 켠 갈래를 전부 이어서 풀게 했다.
+           * 영어와 국어를 둘 다 켜면 한 판이 78문제가 되어 앉은자리에서 다
+           * 해야 했고, 영어를 끝내고 쉬면 국어는 시작도 못 한 채 하루가 갔다.
+           *
+           * 이제 하나씩 들어가 푼다. 대신 **켠 갈래를 다 해야** 오늘 공부가
+           * 끝난 것으로 친다(features/dayRecord.ts 의 isDayComplete).
+           */
+          <View style={{ marginTop: spacing.lg, gap: spacing.sm }}>
+            {orderedSubjects(profile.settings).map((sub) => {
+              const left = perSubject[sub] ?? 0;
+              const done = (day?.doneSubjects ?? []).includes(sub);
+              if (left === 0 && !done) return null;
+              return (
+                <Button
+                  key={sub}
+                  title={
+                    done
+                      ? `✅ ${SUBJECT_LABEL[sub]} 끝냈어요 — 한 번 더`
+                      : `${SUBJECT_LABEL[sub]} 공부 시작하기 (${left}개)`
+                  }
+                  onPress={() => router.push({ pathname: '/study', params: { track: sub } })}
+                  variant={done ? 'secondary' : 'primary'}
+                />
+              );
+            })}
+          </View>
         )}
       </Card>
 

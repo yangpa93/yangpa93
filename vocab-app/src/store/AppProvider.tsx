@@ -437,7 +437,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         cards: { ...data.cards, [log.entryId]: graded },
         days: {
           ...data.days,
-          [today]: addAnswer(day, log.entryId, log.correct),
+          [today]: addAnswer(day, log.entryId, log.correct, log.subject),
         },
         answers: [...data.answers, log],
       });

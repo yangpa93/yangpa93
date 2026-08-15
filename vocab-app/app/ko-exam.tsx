@@ -62,6 +62,8 @@ export default function KoExam() {
         correct,
         ms: 0,
         at: Date.now(),
+        // 국어 레벨 시험. 갈래를 적어야 날짜별 보고서의 국어 칸에 들어간다.
+        subject: 'ko',
       });
 
       if (correct) {

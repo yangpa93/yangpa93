@@ -112,7 +112,9 @@ export default function ParentChildren() {
       ) : null}
 
       <Muted style={{ marginTop: spacing.md }}>
-        아이를 누르면 그 아이의 학습 기록과 설정이 나옵니다. 학년·레벨 · 하루 분량 ·
+        📅 를 누르면 달력이 열립니다. 날짜를 누르면 그날 국어와 영어를 갈라
+        보여 줘요 — 몇 개를 했는지, 정답률은 얼마인지, 무엇을 자주 틀렸는지.
+        {'\n'}이름을 누르면 그 아이의 설정이 나옵니다. 학년·레벨 · 하루 분량 ·
         과목 · 동기 부여 요청권 금액을 아이마다 다르게 정할 수 있어요.
         {'\n'}지우려면 이름 옆 🗑️ 를 누르세요.
       </Muted>
@@ -175,6 +177,23 @@ export default function ParentChildren() {
                 <Text style={s.delText}>🗑️</Text>
               </Pressable>
             </Row>
+
+            {/*
+              **보고서로 가는 길을 이름 붙여 따로 낸다.**
+
+              카드를 누르면 그 아이의 설정 화면이 열린다. 그런데 부모가 여기
+              들어오는 까닭은 대개 "어제 뭘 했나" 를 보려는 것이지 레벨을
+              고치려는 것이 아니다. 설정 화면을 지나 달력을 찾아 내려가야 했다.
+
+              달력으로 바로 보낸다. 날짜를 누르면 그날 국어와 영어를 갈라 놓은
+              것이 아래에 열린다.
+            */}
+            <Button
+              title={`📅 ${p.name} 학습 보고서 보기`}
+              variant="secondary"
+              style={{ marginTop: spacing.md }}
+              onPress={() => router.push({ pathname: '/calendar', params: { profileId: p.id } })}
+            />
           </Card>
         );
       })}

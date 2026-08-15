@@ -60,6 +60,9 @@ export default function Exam() {
         correct,
         ms: 0,
         at: Date.now(),
+        // 레벨 시험도 그날 기록에 들어간다. 갈래를 안 적으면 날짜별 보고서에서
+        // 시험 본 날만 합계와 갈래별 수가 어긋난다.
+        subject: 'en',
       });
 
       if (correct) {

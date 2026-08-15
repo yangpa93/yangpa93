@@ -14,11 +14,20 @@ import {
   WEEKDAY_LABEL,
 } from '../src/features/calendar';
 import { formatKo, todayKey } from '../src/lib/date';
-import { ProfileData } from '../src/types';
+import { ProfileData, SUBJECT_LABEL } from '../src/types';
 import { colors, font, radius, spacing } from '../src/theme';
 import { MonthlyCard } from '../src/components/MonthlyCard';
 import { buildMonthlyReport } from '../src/features/monthly';
 import { ALL_ENTRIES } from '../src/data';
+import { DAILY_ENTRIES } from '../src/data/daily';
+import { KO_ENTRIES } from '../src/data/korean/levels';
+import { dayBySubject } from '../src/features/studiedWords';
+
+/* 찾아보기 표는 앱이 뜰 때 한 번만 만든다. 날짜를 누를 때마다 5,400여 개를
+ * 훑으면 달력이 눌릴 때마다 멈칫한다. 결과 화면도 같은 방식이다. */
+const EN_BY_ID = new Map(ALL_ENTRIES.map((e) => [e.id, e]));
+const DAILY_BY_ID = new Map(DAILY_ENTRIES.map((e) => [e.id, e]));
+const KO_BY_ID = new Map(KO_ENTRIES.map((e) => [e.id, e]));
 
 /**
  * 학습 달력.
@@ -92,19 +101,21 @@ export default function Calendar() {
     return null;
   }, [picked, summary]);
 
-  const wrongWords = useMemo(() => {
-    if (!selected || !pdata) return [];
+  /**
+   * 고른 날을 **갈래별로 갈라** 놓은 것. null 이면 갈래별로 나눠 적기 전의 날.
+   *
+   * 예전에는 「학습 단어 16/15 · 정답률 88%」 한 줄이었다. 그 88% 가 영어에서
+   * 나온 것인지 국어에서 나온 것인지 알 수가 없어서, 아이가 국어만 처지고
+   * 있어도 부모 눈에는 안 보였다.
+   *
+   * 틀린 낱말을 찾을 때 **영어 목록만 뒤지던 것도 여기서 고쳐진다.** 국어를
+   * 틀린 날에도 「이 날 틀린 단어」 가 비어 있었다.
+   */
+  const bySubject = useMemo(() => {
+    if (!selected || !pdata) return null;
     const rec = pdata.days[selected.date];
-    if (!rec) return [];
-    const counts = new Map<string, number>();
-    for (const id of rec.wrongEntryIds) counts.set(id, (counts.get(id) ?? 0) + 1);
-    const byId = new Map(ALL_ENTRIES.map((e) => [e.id, e]));
-    return [...counts.entries()]
-      .sort((a, b) => b[1] - a[1])
-      .flatMap(([id, count]) => {
-        const e = byId.get(id);
-        return e ? [{ word: e.word, meaning: meaningLine(e), count }] : [];
-      });
+    if (!rec) return null;
+    return dayBySubject(rec, { en: EN_BY_ID, daily: DAILY_BY_ID, ko: KO_BY_ID });
   }, [selected, pdata]);
 
   function move(n: number) {
@@ -247,19 +258,46 @@ export default function Calendar() {
                 <Stat label="시간" value={`${selected.minutes}분`} />
               </Row>
 
-              {wrongWords.length > 0 ? (
-                <>
-                  <Muted style={{ marginTop: spacing.lg }}>이 날 틀린 단어</Muted>
-                  {wrongWords.slice(0, 8).map((m) => (
-                    <Row key={m.word} style={{ marginTop: spacing.md, alignItems: 'flex-start' }}>
-                      <Body style={{ fontWeight: '700', width: 120 }}>{m.word}</Body>
-                      <Muted style={{ flex: 1 }}>{m.meaning}</Muted>
-                      {m.count > 1 ? <Chip label={`${m.count}번`} tone="wrong" /> : null}
-                    </Row>
-                  ))}
-                </>
+              {/*
+                * 갈래마다 한 칸씩. 합쳐 놓은 숫자로는 어느 과목이 처지는지
+                * 안 보인다.
+                */}
+              {bySubject === null ? (
+                /*
+                 * 갈래별로 나눠 적기 전(2026-08-15 이전)에 공부한 날이다.
+                 * 어림잡아 채우지 않고 그렇다고 말한다 — 없는 숫자를 지어내면
+                 * 부모가 그것을 아이의 성적으로 읽는다.
+                 */
+                <Muted style={{ marginTop: spacing.lg }}>
+                  이 날은 국어·영어를 나눠 적기 전이라 합계만 있어요.
+                </Muted>
               ) : (
-                <Muted style={{ marginTop: spacing.lg }}>틀린 단어가 없어요. 완벽해요! 🎉</Muted>
+                bySubject.map((sub) => (
+                  <View key={sub.subject} style={s.subjectBox}>
+                    <Row style={{ justifyContent: 'space-between' }}>
+                      <Body style={{ fontWeight: '700' }}>{SUBJECT_LABEL[sub.subject]}</Body>
+                      <Muted>
+                        {sub.studied}개
+                        {sub.accuracy !== null ? ` · 정답률 ${Math.round(sub.accuracy * 100)}%` : ''}
+                      </Muted>
+                    </Row>
+
+                    {sub.missed.length > 0 ? (
+                      sub.missed.map((w) => (
+                        <Row key={w.id} style={{ marginTop: spacing.sm, alignItems: 'flex-start' }}>
+                          <Body style={{ fontWeight: '700', width: 110 }}>{w.entry.word}</Body>
+                          {/* 국어는 뜻이 한 줄이고 영어는 뜻이 여럿이라 줄을 지어야 한다. */}
+                          <Muted style={{ flex: 1 }}>
+                            {w.kind === 'ko' ? w.entry.meaning : meaningLine(w.entry)}
+                          </Muted>
+                          {w.wrong > 1 ? <Chip label={`${w.wrong}번`} tone="wrong" /> : null}
+                        </Row>
+                      ))
+                    ) : (
+                      <Muted style={{ marginTop: spacing.sm }}>다 맞혔어요 🎉</Muted>
+                    )}
+                  </View>
+                ))
               )}
             </>
           ) : (
@@ -296,6 +334,9 @@ function DayBox({
       <Pressable
         onPress={onPress}
         accessibilityRole="button"
+        /* 날짜 칸마다 이름을 붙인다. 시험이 '15' 라는 글자로 칸을 찾으면 월간
+         * 요약의 '15일' 같은 것에 먼저 걸린다. */
+        testID={`day-${cell.date}`}
         accessibilityLabel={
           cell.studied > 0
             ? `${cell.day}일, ${cell.studied}개 학습${cell.completed ? ', 목표 달성' : ''}`
@@ -381,4 +422,12 @@ const s = StyleSheet.create({
 
   swatch: { width: 14, height: 14, borderRadius: 4, borderWidth: 1, borderColor: colors.border },
   statValue: { fontSize: 18, fontWeight: '800', color: colors.text },
+
+  /* 날짜를 눌렀을 때 갈래마다 한 칸. 위에 선을 그어 국어와 영어를 갈라 놓는다. */
+  subjectBox: {
+    marginTop: spacing.lg,
+    paddingTop: spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+  },
 });

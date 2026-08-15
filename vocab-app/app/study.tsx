@@ -16,6 +16,7 @@ import { KO_ENTRIES } from '../src/data/korean/levels';
 import { SessionItem } from '../src/srs/session';
 import { buildParentQueue } from '../src/srs/parentSession';
 import { buildChildQueue, ChildQueueItem, childPool, isChildKo } from '../src/srs/childSession';
+import { koGameFor } from '../src/srs/koExam';
 import { DAILY_ENTRIES, dailyTheme } from '../src/data/daily';
 import { askConfirm } from '../src/lib/confirm';
 import { soundCorrect, soundWrong, tapCorrect, tapWrong, stopSpeaking } from '../src/lib/feedback';
@@ -106,6 +107,14 @@ export default function Study() {
   const studiedIds = useRef(new Set<string>());
   /** 틀려서 뒤에 다시 넣은 단어. 무한 반복을 막으려고 한 번만 재출제한다. */
   const requeued = useRef(new Set<string>());
+  /**
+   * **이번 판에서** 틀린 단어. 틀린 순서 그대로, 두 번 틀리면 두 번 담는다.
+   *
+   * 결과 화면에 그대로 넘긴다. 예전에는 결과 화면이 하루 기록을 보고 있었는데,
+   * 갈래를 따로 들어가 풀게 한 뒤로 하루에 판이 둘 이상이라 국어를 끝내면
+   * 아침에 영어에서 틀린 것이 떴다.
+   */
+  const wrongIds = useRef<string[]>([]);
 
   /**
    * 오답 보기를 뽑을 후보.
@@ -163,6 +172,9 @@ export default function Study() {
         correct,
         ms: Date.now() - questionStartedAt.current,
         at: Date.now(),
+        // 하루 기록에 갈래별로 따로 세어 둔다. 부모가 날짜를 눌렀을 때
+        // 「국어 6개 · 정답률 83%」 로 갈라 보려면 여기서 알려 줘야 한다.
+        subject: current.track,
       });
 
       studiedIds.current.add(current.entry.id);
@@ -178,20 +190,33 @@ export default function Study() {
       } else {
         soundWrong(profile.settings.ttsEnabled);
         tapWrong(profile.settings.hapticsEnabled);
+        wrongIds.current.push(current.entry.id);
         // 마지막 라운드에서 틀린 단어는 세션 끝에 한 번 더 만난다.
         const isLastRound = current.round >= profile.settings.rounds - 1;
         if (isLastRound && !requeued.current.has(current.entry.id)) {
           requeued.current.add(current.entry.id);
+          // 방금 틀린 그 문장으로 다시 물으면 문장을 외운 것인지
+          // 단어를 안 것인지 구별되지 않는다. 예문을 한 칸 넘긴다.
+          const nextExposure = current.exposureIndex + 1;
           setQueue((q) => [
             ...q,
             {
               ...current,
               round: current.round + 1,
-              // 방금 틀린 그 문장으로 다시 물으면 문장을 외운 것인지
-              // 단어를 안 것인지 구별되지 않는다. 예문을 한 칸 넘긴다.
-              exposureIndex: current.exposureIndex + 1,
+              exposureIndex: nextExposure,
               stage: 'learn',
-              game: 'cloze',
+              /*
+               * **국어는 유형을 다시 고른다.** 예전에는 갈래를 안 가리고 빈칸
+               * 문제로 못박았는데, 국어 예문에는 표제어가 그 모양 그대로 안
+               * 들어 있는 것이 있다. 그러면 빈칸을 뚫을 자리가 없어 화면이
+               * 통째로 비고, 아이는 아무것도 못 누른 채 거기서 막힌다.
+               *
+               * 예문을 한 칸 넘긴 참이라 더 그렇다 — 첫 예문은 빈칸이 되는데
+               * 둘째는 안 되는 낱말이 실제로 있다. `koGameFor` 가 그 판단을
+               * 이미 하고 있으니(빈칸을 못 뚫으면 뜻 문제로 내린다) 그것을
+               * 부른다.
+               */
+              game: isKo(current) ? koGameFor(current.entry, koPool, nextExposure) : 'cloze',
               firstMeeting: false,
             } as QueueItem,
           ]);
@@ -200,7 +225,7 @@ export default function Study() {
 
       setFeedback({ item: current, correct });
     },
-    [current, profile, recordAnswer],
+    [current, profile, recordAnswer, koPool],
   );
 
   const next = useCallback(() => {
@@ -223,6 +248,12 @@ export default function Study() {
           wrong: String(stats.wrong),
           studied: String(studiedIds.current.size),
           seconds: String(seconds),
+          /*
+           * 이번 판에서 틀린 것. 결과 화면이 하루 기록을 뒤지지 않게 여기서
+           * 넘긴다. id 는 영어가 `[a-z0-9-]`, 국어가 `ko-` + 표제어라 쉼표가
+           * 들어갈 일이 없다(둘 다 만드는 곳이 slug 를 거친다).
+           */
+          wrongIds: wrongIds.current.join(','),
         },
       });
       return;

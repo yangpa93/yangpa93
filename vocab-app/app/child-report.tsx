@@ -41,6 +41,7 @@ import {
   LevelId,
   Profile,
   ProfileData,
+  RewardRequest,
   Subject,
   SUBJECT_LABEL,
   SUBJECT_ORDER,
@@ -294,7 +295,14 @@ export default function ChildReport() {
       {monthly ? <MonthlyCard report={monthly} name={profile.name} /> : null}
 
       {pdata ? (
-        <GrantCard profile={profile} pdata={pdata} today={today} rates={rates} onGive={grantReward} />
+        <GrantCard
+          profile={profile}
+          pdata={pdata}
+          today={today}
+          rates={rates}
+          rewards={state.rewards.filter((r) => r.profileId === profile.id)}
+          onGive={grantReward}
+        />
       ) : null}
 
       <Button
@@ -543,20 +551,23 @@ function GrantCard({
   pdata,
   today,
   rates,
+  rewards,
   onGive,
 }: {
   profile: Profile;
   pdata: ProfileData;
   today: string;
   rates: AwardRates;
+  /** 지난 신청 기록. 하루치와 달 정산이 이것으로 중복을 가린다. */
+  rewards: RewardRequest[];
   onGive: (profileId: string, award: Award, parentNote?: string) => void;
 }) {
   const [open, setOpen] = useState(false);
   const [note, setNote] = useState('');
 
   const awards = useMemo(
-    () => availableAwards(profile, pdata, today, rates),
-    [profile, pdata, today, rates],
+    () => availableAwards(profile, pdata, today, rates, rewards),
+    [profile, pdata, today, rates, rewards],
   );
 
   return (

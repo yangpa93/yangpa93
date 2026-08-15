@@ -47,8 +47,32 @@ export const HIGH_LEVEL_AWARD = 30_000;
  */
 export const KOREAN_LEVEL_AWARD = 10_000;
 
-/** 한 달을 하루도 빠짐없이 학습했을 때 (기본값) */
-export const PERFECT_MONTH_AWARD = 20_000;
+/**
+ * 한 달을 하루도 빠짐없이 학습했을 때 (기본값).
+ *
+ * **0 이다 — 이 방식을 껐다.** 하루도 안 빠져야 받는 것이라, 중순에 한 번
+ * 빠지면 남은 보름을 버틸 이유가 사라졌다. 매일 쌓는 쪽(DAILY_DONE_AWARD)과
+ * 달 말 공로금(MONTHLY_EFFORT_AWARD)으로 갈음했다.
+ */
+export const PERFECT_MONTH_AWARD = 0;
+
+/** 하루치를 다 마쳤을 때 쌓이는 금액 (기본값) */
+export const DAILY_DONE_AWARD = 500;
+
+/**
+ * 한 달에 스무닷새를 넘겨 공부했을 때 부모가 얹어 줄 수 있는 금액 (기본값).
+ *
+ * 부모가 승인하는 자리에서 고쳐 넣는 **제안값**이다. 자동으로 나가지 않는다.
+ */
+export const MONTHLY_EFFORT_AWARD = 5_000;
+
+/**
+ * 공로금을 얹을 수 있게 되는 날수.
+ *
+ * 한 달을 다 채우라고 하지 않는다. 서른 날 중 스무닷새면 어지간히 꾸준한
+ * 것이고, 남은 닷새는 아파도 되고 여행을 가도 되는 자리로 둔다.
+ */
+export const EFFORT_DAYS = 25;
 /**
  * 아이가 "정말 잘했어요" 라며 더 요구할 수 있는 금액.
  *
@@ -66,6 +90,8 @@ export const DEFAULT_AWARD_RATES: AwardRates = {
   highLevel: HIGH_LEVEL_AWARD,
   koreanLevel: KOREAN_LEVEL_AWARD,
   perfectMonth: PERFECT_MONTH_AWARD,
+  dailyDone: DAILY_DONE_AWARD,
+  monthlyEffort: MONTHLY_EFFORT_AWARD,
   bonus: BONUS_AWARD,
 };
 
@@ -78,7 +104,14 @@ export function awardRates(rates?: Partial<AwardRates> | null): AwardRates {
     middleLevel: clean(r.middleLevel, MIDDLE_LEVEL_AWARD),
     highLevel: clean(r.highLevel, HIGH_LEVEL_AWARD),
     koreanLevel: clean(r.koreanLevel, KOREAN_LEVEL_AWARD),
-    perfectMonth: clean(r.perfectMonth, PERFECT_MONTH_AWARD),
+    dailyDone: clean(r.dailyDone, DAILY_DONE_AWARD),
+    monthlyEffort: clean(r.monthlyEffort, MONTHLY_EFFORT_AWARD),
+    /*
+     * **늘 0 이다.** 개근 요청권을 껐다. 예전에 20,000 으로 저장해 둔 프로필이
+     * 있어서, 저장값을 그대로 쓰면 그 아이에게만 남는다. 정하는 칸을 없앴으니
+     * 되돌릴 길도 없다 — bonus 와 같이 여기서 눌러 둔다.
+     */
+    perfectMonth: 0,
     /*
      * **늘 0 이다.** 「더 요구하기」 를 껐다. 예전에 10,000 으로 저장해 둔
      * 프로필이 있어서, 저장값을 그대로 쓰면 그 아이에게만 단추가 남는다.
@@ -109,12 +142,19 @@ export function ratesOf(
  * 고등학교 3만 / 국어 1만), 아이가 목록에서 무엇으로 받는 것인지 알아야
  * 하기 때문이다.
  */
-export type AwardKind = 'levelup' | 'koLevelup' | 'perfectMonth';
+export type AwardKind =
+  | 'levelup'
+  | 'koLevelup'
+  | 'perfectMonth'
+  | 'dailyDone'
+  | 'monthlyPurse';
 
 export const AWARD_LABEL: Record<AwardKind, string> = {
   levelup: '영어 레벨업',
   koLevelup: '국어 레벨업',
   perfectMonth: '한 달 개근',
+  dailyDone: '오늘 공부 끝',
+  monthlyPurse: '한 달치 모아 받기',
 };
 
 /** 레벨 하나를 끝냈을 때 받는 금액. 중학교와 고등학교 금액이 다르다. */
@@ -129,10 +169,19 @@ export interface Award {
   amount: number;
   /** levelup이면 어떤 레벨을 끝냈는지 */
   earnedFrom: LevelId | null;
-  /** perfectMonth면 어느 달인지 (yyyy-mm) */
+  /** perfectMonth·monthlyPurse면 어느 달인지 (yyyy-mm) */
   month: string | null;
+  /** dailyDone이면 어느 날인지 (yyyy-mm-dd) */
+  date?: string | null;
   /** 화면에 그대로 쓰는 한 줄 */
   reason: string;
+  /**
+   * 부모가 승인할 때 **얹을 수 있는** 금액의 제안값. 0 이면 얹는 칸을 안 낸다.
+   *
+   * 지금은 달 말 정산에만 붙는다. 스무닷새를 넘겨 공부한 달에 부모가 그달의
+   * 애씀을 값으로 매기는 자리다.
+   */
+  effortSuggestion?: number;
 }
 
 export function formatWon(amount: number): string {
@@ -201,20 +250,174 @@ export function perfectMonths(
   });
 }
 
+/* ------------------------------------------------------------------ */
+/* 매일 쌓고 달 말에 모아 받기                                          */
+/* ------------------------------------------------------------------ */
+
+/**
+ * ── 왜 매일 쌓는 쪽으로 바꿨나 ──────────────────────────────
+ *
+ * 예전 보상은 레벨업(몇 달에 한 번)과 한 달 개근(하루도 안 빠져야) 둘뿐이었다.
+ * 둘 다 **오늘 하루와 이어지지 않는다.** 레벨업은 너무 멀고, 개근은 중순에
+ * 한 번 빠지는 순간 남은 보름을 버틸 이유가 사라진다.
+ *
+ * 그래서 하루를 마칠 때마다 조금씩 쌓고, 달이 바뀌면 모아서 받는다. 오늘
+ * 책을 펴는 값이 오늘 생기고, 한 번 빠져도 그날치만 없다.
+ *
+ * **쌓이려면 부모가 승인해야 한다.** 아이가 「오늘 다 했어요」 를 누르면 부모
+ * 폰에 뜨고, 부모가 승인하며 한마디를 적는다. 자동으로 쌓지 않는 것은 그
+ * 한마디를 주고받는 자리를 남기려는 것이다 — 돈만 오가면 심부름값이 된다.
+ */
+
+/** 그달에 목표를 채운 날이 며칠인지. */
+export function completedDays(days: Record<string, DailyRecord>, month: string): number {
+  let n = 0;
+  for (const [date, rec] of Object.entries(days)) {
+    if (monthOf(date) === month && rec.completed) n++;
+  }
+  return n;
+}
+
+/**
+ * 그달에 **승인된** 하루치 적립을 다 더한 금액.
+ *
+ * 신청만 하고 부모가 아직 안 본 것(pending)은 안 센다. 아이 화면에 "12,500원
+ * 모였어요" 라고 적혔는데 부모가 그중 얼마를 아직 승인 안 했다면, 청구할 때
+ * 금액이 줄어 보인다. 승인된 것만 세면 늘 같은 숫자다.
+ */
+export function purseOf(
+  rewards: RewardRequest[],
+  profileId: string,
+  month: string,
+): number {
+  return rewards
+    .filter(
+      (w) =>
+        w.profileId === profileId &&
+        w.kind === 'dailyDone' &&
+        typeof w.date === 'string' &&
+        monthOf(w.date) === month &&
+        (w.status === 'approved' || w.status === 'fulfilled'),
+    )
+    .reduce((sum, w) => sum + w.amount, 0);
+}
+
+/**
+ * 오늘치를 다 마쳐 그날 몫을 청구할 수 있는지. 못 하면 null.
+ *
+ * **하루에 한 번만.** 이미 낸 것이 있으면(부모가 아직 안 봤든, 이미 승인했든,
+ * 거절했든) 다시 안 낸다. 거절까지 막는 것은, 거절을 다시 물어보는 단추로
+ * 만들면 아이가 될 때까지 누르게 되기 때문이다.
+ */
+export function dailyDoneAward(
+  profile: Profile,
+  data: ProfileData,
+  rewards: RewardRequest[],
+  today: string = todayKey(),
+  rates?: Partial<AwardRates> | null,
+): Award | null {
+  const r = awardRates(rates);
+  if (r.dailyDone <= 0) return null;
+  if (!data.days[today]?.completed) return null;
+  const already = rewards.some(
+    (w) => w.profileId === profile.id && w.kind === 'dailyDone' && w.date === today,
+  );
+  if (already) return null;
+  return {
+    kind: 'dailyDone',
+    amount: r.dailyDone,
+    earnedFrom: null,
+    month: null,
+    date: today,
+    reason: '오늘 공부를 다 마쳤어요',
+  };
+}
+
+/**
+ * 지난달까지 쌓아 두고 아직 안 받은 것들. 오래된 달부터.
+ *
+ * **이번 달은 안 낸다.** 아직 쌓이는 중이라, 중간에 받아 가면 남은 날의 몫을
+ * 어떻게 셀지가 엉킨다. 달이 바뀌면 그달 것이 통째로 정산 대상이 된다.
+ *
+ * **놓친 달도 그대로 남긴다.** 9월에 8월치를 안 받고 넘어갔으면 10월에도
+ * 보인다. 받을 것이 조용히 사라지면 아이는 그게 사라진 줄도 모른다.
+ */
+export function monthlyPurseAwards(
+  profile: Profile,
+  data: ProfileData,
+  rewards: RewardRequest[],
+  today: string = todayKey(),
+  rates?: Partial<AwardRates> | null,
+): Award[] {
+  const r = awardRates(rates);
+  const thisMonth = monthOf(today);
+
+  // 하루치를 받은 적이 있는 달만 후보다.
+  const months = [
+    ...new Set(
+      rewards
+        .filter((w) => w.profileId === profile.id && w.kind === 'dailyDone' && typeof w.date === 'string')
+        .map((w) => monthOf(w.date as string)),
+    ),
+  ].sort();
+
+  return months.flatMap((month) => {
+    if (month >= thisMonth) return [];
+    const claimed = rewards.some(
+      (w) => w.profileId === profile.id && w.kind === 'monthlyPurse' && w.month === month,
+    );
+    if (claimed) return [];
+    const total = purseOf(rewards, profile.id, month);
+    if (total <= 0) return [];
+    const done = completedDays(data.days, month);
+    return [
+      {
+        kind: 'monthlyPurse' as const,
+        amount: total,
+        earnedFrom: null,
+        month,
+        date: null,
+        reason: `${Number(month.split('-')[1])}월에 ${done}일 공부해서 모았어요`,
+        /*
+         * 스무닷새를 넘긴 달에만 얹는 칸을 낸다. 늘 내면 그것이 정가가 되어,
+         * 안 얹는 달에 아이가 깎였다고 느낀다.
+         */
+        effortSuggestion: done >= EFFORT_DAYS ? r.monthlyEffort : 0,
+      },
+    ];
+  });
+}
+
 /**
  * 지금 요청할 수 있는 동기 부여 요청권 목록.
  *
  * 이미 요청한 것은 빠진다. 레벨업은 `pendingLevelUps`가, 개근은
- * `claimedMonths`가 중복을 막는다.
+ * `claimedMonths`가, 하루치와 달 정산은 지난 신청 기록이 중복을 막는다.
  */
 export function availableAwards(
   profile: Profile,
   data: ProfileData,
   today: string = todayKey(),
   rates?: Partial<AwardRates> | null,
+  /**
+   * 지금까지의 신청 기록. 하루치와 달 정산이 이것으로 중복을 가린다.
+   *
+   * 안 넘겨도 되게 뒀다 — 레벨업만 보면 되는 자리가 있어서다. 안 넘기면
+   * 하루치·달 정산이 그냥 안 나온다(있는 것을 빠뜨릴 뿐 없는 것을 만들지는
+   * 않는다).
+   */
+  rewards: RewardRequest[] = [],
 ): Award[] {
   const r = awardRates(rates);
   const out: Award[] = [];
+
+  /*
+   * **하루치를 맨 앞에 둔다.** 아이가 가장 자주 만나는 것이고, 목록 아래로
+   * 밀리면 오늘 받을 것이 있는지 한눈에 안 보인다.
+   */
+  const daily = dailyDoneAward(profile, data, rewards, today, r);
+  if (daily) out.push(daily);
+  out.push(...monthlyPurseAwards(profile, data, rewards, today, r));
 
   for (const level of profile.pendingLevelUps) {
     const amount = levelUpAmount(level, r);
@@ -400,8 +603,16 @@ export function buildRewardRequest(input: NewReward): RewardRequest {
     bonusReason: extra > 0 ? (input.bonusReason ?? '').trim() : '',
     earnedFrom: award.earnedFrom,
     month: award.month,
+    /*
+     * 어느 날 몫인지 적어 둔다. 하루에 한 번만 받게 막는 자리이자, 달이
+     * 바뀌었을 때 그달 것을 모아 세는 열쇠다.
+     */
+    date: award.date ?? null,
     reason: award.reason,
     note: (input.note ?? '').trim(),
+    // 부모 폰에는 아이의 하루하루 기록이 없다. 승인하는 자리에서 다시 셀 수
+    // 없으니 신청할 때 셈해서 담아 둔다.
+    effortSuggestion: award.effortSuggestion ?? 0,
     status: origin === 'parent' ? 'approved' : 'pending',
     createdAt: now,
     // 부모가 먼저 준 것은 만든 순간이 곧 정해진 순간이다.

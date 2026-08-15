@@ -54,16 +54,53 @@ export function withDefaults(day: DailyRecord): DailyRecord & { studiedEntryIds:
  * 몇 번 틀렸는지가 뜻을 갖기 때문이다. `studiedEntryIds` 는 반대로 가짓수를
  * 세는 것이라 한 번만 담는다.
  */
-export function addAnswer(day: DailyRecord, entryId: string, correct: boolean): DailyRecord {
+export function addAnswer(
+  day: DailyRecord,
+  entryId: string,
+  correct: boolean,
+  /**
+   * 어느 갈래에서 푼 것인지. 넘기지 않으면 갈래별 집계만 건너뛴다.
+   *
+   * 안 넘겨도 되게 둔 것은, 이 값을 모르는 자리(옛 기록을 되돌리는 길)가
+   * 있어서다. 그런 날은 갈래 칸이 비고, 화면이 그렇다고 밝힌다.
+   */
+  subject?: Subject,
+): DailyRecord {
   const base = withDefaults(day);
+  const firstMeeting = !base.studiedEntryIds.includes(entryId);
   return {
     ...base,
     correct: base.correct + (correct ? 1 : 0),
     wrong: base.wrong + (correct ? 0 : 1),
     wrongEntryIds: correct ? base.wrongEntryIds : [...base.wrongEntryIds, entryId],
-    studiedEntryIds: base.studiedEntryIds.includes(entryId)
-      ? base.studiedEntryIds
-      : [...base.studiedEntryIds, entryId],
+    studiedEntryIds: firstMeeting ? [...base.studiedEntryIds, entryId] : base.studiedEntryIds,
+    bySubject: subject
+      ? addToSubject(base.bySubject, subject, correct, firstMeeting)
+      : base.bySubject,
+  };
+}
+
+/**
+ * 갈래 하나의 성적을 한 문제만큼 올린다.
+ *
+ * `studied` 는 **처음 만난 낱말일 때만** 올린다. 하루 합계의 studied 와 셈법을
+ * 맞추려는 것이다 — 거기도 낱말 가짓수지 문제 수가 아니다. 갈래별 수를 다
+ * 더했을 때 하루 수와 안 맞으면 부모가 어느 쪽을 믿어야 할지 모른다.
+ */
+function addToSubject(
+  base: DailyRecord['bySubject'],
+  subject: Subject,
+  correct: boolean,
+  firstMeeting: boolean,
+): NonNullable<DailyRecord['bySubject']> {
+  const before = base?.[subject] ?? { studied: 0, correct: 0, wrong: 0 };
+  return {
+    ...(base ?? {}),
+    [subject]: {
+      studied: before.studied + (firstMeeting ? 1 : 0),
+      correct: before.correct + (correct ? 1 : 0),
+      wrong: before.wrong + (correct ? 0 : 1),
+    },
   };
 }
 

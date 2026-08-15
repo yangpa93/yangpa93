@@ -189,12 +189,26 @@ describe('buildBackup', () => {
 
   it('보상 금액 설정은 담는다', () => {
     const state = makeState({
-      parent: { ...emptyState().parent, awards: { middleLevel: 5_000, highLevel: 7_000, koreanLevel: 4_000, perfectMonth: 0, bonus: 3_000 } },
+      parent: {
+        ...emptyState().parent,
+        awards: {
+          middleLevel: 5_000,
+          highLevel: 7_000,
+          koreanLevel: 4_000,
+          perfectMonth: 0,
+          dailyDone: 300,
+          monthlyEffort: 8_000,
+          bonus: 3_000,
+        },
+      },
     });
     const b = buildBackup(state, { p1: makeData() }, '1.0.0', NOW);
     expect(b.state.parent.awards.middleLevel).toBe(5_000);
     expect(b.state.parent.awards.koreanLevel).toBe(4_000);
     expect(b.state.parent.awards.perfectMonth).toBe(0);
+    // 매일 쌓는 금액과 달 말 공로금도 되돌리기에 담겨야 한다. 집집마다 다르다.
+    expect(b.state.parent.awards.dailyDone).toBe(300);
+    expect(b.state.parent.awards.monthlyEffort).toBe(8_000);
   });
 });
 

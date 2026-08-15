@@ -294,6 +294,14 @@ function demoPage() {
   <b>🦊 아이 — 숙어가 복습으로 나오는 상태</b>
   <span>'공부 시작하기'를 누르면 첫 문제부터 숙어가 나옵니다</span>
 </button>
+<button onclick="seed('childDone')">
+  <b>🦊 아이 — 오늘치를 다 마친 상태</b>
+  <span>'📗 오늘 공부 다 했어요 — 500원 받기' 가 떠야 맞습니다. 🗓️ 학습 달력에서 오늘을 누르면 국어·영어를 갈라 보여 줘요</span>
+</button>
+<button onclick="seed('childPurse')">
+  <b>🦊 아이 — 지난달치가 쌓여 있는 상태</b>
+  <span>'🗓️ 지난달에 모은 12,500원 청구하기' 가 떠야 맞습니다</span>
+</button>
 
 <h2>3. 부모 화면</h2>
 <button onclick="seed('parent')">
@@ -307,6 +315,10 @@ function demoPage() {
 <button onclick="seed('parentFresh')">
   <b>👩‍💼 부모 — 무엇을 공부할지 아직 안 고른 상태</b>
   <span>'무엇을 공부할지 정하기'부터 시작합니다</span>
+</button>
+<button onclick="seed('parentPurse')">
+  <b>👩‍💼 부모 — 아이가 한 달치를 모아 청구한 상태</b>
+  <span>🎁 새 보상 요청 → 스무닷새를 넘긴 달이라 '얹어 줄 금액' 칸이 열립니다. 금액을 고치면 아래 단추가 따라 바뀌어요</span>
 </button>
 
 <h2>4. 연결을 끝까지 시험하기 (창 두 개)</h2>
@@ -406,16 +418,45 @@ function root(profiles, activeId, extra={}) {
 }
 const empty = { cards:{}, days:{}, answers:[], exams:[] };
 
+/*
+ * 날짜 열쇠(yyyy-mm-dd). **로컬 기준이다.**
+ *
+ * toISOString 은 UTC 라 한국에서는 오전 아홉 시 전에 하루가 밀린다. 앱은
+ * 로컬 날짜(todayKey)를 쓰므로, 심는 쪽이 UTC 를 쓰면 아침에 데모를 열었을 때
+ * '오늘' 기록이 어제 칸에 들어가 화면이 비어 보인다.
+ *
+ * 이 함수는 demo.html 안으로 들어가는 글이다. 여기서는 백틱 문자열을 못 쓴다 —
+ * 바깥이 이미 백틱 문자열이라 거기서 끊긴다. 더하기로 잇는다.
+ */
+function dayKey(d) {
+  d = d || new Date();
+  const mm = String(d.getMonth()+1).padStart(2,'0');
+  const dd = String(d.getDate()).padStart(2,'0');
+  return d.getFullYear() + '-' + mm + '-' + dd;
+}
+
 /** 며칠치 학습 기록. 보고서와 달력이 비어 보이지 않게 한다. */
 function history(days) {
   const out = { cards:{}, days:{}, answers:[], exams:[] };
   const today = new Date();
   for (let i=0; i<days; i++) {
     const d = new Date(today); d.setDate(d.getDate()-i);
-    const key = d.toISOString().slice(0,10);
+    const key = dayKey(d);
     const studied = 12 + ((i*7)%9);
-    out.days[key] = { date:key, goal:20, studied, correct:studied*3-4, wrong:4,
-      seconds:600+i*20, completed: studied>=20 ? true : i%3!==0, wrongEntryIds:[] };
+    const wrong = 4;
+    const correct = studied*3-4;
+    /*
+     * 갈래별 성적도 적어 둔다. 달력에서 날짜를 누르면 국어와 영어를 갈라
+     * 보여 주는데, 이 칸이 없으면 데모에서는 "나눠 적기 전이에요" 만 뜨고
+     * 정작 확인하려는 화면을 못 본다.
+     */
+    const koStudied = Math.round(studied*0.4);
+    out.days[key] = { date:key, goal:20, studied, correct, wrong,
+      seconds:600+i*20, completed: studied>=20 ? true : i%3!==0, wrongEntryIds:[],
+      bySubject:{
+        en:{ studied: studied-koStudied, correct: correct-koStudied*2, wrong: wrong-1 },
+        ko:{ studied: koStudied, correct: koStudied*2, wrong: 1 },
+      } };
   }
   return out;
 }
@@ -508,6 +549,36 @@ function showVoices() {
 speechSynthesis.onvoiceschanged = showVoices;
 showVoices();
 
+/* 지난달 (yyyy-mm). 달 정산은 달이 바뀌어야 받을 수 있다. */
+function lastMonth() {
+  const d = new Date(); d.setDate(1); d.setMonth(d.getMonth()-1);
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+}
+
+/* 지난달에 하루치를 n일 승인받아 둔 기록. 달 정산이 이것을 모아 센다. */
+function lastMonthDaily(n) {
+  const m = lastMonth();
+  return Array.from({ length:n }, function (_, i) {
+    return {
+      id:'d-' + i, profileId:A, kind:'dailyDone', amount:500, baseAmount:500,
+      bonus:0, bonusReason:'', earnedFrom:null, month:null,
+      date: m + '-' + String(i+1).padStart(2,'0'),
+      reason:'오늘 공부를 다 마쳤어요', note:'', effortSuggestion:0,
+      status:'approved', createdAt:0, decidedAt:0, parentNote:'', origin:'child',
+    };
+  });
+}
+
+/* 아이가 올린 한 달치 정산 신청. 스무닷새를 넘겨 공로금 칸이 열린다. */
+function purseRequest() {
+  const m = lastMonth();
+  return { id:'purse-1', profileId:A, kind:'monthlyPurse', amount:12500, baseAmount:12500,
+    bonus:0, bonusReason:'', earnedFrom:null, month:m, date:null,
+    reason: Number(m.slice(5)) + '월에 25일 공부해서 모았어요',
+    note:'이번 달은 하루도 거의 안 빠졌어요!', effortSuggestion:5000,
+    status:'pending', createdAt:Date.now(), decidedAt:null, parentNote:'', origin:'child' };
+}
+
 function seed(which) {
   if (which === 'child') {
     put(root([kids[0]], A), { [A]: history(9) });
@@ -544,6 +615,25 @@ function seed(which) {
     put(root([base({ id:A, name:'서준', kind:'child', avatar:'🦊', level:'m1-1', streak:3,
       settings:settings({ subjects:['en','ko','daily'], subjectOrder:['daily','en','ko'],
         newPerDay:5, reviewPerDay:5 }) })], A), { [A]: empty });
+  } else if (which === 'childDone') {
+    /*
+     * 오늘치를 다 마친 아이. **「📗 오늘 공부 다 했어요 — 500원 받기」 가 떠야
+     * 맞다.** 켠 갈래를 전부 끝내야 하루가 끝난 것이라, 눈으로 보려면 이렇게
+     * 심는 수밖에 없다 — 실제로 풀자면 예순 문제가 넘는다.
+     */
+    const data = history(9);
+    const key = dayKey();
+    data.days[key] = { date:key, goal:15, studied:15, correct:38, wrong:7, seconds:720,
+      completed:true, wrongEntryIds:[], studiedEntryIds:[], doneSubjects:['en','ko','daily'],
+      bySubject:{ en:{studied:5,correct:14,wrong:1}, ko:{studied:6,correct:15,wrong:3},
+                  daily:{studied:4,correct:9,wrong:3} } };
+    put(root([kids[0]], A), { [A]: data });
+  } else if (which === 'childPurse') {
+    /*
+     * 지난달치가 쌓인 아이. **「지난달에 모은 12,500원 청구하기」 가 떠야 맞다.**
+     * 스무닷새를 승인해 둔 상태라, 부모 쪽에서는 공로금 칸까지 열린다.
+     */
+    put(root([kids[0]], A, { rewards: lastMonthDaily(25) }), { [A]: history(9) });
   } else if (which === 'childReview') {
     put(root([kids[0]], A, { parentLinks:[] }),
         { [A]: reviewCards(['a-couple-of','a-kind-of','a-number-of','a-pair-of','a-piece-of',
@@ -559,6 +649,15 @@ function seed(which) {
      */
     put(root([parent], PARENT, { receivesReports:false, myPushToken:PARENT_TOKEN }),
         { [PARENT]: history(6) });
+  } else if (which === 'parentPurse') {
+    /*
+     * 아이가 한 달치를 모아 올린 부모 폰. **공로금을 얹는 칸이 열려야 맞다** —
+     * 그달에 스무닷새를 넘겼기 때문이다. 얹는 금액을 고치면 아래 「모두 …원
+     * 주기」 가 따라 바뀌어야 한다.
+     */
+    put(root([parent, ...kids], PARENT, { receivesReports:true, myPushToken:PARENT_TOKEN,
+      rewards:[purseRequest()] }),
+        { [PARENT]: history(6), [A]: history(12), [B]: history(4) });
   } else if (which === 'parentFresh') {
     const p = { ...parent, parentStudy:{ tracks:[], dailyTheme:'w', perTrack:{ daily:5, enWord:5, ko:5 } } };
     put(root([p], PARENT), { [PARENT]: empty });

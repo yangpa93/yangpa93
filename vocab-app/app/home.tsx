@@ -16,9 +16,11 @@ import { buildDailyReport } from '../src/features/report';
 import { buildMonth, monthOf } from '../src/features/calendar';
 import {
   availableAwards,
+  completedDays,
+  EFFORT_DAYS,
   formatWon,
   levelUpAmount,
-  perfectMonthProgress,
+  purseOf,
   ratesOf,
 } from '../src/features/awards';
 import { buildInfo, buildLabel } from '../src/features/build-info';
@@ -149,8 +151,16 @@ export default function Home() {
   // 금액표는 아이마다 다를 수 있다. 안 정한 아이는 기기 기본값을 쓴다.
   const rates = ratesOf(profile, state.parent.awards);
   const build = buildInfo();
-  const awards = availableAwards(profile, data, today, rates);
-  const perfect = perfectMonthProgress(data.days, today);
+  // 지난 신청 기록을 함께 넘긴다 — 하루치와 달 정산이 이것으로 중복을 가린다.
+  const awards = availableAwards(profile, data, today, rates, myRewards);
+  /*
+   * 이번 달에 지금까지 모은 것. **아직 못 받는다** — 달이 바뀌어야 청구할 수
+   * 있다. 그래도 적어 준다. 얼마가 쌓이고 있는지 안 보이면 매일 누르는 500원이
+   * 어디로 가는지 알 수 없고, 그러면 누를 이유도 옅어진다.
+   */
+  const thisMonth = today.slice(0, 7);
+  const thisMonthPurse = purseOf(myRewards, profile.id, thisMonth);
+  const thisMonthDone = completedDays(data.days, thisMonth);
   // 지금 레벨을 끝내면 얼마인지. 중학교와 고등학교 금액이 다르다.
   const levelAward = levelUpAmount(profile.level, rates);
   const decided = myRewards.filter((r) => r.status !== 'pending');
@@ -421,27 +431,30 @@ export default function Home() {
         </Card>
       </Pressable>
 
-      {/* 이번 달 개근 */}
+      {/*
+        이번 달 저금통.
+
+        **개근 진도를 걷어 낸 자리다.** 「9 / 15일」 옆에 「빠진 날이 있어요.
+        다음 달에 다시 도전해요」 라고 적혀 있었는데, 그 말은 남은 보름을
+        해 봐야 소용없다는 뜻으로 읽힌다. 실제로 그렇기도 했다 — 하루라도
+        빠지면 그달 보상이 통째로 없었다.
+
+        이제는 하루를 마칠 때마다 쌓이므로, 며칠을 빠졌든 오늘 하면 오늘치가
+        늘어난다. 그래서 「남은 날」 이 아니라 **모인 것**을 적는다.
+      */}
       <Card style={{ marginTop: spacing.md }}>
         <Row style={{ justifyContent: 'space-between' }}>
-          <H3>🗓️ 이번 달 개근</H3>
-          <Muted>
-            {perfect.studied} / {perfect.elapsed}일
-          </Muted>
+          <H3>🐷 이번 달 저금통</H3>
+          <Muted>{thisMonthDone}일 완료</Muted>
         </Row>
-        <View style={{ marginTop: spacing.md }}>
-          <ProgressBar
-            value={perfect.total === 0 ? 0 : perfect.studied / perfect.total}
-            color={perfect.alive ? colors.correct : colors.border}
-          />
-        </View>
+        <Text style={s.purse}>{formatWon(thisMonthPurse)}</Text>
         <Muted style={{ marginTop: spacing.sm }}>
-          {!perfect.alive
-            ? '이번 달은 빠진 날이 있어요. 다음 달에 다시 도전해요!'
-            : rates.perfectMonth > 0
-              ? `한 달을 하루도 빠짐없이 하면 ${formatWon(rates.perfectMonth)} 동기 부여 요청권이 생겨요. ${perfect.total - perfect.elapsed}일 남았어요!`
-              : `이번 달 개근까지 ${perfect.total - perfect.elapsed}일 남았어요!`}
+          {thisMonthDone >= EFFORT_DAYS
+            ? `이번 달 ${thisMonthDone}일이나 했어요! 스무닷새를 넘겼으니 부모님이 더 얹어 주실 수 있어요.`
+            : `하루치를 마칠 때마다 ${formatWon(rates.dailyDone)}씩 쌓여요. ` +
+              `${EFFORT_DAYS}일을 넘기면 부모님이 더 얹어 주실 수 있어요 (${EFFORT_DAYS - thisMonthDone}일 남음).`}
         </Muted>
+        <Muted style={{ marginTop: spacing.xs }}>다음 달이 되면 모아서 받을 수 있어요.</Muted>
       </Card>
 
       {/* 보상 결과 알림 */}
@@ -490,10 +503,24 @@ export default function Home() {
             <Muted style={{ marginTop: spacing.sm }}>
               {awards.length}장이 생겼어요. 신청하면 부모님이 확인하세요.
             </Muted>
+            {/*
+              **맨 앞 것을 단추 이름에 그대로 쓴다.** 「요청권 1장 신청하기」 라고만
+              적혀 있으면 그것이 오늘치인지 레벨업인지 눌러 봐야 안다. 아이가
+              가장 자주 만나는 것은 오늘치이고, 그 말이 화면에 적혀 있어야
+              「오늘 다 했으니 받는다」 가 하루 끝의 동작으로 붙는다.
+            */}
             <Button
-              title={`🎟️ 동기 부여 요청권 ${awards.length}장 신청하기 (${formatWon(
-                awards.reduce((n, a) => n + a.amount, 0),
-              )})`}
+              title={
+                awards[0].kind === 'dailyDone'
+                  ? `📗 오늘 공부 다 했어요 — ${formatWon(awards[0].amount)} 받기`
+                  : awards[0].kind === 'monthlyPurse'
+                    ? `🗓️ ${Number((awards[0].month ?? '').slice(5))}월에 모은 ${formatWon(
+                        awards[0].amount,
+                      )} 청구하기`
+                    : `🎟️ 동기 부여 요청권 ${awards.length}장 신청하기 (${formatWon(
+                        awards.reduce((n, a) => n + a.amount, 0),
+                      )})`
+              }
               variant="secondary"
               onPress={() => router.push('/levelup')}
               style={{ marginTop: spacing.md }}
@@ -514,14 +541,20 @@ export default function Home() {
                 </Body>
                 <Body style={{ fontWeight: '800' }}>{formatWon(levelAward)}</Body>
               </Row>
+              {/*
+                개근 대신 **매일 쌓는 쪽**을 적는다. 「하루도 빠지면 안 된다」 는
+                중순에 한 번 빠진 아이에게 남은 보름을 버틸 이유를 안 준다.
+                오늘 끝내면 오늘 생기는 것이라야 오늘 책을 편다.
+              */}
+              <Row style={{ justifyContent: 'space-between' }}>
+                <Body style={{ flex: 1 }}>📗 오늘 공부 끝내기 — 오늘치를 다 하면 바로</Body>
+                <Body style={{ fontWeight: '800' }}>{formatWon(rates.dailyDone)}</Body>
+              </Row>
               <Row style={{ justifyContent: 'space-between' }}>
                 <Body style={{ flex: 1 }}>
-                  🗓️ 한 달 개근 —{' '}
-                  {!perfect.alive
-                    ? '다음 달에 다시 도전해요'
-                    : `${perfect.total - perfect.elapsed}일 남았어요`}
+                  🗓️ 이번 달 모은 것 — 이번 달 {thisMonthDone}일 했어요. 다음 달에 모아서 받아요
                 </Body>
-                <Body style={{ fontWeight: '800' }}>{formatWon(rates.perfectMonth)}</Body>
+                <Body style={{ fontWeight: '800' }}>{formatWon(thisMonthPurse)}</Body>
               </Row>
             </View>
           </>
@@ -562,4 +595,6 @@ const s = StyleSheet.create({
   tileIcon: { fontSize: 26, marginBottom: spacing.sm },
   more: { fontSize: 13, fontWeight: '700', color: colors.primary },
   spark: { flex: 1, height: 10, borderRadius: 3 },
+  /* 이번 달 저금통에 쌓인 금액. 아이가 한눈에 보라고 크게 적는다. */
+  purse: { fontSize: 30, fontWeight: '800', color: colors.text, marginTop: spacing.md },
 });

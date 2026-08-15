@@ -37,6 +37,32 @@ export interface KoGameProps {
 
 const DONT_KNOW = '__dontknow__';
 
+/**
+ * 이 예문으로는 문제를 못 낼 때 내놓는 화면.
+ *
+ * **빈 화면을 내놓으면 안 된다.** 예전에는 그냥 아무것도 안 그렸다. 그런데
+ * 국어를 풀다 틀리면 마지막에 한 번 더 나오는데, 그때 예문을 한 칸 넘기면서
+ * 빈칸을 못 뚫는 문장에 걸리는 일이 있었다. 화면에는 「23/24」 만 적힌 채
+ * 아무것도 없어서, 아이는 누를 것도 없이 거기서 막힌다. 앱이 멈춘 것처럼
+ * 보이지만 오류 하나 안 난다 — 그래서 아무도 몰랐다.
+ *
+ * 유형을 고르는 `koGameFor` 를 제대로 부르면 여기까지 오지 않는다. 그래도
+ * 남겨 둔다. 어휘를 갈아 끼울 때마다 예문이 바뀌는데, 그때 다시 빈 화면이
+ * 되느니 「넘어가기」 라도 있는 편이 낫다.
+ *
+ * 맞은 것으로 넘긴다. 낼 수 없었던 문제를 아이가 틀렸다고 적을 수는 없다.
+ */
+function CantAsk({ onAnswer }: { onAnswer: (correct: boolean) => void }) {
+  return (
+    <View style={{ flex: 1, justifyContent: 'center' }}>
+      <Muted style={{ textAlign: 'center' }}>이 문장으로는 문제를 낼 수 없어요.</Muted>
+      <Pressable style={s.skip} onPress={() => onAnswer(true)} accessibilityRole="button">
+        <Text style={s.skipText}>넘어가기</Text>
+      </Pressable>
+    </View>
+  );
+}
+
 export function KoGame(props: KoGameProps) {
   const { game, entry, pool, exposureIndex, onAnswer } = props;
 
@@ -114,7 +140,7 @@ function KoChoiceCloze({ entry, pool, exposureIndex, onAnswer }: KoGameProps) {
     onAnswer(key === entry.id);
   }
 
-  if (!ex || !blanked) return null;
+  if (!ex || !blanked) return <CantAsk onAnswer={onAnswer} />;
 
   return (
     <View style={{ flex: 1 }}>
@@ -223,7 +249,7 @@ function KoType({ entry, exposureIndex, onAnswer }: KoGameProps) {
     onAnswer(ok);
   }
 
-  if (!ex || !blanked) return null;
+  if (!ex || !blanked) return <CantAsk onAnswer={onAnswer} />;
 
   return (
     <View style={{ flex: 1 }}>
@@ -283,7 +309,7 @@ function KoScramble({ entry, exposureIndex, onAnswer }: KoGameProps) {
     }
   }
 
-  if (!ex || answer.length === 0) return null;
+  if (!ex || answer.length === 0) return <CantAsk onAnswer={onAnswer} />;
 
   return (
     <View style={{ flex: 1 }}>
@@ -439,4 +465,7 @@ const s = StyleSheet.create({
   tileText: { fontSize: font.h3, color: colors.text },
   reset: { marginTop: spacing.lg, alignItems: 'center', padding: spacing.sm },
   resetText: { fontSize: font.small, fontWeight: '700', color: colors.muted },
+  /* 문제를 못 낼 때의 「넘어가기」. 영어 쪽 ClozeGame 과 같은 모양으로 뒀다. */
+  skip: { marginTop: spacing.lg, alignSelf: 'center', padding: spacing.md },
+  skipText: { color: colors.primary, fontWeight: '700' },
 });

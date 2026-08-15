@@ -52,9 +52,14 @@ export default function LevelUp() {
 
   const rates = awardRates(state.parent.awards);
 
+  // 지난 신청 기록을 함께 넘긴다 — 하루치와 달 정산이 이것으로 중복을 가린다.
+  const myRewards = useMemo(
+    () => (profile ? state.rewards.filter((r) => r.profileId === profile.id) : []),
+    [state.rewards, profile],
+  );
   const awards = useMemo(
-    () => (profile ? availableAwards(profile, data, undefined, rates) : []),
-    [profile, data, rates.middleLevel, rates.highLevel, rates.perfectMonth],
+    () => (profile ? availableAwards(profile, data, undefined, rates, myRewards) : []),
+    [profile, data, myRewards, rates.middleLevel, rates.highLevel, rates.dailyDone],
   );
 
   /** 방금 통과한 시험 기록. 아이가 부모님께 알릴 성적이 여기 있다. */
@@ -171,7 +176,11 @@ export default function LevelUp() {
       ? passedExam
         ? `${LEVEL_SHORT[award.earnedFrom!]} 시험에 통과했어요! ${passedExam.total}문제를 다 맞혔어요.`
         : `${LEVEL_SHORT[award.earnedFrom!]} 시험에 통과했어요!`
-      : `${Number((award.month ?? '').slice(5))}월 한 달 동안 하루도 안 빠지고 공부했어요!`;
+      : award.kind === 'dailyDone'
+        ? '오늘 공부를 다 마쳤어요!'
+        : award.kind === 'monthlyPurse'
+          ? `${Number((award.month ?? '').slice(5))}월에 모은 것을 받고 싶어요.`
+          : `${Number((award.month ?? '').slice(5))}월 한 달 동안 하루도 안 빠지고 공부했어요!`;
 
     const suggestedBonusReason =
       wentFaster && pace
@@ -185,9 +194,17 @@ export default function LevelUp() {
     return (
       <Screen>
         <View style={{ paddingTop: spacing.xl }}>
-          <Text style={{ fontSize: 52 }}>{isLevelUp ? '🏆' : '🎟️'}</Text>
+          <Text style={{ fontSize: 52 }}>
+            {isLevelUp ? '🏆' : award.kind === 'dailyDone' ? '📗' : award.kind === 'monthlyPurse' ? '🗓️' : '🎟️'}
+          </Text>
           <H1 style={{ marginTop: spacing.md }}>
-            {isLevelUp ? '시험에 통과했어요!' : '동기 부여 요청권을 얻었어요!'}
+            {isLevelUp
+              ? '시험에 통과했어요!'
+              : award.kind === 'dailyDone'
+                ? '오늘 공부를 다 했어요!'
+                : award.kind === 'monthlyPurse'
+                  ? '한 달치가 모였어요!'
+                  : '동기 부여 요청권을 얻었어요!'}
           </H1>
           <Muted style={{ marginTop: spacing.sm }}>{award.reason}</Muted>
         </View>
@@ -216,7 +233,15 @@ export default function LevelUp() {
           }}
         >
           <Chip
-            label={award.kind === 'levelup' ? `${LEVEL_SHORT[award.earnedFrom!]} 완료` : '한 달 개근'}
+            label={
+              award.kind === 'levelup'
+                ? `${LEVEL_SHORT[award.earnedFrom!]} 완료`
+                : award.kind === 'dailyDone'
+                  ? '오늘 공부 끝'
+                  : award.kind === 'monthlyPurse'
+                    ? `${Number((award.month ?? '').slice(5))}월치 모아 받기`
+                    : '한 달 개근'
+            }
             tone="accent"
           />
           <Text style={s.amount}>{formatWon(total)}</Text>

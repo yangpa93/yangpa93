@@ -239,6 +239,14 @@ export interface AnswerLog {
   /** 응답 시간(ms) */
   ms: number;
   at: number;
+  /**
+   * 어느 갈래에서 푼 것인지. 하루 기록에 갈래별로 따로 세어 두려고 받는다.
+   *
+   * 화면이 알려 줘야 한다. 낱말 id 만으로도 갈래를 가릴 수는 있지만, 그러려면
+   * 기록하는 쪽이 어휘 파일 5,400여 개를 들고 있어야 한다. 문제를 낸 화면은
+   * 이미 알고 있는 값이다.
+   */
+  subject?: Subject;
 }
 
 /**
@@ -294,6 +302,21 @@ export const STAGE_LABEL: Record<Stage, string> = {
   recall: '떠올리기',
 };
 
+/**
+ * 한 갈래의 하루 성적.
+ *
+ * 부모가 날짜를 누르면 「국어 6개 · 정답률 83%」 처럼 갈래를 갈라 본다.
+ * 그러려면 갈래마다 따로 세어 두는 수밖에 없다 — 하루 합계(correct/wrong)를
+ * 나중에 갈래로 되돌릴 방법이 없기 때문이다. 낱말 id 로 갈래는 가릴 수 있어도
+ * **몇 문제를 풀었는지**는 id 목록에 안 남는다(같은 낱말을 여러 번 묻는다).
+ */
+export interface SubjectTally {
+  /** 만난 낱말 가짓수. 문제 수가 아니라 낱말 수다. */
+  studied: number;
+  correct: number;
+  wrong: number;
+}
+
 /** 하루치 학습 기록. 날짜별로 하나. */
 export interface DailyRecord {
   /** yyyy-mm-dd (기기 로컬 기준) */
@@ -336,6 +359,16 @@ export interface DailyRecord {
    * 이 칸이 없는 옛 기록은 completed 값을 그대로 믿는다.
    */
   doneSubjects?: Subject[];
+  /**
+   * 갈래별 성적. 날짜별 보고서에서 국어와 영어를 갈라 보여 주려고 센다.
+   *
+   * **없을 수 있다.** 이 칸이 생기기 전(2026-08-15 이전)에 저장된 날에는 안
+   * 들어 있다. 그런 날은 화면에서 **갈래별로 나눠 적기 전이라고 밝힌다.**
+   * 하루 합계를 낱말 수 비율로 나눠 어림잡을 수도 있지만, 그러면 아이가 실제로
+   * 받은 적 없는 정답률이 부모 화면에 숫자로 뜬다. 모르는 것은 모른다고
+   * 적는 편이 낫다.
+   */
+  bySubject?: Partial<Record<Subject, SubjectTally>>;
 }
 
 /* ------------------------------------------------------------------ */
@@ -381,12 +414,31 @@ export interface RewardRequest {
   bonusReason: string;
   /** levelup이면 어떤 레벨을 끝냈는지 */
   earnedFrom: LevelId | null;
-  /** perfectMonth면 어느 달인지 (yyyy-mm) */
+  /** perfectMonth·monthlyPurse면 어느 달인지 (yyyy-mm) */
   month: string | null;
+  /**
+   * dailyDone이면 어느 날인지 (yyyy-mm-dd).
+   *
+   * 하루에 한 번만 받게 막는 자리이자, 달 말에 그달 것을 모아 셀 때 쓰는
+   * 열쇠다. 프로필에 「받은 날」 목록을 따로 두지 않는다 — 신청 기록이 이미
+   * 그 목록이고, 둘로 나누면 한쪽만 지워졌을 때 어긋난다.
+   */
+  date?: string | null;
   /** 왜 받는지 한 줄 */
   reason: string;
   /** 아이가 덧붙인 한마디 (선택) */
   note: string;
+  /**
+   * 부모가 승인하면서 **얹어 줄 수 있는** 금액의 제안값. 0이면 얹는 칸을 안 낸다.
+   *
+   * 달 정산에만 붙는다. 그달에 스무닷새를 넘겨 공부했으면 열리고, 못 미치면
+   * 0으로 닫힌다. 신청할 때 셈해서 담아 둔다 — 부모 폰에는 아이의 하루하루
+   * 기록이 없어서(다른 폰의 아이면 더욱), 승인하는 자리에서는 다시 셀 수가
+   * 없기 때문이다.
+   *
+   * **제안값일 뿐이다.** 얼마를 얹을지는 부모가 그 칸에서 고쳐 넣는다.
+   */
+  effortSuggestion?: number;
   status: RewardStatus;
   createdAt: number;
   decidedAt: number | null;
@@ -838,8 +890,32 @@ export interface AwardRates {
   middleLevel: number;
   /** 고등학교 레벨 하나를 끝냈을 때 */
   highLevel: number;
-  /** 한 달 개근 */
+  /**
+   * 한 달 개근. **더 안 쓴다.**
+   *
+   * 매일 쌓는 방식(`dailyDone`)과 달 말 공로금(`monthlyEffort`)으로 갈음했다.
+   * 「한 달을 하루도 안 빠져야 2만원」 은 아픈 날 하루에 한 달이 날아가서,
+   * 중순에 한 번 빠지면 남은 보름을 버틸 이유가 사라졌다.
+   *
+   * 칸은 남겨 둔다 — 이미 신청해 둔 요청권에 그때 금액이 적혀 있어서, 통째로
+   * 지우면 지난 기록을 못 읽는다(`bonus` 와 같은 이유다).
+   */
   perfectMonth: number;
+  /**
+   * 하루치를 다 마쳤을 때 쌓이는 금액.
+   *
+   * 매일 손에 잡히는 것이 있어야 오늘 책을 편다. 레벨업은 몇 달에 한 번이라
+   * 오늘 하루와 이어지지 않는다.
+   */
+  dailyDone: number;
+  /**
+   * 한 달에 스무닷새를 넘겨 공부했을 때, 부모가 얹어 줄 수 있는 금액.
+   *
+   * **정해진 값이 아니라 부모가 승인할 때 고쳐 넣는 제안값이다.** 그달에
+   * 얼마나 애썼는지는 숫자로만 볼 수 있는 것이 아니어서, 마지막 판단은
+   * 부모에게 남긴다.
+   */
+  monthlyEffort: number;
   /**
    * 아이가 "이번엔 정말 잘했어요"라며 더 요구할 수 있는 금액.
    *

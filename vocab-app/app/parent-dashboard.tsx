@@ -327,9 +327,13 @@ function GrantCard({
   const [note, setNote] = useState('');
 
   const rates = awardRates(state.parent.awards);
+  const myRewards = useMemo(
+    () => state.rewards.filter((r) => r.profileId === profile.id),
+    [state.rewards, profile.id],
+  );
   const awards = useMemo(
-    () => availableAwards(profile, pdata, today, rates),
-    [profile, pdata, today, rates.middleLevel, rates.highLevel, rates.perfectMonth],
+    () => availableAwards(profile, pdata, today, rates, myRewards),
+    [profile, pdata, today, myRewards, rates.middleLevel, rates.highLevel, rates.dailyDone],
   );
 
   // 이미 아이가 신청해 둔 것은 여기서 또 주면 두 번 주는 셈이 된다.

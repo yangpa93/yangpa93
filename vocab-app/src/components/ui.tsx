@@ -67,8 +67,24 @@ export function H3({ children, style }: { children: React.ReactNode; style?: Sty
   return <Text style={[s.h3, style]}>{children}</Text>;
 }
 
-export function Body({ children, style }: { children: React.ReactNode; style?: StyleProp<TextStyle> }) {
-  return <Text style={[s.body, style]}>{children}</Text>;
+/*
+ * testID 는 Body 만 받는다. e2e 가 화면에서 값을 집어 볼 자리가 여기라서다 —
+ * 제목이나 흐린 글씨는 집어 볼 것이 없다. 필요해지면 그때 늘린다.
+ */
+export function Body({
+  children,
+  style,
+  testID,
+}: {
+  children: React.ReactNode;
+  style?: StyleProp<TextStyle>;
+  testID?: string;
+}) {
+  return (
+    <Text style={[s.body, style]} testID={testID}>
+      {children}
+    </Text>
+  );
 }
 
 export function Muted({ children, style }: { children: React.ReactNode; style?: StyleProp<TextStyle> }) {

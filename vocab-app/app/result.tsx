@@ -6,10 +6,18 @@ import { Body, Button, Card, Chip, CONTENT_MAX_WIDTH, H1, H3, Muted, ProgressBar
 import { useApp } from '../src/store/AppProvider';
 import { ALL_ENTRIES } from '../src/data';
 import { DAILY_ENTRIES } from '../src/data/daily';
+import { KO_ENTRIES } from '../src/data/korean/levels';
 import { meaningLine } from '../src/data/entry';
+import { sessionMissed } from '../src/features/studiedWords';
 import { levelProgress } from '../src/srs/progress';
 import { todayKey } from '../src/lib/date';
 import { colors, radius, spacing } from '../src/theme';
+
+/* 찾아보기 표는 앱이 뜰 때 한 번만 만든다. 오답 몇 개를 찾자고 5,400여 개를
+ * 매번 훑으면 판을 끝낼 때마다 멈칫한다. 오답 노트도 같은 방식이다. */
+const EN_BY_ID = new Map(ALL_ENTRIES.map((e) => [e.id, e]));
+const DAILY_BY_ID = new Map(DAILY_ENTRIES.map((e) => [e.id, e]));
+const KO_BY_ID = new Map(KO_ENTRIES.map((e) => [e.id, e]));
 
 export default function Result() {
   const { profile, data } = useApp();
@@ -18,6 +26,7 @@ export default function Result() {
     wrong?: string;
     studied?: string;
     seconds?: string;
+    wrongIds?: string;
   }>();
 
   const correct = Number(params.correct ?? 0);
@@ -47,11 +56,26 @@ export default function Result() {
     [profile, data.cards],
   );
 
-  // 방금 세션에서 틀린 것을 보여준다. 부모가 푼 일상 문장도 여기 섞인다.
-  const missed = useMemo(() => {
-    const ids = new Set(day?.wrongEntryIds ?? []);
-    return [...ALL_ENTRIES, ...DAILY_ENTRIES].filter((e) => ids.has(e.id)).slice(0, 6);
-  }, [day?.wrongEntryIds]);
+  /**
+   * 방금 판에서 틀린 것. **study 가 넘겨준 id 만 본다.**
+   *
+   * 두 가지가 어긋나 있었다. 하나는 하루 기록(`day.wrongEntryIds`)을 보던 것 —
+   * 갈래를 따로 들어가 풀게 한 뒤로 하루에 판이 둘 이상이라, 국어를 끝냈는데
+   * 아침에 영어에서 틀린 것이 올라왔다. 다른 하나는 **국어를 아예 안 찾던
+   * 것** — 영어와 일상 문장 목록에서만 찾아서 국어 오답은 뜰 자리가 없었다.
+   *
+   * 찾는 규칙은 오답 노트와 같은 것(`sessionMissed` → `studiedWords`)을 쓴다.
+   * 두 곳에 따로 적으면 한쪽만 고치게 되어 서로 다른 말을 하게 된다.
+   */
+  const missed = useMemo(
+    () =>
+      sessionMissed((params.wrongIds ?? '').split(',').filter(Boolean), {
+        en: EN_BY_ID,
+        daily: DAILY_BY_ID,
+        ko: KO_BY_ID,
+      }),
+    [params.wrongIds],
+  );
 
   if (!profile) return null;
   const homePath = profile.kind === 'parent' ? '/parent-home' : '/home';
@@ -104,10 +128,16 @@ export default function Result() {
               <H3>오늘 틀린 단어</H3>
               <Chip label="내일 또 나와요" tone="wrong" />
             </Row>
-            {missed.map((e) => (
-              <Row key={e.id} style={{ marginTop: spacing.md, alignItems: 'flex-start' }}>
-                <Body style={{ fontWeight: '700', width: 120 }}>{e.word}</Body>
-                <Muted style={{ flex: 1 }}>{meaningLine(e)}</Muted>
+            {missed.map((w) => (
+              <Row key={w.id} style={{ marginTop: spacing.md, alignItems: 'flex-start' }}>
+                {/* e2e 가 여기 오른 낱말을 집어 본다 — 갈래가 섞이지 않았는지 센다. */}
+                <Body testID="missed-word" style={{ fontWeight: '700', width: 120 }}>
+                  {w.entry.word}
+                </Body>
+                {/* 국어는 뜻이 한 줄이고 영어는 뜻이 여럿이라 줄을 지어야 한다. */}
+                <Muted style={{ flex: 1 }}>
+                  {w.kind === 'ko' ? w.entry.meaning : meaningLine(w.entry)}
+                </Muted>
               </Row>
             ))}
           </Card>

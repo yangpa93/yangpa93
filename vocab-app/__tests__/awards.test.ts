@@ -4,6 +4,9 @@ import {
   awardRates,
   BONUS_AWARD,
   buildRewardRequest,
+  completedDays,
+  DAILY_DONE_AWARD,
+  dailyDoneAward,
   levelPace,
   levelStartedAt,
   claimAward,
@@ -13,11 +16,14 @@ import {
   isPerfectMonth,
   levelUpAmount,
   MIDDLE_LEVEL_AWARD,
+  MONTHLY_EFFORT_AWARD,
+  monthlyPurseAwards,
   PERFECT_MONTH_AWARD,
   perfectMonthProgress,
   perfectMonths,
+  purseOf,
 } from '../src/features/awards';
-import { DailyRecord, LevelId, Profile, ProfileData } from '../src/types';
+import { DailyRecord, LevelId, Profile, ProfileData, RewardRequest } from '../src/types';
 
 function makeProfile(over: Partial<Profile> = {}): Profile {
   return {
@@ -157,13 +163,17 @@ describe('availableAwards', () => {
     expect(high[0].amount).toBe(30_000);
   });
 
-  it('개근한 달마다 동기 부여 요청권이 하나씩 생긴다', () => {
+  it('개근으로는 이제 요청권이 안 생긴다', () => {
+    /*
+     * 하루도 안 빠져야 받는 방식을 껐다. 중순에 한 번 빠지면 남은 보름을
+     * 버틸 이유가 사라지기 때문이다. 매일 쌓는 쪽(dailyDone)과 달 말
+     * 공로금으로 갈음했다.
+     *
+     * 두 달을 내리 개근해도 안 나와야 한다.
+     */
     const days = { ...studiedDays('2026-05', 31), ...studiedDays('2026-06', 30) };
     const awards = availableAwards(makeProfile(), makeData(days), '2026-07-27');
-
-    expect(awards).toHaveLength(2);
-    expect(awards.every((a) => a.amount === PERFECT_MONTH_AWARD)).toBe(true);
-    expect(awards.map((a) => a.month)).toEqual(['2026-05', '2026-06']);
+    expect(awards.filter((a) => a.kind === 'perfectMonth')).toEqual([]);
   });
 
   it('이미 신청한 달은 다시 나오지 않는다', () => {
@@ -196,20 +206,15 @@ describe('availableAwards', () => {
     expect(two.every((a) => a.kind === 'levelup')).toBe(true);
   });
 
-  it('한 달 개근하면 동기 부여 요청권이 딱 한 장 생긴다', () => {
-    const one = availableAwards(makeProfile(), makeData(studiedDays('2026-06', 30)), '2026-07-27');
-    expect(one).toHaveLength(1);
-    expect(one[0].kind).toBe('perfectMonth');
-  });
-
-  it('레벨업과 개근이 겹치면 둘 다 나온다', () => {
+  it('한 달을 다 채워도 레벨업 말고는 안 나온다', () => {
     const days = studiedDays('2026-06', 30);
     const awards = availableAwards(
       makeProfile({ pendingLevelUps: ['h3-1' as LevelId] }),
       makeData(days),
       '2026-07-27',
     );
-    expect(awards.map((a) => a.amount)).toEqual([30_000, 20_000]);
+    expect(awards.map((a) => a.kind)).toEqual(['levelup']);
+    expect(awards[0].amount).toBe(30_000);
   });
 });
 
@@ -239,17 +244,27 @@ describe('부모님이 정하는 금액표', () => {
       highLevel: HIGH_LEVEL_AWARD,
       koreanLevel: KOREAN_LEVEL_AWARD,
       perfectMonth: PERFECT_MONTH_AWARD,
+      dailyDone: DAILY_DONE_AWARD,
+      monthlyEffort: MONTHLY_EFFORT_AWARD,
       bonus: BONUS_AWARD,
     });
   });
 
   it('저장된 값이 깨져 있어도 기본값으로 메운다', () => {
     // 예전 저장본에는 이 설정이 아예 없고, 손으로 고친 파일은 깨질 수 있다.
-    const r = awardRates({ middleLevel: -1, highLevel: NaN, perfectMonth: 15_000 } as never);
+    const r = awardRates({ middleLevel: -1, highLevel: NaN, dailyDone: 300 } as never);
     expect(r.middleLevel).toBe(MIDDLE_LEVEL_AWARD);
     expect(r.highLevel).toBe(HIGH_LEVEL_AWARD);
-    expect(r.perfectMonth).toBe(15_000);
+    expect(r.dailyDone).toBe(300);
     expect(r.bonus).toBe(BONUS_AWARD);
+  });
+
+  it('예전에 개근 금액을 저장해 둔 프로필도 0 으로 눌러 둔다', () => {
+    /*
+     * 개근 방식을 껐는데 저장값을 그대로 쓰면 그 아이에게만 요청권이 남는다.
+     * 정하는 칸을 없앴으니 부모가 되돌릴 길도 없다.
+     */
+    expect(awardRates({ perfectMonth: 20_000 } as never).perfectMonth).toBe(0);
   });
 
   it('0원으로 꺼 둔 동기 부여 요청권은 생기지 않는다', () => {
@@ -260,20 +275,20 @@ describe('부모님이 정하는 금액표', () => {
     const off = availableAwards(profile, data, '2026-07-01', {
       middleLevel: 0,
       highLevel: 0,
-      perfectMonth: 0,
+      dailyDone: 0,
       bonus: 0,
     });
     expect(off).toEqual([]);
 
-    // 개근만 켜 두면 개근 동기 부여 요청권만 생긴다.
-    const onlyMonth = availableAwards(profile, data, '2026-07-01', {
-      middleLevel: 0,
+    // 레벨업만 켜 두면 레벨업 요청권만 생긴다.
+    const onlyLevel = availableAwards(profile, data, '2026-07-01', {
+      middleLevel: 30_000,
       highLevel: 0,
-      perfectMonth: 30_000,
+      dailyDone: 0,
       bonus: 0,
     });
-    expect(onlyMonth.map((a) => a.kind)).toEqual(['perfectMonth']);
-    expect(onlyMonth[0].amount).toBe(30_000);
+    expect(onlyLevel.map((a) => a.kind)).toEqual(['levelup']);
+    expect(onlyLevel[0].amount).toBe(30_000);
   });
 });
 
@@ -616,5 +631,203 @@ describe('levelPace', () => {
     });
     expect(p.plannedDays).toBe(1);
     expect(Number.isFinite(p.daysAhead)).toBe(true);
+  });
+});
+
+/* ------------------------------------------------------------------ */
+/* 매일 쌓고 달 말에 모아 받기                                          */
+/* ------------------------------------------------------------------ */
+
+/** 하루치 적립 신청 하나. 승인 여부를 골라 만든다. */
+function dailyReq(date: string, status: RewardRequest['status'], amount = DAILY_DONE_AWARD): RewardRequest {
+  return {
+    id: `r-${date}`,
+    profileId: 'p1',
+    kind: 'dailyDone',
+    amount,
+    baseAmount: amount,
+    bonus: 0,
+    bonusReason: '',
+    earnedFrom: null,
+    month: null,
+    date,
+    reason: '오늘 공부를 다 마쳤어요',
+    note: '',
+    status,
+    createdAt: 0,
+    decidedAt: null,
+    parentNote: '',
+    origin: 'child',
+  };
+}
+
+describe('dailyDoneAward', () => {
+  const done = { '2026-08-15': { ...studiedDays('2026-08', 15)['2026-08-15'] } };
+
+  it('오늘치를 다 마쳤으면 청구할 수 있다', () => {
+    const got = dailyDoneAward(makeProfile(), makeData(done), [], '2026-08-15');
+    expect(got?.kind).toBe('dailyDone');
+    expect(got?.amount).toBe(DAILY_DONE_AWARD);
+    expect(got?.date).toBe('2026-08-15');
+  });
+
+  it('아직 다 안 했으면 안 준다', () => {
+    /*
+     * 켠 갈래를 다 풀어야 하루가 끝난 것이다. 영어만 하고 그만둔 날에
+     * 하루치가 나오면, 국어를 안 해도 받는 것이 되어 버린다.
+     */
+    const half = { '2026-08-15': { ...done['2026-08-15'], completed: false } };
+    expect(dailyDoneAward(makeProfile(), makeData(half), [], '2026-08-15')).toBeNull();
+  });
+
+  it('기록이 아예 없는 날도 안 준다', () => {
+    expect(dailyDoneAward(makeProfile(), makeData({}), [], '2026-08-15')).toBeNull();
+  });
+
+  it('하루에 한 번만 — 이미 냈으면 또 안 나온다', () => {
+    const already = [dailyReq('2026-08-15', 'pending')];
+    expect(dailyDoneAward(makeProfile(), makeData(done), already, '2026-08-15')).toBeNull();
+  });
+
+  it('거절당한 날도 다시 안 나온다', () => {
+    // 다시 누를 수 있게 두면 될 때까지 누르는 단추가 된다.
+    const rejected = [dailyReq('2026-08-15', 'rejected')];
+    expect(dailyDoneAward(makeProfile(), makeData(done), rejected, '2026-08-15')).toBeNull();
+  });
+
+  it('어제 낸 것은 오늘을 막지 않는다', () => {
+    const yesterday = [dailyReq('2026-08-14', 'approved')];
+    expect(dailyDoneAward(makeProfile(), makeData(done), yesterday, '2026-08-15')).not.toBeNull();
+  });
+
+  it('0원으로 꺼 두면 안 생긴다', () => {
+    const off = dailyDoneAward(makeProfile(), makeData(done), [], '2026-08-15', { dailyDone: 0 });
+    expect(off).toBeNull();
+  });
+});
+
+describe('purseOf — 그달에 쌓인 금액', () => {
+  it('승인된 것만 더한다', () => {
+    /*
+     * 아이 화면에 "12,500원 모였어요" 라고 적혔는데 그중 얼마가 아직 승인
+     * 안 된 것이면, 청구할 때 금액이 줄어 보인다. 승인된 것만 세면 늘 같다.
+     */
+    const rewards = [
+      dailyReq('2026-08-01', 'approved'),
+      dailyReq('2026-08-02', 'pending'),
+      dailyReq('2026-08-03', 'rejected'),
+      dailyReq('2026-08-04', 'fulfilled'),
+    ];
+    expect(purseOf(rewards, 'p1', '2026-08')).toBe(DAILY_DONE_AWARD * 2);
+  });
+
+  it('다른 달 것은 안 섞는다', () => {
+    const rewards = [dailyReq('2026-07-31', 'approved'), dailyReq('2026-08-01', 'approved')];
+    expect(purseOf(rewards, 'p1', '2026-08')).toBe(DAILY_DONE_AWARD);
+  });
+
+  it('다른 아이 것은 안 센다', () => {
+    const other = { ...dailyReq('2026-08-01', 'approved'), profileId: 'p2' };
+    expect(purseOf([other], 'p1', '2026-08')).toBe(0);
+  });
+});
+
+describe('monthlyPurseAwards — 달이 바뀌면 모아 받기', () => {
+  /** 8월에 `n`일치가 승인되어 쌓인 상태. */
+  const approvedIn = (month: string, n: number) =>
+    Array.from({ length: n }, (_, i) => dailyReq(`${month}-${String(i + 1).padStart(2, '0')}`, 'approved'));
+
+  it('지난달 쌓인 것을 청구할 수 있다', () => {
+    const rewards = approvedIn('2026-08', 25);
+    const got = monthlyPurseAwards(
+      makeProfile(),
+      makeData(studiedDays('2026-08', 25)),
+      rewards,
+      '2026-09-01',
+    );
+    expect(got).toHaveLength(1);
+    expect(got[0].month).toBe('2026-08');
+    expect(got[0].amount).toBe(DAILY_DONE_AWARD * 25);
+  });
+
+  it('이번 달은 아직 안 준다', () => {
+    // 쌓이는 중에 받아 가면 남은 날의 몫을 어떻게 셀지가 엉킨다.
+    const rewards = approvedIn('2026-09', 10);
+    const got = monthlyPurseAwards(makeProfile(), makeData({}), rewards, '2026-09-20');
+    expect(got).toEqual([]);
+  });
+
+  it('1일이 지나도 받을 수 있다', () => {
+    /*
+     * "매월 1일에 청구" 라고 해서 1일에만 되면, 그날 앱을 안 열면 한 달치가
+     * 통째로 사라진다. 달이 바뀌면 언제든 받을 수 있어야 한다.
+     */
+    const rewards = approvedIn('2026-08', 25);
+    const got = monthlyPurseAwards(makeProfile(), makeData({}), rewards, '2026-09-17');
+    expect(got).toHaveLength(1);
+  });
+
+  it('놓친 달도 그대로 남는다', () => {
+    // 받을 것이 조용히 사라지면 아이는 사라진 줄도 모른다.
+    const rewards = [...approvedIn('2026-07', 20), ...approvedIn('2026-08', 25)];
+    const got = monthlyPurseAwards(makeProfile(), makeData({}), rewards, '2026-09-05');
+    expect(got.map((a) => a.month)).toEqual(['2026-07', '2026-08']);
+  });
+
+  it('이미 청구한 달은 다시 안 나온다', () => {
+    const rewards = [
+      ...approvedIn('2026-08', 25),
+      { ...dailyReq('2026-08-01', 'approved'), kind: 'monthlyPurse', month: '2026-08', date: null },
+    ] as RewardRequest[];
+    expect(monthlyPurseAwards(makeProfile(), makeData({}), rewards, '2026-09-01')).toEqual([]);
+  });
+
+  it('스무닷새를 넘겼으면 부모가 얹을 금액을 제안한다', () => {
+    const got = monthlyPurseAwards(
+      makeProfile(),
+      makeData(studiedDays('2026-08', 25)),
+      approvedIn('2026-08', 25),
+      '2026-09-01',
+    );
+    expect(got[0].effortSuggestion).toBe(MONTHLY_EFFORT_AWARD);
+    expect(got[0].reason).toContain('25일');
+  });
+
+  it('스무닷새에 못 미치면 얹는 칸을 안 낸다', () => {
+    // 늘 내면 그것이 정가가 되어, 안 얹는 달에 아이가 깎였다고 느낀다.
+    const got = monthlyPurseAwards(
+      makeProfile(),
+      makeData(studiedDays('2026-08', 24)),
+      approvedIn('2026-08', 24),
+      '2026-09-01',
+    );
+    expect(got[0].effortSuggestion).toBe(0);
+  });
+
+  it('쌓인 것이 없으면 안 나온다', () => {
+    // 하루치를 냈지만 부모가 다 거절한 달.
+    const rejected = [dailyReq('2026-08-01', 'rejected'), dailyReq('2026-08-02', 'rejected')];
+    expect(monthlyPurseAwards(makeProfile(), makeData({}), rejected, '2026-09-01')).toEqual([]);
+  });
+});
+
+describe('completedDays', () => {
+  it('그달에 목표를 채운 날을 센다', () => {
+    expect(completedDays(studiedDays('2026-08', 25), '2026-08')).toBe(25);
+  });
+
+  it('다른 달은 안 센다', () => {
+    const days = { ...studiedDays('2026-07', 31), ...studiedDays('2026-08', 10) };
+    expect(completedDays(days, '2026-08')).toBe(10);
+  });
+
+  it('목표를 못 채운 날은 빼고 센다', () => {
+    /*
+     * 공부를 시작만 한 날은 안 센다. 공로금은 "끝까지 한 날" 을 세는 것이지
+     * "앱을 켠 날" 을 세는 것이 아니다.
+     */
+    const days = studiedDays('2026-08', 10);
+    days['2026-08-05'] = { ...days['2026-08-05'], completed: false };
+    expect(completedDays(days, '2026-08')).toBe(9);
   });
 });

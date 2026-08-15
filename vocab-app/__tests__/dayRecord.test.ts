@@ -147,6 +147,42 @@ describe('addAnswer', () => {
     d = addAnswer(d, 'b', true);
     expect(d.studiedEntryIds).toEqual(['b', 'a']);
   });
+
+  it('갈래를 넘기면 갈래별로도 센다', () => {
+    /*
+     * 부모가 날짜를 눌렀을 때 「국어 6개 · 정답률 83%」 로 갈라 보려면 갈래마다
+     * 따로 세어 두는 수밖에 없다. 하루 합계를 나중에 갈래로 되돌릴 방법이 없다.
+     */
+    let d = addAnswer(day(), 'w1', true, 'en');
+    d = addAnswer(d, 'ko-0001', false, 'ko');
+    d = addAnswer(d, 'ko-0001', true, 'ko');
+    expect(d.bySubject?.en).toEqual({ studied: 1, correct: 1, wrong: 0 });
+    expect(d.bySubject?.ko).toEqual({ studied: 1, correct: 1, wrong: 1 });
+  });
+
+  it('갈래별 낱말 수를 다 더하면 하루 낱말 수와 같다', () => {
+    // 둘이 안 맞으면 부모가 어느 쪽을 믿어야 할지 모른다.
+    let d = addAnswer(day(), 'w1', true, 'en');
+    d = addAnswer(d, 'w1', false, 'en');
+    d = addAnswer(d, 'ko-0001', true, 'ko');
+    d = addAnswer(d, 'daily-1', true, 'daily');
+    const sum = (['en', 'ko', 'daily'] as const).reduce(
+      (n, s) => n + (d.bySubject?.[s]?.studied ?? 0),
+      0,
+    );
+    expect(sum).toBe(d.studiedEntryIds?.length);
+  });
+
+  it('갈래를 안 넘기면 갈래 칸은 그대로 둔다', () => {
+    /*
+     * 갈래를 모르는 자리가 있다(옛 기록을 되돌리는 길). 그런 날은 갈래 칸이
+     * 비고, 화면이 "나눠 적기 전이에요" 라고 밝힌다. 억지로 한 갈래에 몰아
+     * 넣으면 안 배운 갈래를 배운 것으로 적게 된다.
+     */
+    const d = addAnswer(day(), 'w1', true);
+    expect(d.bySubject).toBeUndefined();
+    expect(d.correct).toBe(1);
+  });
 });
 
 describe('옛 기록', () => {

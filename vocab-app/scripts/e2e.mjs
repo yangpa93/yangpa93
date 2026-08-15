@@ -879,6 +879,179 @@ ok(
 
 /* ================================================================= */
 console.log('');
+console.log('  ⑧-2 결과 화면 — 방금 판에서 틀린 것만 적히는가');
+/*
+ * ── 조용히 어긋나 있던 자리 ─────────────────────────────────
+ *
+ * 결과 화면의 「오늘 틀린 단어」 가 두 가지로 틀려 있었다.
+ *
+ * 하나, **국어를 아예 안 찾았다.** 영어와 일상 문장 목록에서만 뒤져서, 국어를
+ * 공부하고 틀려도 그 자리가 통째로 비었다.
+ *
+ * 둘, **하루 기록을 보고 있었다.** 갈래를 따로 들어가 풀게 한 뒤로 하루에 판이
+ * 둘 이상인데 그날 틀린 것을 전부 끌어오니, 아침에 영어에서 틀린 것이 저녁
+ * 국어 판 결과에 그대로 올라왔다.
+ *
+ * 그래서 **영어를 먼저 틀려 놓고 국어를 푼다.** 국어를 혼자 풀어서는 두 번째를
+ * 못 잡는다 — 섞일 것이 없으면 안 섞이는 게 당연하니, 통과해도 아무 말을 못
+ * 하는 시험이 된다.
+ */
+/* ================================================================= */
+
+/**
+ * 문제를 「모르겠어요」 로 넘긴다. 일부러 다 틀리려는 것이다.
+ *
+ * 보기를 아무거나 누르면 넷 중 하나는 맞아 버려서, 무엇이 오답으로 남을지 시험
+ * 쪽에서 알 수가 없다. 「모르겠어요」 는 반드시 틀린 것으로 적힌다.
+ *
+ * **못 찾았다고 바로 손 떼지 않는다.** 처음에는 한 번 못 보면 끝난 줄 알고
+ * 나왔는데, 22/24 에서 「빈칸 채우기」 로 갈아타는 참에 걸려 결과 화면을 코앞에
+ * 두고 멈췄다. 게임이 바뀌면 화면을 다시 그리느라 800밀리초가 모자란다.
+ * 결과 화면에 닿았는지를 먼저 보고, 아니면 몇 번 더 기다려 본다.
+ *
+ * 되돌려주는 값은 **몇 문제를 틀렸나** 다. 0 이면 문제 화면에 닿지도 못한
+ * 것이니, 그 뒤 검사는 볼 것도 없이 헛것을 재고 있는 셈이다.
+ */
+async function missAll(p, steps) {
+  const FAST = { timeout: 800 };
+  let missed = 0;
+  let quiet = 0;
+  for (let i = 0; i < steps; i++) {
+    // 결과 화면에 닿았으면 다 푼 것이다. 여기서 나가야 한다.
+    if (await p.getByText('오늘 틀린 단어', { exact: false }).first().isVisible(FAST).catch(() => false)) {
+      break;
+    }
+    const next = p.getByText(/다음 문제|결과 보기/, { exact: false }).first();
+    if (await next.isVisible(FAST).catch(() => false)) {
+      await next.click(FAST).catch(() => {});
+      quiet = 0;
+      await p.waitForTimeout(350);
+      continue;
+    }
+    const dunno = p.getByText('모르겠어요', { exact: false }).first();
+    if (await dunno.isVisible(FAST).catch(() => false)) {
+      await dunno.click(FAST).catch(() => {});
+      missed++;
+      quiet = 0;
+      await p.waitForTimeout(350);
+      continue;
+    }
+    // 아무것도 안 보인다 — 그리는 중일 수 있다. 세 번까지 기다려 준다.
+    if (++quiet > 3) break;
+    await p.waitForTimeout(1200);
+  }
+  return missed;
+}
+
+await seed(page, '국어부터 풀도록 차례를 바꾼 상태');
+await go(page, '/home');
+
+/* ── 먼저 영어 판에서 몇 개 틀려 둔다 ────────────────────────── */
+
+await page.getByText('영어 공부 시작하기', { exact: false }).first().click();
+await page
+  .getByTestId('subject-tag')
+  .first()
+  .waitFor({ state: 'visible', timeout: 25000 })
+  .catch(() => {});
+const enMissed = await missAll(page, 6);
+ok('영어 판에서 먼저 몇 개 틀렸다', enMissed > 0, `${enMissed}개`);
+
+/*
+ * 끝까지 안 풀고 그만둔다. 그래도 푼 것은 하루 기록에 남는다 — 지금 필요한
+ * 것이 그것이다. 「그만하기」 는 확인을 한 번 묻는다.
+ */
+await go(page, '/home');
+
+/* ── 이제 국어 판을 끝까지 푼다 ──────────────────────────────── */
+
+await page.getByText('국어 공부 시작하기', { exact: false }).first().click();
+await page
+  .getByTestId('subject-tag')
+  .first()
+  .waitFor({ state: 'visible', timeout: 25000 })
+  .catch(() => {});
+const koMissed = await missAll(page, 70);
+ok('국어 판을 끝까지 풀었다', koMissed > 0, `${koMissed}문제`);
+
+await page.waitForTimeout(800);
+ok('결과 화면에 닿았다', await has(page, '오늘 틀린 단어', 8000));
+
+const missedWords = await page.getByTestId('missed-word').allTextContents();
+ok('국어 오답이 결과에 적힌다', missedWords.length > 0, '「오늘 틀린 단어」 가 비어 있다');
+/*
+ * 영어와 일상 문장은 알파벳으로 적힌다. 국어 판 결과에 알파벳이 하나라도
+ * 끼어 있으면 앞 판 것을 끌어온 것이다.
+ */
+ok(
+  '앞 판에서 틀린 영어는 안 섞인다',
+  missedWords.length > 0 && missedWords.every((w) => !/[a-zA-Z]/.test(w)),
+  missedWords.join(' · ') || '(빈 목록)',
+);
+
+/* ================================================================= */
+console.log('');
+console.log('  ⑧-3 날짜별 보고서 — 국어와 영어를 갈라 적는가');
+/*
+ * 달력에서 날짜를 누르면 「학습 단어 16/15 · 정답률 88%」 한 줄뿐이었다. 그
+ * 88% 가 어느 과목에서 나온 것인지 알 수 없어서, 국어만 처지고 있어도 부모
+ * 눈에는 안 보였다. 틀린 낱말도 영어 목록에서만 찾아 국어는 늘 비어 있었다.
+ *
+ * **날짜 카드는 들어가면 이미 열려 있다**(오늘이 기본으로 골라져 있다).
+ * 여기서 칸을 한 번 더 누르면 토글이 풀려 닫힌다 — 처음에 그걸 모르고 눌러
+ * 놓고 "카드가 안 열린다" 고 읽었다.
+ */
+/* ================================================================= */
+
+await seed(page, '오늘치를 다 마친 상태');
+await go(page, '/calendar');
+
+ok('달력이 오늘 카드를 열어 둔다', await has(page, '학습 단어'));
+/*
+ * 갈래 이름과 그 옆의 「N개 · 정답률 M%」 가 한 칸에 있어야 한다. 이름만 보고
+ * 통과시키면 칸이 비어 있어도 초록이 된다.
+ */
+const subjectLines = await page
+  .getByText(/^\d+개 · 정답률 \d+%$/)
+  .allTextContents()
+  .catch(() => []);
+ok('갈래마다 개수와 정답률을 적는다', subjectLines.length >= 2, subjectLines.join(' / ') || '(없음)');
+ok('국어 칸이 있다', await has(page, '국어', 3000));
+ok('영어 칸이 있다', await has(page, '영어', 3000));
+
+/* ================================================================= */
+console.log('');
+console.log('  ⑧-4 보상 — 매일 쌓고 달이 바뀌면 모아 받는가');
+/*
+ * 레벨업(몇 달에 한 번)과 한 달 개근(하루도 안 빠져야)뿐이라 **오늘 하루와
+ * 이어지지 않았다.** 중순에 한 번 빠지면 남은 보름을 버틸 이유가 사라진다.
+ * 하루를 마칠 때마다 쌓고, 달이 바뀌면 모아서 받는 쪽으로 바꿨다.
+ */
+/* ================================================================= */
+
+await go(page, '/home');
+ok('아이 홈에 오늘치 받는 단추가 있다', await has(page, '오늘 공부 다 했어요'));
+ok('이번 달 저금통이 보인다', await has(page, '이번 달 저금통'));
+/* 없앤 것이 남아 있지 않은지도 본다. 화면 둘이 서로 다른 말을 하면 안 된다. */
+ok('개근 진도는 걷어 냈다', !(await has(page, '이번 달 개근', 2000)));
+
+await seed(page, '지난달치가 쌓여 있는 상태');
+await go(page, '/home');
+ok('달이 바뀌면 모아 받는 단추가 뜬다', await has(page, '모은 12,500원 청구하기'));
+
+await seed(page, '한 달치를 모아 청구한 상태');
+await go(page, '/parent-rewards');
+ok('부모 폰에 달 정산이 올라온다', await has(page, '월치 모아 받기'));
+/*
+ * 스무닷새를 넘긴 달이라 얹는 칸이 열려야 한다. 열리기만 해서는 안 되고,
+ * **얹은 금액이 합쳐진 총액**이 단추에 적혀야 한다 — 부모가 누르기 전에
+ * 얼마가 나가는지 보고 누르는 자리다.
+ */
+ok('스무닷새를 넘긴 달은 얹는 칸이 열린다', await has(page, '스무닷새를 넘겼어요'));
+ok('얹은 금액이 합쳐져 적힌다', await has(page, '17,500원 주기'), '12,500 + 5,000 이 안 맞는다');
+
+/* ================================================================= */
+console.log('');
 console.log('  ⑨ 연결 — 아이가 띄우고 부모가 받는다 (창 두 개)');
 /*
  * ── 여태 이 흐름을 노트북에서 한 번도 못 봤다 ────────────────

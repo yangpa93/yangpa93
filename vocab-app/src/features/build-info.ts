@@ -95,11 +95,32 @@ export function buildInfo(): BuildInfo {
     platform: Platform.OS,
     update,
     /*
-     * 노트북 미리보기와 개발 모드에서는 null 이다. 그때는 빈 문자열이 되고
-     * 화면에서도 그 자리가 통째로 빠진다 — 없는 시각을 지어내지 않는다.
+     * **두 군데서 찾는다.**
+     *
+     * ① `Updates.createdAt` — 무선 업데이트로 갈아 끼운 판이면 그 업데이트가
+     *    만들어진 때다. 지금 도는 것이 언제 것인지가 알고 싶은 값이니 이쪽이
+     *    먼저다.
+     * ② `extra.builtAt` — 구울 때 app.config.js 가 박아 둔 시각. APK 를 갓
+     *    깔아 그대로 돌리는 동안에는 ①이 비어 있어서, 이것이 없으면 판
+     *    정보에 시각이 통째로 안 적힌다. "빌드 시간이 다시 없어졌습니다"
+     *    라는 말을 들은 자리가 그것이다.
+     *
+     * 둘 다 없으면 빈 문자열이고 화면에서 그 자리가 빠진다. 노트북 미리보기와
+     * 개발 모드가 그렇다 — 없는 시각을 지어내지 않는다.
      */
-    builtAt: stampOf(Updates.createdAt),
+    builtAt: stampOf(Updates.createdAt) || stampOf(configBuiltAt(cfg)),
   };
+}
+
+/**
+ * 구울 때 박아 둔 시각을 꺼낸다. 글자로 들어 있으니 날짜로 바꿔 준다.
+ *
+ * 깨진 값이 들어 있어도 `stampOf` 가 빈 문자열로 돌려준다 — 없는 시각을
+ * 지어내느니 안 적는 편이 맞다.
+ */
+function configBuiltAt(cfg: typeof Constants.expoConfig): Date | null {
+  const v = (cfg?.extra as Record<string, unknown> | undefined)?.builtAt;
+  return typeof v === 'string' && v ? new Date(v) : null;
 }
 
 /**

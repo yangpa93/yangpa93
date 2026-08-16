@@ -27,6 +27,12 @@ import { colors, font, radius, spacing } from '../theme';
 interface Field {
   key: keyof AwardRates;
   label: string;
+  /**
+   * 이름 아래 한 줄. **지금은 다 비워 두었다.**
+   *
+   * 다섯 칸에 설명이 붙으니 표가 길어져 정작 고칠 금액 단추가 화면 밖으로
+   * 밀렸다. 이름만으로 뜻이 통하는 자리다.
+   */
   hint: string;
   /** 눌러서 고를 수 있는 금액들 */
   options: number[];
@@ -42,36 +48,37 @@ const FIELDS: Field[] = [
   {
     key: 'dailyDone',
     label: '하루치를 다 마쳤을 때',
-    hint: '켠 갈래를 다 푼 날에 아이가 청구합니다. 스무닷새면 한 달에 12,500원쯤 됩니다.',
-    options: [0, 300, 500, 1_000, 2_000],
+    hint: '',
+    options: [0, 300, 500, 1_000],
     suggestMax: 2_000,
   },
   {
     key: 'monthlyEffort',
-    label: '한 달에 25일을 넘겼을 때 얹어 줄 금액',
-    hint: '자동으로 나가지 않습니다. 달 정산을 승인하실 때 이 금액이 미리 적혀 나오고, 그 자리에서 고치실 수 있어요.',
-    options: [0, 3_000, 5_000, 10_000, 20_000],
+    label: '한 달에 25일 이상 개근시 추가 금액',
+    // 설명은 안 붙인다 — 이름만으로 뜻이 통한다.
+    hint: '',
+    options: [0, 3_000, 5_000, 10_000],
     suggestMax: 20_000,
   },
   {
     key: 'middleLevel',
-    label: '중학교 영어 레벨 하나',
-    hint: '중1-1부터 중3-4까지 12개 레벨',
-    options: [0, 5_000, 10_000, 20_000, 30_000],
+    label: '중학교 영어 레벨 승급 기본 금액',
+    hint: '',
+    options: [0, 5_000, 10_000, 20_000],
     suggestMax: 30_000,
   },
   {
     key: 'highLevel',
-    label: '고등학교 영어 레벨 하나',
-    hint: '고1-1부터 고3-4까지 12개 레벨. 단어가 어려워 보통 더 높게 둡니다.',
-    options: [0, 10_000, 20_000, 30_000, 50_000],
+    label: '고등학교 영어 레벨 승급 기본 금액',
+    hint: '',
+    options: [0, 10_000, 20_000, 30_000],
     suggestMax: 50_000,
   },
   {
     key: 'koreanLevel',
-    label: '국어 레벨 하나',
-    hint: '한 레벨이 60개로 영어(137개)의 절반이 안 됩니다.',
-    options: [0, 5_000, 10_000, 20_000, 30_000],
+    label: '국어 레벨 승급 기본 금액',
+    hint: '',
+    options: [0, 5_000, 10_000, 20_000],
     suggestMax: 30_000,
   },
   /*
@@ -149,7 +156,7 @@ function AwardField({
   return (
     <View style={{ marginTop: spacing.lg }}>
       <Text style={s.label}>{field.label}</Text>
-      <Muted style={{ marginTop: 2 }}>{field.hint}</Muted>
+      {field.hint ? <Muted style={{ marginTop: 2 }}>{field.hint}</Muted> : null}
 
       <Row style={{ gap: spacing.sm, marginTop: spacing.sm, flexWrap: 'wrap' }}>
         {field.options.map((won) => (
@@ -195,7 +202,7 @@ function AwardField({
                 // 위의 '안 함' 을 누르면 된다.
                 if (won !== null) onChange(won);
               }}
-              placeholder="직접 적기 (예: 40000)"
+              placeholder="더 큰 금액은 여기에 (예: 50000)"
               placeholderTextColor={colors.muted}
               keyboardType="number-pad"
               style={s.input}
@@ -205,8 +212,7 @@ function AwardField({
           </Row>
           {over ? (
             <Muted style={{ marginTop: spacing.xs, color: '#B45309' }}>
-              {field.label}은 {formatWon(field.suggestMax ?? 0)}까지를 권합니다. 레벨이 24개라
-              한 칸의 금액이 그대로 스물네 배가 돼요.
+              {formatWon(field.suggestMax ?? 0)}까지를 권합니다 (레벨이 24개예요).
             </Muted>
           ) : null}
         </View>
@@ -217,8 +223,13 @@ function AwardField({
 
 const s = StyleSheet.create({
   label: { fontSize: font.body, fontWeight: '600', color: colors.text },
+  /*
+   * **한 줄에 다섯이 들어가야 한다.** 예전에는 여섯이라 두 줄로 접혔고, 칸이
+   * 다섯이니 표가 열 줄이 됐다. 고를 값을 넷으로 줄이고 알약도 좁혔다 —
+   * 그보다 큰 금액은 「기타」 에 적으면 된다.
+   */
   chip: {
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.sm,
     paddingVertical: spacing.sm,
     borderRadius: radius.pill,
     backgroundColor: colors.bg,
@@ -226,7 +237,7 @@ const s = StyleSheet.create({
     borderColor: colors.border,
   },
   chipOn: { backgroundColor: colors.parent, borderColor: colors.parent },
-  chipText: { fontSize: font.small, fontWeight: '700', color: colors.subtext },
+  chipText: { fontSize: font.tiny, fontWeight: '700', color: colors.subtext },
   chipTextOn: { color: '#fff' },
   input: {
     flex: 1,

@@ -26,7 +26,14 @@ export default function ParentRewards() {
 
   function nameOf(r: RewardRequest): string {
     const p = state.profiles.find((x) => x.id === r.profileId);
-    return p ? `${p.avatar} ${p.name}` : '알 수 없음';
+    if (p) return `${p.avatar} ${p.name}`;
+    /*
+     * **다른 폰의 아이.** 이 폰에 프로필이 없어 `profileId` 로는 못 찾는다.
+     * 예전에는 그대로 「알 수 없음」 이 떴다 — 누가 신청한 것인지 모르는 채로
+     * 승인 단추를 누르게 되는 자리였다. 보내 온 이름을 적는다.
+     */
+    if (r.childName) return `📲 ${r.childName}`;
+    return '알 수 없음';
   }
 
   function badgeOf(r: RewardRequest): string {

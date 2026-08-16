@@ -294,6 +294,45 @@ describe('부모 → 아이 과목 설정', () => {
     expect(parseSettings(body.data)).toEqual({ from: '엄마 폰', subjects: ['en', 'ko'] });
   });
 
+  /*
+   * 하루 분량. 갈래는 처음부터 건너갔는데 **몇 개를 할지는 아이 폰에만**
+   * 있었다 — 갈래만 켜 주고 분량은 못 정하니 반쪽이었다.
+   */
+  it('하루 분량도 함께 건너간다', () => {
+    const body = buildSettingsBody(TOKEN, {
+      from: '엄마 폰',
+      subjects: ['en', 'ko'],
+      newPerDay: 12,
+      koNewPerDay: 3,
+    });
+    expect(parseSettings(body.data)).toEqual({
+      from: '엄마 폰',
+      subjects: ['en', 'ko'],
+      newPerDay: 12,
+      koNewPerDay: 3,
+    });
+  });
+
+  it('안 고친 분량은 안 실려 가고, 그러면 아이 것이 그대로 남는다', () => {
+    const body = buildSettingsBody(TOKEN, { from: '엄마 폰', subjects: ['en'] });
+    const got = parseSettings(body.data);
+    expect(got).not.toBeNull();
+    expect(got).not.toHaveProperty('newPerDay');
+    expect(got).not.toHaveProperty('koNewPerDay');
+  });
+
+  /*
+   * 0 이 꽂히면 낼 문제가 없어지고, 터무니없이 큰 수가 오면 한 판이 안 끝난다.
+   * 둘 다 아이 폰에서는 앱이 고장 난 것으로 보인다.
+   */
+  it('말이 안 되는 분량은 버리고 나머지는 살린다', () => {
+    for (const bad of [0, -5, 3.5, 1000, '10', null]) {
+      const got = parseSettings({ kind: 'settings', subjects: ['en'], newPerDay: bad });
+      expect(got?.subjects).toEqual(['en']);
+      expect(got).not.toHaveProperty('newPerDay');
+    }
+  });
+
   it('빈 과목은 받아들이지 않는다', () => {
     // 빈 과목으로 덮어쓰면 아이 화면에 낼 문제가 없어져 고장으로 보인다.
     expect(parseSettings({ kind: 'settings', from: '엄마', subjects: [] })).toBeNull();

@@ -194,7 +194,7 @@ export default function LinkChildCode() {
       <Button
         title="아이 목록 보기"
         variant="ghost"
-        onPress={() => router.replace('/parent-children')}
+        onPress={() => router.replace('/parent-child-basics')}
         style={{ marginTop: spacing.lg }}
       />
     </Screen>

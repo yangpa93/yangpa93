@@ -146,7 +146,7 @@ export function LinkChildCard() {
         <Button
           title="아이별 설정 보기"
           variant="secondary"
-          onPress={() => router.push('/parent-children')}
+          onPress={() => router.push('/parent-child-basics')}
           style={{ marginTop: spacing.lg }}
         />
       ) : null}

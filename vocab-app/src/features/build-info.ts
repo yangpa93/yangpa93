@@ -13,6 +13,7 @@ import * as Updates from 'expo-updates';
 import { Platform } from 'react-native';
 import { APP_NAME } from './app-name';
 import { APP_VERSION } from './changelog';
+import { stampOf } from '../lib/date';
 
 // 예전부터 여기서 가져다 쓰던 자리가 있어 그대로 내보낸다.
 export { APP_NAME };
@@ -39,7 +40,30 @@ export interface BuildInfo {
    * 빌드에 들어 있던 그대로면 빈 문자열.
    */
   update: string;
+  /**
+   * 이 판이 **만들어진 때** (`2026.08.15.20.05`). 못 읽으면 빈 문자열.
+   *
+   * ── 왜 번호만으로는 모자라나 ────────────────────────────────
+   *
+   * 빌드 번호는 EAS 가 하나씩 올려 주는 값이라 「16」 이 언제 만들어진 것인지
+   * 알 수 없다. 하루에 두어 번 빌드하는 날에는 아이 폰에 든 것이 아침 것인지
+   * 저녁 것인지 번호만 보고는 못 가린다. 시각이 적혀 있으면 그 자리에서 끝난다.
+   *
+   * `Updates.createdAt` 은 **지금 돌고 있는 판이 만들어진 때**다. 무선
+   * 업데이트로 갈아 끼웠으면 그 업데이트가 만들어진 때가 된다 — 그것이 맞다.
+   * 지금 도는 것이 언제 것인지가 알고 싶은 값이기 때문이다.
+   *
+   * 개발 모드와 노트북 미리보기에서는 null 이라 빈 문자열이 된다. 없는 시각을
+   * 지어내지 않는다.
+   */
+  builtAt: string;
 }
+
+/*
+ * 시각을 글로 바꾸는 규칙은 `lib/date` 에 있다. 이 파일은 expo-application 을
+ * 끌어와서 기기 없이 못 부르는데, 그 규칙은 시험으로 못박아 두고 싶었다.
+ */
+export { stampOf } from '../lib/date';
 
 export function buildInfo(): BuildInfo {
   const cfg = Constants.expoConfig;
@@ -70,6 +94,11 @@ export function buildInfo(): BuildInfo {
     isExpoGo,
     platform: Platform.OS,
     update,
+    /*
+     * 노트북 미리보기와 개발 모드에서는 null 이다. 그때는 빈 문자열이 되고
+     * 화면에서도 그 자리가 통째로 빠진다 — 없는 시각을 지어내지 않는다.
+     */
+    builtAt: stampOf(Updates.createdAt),
   };
 }
 
@@ -100,7 +129,14 @@ export function versionLabel(info: BuildInfo = buildInfo()): string {
  * 으로 들려 이상한 것을 말하기 어려워진다.
  */
 export function buildLabel(info: BuildInfo = buildInfo()): string {
-  const parts = [versionLabel(info), info.platform];
+  /*
+   * 만든 때를 판 번호 **바로 뒤에** 붙인다. 「0.23.0.16 · 2026.08.15.20.05」.
+   *
+   * 번호만으로는 그것이 언제 것인지 알 수 없다 — 하루에 두어 번 빌드한 날에는
+   * 아이 폰에 든 것이 아침 것인지 저녁 것인지 못 가린다. 못 읽는 자리(노트북
+   * 미리보기)에서는 이 칸이 통째로 빠진다.
+   */
+  const parts = [versionLabel(info), ...(info.builtAt ? [info.builtAt] : []), info.platform];
   // 무선 업데이트로 받은 판이면 그것까지 적어야 같은 빌드 번호끼리도 구별된다.
   if (info.update) parts.push(`업데이트 ${info.update}`);
   if (info.isExpoGo) parts.push('Expo Go');

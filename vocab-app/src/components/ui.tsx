@@ -87,8 +87,24 @@ export function Body({
   );
 }
 
-export function Muted({ children, style }: { children: React.ReactNode; style?: StyleProp<TextStyle> }) {
-  return <Text style={[s.muted, style]}>{children}</Text>;
+/*
+ * `numberOfLines` 는 흐린 글씨만 받는다. 긴 뜻풀이를 한 줄로 자르는 자리가
+ * 여기라서다 — 좁은 칸에 두세 줄짜리 뜻이 들어오면 그 아래가 통째로 밀린다.
+ */
+export function Muted({
+  children,
+  style,
+  numberOfLines,
+}: {
+  children: React.ReactNode;
+  style?: StyleProp<TextStyle>;
+  numberOfLines?: number;
+}) {
+  return (
+    <Text style={[s.muted, style]} numberOfLines={numberOfLines}>
+      {children}
+    </Text>
+  );
 }
 
 type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'parent';
@@ -207,7 +223,8 @@ export function SettingsTile({
 }: {
   icon: string;
   title: string;
-  hint: string;
+  /** 이름 아래 한 줄. 이름만으로 통하는 자리에서는 안 준다. */
+  hint?: string;
   onPress: () => void;
 }) {
   return (
@@ -215,7 +232,8 @@ export function SettingsTile({
       <Text style={s.tileIcon}>{icon}</Text>
       <View style={{ flex: 1 }}>
         <Text style={s.tileTitle}>{title}</Text>
-        <Text style={s.tileHint}>{hint}</Text>
+        {/* 설명이 없으면 그 줄을 아예 안 그린다. 빈 줄이 남으면 칸이 벌어진다. */}
+        {hint ? <Text style={s.tileHint}>{hint}</Text> : null}
       </View>
       <Text style={s.tileChev}>›</Text>
     </Pressable>

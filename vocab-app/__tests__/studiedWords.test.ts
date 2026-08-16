@@ -8,6 +8,7 @@
 import {
   countByKind,
   dayBySubject,
+  troubleAll,
   sessionMissed,
   studiedWords,
   WORD_KIND_LABEL,
@@ -259,5 +260,52 @@ describe('dayBySubject — 하루를 갈래별로 가르기', () => {
       SRC,
     );
     expect(got?.[0].accuracy).toBeNull();
+  });
+});
+
+
+describe('troubleAll — 많이 틀린 낱말', () => {
+  /** 오답 노트가 읽는 낱말 카드. 누적 통계가 여기 있다. */
+  const card = (entryId: string, wrong: number, correct = 0) => ({ entryId, wrong, correct });
+
+  it('국어도 찾는다 ★', () => {
+    /*
+     * 여기가 통째로 빠져 있었다. 오답 노트는 영어 어휘만 넘겨 받는 함수를
+     * 써서, 국어를 아무리 틀려도 「많이 틀린 단어」 에 안 올라왔다.
+     */
+    const got = troubleAll({ a: card('ko-0001', 3) }, SRC);
+    expect(got.map((w) => w.kind)).toEqual(['ko']);
+    expect(got[0].entry.word).toBe('고진감래');
+  });
+
+  it('많이 틀린 것부터 줄 세운다', () => {
+    const got = troubleAll(
+      { a: card('w1', 1), b: card('ko-0001', 5), c: card('daily-1', 3) },
+      SRC,
+    );
+    expect(got.map((w) => w.id)).toEqual(['ko-0001', 'daily-1', 'w1']);
+  });
+
+  it('틀린 횟수가 같으면 정답률이 낮은 쪽을 먼저', () => {
+    const got = troubleAll({ a: card('w1', 2, 8), b: card('ko-0001', 2, 1) }, SRC);
+    expect(got[0].id).toBe('ko-0001');
+  });
+
+  it('한 번도 안 틀린 것은 안 담는다', () => {
+    expect(troubleAll({ a: card('w1', 0, 5) }, SRC)).toEqual([]);
+  });
+
+  it('없어진 낱말을 버린 만큼 목록이 짧아지지 않는다', () => {
+    /*
+     * 자르는 것은 **찾은 뒤에** 한다. 먼저 잘라 두면 어휘에서 빠진 낱말이
+     * 자리를 차지한 채 버려져, 화면에 보이는 개수가 들쭉날쭉해진다.
+     */
+    const got = troubleAll(
+      { a: card('없는것', 9), b: card('w1', 5), c: card('ko-0001', 4) },
+      SRC,
+      2,
+    );
+    expect(got).toHaveLength(2);
+    expect(got.map((w) => w.id)).toEqual(['w1', 'ko-0001']);
   });
 });

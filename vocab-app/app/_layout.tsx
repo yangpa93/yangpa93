@@ -78,16 +78,24 @@ export default function RootLayout() {
               parent-child-devices(아이 쪽)와 parent-plan(내 공부)에 있다.
             */}
             <Stack.Screen name="parent-plan" options={{ title: '내 공부 설정' }} />
-            <Stack.Screen name="parent-child-devices" options={{ title: '아이들 폰 설정' }} />
+            <Stack.Screen name="parent-child-basics" options={{ title: '아이들 기본 설정' }} />
+            <Stack.Screen name="parent-child-one" options={{ title: '아이 개별 설정' }} />
+            <Stack.Screen name="parent-backup-pin" options={{ title: '백업 및 PIN 설정' }} />
             <Stack.Screen name="parent-awards-rates" options={{ title: '동기 부여 요청권' }} />
             {/* 부모도 영어를 듣는다. 목소리·속도를 고르는 자리가 부모 쪽에도 필요했다. */}
             <Stack.Screen name="parent-sound" options={{ title: '소리와 목소리' }} />
-            <Stack.Screen name="parent-children" options={{ title: '아이별 설정' }} />
-            <Stack.Screen name="child-report" options={{ title: '아이 보고서와 설정' }} />
+            <Stack.Screen name="parent-reports" options={{ title: '아이들 학습 보고서' }} />
+            <Stack.Screen name="child-report" options={{ title: '아이 설정' }} />
             <Stack.Screen name="parent-dashboard" options={{ title: '학습 리포트' }} />
             <Stack.Screen name="parent-rewards" options={{ title: '보상 요청' }} />
             <Stack.Screen name="parent-settings" options={{ title: '설정' }} />
-            <Stack.Screen name="parent-link" options={{ title: '부모님 폰 연결' }} />
+            {/*
+              누른 단추와 도착한 화면의 이름이 같아야 한다. 설정에서 「아이들
+              폰 연결」 을 눌렀는데 머리글이 「부모님 폰 연결」 이면 잘못 온
+              줄 안다 — 「아이 개별 설정」 이 「아이 설정」 으로 바뀌던 자리와
+              같은 실수다.
+            */}
+            <Stack.Screen name="parent-link" options={{ title: '아이들 폰 연결' }} />
             <Stack.Screen name="scan" options={{ headerShown: false }} />
             {/* 부모가 아이 코드를 적는 자리. 부모 폰에는 이 칸이 아예 없었다. */}
             <Stack.Screen name="link-child-code" options={{ title: '코드로 아이 연결하기' }} />

@@ -92,6 +92,26 @@ export function SoundCard({ title, note }: { title?: string; note?: string }) {
       </Row>
 
       {/*
+        **들어보는 단추는 늘 있어야 한다.**
+
+        아래 목록에 줄마다 🔊 이 있지만 그건 **고를 목소리가 둘 이상일 때**
+        얘기다. 기기에 영어 목소리가 하나뿐이면 목록이 통째로 안 나오고,
+        그러면 소리를 확인할 자리가 화면에서 사라진다. 스위치를 껐다 켜야
+        소리가 나는 것은 확인하는 방법이라 하기 어렵다 — "소리 설정할 수 있게
+        해 줬는데 단추가 없어졌다" 는 말을 들은 자리가 여기다.
+      */}
+      {ttsEnabled ? (
+        <Pressable
+          onPress={() => speak('Hello! Nice to meet you.', true)}
+          accessibilityRole="button"
+          accessibilityLabel="지금 목소리로 들어보기"
+          style={s.listenBtn}
+        >
+          <Text style={s.listenBtnText}>🔊 지금 목소리로 들어보기</Text>
+        </Pressable>
+      ) : null}
+
+      {/*
         영어 목소리가 없으면 왜 조용한지 알려 준다.
 
         이게 없으면 스위치를 켰는데 소리가 안 난다고만 여긴다. 더 나쁜 것은
@@ -253,4 +273,14 @@ const s = StyleSheet.create({
     backgroundColor: colors.primarySoft,
   },
   tryBtnText: { fontSize: 18 },
+  listenBtn: {
+    marginTop: spacing.md,
+    paddingVertical: spacing.md,
+    borderRadius: radius.md,
+    alignItems: 'center',
+    backgroundColor: colors.primarySoft,
+    borderWidth: 1,
+    borderColor: colors.primary,
+  },
+  listenBtnText: { fontSize: font.body, fontWeight: '700', color: colors.primary },
 });

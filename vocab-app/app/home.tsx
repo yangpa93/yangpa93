@@ -384,12 +384,12 @@ export default function Home() {
         <Pressable style={s.tile} onPress={() => router.push('/mistakes')} accessibilityRole="button">
           <Text style={s.tileIcon}>📕</Text>
           <H3>오답 노트</H3>
-          <Muted>오늘 틀린 것부터</Muted>
+          <Muted>지난 날은 달력에서</Muted>
         </Pressable>
         <Pressable style={s.tile} onPress={() => router.push('/wordbook')} accessibilityRole="button">
           <Text style={s.tileIcon}>📗</Text>
           <H3>단어장</H3>
-          <Muted>오늘 배운 것부터</Muted>
+          <Muted>지난 날은 달력에서</Muted>
         </Pressable>
       </Row>
 
@@ -498,67 +498,98 @@ export default function Home() {
       <Card style={{ marginTop: spacing.md }}>
         <H3>🎟️ 내 동기 부여 요청권</H3>
 
-        {awards.length > 0 ? (
-          <>
-            <Muted style={{ marginTop: spacing.sm }}>
-              {awards.length}장이 생겼어요. 신청하면 부모님이 확인하세요.
-            </Muted>
-            {/*
-              **맨 앞 것을 단추 이름에 그대로 쓴다.** 「요청권 1장 신청하기」 라고만
-              적혀 있으면 그것이 오늘치인지 레벨업인지 눌러 봐야 안다. 아이가
-              가장 자주 만나는 것은 오늘치이고, 그 말이 화면에 적혀 있어야
-              「오늘 다 했으니 받는다」 가 하루 끝의 동작으로 붙는다.
-            */}
-            <Button
-              title={
-                awards[0].kind === 'dailyDone'
-                  ? `📗 오늘 공부 다 했어요 — ${formatWon(awards[0].amount)} 받기`
-                  : awards[0].kind === 'monthlyPurse'
-                    ? `🗓️ ${Number((awards[0].month ?? '').slice(5))}월에 모은 ${formatWon(
-                        awards[0].amount,
-                      )} 청구하기`
-                    : `🎟️ 동기 부여 요청권 ${awards.length}장 신청하기 (${formatWon(
-                        awards.reduce((n, a) => n + a.amount, 0),
-                      )})`
+        {/*
+          ── 받을 수 있는 것을 **늘 넷 다 보여준다** ─────────────────
+
+          예전에는 받을 것이 있으면 단추 하나가 뜨고, 없으면 글 세 줄이 떴다.
+          그래서 「개근과 레벨업 단추가 없다」 는 말을 들었다 — 그것은 글로만
+          적혀 있었고, 눌러 볼 것으로 보이지 않았다.
+
+          이제 넷을 늘 단추로 세운다. 조건을 채운 것은 켜지고, 아직인 것은
+          **꺼진 채로 남아 무엇을 더 해야 하는지** 아래에 적는다. 보상은 받을
+          때가 아니라 바라볼 때 힘이 된다.
+        */}
+        <View style={{ marginTop: spacing.md, gap: spacing.md }}>
+          {/*
+            **지난달치는 있을 때만, 그리고 맨 위에.**
+
+            받을 것 중 가장 큰 금액이고, 달이 바뀌어야 한 번 생기는 것이라
+            놓치면 한 달을 통째로 못 받는다. 다른 넷은 늘 자리에 있지만 이것은
+            받을 것이 있을 때만 나타나므로, 나타난 날 눈에 먼저 들어와야 한다.
+
+            (넷을 단추로 세우면서 이 자리를 통째로 빠뜨린 적이 있다. 화면만
+            보면 멀쩡했고, e2e 가 「달이 바뀌면 모아 받는 단추가 뜬다」 에서
+            잡았다.)
+          */}
+          {awards
+            .filter((a) => a.kind === 'monthlyPurse')
+            .map((a) => (
+              <RewardRow
+                key={a.month ?? 'purse'}
+                title={`🗓️ ${Number((a.month ?? '').slice(5))}월에 모은 ${formatWon(a.amount)} 받기`}
+                ready
+                hint={
+                  (a.effortSuggestion ?? 0) > 0
+                    ? `${EFFORT_DAYS}일을 넘긴 달이에요! 부모님이 더 얹어 주실 수 있어요`
+                    : '눌러서 부모님께 보내세요'
+                }
+              />
+            ))}
+
+          <RewardRow
+            title={`📗 오늘 공부 다 했어요 — ${formatWon(rates.dailyDone)}`}
+            ready={awards.some((a) => a.kind === 'dailyDone')}
+            hint={
+              awards.some((a) => a.kind === 'dailyDone')
+                ? '눌러서 부모님께 보내세요'
+                : finished
+                  ? '오늘 것은 이미 받았어요'
+                  : '켠 갈래를 다 풀면 받을 수 있어요'
+            }
+          />
+
+          {/*
+            25일 — 회원님이 「개근」 이라 부르신 자리다. 하루도 안 빠져야 하는
+            옛 개근이 아니라, 스무닷새를 넘기면 부모님이 얹어 주실 수 있다는
+            뜻이다. 한 번 빠졌다고 그달이 통째로 날아가지 않는다.
+          */}
+          <RewardRow
+            title={`🗓️ 이번 달 ${EFFORT_DAYS}일 채우기`}
+            ready={thisMonthDone >= EFFORT_DAYS}
+            hint={
+              thisMonthDone >= EFFORT_DAYS
+                ? `${thisMonthDone}일 했어요! 다음 달에 모은 것을 받을 때 부모님이 얹어 주세요`
+                : `${EFFORT_DAYS}일을 넘기면 부모님이 얹어 주실 수 있어요 · ${EFFORT_DAYS - thisMonthDone}일 남음`
+            }
+          />
+
+          <RewardRow
+            title={`🏅 영어 레벨 시험 — ${formatWon(levelAward)}`}
+            ready={awards.some((a) => a.kind === 'levelup')}
+            hint={
+              awards.some((a) => a.kind === 'levelup')
+                ? '통과했어요! 눌러서 부모님께 보내세요'
+                : progress.canTakeExam
+                  ? '지금 시험을 볼 수 있어요'
+                  : `${progress.remaining}개 더 외우면 시험을 볼 수 있어요`
+            }
+          />
+
+          {/* 국어를 안 켠 아이에게는 안 보인다. 할 수 없는 것을 걸어 두면 안 된다. */}
+          {koProgress ? (
+            <RewardRow
+              title={`🏅 국어 레벨 시험 — ${formatWon(rates.koreanLevel)}`}
+              ready={awards.some((a) => a.kind === 'koLevelup')}
+              hint={
+                awards.some((a) => a.kind === 'koLevelup')
+                  ? '통과했어요! 눌러서 부모님께 보내세요'
+                  : koProgress.allowed
+                    ? '지금 시험을 볼 수 있어요'
+                    : `${Math.max(0, koProgress.need - koProgress.mastered)}개 더 외우면 시험을 볼 수 있어요`
               }
-              variant="secondary"
-              onPress={() => router.push('/levelup')}
-              style={{ marginTop: spacing.md }}
             />
-          </>
-        ) : (
-          <>
-            <Muted style={{ marginTop: spacing.sm }}>
-              아직 받을 동기 부여 요청권이 없어요. 이렇게 하면 한 장씩 생겨요.
-            </Muted>
-            <View style={{ marginTop: spacing.md, gap: spacing.sm }}>
-              <Row style={{ justifyContent: 'space-between' }}>
-                <Body style={{ flex: 1 }}>
-                  🏅 레벨 시험 통과 —{' '}
-                  {progress.canTakeExam
-                    ? '지금 볼 수 있어요!'
-                    : `${progress.remaining}개 더 외우면 볼 수 있어요`}
-                </Body>
-                <Body style={{ fontWeight: '800' }}>{formatWon(levelAward)}</Body>
-              </Row>
-              {/*
-                개근 대신 **매일 쌓는 쪽**을 적는다. 「하루도 빠지면 안 된다」 는
-                중순에 한 번 빠진 아이에게 남은 보름을 버틸 이유를 안 준다.
-                오늘 끝내면 오늘 생기는 것이라야 오늘 책을 편다.
-              */}
-              <Row style={{ justifyContent: 'space-between' }}>
-                <Body style={{ flex: 1 }}>📗 오늘 공부 끝내기 — 오늘치를 다 하면 바로</Body>
-                <Body style={{ fontWeight: '800' }}>{formatWon(rates.dailyDone)}</Body>
-              </Row>
-              <Row style={{ justifyContent: 'space-between' }}>
-                <Body style={{ flex: 1 }}>
-                  🗓️ 이번 달 모은 것 — 이번 달 {thisMonthDone}일 했어요. 다음 달에 모아서 받아요
-                </Body>
-                <Body style={{ fontWeight: '800' }}>{formatWon(thisMonthPurse)}</Body>
-              </Row>
-            </View>
-          </>
-        )}
+          ) : null}
+        </View>
       </Card>
 
       {/*
@@ -570,6 +601,27 @@ export default function Home() {
       */}
       <VersionButton tone="primary" style={{ marginTop: spacing.xl }} />
     </Screen>
+  );
+}
+
+/**
+ * 받을 수 있는 것 한 줄. **조건을 아직 못 채웠어도 보인다.**
+ *
+ * 채운 것만 보여 주면 아이는 무엇을 더 해야 받는지 모른 채 공부한다. 꺼진
+ * 단추와 그 아래 한 줄이 「이만큼 더 하면 된다」 를 말해 준다 — 보상은 받을
+ * 때가 아니라 바라볼 때 힘이 된다.
+ */
+function RewardRow({ title, hint, ready }: { title: string; hint: string; ready: boolean }) {
+  return (
+    <View>
+      <Button
+        title={title}
+        variant={ready ? 'secondary' : 'ghost'}
+        disabled={!ready}
+        onPress={() => router.push('/levelup')}
+      />
+      <Muted style={{ marginTop: spacing.xs, textAlign: 'center' }}>{hint}</Muted>
+    </View>
   );
 }
 

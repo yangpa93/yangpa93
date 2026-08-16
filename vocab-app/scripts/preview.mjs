@@ -320,6 +320,10 @@ function demoPage() {
   <b>👩‍💼 부모 — 아이가 한 달치를 모아 청구한 상태</b>
   <span>🎁 새 보상 요청 → 스무닷새를 넘긴 달이라 '얹어 줄 금액' 칸이 열립니다. 금액을 고치면 아래 단추가 따라 바뀌어요</span>
 </button>
+<button onclick="seed('parentRemote')">
+  <b>👩‍💼 부모 — 아이 셋이 각자 폰을 쓰는 상태 ★</b>
+  <span>실제 쓰시는 구성입니다. 이 폰에는 아이 프로필이 없고 보내 온 리포트만 있어요. 👧 아이들 학습 보고서 → 아이 → 달력 → 날짜를 눌러 보세요</span>
+</button>
 
 <h2>4. 연결을 끝까지 시험하기 (창 두 개)</h2>
 <div class="warn" style="background:#ECFDF5;border-color:#6EE7B7">
@@ -549,6 +553,42 @@ function showVoices() {
 speechSynthesis.onvoiceschanged = showVoices;
 showVoices();
 
+/*
+ * 다른 폰의 아이가 보내 온 리포트 며칠치.
+ *
+ * **회원님 구성이 이것이다** — 아이 셋이 각자 폰을 쓰고, 부모 폰에는 프로필도
+ * 학습 기록도 없이 보내 온 리포트만 있다. 이 상황을 심어 두지 않아서, 로컬
+ * 프로필로만 확인하고 「된다」 고 말한 적이 있다.
+ */
+function reportsFrom(name, days) {
+  const out = [];
+  for (let i = 0; i < days; i++) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const key = dayKey(d);
+    const koStudied = 3 + (i % 3);
+    const enStudied = 5 + (i % 4);
+    const done = i % 4 !== 0;
+    out.push({
+      id: 'rr_' + name + '_' + i,
+      childName: name,
+      date: key,
+      headline: name + ' · 오늘 ' + (koStudied + enStudied) + '개 · 정답률 8' + (i % 9) + '%',
+      detail: '',
+      completed: done,
+      receivedAt: Date.now() - i * 86400000,
+      studied: koStudied + enStudied,
+      goal: 15,
+      bySubject: {
+        en: { studied: enStudied, correct: enStudied * 3 - 2, wrong: 2 },
+        ko: { studied: koStudied, correct: koStudied * 2, wrong: 1 + (i % 2) },
+      },
+      /* 낱말 id 만 온다. 이름과 뜻은 부모 폰의 어휘에서 찾는다. */
+      wrongIds: ['ko-구사일생', 'ko-금의환향', 'abandon', 'ability', 'ko-구사일생'],
+    });
+  }
+  return out;
+}
+
 /* 지난달 (yyyy-mm). 달 정산은 달이 바뀌어야 받을 수 있다. */
 function lastMonth() {
   const d = new Date(); d.setDate(1); d.setMonth(d.getMonth()-1);
@@ -623,10 +663,30 @@ function seed(which) {
      */
     const data = history(9);
     const key = dayKey();
-    data.days[key] = { date:key, goal:15, studied:15, correct:38, wrong:7, seconds:720,
-      completed:true, wrongEntryIds:[], studiedEntryIds:[], doneSubjects:['en','ko','daily'],
+    /*
+     * 배운 낱말과 틀린 낱말을 **실제 id 로** 심는다. 비워 두면 「이 날 배운
+     * 낱말」 칸이 통째로 안 나오고, 그러면 그 자리가 되는지 눈으로도 시험으로도
+     * 확인할 수가 없다.
+     */
+    const learnedIds = ['abandon','ability','abroad','absolute','accept',
+                        'ko-구사일생','ko-금의환향','ko-다다익선','ko-동병상련','ko-막상막하'];
+    /*
+     * **숫자를 앞뒤 맞게 심는다.** 갈래별 「틀린 문제 수」 와 아래 오답 낱말
+     * 목록이 어긋나 있으면, 정답률은 75% 인데 「다 맞혔어요」 라고 적히는
+     * 화면이 나온다. 실제로 그렇게 나와서 「다 맞혔는데 왜 75% 인가」 라는
+     * 말을 들었다. 데모가 앱보다 먼저 거짓말을 하면 안 된다.
+     *
+     *   영어  abandon 1번           → wrong 1
+     *   국어  구사일생 2번 + 금의환향 1번 → wrong 3
+     *   일상  틀린 것 없음           → wrong 0
+     */
+    data.days[key] = { date:key, goal:15, studied:15, correct:38, wrong:4, seconds:720,
+      completed:true,
+      wrongEntryIds:['abandon','ko-구사일생','ko-구사일생','ko-금의환향'],
+      studiedEntryIds:learnedIds,
+      doneSubjects:['en','ko','daily'],
       bySubject:{ en:{studied:5,correct:14,wrong:1}, ko:{studied:6,correct:15,wrong:3},
-                  daily:{studied:4,correct:9,wrong:3} } };
+                  daily:{studied:4,correct:12,wrong:0} } };
     put(root([kids[0]], A), { [A]: data });
   } else if (which === 'childPurse') {
     /*
@@ -658,6 +718,35 @@ function seed(which) {
     put(root([parent, ...kids], PARENT, { receivesReports:true, myPushToken:PARENT_TOKEN,
       rewards:[purseRequest()] }),
         { [PARENT]: history(6), [A]: history(12), [B]: history(4) });
+  } else if (which === 'parentRemote') {
+    /*
+     * **회원님 폰과 같은 구성.** 아이 셋이 각자 폰을 쓰고, 이 폰에는 아이
+     * 프로필이 하나도 없다. 학습 보고서·달력·요청권이 전부 보내 온 것만으로
+     * 그려져야 맞다.
+     */
+    const names = ['수빈', '시윤', '서준'];
+    put(root([parent], PARENT, {
+      receivesReports: true,
+      myPushToken: PARENT_TOKEN,
+      knownChildren: names.map((n, i) => ({
+        name: n, token: 'ExponentPushToken[Preview-Child' + i + ']', lastSeen: Date.now(),
+      })),
+      receivedReports: [
+        ...reportsFrom('수빈', 12),
+        ...reportsFrom('시윤', 9),
+        ...reportsFrom('서준', 5),
+      ],
+      /* 수빈이가 오늘치 500원을 올려 둔 상태. 부모가 승인해 볼 수 있다. */
+      rewards: [{
+        id: 'rq_demo_1', profileId: 'remote:수빈', childName: '수빈',
+        askId: 'child_ask_1', childToken: 'ExponentPushToken[Preview-Child0]',
+        kind: 'dailyDone', amount: 500, baseAmount: 500, bonus: 0, bonusReason: '',
+        earnedFrom: null, month: null, date: dayKey(),
+        reason: '오늘 공부를 다 마쳤어요', note: '오늘 국어 다 맞았어요!',
+        effortSuggestion: 0, status: 'pending', createdAt: Date.now(),
+        decidedAt: null, parentNote: '', origin: 'child',
+      }],
+    }), { [PARENT]: history(6) });
   } else if (which === 'parentFresh') {
     const p = { ...parent, parentStudy:{ tracks:[], dailyTheme:'w', perTrack:{ daily:5, enWord:5, ko:5 } } };
     put(root([p], PARENT), { [PARENT]: empty });

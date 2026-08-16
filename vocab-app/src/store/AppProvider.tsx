@@ -28,6 +28,7 @@ import {
   ProfileData,
   ProfileKind,
   ProfileSettings,
+  KnownChild,
   ParentSettings,
   ReceivedReport,
   RewardRequest,
@@ -52,8 +53,10 @@ import {
   SendResult,
   sendReportToParent,
   sendRewardAskToParent,
+  sendRewardDecisionToChild,
   toPayload,
 } from '../features/push';
+import type { RewardAskPayload, RewardDecisionPayload } from '../features/pairing';
 import {
   DEFAULT_NEW_PER_DAY,
   DEFAULT_REVIEW_PER_DAY,
@@ -166,10 +169,33 @@ interface Ctx {
   /** 부모 기기가 받은 리포트를 쌓는다. 같은 아이·같은 날짜는 최신 것으로 덮는다. */
   addReceivedReport(report: Omit<ReceivedReport, 'id' | 'receivedAt'>): void;
   /**
+   * **다른 폰의 아이**가 보낸 요청권 신청을 부모 폰 목록에 넣는다.
+   *
+   * 이 폰에 그 아이 프로필이 없으므로 `profileId` 대신 이름으로 가린다.
+   * 같은 신청이 두 번 와도(알림을 받고 또 눌렀을 때) 한 번만 쌓는다.
+   */
+  addChildReward(ask: RewardAskPayload): void;
+  /**
+   * **아이 폰**이 부모의 판단을 받아 제 신청에 반영한다.
+   *
+   * 이게 없으면 부모가 승인해도 아이 화면은 「기다리는 중」 그대로다.
+   */
+  applyRewardDecision(decision: RewardDecisionPayload): void;
+  /**
    * 알림을 보낼 수 있는 아이 기기를 기억한다. 같은 이름이면 주소를 갱신한다.
    * 아이가 이미 MAX_CHILDREN 명이면 **받지 않고 false** 를 돌려준다.
    */
   rememberChild(name: string, token: string): boolean;
+  /** 다른 폰의 아이에게 보낸 설정(레벨·금액)을 부모 폰에 적어 둔다. */
+  rememberChildSettings(
+    name: string,
+    patch: Partial<
+      Pick<
+        KnownChild,
+        'sentLevel' | 'sentKoLevel' | 'rates' | 'sentSubjects' | 'sentNewPerDay' | 'sentKoNewPerDay'
+      >
+    >,
+  ): void;
   /** 지금 리포트를 부모 기기로 보낸다. 결과를 돌려준다. */
   pushReportNow(profileId?: string): Promise<SendResult>;
 }
@@ -523,6 +549,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           report,
           buildWeeklySummary(nextData, today),
           ref.current.state.myPushToken,
+          // 그날 기록 원본. 갈래별 성적과 틀린 낱말 id 가 여기서 실린다 —
+          // 부모 폰이 달력과 날짜별 보고서를 그릴 알맹이다.
+          nextData.days[today],
         );
         /*
          * **연결된 폰 전부에게 보낸다.** 한쪽이 실패해도 다른 쪽은 간다 —
@@ -657,6 +686,21 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           childName: active.name,
           reason: award.reason,
           amount: award.amount + Math.max(0, bonus),
+          /*
+           * **방금 만든 신청의 번호를 같이 보낸다.** 부모가 승인하면 이 번호를
+           * 되돌려 주고, 아이 폰은 그것으로 제 신청을 찾아 상태를 바꾼다.
+           * 없으면 부모가 승인해도 아이 화면은 「기다리는 중」 그대로다.
+           *
+           * `addReward` 가 방금 목록 맨 앞에 넣은 것이 그것이다.
+           */
+          askId: ref.current.state.rewards[0]?.id,
+          askKind: award.kind,
+          ...(award.date ? { date: award.date } : {}),
+          ...(award.month ? { month: award.month } : {}),
+          ...(award.effortSuggestion ? { effortSuggestion: award.effortSuggestion } : {}),
+          ...(note ? { note } : {}),
+          // 되보낼 주소. 아이 폰이 제 주소를 모르면 부모가 답을 보낼 길이 없다.
+          ...(state.myPushToken ? { childToken: state.myPushToken } : {}),
         }).catch(() => {});
       }
     },
@@ -712,6 +756,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const decideReward = useCallback(
     (id: string, status: RewardStatus, parentNote: string, amount?: number) => {
       const { state } = ref.current;
+      const target = state.rewards.find((r) => r.id === id);
       persistState({
         ...state,
         rewards: state.rewards.map((r) =>
@@ -729,6 +774,28 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
             : r,
         ),
       });
+
+      /*
+       * **다른 폰의 아이면 결과를 되보낸다.**
+       *
+       * 이 폰에 프로필이 있는 아이는 여기서 끝난다 — 같은 저장소를 보므로
+       * 화면이 곧바로 바뀐다. 그런데 아이가 제 폰을 쓰면 여기서 승인해도
+       * 아이 폰은 아무것도 모른다. 아이 화면에는 「기다리는 중」 이 그대로
+       * 남고, 저금통에도 안 쌓인다.
+       *
+       * 실패해도 이 폰의 판단은 그대로 둔다. 못 갔다고 되돌리면 부모가 같은
+       * 것을 또 판단해야 한다. 아이 폰은 다음 리포트를 보낼 때까지 모른 채
+       * 있게 되지만, 판단이 사라지는 것보다는 낫다.
+       */
+      if (target?.childToken && target.askId) {
+        void sendRewardDecisionToChild(target.childToken, {
+          askId: target.askId,
+          approved: status === 'approved',
+          amount: amount ?? target.amount,
+          parentNote,
+          from: primaryParent(state.parentLinks)?.label ?? '부모님',
+        }).catch(() => {});
+      }
     },
     [persistState],
   );
@@ -805,10 +872,44 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         ...state,
         // 같은 이름이 이미 있으면 주소를 갱신한다. 앱을 다시 깔면 주소가
         // 바뀌는데, 옛 주소로 보내면 조용히 사라진다.
-        knownChildren: [{ name, token, lastSeen: Date.now() }, ...rest].slice(0, MAX_CHILDREN),
+        /*
+         * **예전에 보내 둔 설정을 지키다.** 같은 이름이 이미 있으면 그 아이에게
+         * 보냈던 레벨·금액을 그대로 옮겨 온다. 안 그러면 아이가 앱을 다시
+         * 깔아 주소가 바뀔 때마다 부모가 정해 둔 것이 화면에서 사라진다.
+         */
+        knownChildren: [
+          { ...(state.knownChildren ?? []).find((c) => c.name === name), name, token, lastSeen: Date.now() },
+          ...rest,
+        ].slice(0, MAX_CHILDREN),
         forgottenChildren: byHand ? forgotten.filter((t) => t !== token) : forgotten,
       });
       return true;
+    },
+    [persistState],
+  );
+
+  /**
+   * 다른 폰의 아이에게 **보낸 설정을 적어 둔다.**
+   *
+   * 진짜 값은 아이 폰 안에 있다. 여기 적는 것은 부모가 마지막으로 보낸 것이고,
+   * 화면이 무엇을 골라 두었는지 보여 주는 데 쓴다. 안 적어 두면 부모가 레벨을
+   * 바꿔 보낸 뒤 다시 들어왔을 때 화면이 빈 채로 돌아가, 안 간 줄 알고 또
+   * 보내게 된다.
+   */
+  const rememberChildSettings = useCallback(
+    (name: string, patch: Partial<
+      Pick<
+        KnownChild,
+        'sentLevel' | 'sentKoLevel' | 'rates' | 'sentSubjects' | 'sentNewPerDay' | 'sentKoNewPerDay'
+      >
+    >) => {
+      const { state } = ref.current;
+      persistState({
+        ...state,
+        knownChildren: (state.knownChildren ?? []).map((c) =>
+          c.name === name ? { ...c, ...patch } : c,
+        ),
+      });
     },
     [persistState],
   );
@@ -875,6 +976,74 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     [persistState],
   );
 
+  /**
+   * 다른 폰의 아이가 올린 요청권 신청을 부모 폰에 쌓는다.
+   *
+   * `profileId` 에 `remote:이름` 을 넣는다. 이 폰의 아이와 섞이지 않게 하려는
+   * 것이다 — 화면들이 `profileId` 로 걸러 보고 있어서, 빈 값을 넣으면 엉뚱한
+   * 아이 목록에 끼어든다.
+   */
+  const addChildReward = useCallback(
+    (ask: RewardAskPayload) => {
+      const { state } = ref.current;
+      // 알림이 두 번 들어오는 일이 있다(받았을 때 한 번, 눌렀을 때 한 번).
+      if (ask.askId && state.rewards.some((r) => r.askId === ask.askId)) return;
+      const reward: RewardRequest = {
+        id: `rq_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`,
+        profileId: `remote:${ask.childName}`,
+        childName: ask.childName,
+        ...(ask.askId ? { askId: ask.askId } : {}),
+        ...(ask.childToken ? { childToken: ask.childToken } : {}),
+        kind: ask.askKind ?? 'dailyDone',
+        amount: ask.amount,
+        baseAmount: ask.amount,
+        bonus: 0,
+        bonusReason: '',
+        earnedFrom: null,
+        month: ask.month ?? null,
+        date: ask.date ?? null,
+        reason: ask.reason,
+        note: ask.note ?? '',
+        effortSuggestion: ask.effortSuggestion ?? 0,
+        status: 'pending',
+        createdAt: Date.now(),
+        decidedAt: null,
+        parentNote: '',
+        origin: 'child',
+      };
+      persistState({ ...state, rewards: [reward, ...state.rewards] });
+    },
+    [persistState],
+  );
+
+  /**
+   * 아이 폰이 부모의 판단을 제 신청에 반영한다.
+   *
+   * 부모가 공로금을 얹었으면 금액이 늘어 와 있다. 그것을 그대로 적어야
+   * 아이 저금통과 부모가 준 액수가 같아진다.
+   */
+  const applyRewardDecision = useCallback(
+    (d: RewardDecisionPayload) => {
+      const { state } = ref.current;
+      if (!state.rewards.some((r) => r.id === d.askId)) return;
+      persistState({
+        ...state,
+        rewards: state.rewards.map((r) =>
+          r.id === d.askId
+            ? {
+                ...r,
+                status: d.approved ? ('approved' as const) : ('rejected' as const),
+                amount: d.approved ? d.amount : r.amount,
+                parentNote: d.parentNote,
+                decidedAt: Date.now(),
+              }
+            : r,
+        ),
+      });
+    },
+    [persistState],
+  );
+
   const addReceivedReport = useCallback(
     (r: Omit<ReceivedReport, 'id' | 'receivedAt'>) => {
       const { state } = ref.current;
@@ -916,7 +1085,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const today = todayKey();
     const report = buildDailyReport(p, pdata, ALL_ENTRIES, today);
 
-    const payload = toPayload(report, buildWeeklySummary(pdata, today), state.myPushToken);
+    const payload = toPayload(
+      report,
+      buildWeeklySummary(pdata, today),
+      state.myPushToken,
+      pdata.days[today],
+    );
 
     /*
      * 연결된 폰 전부에 보내고, 하나라도 성공하면 성공으로 본다. 셋 중 하나가
@@ -964,10 +1138,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setReceivesReports,
     markDataSeen,
     rememberChild,
+    rememberChildSettings,
     linkParent,
     unlinkParent,
     setPrimaryParent,
     addReceivedReport,
+    addChildReward,
+    applyRewardDecision,
     pushReportNow,
   };
 

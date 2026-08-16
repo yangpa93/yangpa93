@@ -7,7 +7,7 @@
  */
 
 import { DailyReport, reportHeadline, reportText, WeeklySummary } from './report';
-import { Subject, SUBJECT_LABEL } from '../types';
+import { DailyRecord, Subject, SubjectTally, SUBJECT_LABEL } from '../types';
 import appJson from '../../app.json';
 
 /**
@@ -35,6 +35,31 @@ export interface PushPayload {
    * 경우(권한 거부 등)에는 없을 수 있다.
    */
   childToken?: string;
+  /**
+   * ── 아래 셋은 **부모 폰이 날짜별 보고서를 그리려고** 받는 것이다 ──────
+   *
+   * 예전에는 `headline` 한 줄만 보냈다. "오늘 목표 완료! 35개 · 정답률 83%"
+   * 같은 **글**이라, 부모 폰에서 그것을 도로 숫자로 뜯어낼 수가 없었다.
+   * 그래서 다른 폰의 아이는 달력도 갈래별 성적도 그릴 수 없었다.
+   *
+   * 아이가 이 폰에 프로필로 있으면 기록이 여기 있으니 문제가 없었는데,
+   * 아이가 제 폰을 쓰면 부모 폰에는 저 한 줄 말고 아무것도 없다.
+   */
+  /** 갈래별 성적(en·ko·daily). 날짜별 보고서의 국어·영어 칸이 이것으로 그려진다. */
+  bySubject?: Partial<Record<Subject, SubjectTally>>;
+  /**
+   * 그날 틀린 낱말 **id**. 중복을 그대로 둔다 — 두 번 틀리면 두 번 들어간다.
+   *
+   * **이름과 뜻은 안 보낸다.** 부모 폰에도 같은 어휘 파일이 들어 있어서 id 만
+   * 있으면 찾을 수 있다. 글자를 실어 보내면 알림 한 통에 안 들어간다.
+   *
+   * 배운 낱말(단어장)은 안 보낸다. 하루 서른 개가 넘는 날이 있어 알림이
+   * 잘리는데, 단어장은 아이 폰 달력에서 보면 된다.
+   */
+  wrongIds?: string[];
+  /** 그날 만난 낱말 수와 목표. 달력 칸의 진하기를 정한다. */
+  studied?: number;
+  goal?: number;
 }
 
 /**
@@ -536,6 +561,13 @@ export function toPayload(
   report: DailyReport,
   weekly?: WeeklySummary,
   childToken?: string | null,
+  /**
+   * 그날 기록 원본. 갈래별 성적과 틀린 낱말 id 를 여기서 뜯어 싣는다.
+   *
+   * 없어도 된다 — 옛 기록을 다시 보낼 때처럼 원본이 없는 자리가 있다. 그때는
+   * 예전처럼 한 줄만 가고, 부모 폰 달력에서 그날은 「나눠 적기 전」 으로 뜬다.
+   */
+  day?: DailyRecord | null,
 ): PushPayload {
   return {
     childName: report.profileName,
@@ -544,6 +576,14 @@ export function toPayload(
     detail: reportText(report, weekly),
     completed: report.completed,
     ...(childToken ? { childToken } : {}),
+    ...(day?.bySubject ? { bySubject: day.bySubject } : {}),
+    /*
+     * 틀린 낱말은 **id 만** 싣는다. 부모 폰에도 같은 어휘가 있어 이름과 뜻은
+     * 거기서 찾는다. 스물을 넘기면 자른다 — 알림 한 통에 담을 수 있는 양에
+     * 한계가 있고, 화면에는 자주 틀린 것 몇 개만 보여 준다.
+     */
+    ...(day?.wrongEntryIds?.length ? { wrongIds: day.wrongEntryIds.slice(0, 20) } : {}),
+    ...(day ? { studied: day.studied, goal: day.goal } : {}),
   };
 }
 
@@ -560,7 +600,39 @@ export function parseIncoming(data: unknown): PushPayload | null {
     headline: typeof d.headline === 'string' ? d.headline : '',
     detail: typeof d.detail === 'string' ? d.detail : '',
     completed: d.completed === true,
+    /*
+     * 아래 넷은 **옛 앱이 보낸 알림에는 없다.** 아이 폰과 부모 폰의 판이
+     * 다를 수 있으니(한쪽만 먼저 깔았을 때) 없으면 없는 대로 둔다. 그날은
+     * 부모 화면에서 「나눠 적기 전」 으로 뜬다.
+     */
+    ...(isTally(d.bySubject) ? { bySubject: d.bySubject } : {}),
+    ...(isStringArray(d.wrongIds) ? { wrongIds: d.wrongIds } : {}),
+    ...(typeof d.studied === 'number' ? { studied: d.studied } : {}),
+    ...(typeof d.goal === 'number' ? { goal: d.goal } : {}),
   };
+}
+
+/**
+ * 알림으로 온 값을 그대로 믿지 않는다.
+ *
+ * 남이 보낸 것이 아니라 우리 앱끼리 주고받는 것이지만, 판이 다른 앱이 보낸
+ * 것일 수 있고 도중에 깨질 수도 있다. 숫자 자리에 글이 들어오면 화면이
+ * 죽는데, 부모 폰에서 죽으면 왜 그런지 알 길이 없다.
+ */
+function isTally(v: unknown): v is Partial<Record<Subject, SubjectTally>> {
+  if (!v || typeof v !== 'object' || Array.isArray(v)) return false;
+  for (const val of Object.values(v as Record<string, unknown>)) {
+    if (!val || typeof val !== 'object') return false;
+    const t = val as Record<string, unknown>;
+    if (typeof t.studied !== 'number' || typeof t.correct !== 'number' || typeof t.wrong !== 'number') {
+      return false;
+    }
+  }
+  return true;
+}
+
+function isStringArray(v: unknown): v is string[] {
+  return Array.isArray(v) && v.every((x) => typeof x === 'string');
 }
 
 /** Expo 푸시 서버에 보낼 요청 본문. */
@@ -634,6 +706,79 @@ export interface RewardAskPayload {
   reason: string;
   /** 신청 금액(원) */
   amount: number;
+  /**
+   * ── 아래는 **부모가 그 자리에서 승인할 수 있게** 하려고 싣는 것이다 ──────
+   *
+   * 예전에는 위 셋만 보내고 알림 하나로 끝냈다. 부모는 "요청이 왔다"는 것만
+   * 알 뿐, 승인하려면 아이 폰이 필요했다. 그래서 아이 화면에는 「부모님 확인
+   * 기다리는 중」 이라고 떠 있는데 부모 폰에는 그 요청이 아예 없었다.
+   */
+  /** 아이 폰이 붙인 고유 번호. 같은 알림이 두 번 와도 한 번만 쌓으려고 쓴다. */
+  askId?: string;
+  /** dailyDone · monthlyPurse · levelup … 무엇으로 받는 것인지 */
+  askKind?: string;
+  /** dailyDone 이면 어느 날 (yyyy-mm-dd) */
+  date?: string;
+  /** monthlyPurse 면 어느 달 (yyyy-mm) */
+  month?: string;
+  /** 부모가 얹어 줄 수 있는 금액의 제안값. 0이면 얹는 칸을 안 낸다. */
+  effortSuggestion?: number;
+  /** 아이가 덧붙인 한마디 */
+  note?: string;
+  /** 아이 기기 주소. 부모가 승인 결과를 되보내려면 필요하다. */
+  childToken?: string;
+}
+
+/**
+ * 부모가 판단한 결과를 아이에게 되보낸다.
+ *
+ * **이게 없으면 반쪽이다.** 부모가 승인해도 아이 폰은 그대로 「기다리는 중」
+ * 이고, 저금통에도 안 쌓인다. 아이 입장에서는 눌러 봐야 아무 일도 안 일어나는
+ * 단추가 된다.
+ *
+ * 부모가 적은 한마디도 같이 간다. 돈만 오가면 심부름값이 되는데, 이 한 줄이
+ * 있으면 "오늘 잘했다" 는 말이 아이 화면에 남는다.
+ */
+export interface RewardDecisionPayload {
+  /** 아이 폰이 붙였던 번호. 어느 신청에 대한 답인지 가린다. */
+  askId: string;
+  approved: boolean;
+  /** 실제로 주기로 한 금액(원). 부모가 공로금을 얹었으면 그만큼 늘어 있다. */
+  amount: number;
+  /** 부모가 남긴 한마디 */
+  parentNote: string;
+  /** 누가 판단했는지. 아이 화면에 「엄마 폰」 처럼 적는다. */
+  from: string;
+}
+
+export function buildRewardDecisionBody(childToken: string, payload: RewardDecisionPayload) {
+  const won = payload.amount.toLocaleString('ko-KR');
+  return {
+    to: childToken,
+    title: payload.approved ? '🎉 승인됐어요!' : '🎟️ 부모님이 답하셨어요',
+    body: payload.approved
+      ? `${won}원을 주기로 하셨어요.${payload.parentNote ? ` "${payload.parentNote}"` : ''}`
+      : `이번엔 다음 기회에.${payload.parentNote ? ` "${payload.parentNote}"` : ''}`,
+    sound: 'default' as const,
+    priority: 'high' as const,
+    channelId: 'child-nudge',
+    data: { kind: 'reward-decision', ...payload },
+  };
+}
+
+/** 받은 푸시에서 부모의 판단을 꺼낸다. 우리 형식이 아니면 null. */
+export function parseRewardDecision(data: unknown): RewardDecisionPayload | null {
+  if (!data || typeof data !== 'object') return null;
+  const d = data as Record<string, unknown>;
+  if (d.kind !== 'reward-decision') return null;
+  if (typeof d.askId !== 'string' || d.askId === '') return null;
+  return {
+    askId: d.askId,
+    approved: d.approved === true,
+    amount: typeof d.amount === 'number' ? d.amount : 0,
+    parentNote: typeof d.parentNote === 'string' ? d.parentNote : '',
+    from: typeof d.from === 'string' ? d.from : '부모님',
+  };
 }
 
 export function buildRewardAskBody(parentToken: string, payload: RewardAskPayload) {
@@ -695,7 +840,24 @@ export function parseRewardAsk(data: unknown): RewardAskPayload | null {
   if (typeof d.childName !== 'string' || !d.childName.trim()) return null;
   if (typeof d.reason !== 'string') return null;
   if (typeof d.amount !== 'number' || !Number.isFinite(d.amount)) return null;
-  return { childName: d.childName, reason: d.reason, amount: Math.round(d.amount) };
+  const str = (v: unknown) => (typeof v === 'string' && v !== '' ? v : undefined);
+  return {
+    childName: d.childName,
+    reason: d.reason,
+    amount: Math.round(d.amount),
+    /*
+     * 아래는 옛 판 아이 폰에서는 안 온다. 그때는 부모 화면에 요청이 뜨긴 하되
+     * 「아이 폰을 새로 깔면 여기서 승인할 수 있어요」 로 안내한다 — 승인해도
+     * 아이 폰에 돌려줄 번호(askId)가 없어 아이 쪽이 그대로 멈춰 있게 된다.
+     */
+    ...(str(d.askId) ? { askId: d.askId as string } : {}),
+    ...(str(d.askKind) ? { askKind: d.askKind as string } : {}),
+    ...(str(d.date) ? { date: d.date as string } : {}),
+    ...(str(d.month) ? { month: d.month as string } : {}),
+    ...(typeof d.effortSuggestion === 'number' ? { effortSuggestion: d.effortSuggestion } : {}),
+    ...(str(d.note) ? { note: d.note as string } : {}),
+    ...(str(d.childToken) ? { childToken: d.childToken as string } : {}),
+  };
 }
 
 /** 받은 푸시에서 연결 인사를 꺼낸다. 우리 형식이 아니면 null. */
@@ -720,18 +882,59 @@ export function parseHello(data: unknown): HelloPayload | null {
 export interface SettingsPayload {
   from: string;
   subjects: Subject[];
+  /**
+   * ── 아래 셋은 **아이 폰에만 있던 값**을 부모가 고쳐 보내는 것이다 ────
+   *
+   * 레벨과 요청권 금액은 아이 폰 안에 있다. 부모 폰에는 그 아이 프로필이
+   * 없어서(제 폰을 쓰는 아이라면) 고칠 길이 아예 없었다 — 부모가 "우리 애는
+   * 중3-1 로 올려 줘야겠다" 고 생각해도 아이 폰을 걷어 와야 했다.
+   *
+   * 보내는 것은 **부모가 실제로 고친 것만** 이다. 안 고친 값은 안 실어
+   * 보낸다. 통째로 보내면 부모 화면에 우연히 떠 있던 기본값이 아이가 제
+   * 폰에서 골라 둔 것을 덮어쓴다.
+   */
+  level?: string;
+  koLevel?: string;
+  /** 이 아이만의 요청권 금액. 공통(기기 기본값)보다 앞선다. */
+  rates?: Record<string, number>;
+  /**
+   * 하루에 새로 배울 개수. 영어와 국어를 따로 정한다.
+   *
+   * 갈래(`subjects`)는 처음부터 실려 갔는데 **분량은 아이 폰에만** 있었다.
+   * 갈래만 켜 주고 몇 개를 할지는 못 정하니 반쪽이었던 셈이다.
+   */
+  newPerDay?: number;
+  koNewPerDay?: number;
 }
 
 export function buildSettingsBody(token: string, payload: SettingsPayload) {
   const names = payload.subjects.map((s) => SUBJECT_LABEL[s]).join(' · ');
+  /* 무엇이 바뀌었는지 알림 본문에 적는다. 과목만 바뀐 것이 아닐 수 있다. */
+  const extra = [
+    payload.level ? '영어 레벨' : '',
+    payload.koLevel ? '국어 레벨' : '',
+    payload.rates ? '요청권 금액' : '',
+    payload.newPerDay || payload.koNewPerDay ? '하루 분량' : '',
+  ].filter(Boolean);
   return {
     to: token,
-    title: '⚙️ 공부할 과목이 바뀌었어요',
-    body: `${payload.from}이(가) ${names}(으)로 정했어요.`,
+    title: '⚙️ 부모님이 설정을 바꾸셨어요',
+    body: extra.length
+      ? `${payload.from}이(가) ${names} · ${extra.join(' · ')}을(를) 바꿨어요.`
+      : `${payload.from}이(가) ${names}(으)로 정했어요.`,
     sound: 'default' as const,
     priority: 'high' as const,
     channelId: 'child-nudge',
-    data: { kind: 'settings', from: payload.from, subjects: payload.subjects },
+    data: {
+      kind: 'settings',
+      from: payload.from,
+      subjects: payload.subjects,
+      ...(payload.level ? { level: payload.level } : {}),
+      ...(payload.koLevel ? { koLevel: payload.koLevel } : {}),
+      ...(payload.rates ? { rates: payload.rates } : {}),
+      ...(payload.newPerDay ? { newPerDay: payload.newPerDay } : {}),
+      ...(payload.koNewPerDay ? { koNewPerDay: payload.koNewPerDay } : {}),
+    },
   };
 }
 
@@ -749,7 +952,36 @@ export function parseSettings(data: unknown): SettingsPayload | null {
   const all: Subject[] = ['en', 'ko', 'daily'];
   const subjects = all.filter((x) => (d.subjects as unknown[]).includes(x));
   if (subjects.length === 0) return null;
-  return { from: typeof d.from === 'string' ? d.from : '부모님', subjects };
+  /* 금액은 숫자만 받는다. 글자가 들어오면 아이 폰에서 계산이 NaN 이 된다. */
+  const rates =
+    d.rates && typeof d.rates === 'object' && !Array.isArray(d.rates)
+      ? Object.fromEntries(
+          Object.entries(d.rates as Record<string, unknown>).filter(
+            ([, v]) => typeof v === 'number' && Number.isFinite(v) && v >= 0,
+          ),
+        ) as Record<string, number>
+      : undefined;
+  /*
+   * 하루 분량은 **말이 되는 값만** 받는다.
+   *
+   * 0 이나 음수가 꽂히면 아이 화면에 낼 문제가 없어지고, 터무니없이 큰 수가
+   * 오면 한 판이 끝나지 않는다. 둘 다 앱이 고장 난 것처럼 보인다. 위쪽은
+   * 넉넉히 열어 두되(부모가 시험 앞두고 많이 시킬 수 있다) 한도는 둔다.
+   */
+  const count = (v: unknown) =>
+    typeof v === 'number' && Number.isInteger(v) && v >= 1 && v <= 100 ? v : undefined;
+  const newPerDay = count(d.newPerDay);
+  const koNewPerDay = count(d.koNewPerDay);
+
+  return {
+    from: typeof d.from === 'string' ? d.from : '부모님',
+    subjects,
+    ...(typeof d.level === 'string' && d.level ? { level: d.level } : {}),
+    ...(typeof d.koLevel === 'string' && d.koLevel ? { koLevel: d.koLevel } : {}),
+    ...(rates && Object.keys(rates).length > 0 ? { rates } : {}),
+    ...(newPerDay ? { newPerDay } : {}),
+    ...(koNewPerDay ? { koNewPerDay } : {}),
+  };
 }
 
 /** 부모가 고를 수 있는 문구. 직접 쓰는 것보다 누르기 쉽다. */

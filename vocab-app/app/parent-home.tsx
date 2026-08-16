@@ -160,13 +160,54 @@ export default function ParentHome() {
               style={{ marginTop: spacing.lg }}
             />
           </Card>
+        </>
+      )}
 
+      {/*
+        ② 아이들 학습 보고서. **부모님 오늘 공부 바로 아래다.**
+
+        예전에는 이것이 넷째였다 — 오늘의 공부, 내 학습 기록, 오답 노트를
+        지나야 나왔다. 그런데 아이 셋이 각자 폰을 쓰는 집에서는 부모가 홈을
+        여는 까닭이 대개 "오늘 누가 했나" 이고, 그것이 첫 화면에 안 들어오면
+        홈이 제 일을 못 한다.
+
+        자기 공부를 맨 앞에 두는 것은 그대로다. 부모가 앱을 아이 감시용으로만
+        열게 되지 않으려면 그 자리는 지켜야 한다. 다만 그 **바로 다음**이
+        아이들이다.
+      */}
+      <Tile
+        icon="👧"
+        title="아이들 학습 보고서"
+        hint={
+          childCount === 0
+            ? '아직 연결된 아이가 없어요. 아이 폰의 QR 을 찍어 주세요'
+            : `${childCount}명 · 아이를 누르면 달력이 열려요`
+        }
+        badge={pendingRewards > 0 ? `동기 부여 요청권 ${pendingRewards}건` : undefined}
+        /*
+         * **설정이 아니라 보고서로 간다.**
+         *
+         * 예전에는 여기서 「아이별 설정」 화면이 열렸다. 이름은 학습 보고서인데
+         * 도착한 곳에는 학년·하루 분량·금액이 늘어서 있고 정작 기록은 없었다.
+         * "학습 보고서에 들어가면 아이별 설정으로 들어갑니다" 라는 말을 그대로
+         * 들었다. 설정으로 가는 길은 그 화면 아래에 따로 두었다.
+         */
+        onPress={() => router.push('/parent-reports')}
+      />
+
+      {study.tracks.length === 0 ? null : (
+        <>
           {/*
-            ② 내 학습 기록. **타일이 아니라 그대로 편다.**
+            ③ 내 학습 기록. **타일이 아니라 그대로 편다.**
 
-            부모가 홈에서 제일 먼저 보고 싶은 것이 이것이다. 한 번 더 눌러야
-            보이면 대부분 안 누른다. 공부를 안 하기로 한 부모에게는 기록도
-            뜻이 없으므로 공부 카드와 함께 사라진다.
+            한 번 더 눌러야 보이면 대부분 안 누르고, 안 누르면 자기 진도를
+            모른 채 며칠이 지난다. 공부를 안 하기로 한 부모에게는 기록도 뜻이
+            없으므로 공부 카드와 함께 사라진다.
+
+            **아이들 보고서보다는 아래다.** 예전에는 여기가 둘째 자리였는데,
+            그러면 아이 셋을 각자 폰으로 보는 부모의 홈에서 정작 아이들이
+            넷째로 밀려 첫 화면에 안 들어왔다. "아이들 학습 보고서는 왜 안
+            보이나" 는 물음이 그래서 나왔다.
           */}
           <H3 style={{ marginTop: spacing.xl }}>📈 내 학습 기록</H3>
           <ParentRecordCards />
@@ -186,7 +227,7 @@ export default function ParentHome() {
             >
               <Text style={s.halfIcon}>📕</Text>
               <Text style={s.halfTitle}>오답 노트</Text>
-              <Text style={s.halfHint}>오늘 틀린 것부터</Text>
+              <Text style={s.halfHint}>지난 날은 달력에서</Text>
             </Pressable>
             <Pressable
               style={s.half}
@@ -195,24 +236,11 @@ export default function ParentHome() {
             >
               <Text style={s.halfIcon}>📗</Text>
               <Text style={s.halfTitle}>단어장</Text>
-              <Text style={s.halfHint}>오늘 배운 것부터</Text>
+              <Text style={s.halfHint}>지난 날은 달력에서</Text>
             </Pressable>
           </Row>
         </>
       )}
-
-      {/* ④ 아이들 */}
-      <Tile
-        icon="👧"
-        title="아이들 학습 보고서"
-        hint={
-          childCount === 0
-            ? '아직 연결된 아이가 없어요. 아이 폰의 QR 을 찍어 주세요'
-            : `${childCount}명 · 아이를 누르면 그 아이의 기록과 설정이 나옵니다`
-        }
-        badge={pendingRewards > 0 ? `동기 부여 요청권 ${pendingRewards}건` : undefined}
-        onPress={() => router.push('/parent-children')}
-      />
 
       {/*
         공부를 안 고른 부모에게 남기는 한 줄. 카드가 아니라 한 줄인 이유는

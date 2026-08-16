@@ -24,10 +24,11 @@ import { spacing } from '../src/theme';
 export default function ParentSound() {
   return (
     <Screen>
-      <Muted style={{ paddingTop: spacing.md }}>
-        부모님도 일상 문장과 영어 단어를 소리로 들으니, 여기서 목소리와 속도를 정합니다.
-      </Muted>
-
+      {/*
+        **고치는 자리를 맨 위에.** 예전에는 안내 한 줄이 먼저 오고 그 아래
+        설정이, 그 아래 가이드 카드 둘이 있었다. 안내와 가이드가 화면을 먼저
+        차지하니 정작 목소리를 고르는 자리가 아래로 밀렸다.
+      */}
       <SoundCard title="🔊 내 소리 설정" />
 
       <Card style={{ marginTop: spacing.md }}>

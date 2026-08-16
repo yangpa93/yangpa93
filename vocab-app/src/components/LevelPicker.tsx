@@ -7,7 +7,7 @@
 
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { Muted, Row } from './ui';
+import { Row } from './ui';
 import { entriesOf } from '../data';
 import {
   GRADE_ORDER,
@@ -16,7 +16,6 @@ import {
   LevelId,
   STEPS,
   gradeOf,
-  stepOf,
 } from '../types';
 import { colors, font, radius, spacing } from '../theme';
 
@@ -56,7 +55,16 @@ export function LevelPicker({
         })}
       </Row>
 
-      <Row style={{ gap: spacing.sm, marginTop: spacing.sm, flexWrap: 'wrap' }}>
+      {/*
+        **넷이 반드시 한 줄에 선다.** 줄바꿈(flexWrap)을 안 쓰고 칸마다
+        `flex: 1` 로 폭을 똑같이 나눈다.
+
+        「레벨 1 (156개)」 를 한 줄로 적었더니 글자 길이만큼 칸 폭이 제각각이
+        되어 셋 + 하나로 접혔다. 접힌 줄은 그 아래 설정을 통째로 밀어낸다.
+        그래서 글자를 위아래로 나눈다 — 이름은 크게, 개수는 그 밑에 작게.
+        칸이 세로로 조금 길어지는 대신 넷이 나란히 서고 폭도 고르게 된다.
+      */}
+      <Row style={{ gap: spacing.xs, marginTop: spacing.sm }}>
         {STEPS.map((step) => {
           const level = `${grade}-${step}` as LevelId;
           const active = value === level;
@@ -68,22 +76,22 @@ export function LevelPicker({
               style={[s.step, active && { backgroundColor: on, borderColor: on }]}
               accessibilityRole="button"
               accessibilityState={{ selected: active }}
+              accessibilityLabel={`레벨 ${step}${showCounts ? ` ${count}개` : ''}`}
             >
               <Text style={[s.stepText, active && s.chipTextOn]}>레벨 {step}</Text>
               {showCounts ? (
-                <Text style={[s.stepCount, active && s.chipTextOn]}>{count}개</Text>
+                <Text style={[s.stepCount, active && s.stepCountOn]}>{count}개</Text>
               ) : null}
             </Pressable>
           );
         })}
       </Row>
 
-      {showCounts ? (
-        <Muted style={{ marginTop: spacing.sm }}>
-          {GRADE_SHORT[grade]}은 레벨 {STEPS.length}개로 나뉘어 있어요. 지금 고른 것은{' '}
-          {GRADE_SHORT[gradeOf(value)]} 레벨 {stepOf(value)}입니다.
-        </Muted>
-      ) : null}
+      {/*
+        「중1은 레벨 4개로 나뉘어 있어요」 라고 적던 줄을 없앴다. 칸이 넷 있는
+        것은 보면 아는 것이고, 무엇을 골랐는지도 칸 색이 말한다. 설명이 쌓이면
+        정작 고를 칸이 화면 밖으로 밀린다.
+      */}
     </View>
   );
 }
@@ -99,17 +107,26 @@ const s = StyleSheet.create({
   },
   chipText: { fontSize: font.small, fontWeight: '700', color: colors.subtext },
   chipTextOn: { color: '#fff' },
+  /*
+   * 세로로 조금 긴 네모. **넷이 폭을 똑같이 나눠 갖는다.**
+   *
+   * `flex: 1` 이 그 일을 한다. `minWidth: 0` 은 안에 든 글자가 칸을 억지로
+   * 넓히지 못하게 막는 것으로, 이게 없으면 개수가 세 자리인 칸만 넓어져
+   * 줄이 다시 접힌다.
+   */
   step: {
     flex: 1,
-    minWidth: 90,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
+    minWidth: 0,
+    alignItems: 'center',
+    paddingHorizontal: spacing.xs,
+    paddingVertical: spacing.sm,
     borderRadius: radius.md,
     backgroundColor: colors.card,
     borderWidth: 1,
     borderColor: colors.border,
-    alignItems: 'center',
   },
-  stepText: { fontSize: font.body, fontWeight: '800', color: colors.text },
-  stepCount: { fontSize: font.tiny, fontWeight: '600', color: colors.muted, marginTop: 2 },
+  stepText: { fontSize: font.small, fontWeight: '700', color: colors.text },
+  /* 개수는 딸린 정보다. 작게, 흐리게 — 고르는 것은 레벨이지 개수가 아니다. */
+  stepCount: { fontSize: font.tiny, color: colors.subtext, marginTop: 1 },
+  stepCountOn: { color: 'rgba(255,255,255,0.85)' },
 });

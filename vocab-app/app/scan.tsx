@@ -156,7 +156,7 @@ export default function Scan() {
             await sendLinkBackToChild(got.token, mine, parentLabelOf(profile?.name)).catch(() => {});
           }
           setBusy(false);
-          router.replace('/parent-children');
+          router.replace('/parent-child-basics');
           return;
         }
 

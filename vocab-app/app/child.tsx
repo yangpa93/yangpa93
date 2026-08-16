@@ -123,7 +123,7 @@ export default function ChildLinkScreen() {
           </Body>
           <Button
             title="아이 목록 보기"
-            onPress={() => router.replace('/parent-children')}
+            onPress={() => router.replace('/parent-child-basics')}
             style={{ marginTop: spacing.xl, width: '100%' }}
           />
         </View>

@@ -45,3 +45,21 @@ export function formatKo(key: string): string {
   const week = ['일', '월', '화', '수', '목', '금', '토'][d.getDay()];
   return `${d.getMonth() + 1}월 ${d.getDate()}일 (${week})`;
 }
+
+/**
+ * 빌드가 만들어진 때를 `2026.08.15.20.05` 로 적는다.
+ *
+ * 점으로 이어 붙인 것은 판 번호(`0.23.0.16`)와 나란히 놓았을 때 한 덩어리로
+ * 읽히게 하려는 것이다. 기기 시간대로 적는다 — 폰을 든 사람이 읽는 값이다.
+ *
+ * **못 읽으면 빈 문자열.** 개발 모드와 노트북 미리보기에서는 만든 때를 알 수
+ * 없다. 없는 시각을 지어내면 그것이 진짜인 줄 알고 폰과 견주게 된다.
+ *
+ * 화면 코드(build-info)가 아니라 여기 있는 것은 시험 때문이다. build-info 는
+ * expo-application 을 끌어와서 기기 없이 못 부른다.
+ */
+export function stampOf(d: Date | null | undefined): string {
+  if (!d || Number.isNaN(d.getTime())) return '';
+  const p = (n: number) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}.${p(d.getMonth() + 1)}.${p(d.getDate())}.${p(d.getHours())}.${p(d.getMinutes())}`;
+}

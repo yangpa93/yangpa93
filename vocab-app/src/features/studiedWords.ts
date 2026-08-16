@@ -118,6 +118,43 @@ export function sessionMissed(ids: string[], src: WordSources, limit = 6): Studi
   ).slice(0, limit);
 }
 
+/**
+ * 여태 **많이 틀린 낱말.** 오답 노트의 「많이 틀린 단어」 칸이 쓴다.
+ *
+ * ── 왜 새로 만들었나 ────────────────────────────────────────
+ *
+ * 오답 노트는 `troubleWords(ALL_ENTRIES, …)` 를 썼다. 영어 어휘만 넘기는
+ * 함수라, **국어를 아무리 틀려도 그 목록에 안 나왔다.** 국어를 넣은 지 한참
+ * 뒤에도 오답 노트는 영어만 세고 있었고, 아이 눈에는 "국어는 틀려도 안 적히는"
+ * 것으로 보인다.
+ *
+ * 갈래를 가리는 규칙은 `studiedWords` 하나뿐이라 그것을 쓴다. 결과 화면·달력·
+ * 오답 노트가 같은 규칙을 보게 해야 한 곳만 고쳐도 세 곳이 같이 맞는다.
+ */
+export function troubleAll(
+  cards: Record<string, { entryId: string; wrong: number; correct: number }>,
+  src: WordSources,
+  limit = 50,
+): StudiedWord[] {
+  const wrong = Object.values(cards)
+    .filter((c) => c.wrong > 0)
+    .sort((a, b) => {
+      if (b.wrong !== a.wrong) return b.wrong - a.wrong;
+      // 틀린 횟수가 같으면 정답률이 낮은 쪽을 먼저.
+      const ra = a.correct / (a.correct + a.wrong);
+      const rb = b.correct / (b.correct + b.wrong);
+      return ra - rb;
+    });
+  /*
+   * 어휘에서 없어진 낱말은 `studiedWords` 가 조용히 버린다. 그래서 자르는
+   * 것은 **찾은 뒤에** 한다 — 먼저 잘라 두면 버려진 자리만큼 목록이 짧아진다.
+   */
+  return studiedWords(
+    wrong.map((c) => ({ id: c.entryId, wrong: c.wrong })),
+    src,
+  ).slice(0, limit);
+}
+
 /** 하루를 한 갈래만큼 잘라 본 것. 부모가 날짜를 눌렀을 때 한 칸씩 그린다. */
 export interface SubjectDay {
   subject: Subject;
@@ -125,6 +162,15 @@ export interface SubjectDay {
   studied: number;
   correct: number;
   wrong: number;
+  /**
+   * 그 갈래에서 **푼 문제 수** (correct + wrong).
+   *
+   * 낱말 수와 따로 적어야 한다. 낱말 하나를 세 바퀴 돌려 묻고 뜻이 여럿이면
+   * 뜻마다 묻기 때문에, 낱말 다섯이 열다섯 문제가 된다. 화면에 「5개 · 정답률
+   * 93%」 라고만 적었더니 "다섯 개 중 93%" 로 읽혀서 「다 맞혔는데 왜 93%
+   * 인가」 라는 말을 들었다. 분모를 같이 보여 줘야 그 물음이 안 생긴다.
+   */
+  asked: number;
   /**
    * 정답률 0~1. **푼 문제가 없으면 null.**
    *
@@ -184,6 +230,7 @@ export function dayBySubject(
         studied: tally.studied,
         correct: tally.correct,
         wrong: tally.wrong,
+        asked,
         accuracy: asked > 0 ? tally.correct / asked : null,
         // StudiedWord 의 kind 와 Subject 는 같은 말을 쓴다(en·ko·daily).
         missed: missed

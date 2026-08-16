@@ -24,6 +24,8 @@ import {
   buildRewardAskBody,
   buildSettingsChangedBody,
   RewardAskPayload,
+  RewardDecisionPayload,
+  buildRewardDecisionBody,
   SettingsChangedPayload,
   buildLinkBackBody,
   buildNudgeBody,
@@ -59,6 +61,8 @@ export {
   NUDGE_PRESETS,
   parseHello,
   parseNudge,
+  parseRewardAsk,
+  parseRewardDecision,
   parseSettings,
   parseUnlink,
   pushFailureReason,
@@ -157,6 +161,22 @@ export async function sendRewardAskToParent(
   payload: RewardAskPayload,
 ): Promise<SendResult> {
   return sendPush(buildRewardAskBody(parentToken, payload));
+}
+
+/**
+ * 부모가 판단한 결과를 아이 기기로 되보낸다.
+ *
+ * **이게 없으면 반쪽이다.** 부모가 승인해도 아이 폰은 「기다리는 중」 그대로고
+ * 저금통에도 안 쌓인다. 아이 눈에는 눌러 봐야 아무 일도 안 일어나는 단추다.
+ *
+ * 실패해도 부모 폰의 판단은 그대로 남는다. 못 갔다고 승인을 무르면 부모는
+ * 같은 것을 다시 판단해야 한다.
+ */
+export async function sendRewardDecisionToChild(
+  childToken: string,
+  payload: RewardDecisionPayload,
+): Promise<SendResult> {
+  return sendPush(buildRewardDecisionBody(childToken, payload));
 }
 
 /**
@@ -312,7 +332,7 @@ export async function scheduleMissingReportAlert(args: {
       title: '📭 오늘 학습 리포트가 오지 않았어요',
       // 눌렀을 때 할 일을 적어 준다. 알림만 뜨고 끝나면 부모는 손으로
       // 앱을 열고 부모님 모드를 찾아 들어가야 한다.
-      body: '여기를 눌러 아이에게 공부하자고 알려 줄 수 있어요.',
+      body: '여기를 눌러 아이에게 「공부하세요」 라고 보낼 수 있어요.',
       data: { kind: 'missing-report' },
     },
     trigger: {

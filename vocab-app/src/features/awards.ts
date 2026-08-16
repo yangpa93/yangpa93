@@ -185,6 +185,12 @@ export interface Award {
 }
 
 export function formatWon(amount: number): string {
+  /*
+   * **0 은 「0원」 이다.** 0 도 만으로 나누어떨어져서 예전에는 「0만원」 이라고
+   * 적혔다. 저금통이 빈 첫날 아이 화면에 그 말이 큼직하게 떴는데, 읽는 사람은
+   * 잠깐 멈칫한다 — 0만 몇천 원인가 싶어서다.
+   */
+  if (amount === 0) return '0원';
   // 20000 → '2만원'. 만 단위로 딱 떨어지지 않으면 그대로 적는다.
   if (amount % 10_000 === 0) return `${amount / 10_000}만원`;
   return `${amount.toLocaleString('ko-KR')}원`;

@@ -137,7 +137,7 @@ export default function ChildReport() {
       `${profile.name} 프로필을 지울까요?`,
       '학습 기록과 오답 노트가 모두 사라지고 되돌릴 수 없어요.',
       () => {
-        void deleteProfile(profile.id).then(() => router.replace('/parent-children'));
+        void deleteProfile(profile.id).then(() => router.replace('/parent-child-basics'));
       },
       { confirmText: '삭제', destructive: true },
     );
@@ -175,124 +175,24 @@ export default function ChildReport() {
         {profile.streak > 0 ? <Chip label={`🔥 ${profile.streak}일`} tone="accent" /> : null}
       </Row>
 
-      {/* ---------------- 보고서 ---------------- */}
+      {/*
+        ── 보고서를 여기서 뺐다 ★ ─────────────────────────────
 
-      {report ? (
-        <Card style={{ marginTop: spacing.md }}>
-          <Row style={{ justifyContent: 'space-between' }}>
-            <H3>{formatKo(today)}</H3>
-            <Chip
-              label={report.completed ? '목표 달성' : report.studied > 0 ? '진행 중' : '미학습'}
-              tone={report.completed ? 'correct' : report.studied > 0 ? 'accent' : 'wrong'}
-            />
-          </Row>
-          <Row style={{ justifyContent: 'space-around', marginTop: spacing.lg }}>
-            <Stat label="학습 단어" value={`${report.studied}/${report.goal}`} />
-            <Stat label="정답률" value={`${Math.round(report.accuracy * 100)}%`} />
-            <Stat label="학습 시간" value={`${report.minutes}분`} />
-            <Stat label="연속" value={`${report.streak}일`} />
-          </Row>
-        </Card>
-      ) : null}
+        이 화면은 「아이 보고서와 설정」 이었다. 오늘 성적·최근 7일·달력으로
+        가는 단추·자주 틀린 낱말·한 달 성적표가 위에 있고, 그 아래에 설정이
+        붙어 있었다. 그런데 **같은 보고서를 부모 홈 → 아이들 학습 보고서에서도
+        본다.** 두 길로 같은 것에 닿으니 "아이 보고서와 설정이 자꾸 중복됩니다"
+        라는 말이 나왔다.
 
-      {weekly ? (
-        <Card style={{ marginTop: spacing.md }}>
-          <Row style={{ justifyContent: 'space-between' }}>
-            <H3>최근 7일</H3>
-            <Muted>{weekly.completedCount}일 달성</Muted>
-          </Row>
-          <Row style={{ marginTop: spacing.lg, justifyContent: 'space-between', alignItems: 'flex-end' }}>
-            {weekly.days.map((d) => (
-              <View key={d.date} style={{ alignItems: 'center', flex: 1 }}>
-                <View
-                  style={[
-                    s.bar,
-                    {
-                      height: Math.max(6, Math.min(56, d.studied * 3)),
-                      backgroundColor: d.completed ? colors.primary : colors.border,
-                    },
-                  ]}
-                />
-                <Muted style={{ fontSize: 10, marginTop: spacing.xs }}>{d.date.slice(8)}</Muted>
-              </View>
-            ))}
-          </Row>
-          <Muted style={{ marginTop: spacing.md }}>
-            총 {weekly.totalStudied}개 · 평균 정답률 {Math.round(weekly.averageAccuracy * 100)}%
-          </Muted>
-          <Button
-            title="🗓️ 달력으로 보기"
-            variant="secondary"
-            onPress={() => router.push({ pathname: '/calendar', params: { profileId: profile.id } })}
-            style={{ marginTop: spacing.lg }}
-          />
-        </Card>
-      ) : null}
-
-      {progress ? (
-        <Card style={{ marginTop: spacing.md }}>
-          <Row style={{ justifyContent: 'space-between' }}>
-            <H3>영어 {LEVEL_SHORT[profile.level]}</H3>
-            <Muted>
-              {progress.mastered} / {progress.total}개
-            </Muted>
-          </Row>
-          <View style={{ marginTop: spacing.md }}>
-            <ProgressBar value={progress.ratio} color={colors.accent} />
-          </View>
-          <Muted style={{ marginTop: spacing.sm }}>
-            {progress.canTakeExam
-              ? '레벨 시험을 볼 수 있습니다.'
-              : `${progress.remaining}개 더 외우면 레벨 시험을 볼 수 있습니다.`}
-          </Muted>
-
-          {koProgress && subjects.includes('ko') ? (
-            <>
-              <Row style={{ justifyContent: 'space-between', marginTop: spacing.lg }}>
-                <H3>국어 {LEVEL_SHORT[profile.koLevel]}</H3>
-                <Muted>
-                  {koProgress.mastered} / {koProgress.total}개
-                </Muted>
-              </Row>
-              <View style={{ marginTop: spacing.md }}>
-                <ProgressBar
-                  value={koProgress.total === 0 ? 0 : koProgress.mastered / koProgress.total}
-                  color={colors.accent}
-                />
-              </View>
-            </>
-          ) : null}
-        </Card>
-      ) : null}
-
-      {report && report.todayMistakes.length > 0 ? (
-        <Card style={{ marginTop: spacing.md }}>
-          <H3>오늘 틀린 단어</H3>
-          {report.todayMistakes.map((m) => (
-            <Row key={m.word} style={{ marginTop: spacing.md, alignItems: 'flex-start' }}>
-              <Body style={{ fontWeight: '700', width: 120 }}>{m.word}</Body>
-              <Muted style={{ flex: 1 }}>{m.meaning}</Muted>
-              {m.count > 1 ? <Chip label={`${m.count}번`} tone="wrong" /> : null}
-            </Row>
-          ))}
-        </Card>
-      ) : null}
-
-      {report && report.chronicMistakes.length > 0 ? (
-        <Card style={{ marginTop: spacing.md }}>
-          <H3>자주 틀리는 단어</H3>
-          <Muted style={{ marginTop: spacing.xs }}>이 단어들은 매일 우선해서 다시 출제됩니다.</Muted>
-          {report.chronicMistakes.map((m) => (
-            <Row key={m.word} style={{ marginTop: spacing.md, alignItems: 'flex-start' }}>
-              <Body style={{ fontWeight: '700', width: 120 }}>{m.word}</Body>
-              <Muted style={{ flex: 1 }}>{m.meaning}</Muted>
-              <Chip label={`누적 ${m.wrong}회`} tone="wrong" />
-            </Row>
-          ))}
-        </Card>
-      ) : null}
-
-      {monthly ? <MonthlyCard report={monthly} name={profile.name} /> : null}
+        이제 여기는 **설정만** 한다. 보는 자리는 부모 홈의 「아이들 학습
+        보고서」 하나뿐이다. 보러 갈 길은 아래 한 줄로만 남긴다.
+      */}
+      <Button
+        title={`📅 ${profile.name} 학습 보고서 보기`}
+        variant="secondary"
+        onPress={() => router.push({ pathname: '/calendar', params: { profileId: profile.id } })}
+        style={{ marginTop: spacing.md }}
+      />
 
       {pdata ? (
         <GrantCard
@@ -304,16 +204,6 @@ export default function ChildReport() {
           onGive={grantReward}
         />
       ) : null}
-
-      <Button
-        title="리포트 공유하기"
-        variant="secondary"
-        onPress={() => {
-          if (!report) return;
-          Share.share({ message: reportText(report, weekly ?? undefined) }).catch(() => {});
-        }}
-        style={{ marginTop: spacing.lg }}
-      />
 
       {/* ---------------- 이 아이의 설정 ---------------- */}
 
@@ -576,7 +466,7 @@ function GrantCard({
       <Muted style={{ marginTop: spacing.xs }}>
         {awards.length > 0
           ? `${profile.name}에게 지금 줄 수 있는 동기 부여 요청권이 ${awards.length}장 있습니다.`
-          : `지금 줄 수 있는 동기 부여 요청권이 없습니다. 레벨 시험에 통과하거나 한 달을 개근하면 생깁니다.`}
+          : `지금 줄 수 있는 동기 부여 요청권이 없습니다. 하루치를 다 마치거나 레벨 시험에 통과하면 생깁니다.`}
       </Muted>
 
       {open ? (

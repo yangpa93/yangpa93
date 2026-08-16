@@ -249,7 +249,11 @@ await go(page, '/parent-home');
 ok('부모 홈이 뜬다', await has(page, '오늘의 공부'));
 ok('오답 노트 타일이 있다', await has(page, '오답 노트'));
 ok('단어장 타일이 있다', await has(page, '단어장'));
-ok('오늘 틀린 것부터 라고 적혀 있다', await has(page, '오늘 틀린 것부터'));
+/*
+ * 타일은 「지난 날은 달력에서」 라고 말한다. 오답 노트와 단어장이 오늘 것만
+ * 보여 줘서 어제 뭘 했는지 되짚을 길이 없었고, 그것을 달력으로 옮겼기 때문이다.
+ */
+ok('지난 날은 달력에서 라고 안내한다', await has(page, '지난 날은 달력에서'));
 
 /* ================================================================= */
 console.log('');
@@ -363,9 +367,16 @@ console.log('  ⑤ 부모 설정 — 소리와 목소리');
 /* ================================================================= */
 
 await go(page, '/parent-settings');
-ok('아이들 폰 설정이 있다', await has(page, '아이들 폰 설정'));
+/*
+ * 설정을 다섯으로 갈랐다. **다섯을 다 센다** — 하나만 보면 나머지가 사라져도
+ * 모른다. 「설정이 여기저기 흩어져 있다」 는 말에서 나온 구조라 그 다섯이
+ * 그대로 있는지가 이 검사의 뜻이다.
+ */
+ok('아이들 기본 설정이 있다', await has(page, '아이들 기본 설정'));
 ok('내 공부 설정이 있다', await has(page, '내 공부 설정'));
 ok('소리와 목소리가 있다', await has(page, '소리와 목소리'));
+ok('아이들 폰 연결이 있다', await has(page, '아이들 폰 연결'));
+ok('백업 및 PIN 설정이 있다', await has(page, '백업 및 PIN 설정'));
 
 await page.getByText('소리와 목소리', { exact: false }).first().click();
 await page.waitForTimeout(1500);
@@ -380,7 +391,12 @@ console.log('  ⑥ 연결 — 부모가 아이 화면을 보지 않는가');
 
 await go(page, '/parent-link');
 ok('부모에게 아이 화면을 안 보인다', !(await has(page, '부모님이 보낸 요청 승인하기', 2000)));
-ok('대신 길을 알려 준다', await has(page, '여기는 아이 폰에서 쓰는 화면이에요'));
+/*
+ * 문구가 바뀌었다. 「여기는 아이 폰에서 쓰는 화면이에요」 는 **여기가 잘못
+ * 온 자리**라는 소리로만 들렸다 — 실제로는 부모가 아이를 등록하러 오는
+ * 자리다. 그래서 무엇을 하는 자리인지부터 적는다.
+ */
+ok('대신 길을 알려 준다', await has(page, '아이를 등록합니다'));
 
 await go(page, '/link-child-code');
 ok('코드로 아이 연결하기가 열린다', await has(page, '코드로 아이 연결하기'));
@@ -404,14 +420,18 @@ if (await codeBox.isVisible().catch(() => false)) {
  * 있으면 눌러 보고 멈추게 되므로, 남아 있지 않은 것까지 함께 본다.
  */
 /*
- * 연결하는 자리는 `/parent-link` 로 옮겼다. 「아이들 폰 설정」 한 장에
- * 연결·아이별 설정·금액이 모두 쌓여 있어서 어느 것을 누르면 무엇이 나오는지
- * 알기 어려웠고, 그 화면은 이제 갈 곳을 고르는 세 단추만 둔다.
+ * 「아이들 폰 설정」 화면은 **없앴다.** 한 장에 알림·연결·금액·백업·PIN 이
+ * 다 쌓여 있어서 "설정이 여기저기 흩어져 있으니 너무 복잡합니다" 라는 말을
+ * 들었다. 이제 그 다섯이 저마다 제 갈래로 나뉘어 있고, 설정 화면이 그것을
+ * 고르는 자리다(위 ⑤ 에서 다섯을 다 센다).
+ *
+ * 여기서는 **아이에 대한 설정이 한자리에 모였는지** 본다.
  */
-await go(page, '/parent-child-devices');
-ok('갈 곳 세 단추가 있다 — 연결', await has(page, '아이 기기와 연결하기'));
-ok('갈 곳 세 단추가 있다 — 아이별 설정', await has(page, '아이별 설정 하기'));
-ok('갈 곳 세 단추가 있다 — 요청권', await has(page, '동기 부여 요청권'));
+await go(page, '/parent-child-basics');
+ok('아이들 공통 설정이 있다', await has(page, '아이들 공통 설정'));
+ok('매일 리포트 알림이 있다', await has(page, '매일 리포트 알림'));
+ok('동기 부여 요청권으로 가는 길이 있다', await has(page, '동기 부여 요청권'));
+ok('아이 개별 설정이 있다', await has(page, '아이 개별 설정'));
 
 await go(page, '/parent-link');
 ok('연결 카드에 코드 길이 있다', await has(page, '카메라가 안 되면 — 코드로 연결하기'));
@@ -621,8 +641,7 @@ ok('진동 피드백이 여기로 왔다', await has(page, '진동 피드백'));
  * 오늘 것이 있는 줄을 몰랐다. 타일 글자까지 함께 본다.
  */
 await go(page, '/home');
-ok('아이 홈 타일이 오늘 배운 것부터라고 말한다', await has(page, '오늘 배운 것부터'));
-ok('아이 홈 오답 노트도 오늘부터', await has(page, '오늘 틀린 것부터'));
+ok('아이 홈 타일도 달력으로 안내한다', await has(page, '지난 날은 달력에서'));
 
 await go(page, '/wordbook');
 ok('아이 단어장에 오늘 배운 것 칸이 있다', await has(page, '오늘 배운 것'));
@@ -747,7 +766,7 @@ await seed(page, '아이 둘이 등록된 상태');
 for (const [where, path] of [
   ['부모 홈', '/parent-home'],
   ['부모 설정', '/parent-settings'],
-  ['아이들 폰 설정', '/parent-child-devices'],
+  ['백업 및 PIN 설정', '/parent-backup-pin'],
 ]) {
   await go(page, path);
   ok(`${where} 에 현재 버전이 적혀 있다`, await has(page, '현재 버전'));
@@ -936,6 +955,23 @@ async function missAll(p, steps) {
       await p.waitForTimeout(350);
       continue;
     }
+    /*
+     * 국어에는 **문제를 못 내는 낱말**이 있다. 예문이 하나뿐인데 그것을 이미
+     * 썼다든지 해서, 그럴 때는 「이 문장으로는 문제를 낼 수 없어요 — 넘어가기」
+     * 가 뜬다. 여기에는 「모르겠어요」 가 없다.
+     *
+     * 이걸 몰라서 시험이 그 자리에 멈춰 섰다. 결과 화면을 두 문제 앞두고
+     * 멈춰 놓고는 「결과 화면에 닿았다 ❌」 라고 적으니, 앱이 깨진 것처럼
+     * 읽혔다. 실제로 깨진 것은 시험 쪽이었다. 틀린 것으로는 안 센다 —
+     * 넘어간 것은 맞힌 것으로 적히기 때문이다.
+     */
+    const skip = p.getByText('넘어가기', { exact: false }).first();
+    if (await skip.isVisible(FAST).catch(() => false)) {
+      await skip.click(FAST).catch(() => {});
+      quiet = 0;
+      await p.waitForTimeout(350);
+      continue;
+    }
     // 아무것도 안 보인다 — 그리는 중일 수 있다. 세 번까지 기다려 준다.
     if (++quiet > 3) break;
     await p.waitForTimeout(1200);
@@ -971,7 +1007,12 @@ await page
   .first()
   .waitFor({ state: 'visible', timeout: 25000 })
   .catch(() => {});
-const koMissed = await missAll(page, 70);
+/*
+ * 넉넉히 잡는다. 한 문제를 넘기는 데 두 번(답 + 「다음 문제」)이 들고, 틀린
+ * 것은 그 판 안에서 한 번 더 나온다. 스물넷짜리 판이면 백 번쯤 든다.
+ * 일찍 끝나면 결과 화면을 보고 알아서 빠져나온다.
+ */
+const koMissed = await missAll(page, 200);
 ok('국어 판을 끝까지 풀었다', koMissed > 0, `${koMissed}문제`);
 
 await page.waitForTimeout(800);
@@ -1012,10 +1053,10 @@ ok('달력이 오늘 카드를 열어 둔다', await has(page, '학습 단어'))
  * 통과시키면 칸이 비어 있어도 초록이 된다.
  */
 const subjectLines = await page
-  .getByText(/^\d+개 · 정답률 \d+%$/)
+  .getByText(/^낱말 \d+개 · \d+\/\d+문제$/)
   .allTextContents()
   .catch(() => []);
-ok('갈래마다 개수와 정답률을 적는다', subjectLines.length >= 2, subjectLines.join(' / ') || '(없음)');
+ok('갈래마다 낱말 수와 문제 수를 적는다', subjectLines.length >= 2, subjectLines.join(' / ') || '(없음)');
 ok('국어 칸이 있다', await has(page, '국어', 3000));
 ok('영어 칸이 있다', await has(page, '영어', 3000));
 
@@ -1037,7 +1078,7 @@ ok('개근 진도는 걷어 냈다', !(await has(page, '이번 달 개근', 2000
 
 await seed(page, '지난달치가 쌓여 있는 상태');
 await go(page, '/home');
-ok('달이 바뀌면 모아 받는 단추가 뜬다', await has(page, '모은 12,500원 청구하기'));
+ok('달이 바뀌면 모아 받는 단추가 뜬다', await has(page, '모은 12,500원 받기'));
 
 await seed(page, '한 달치를 모아 청구한 상태');
 await go(page, '/parent-rewards');
@@ -1049,6 +1090,153 @@ ok('부모 폰에 달 정산이 올라온다', await has(page, '월치 모아 �
  */
 ok('스무닷새를 넘긴 달은 얹는 칸이 열린다', await has(page, '스무닷새를 넘겼어요'));
 ok('얹은 금액이 합쳐져 적힌다', await has(page, '17,500원 주기'), '12,500 + 5,000 이 안 맞는다');
+
+/* ================================================================= */
+console.log('');
+console.log('  ⑧-5 다른 폰의 아이 — 부모 폰에서 보고서가 보이는가 ★');
+/*
+ * ── 여기서 크게 틀렸다 ──────────────────────────────────────
+ *
+ * 부모 폰에서 아이는 두 종류다. 이 폰에 프로필이 있는 아이와, 제 폰을 쓰고
+ * 리포트만 보내 오는 아이. **회원님 아이 셋은 전부 뒤쪽이다.**
+ *
+ * 그런데 확인은 앞쪽(로컬 프로필)으로만 했다. 그래서 「달력이 열린다」 고
+ * 말했는데 회원님 화면에는 그 단추조차 없었다. 안내 문구만 새것이라
+ * 「📅 를 누르면 달력이 열립니다」 라고 적혀 있고 정작 📅 가 없었다.
+ *
+ * 이제 **그 상황을 심어 놓고** 잰다. 로컬 프로필이 하나도 없는 부모 폰이다.
+ */
+/* ================================================================= */
+
+await seed(page, '아이 셋이 각자 폰을 쓰는 상태');
+await go(page, '/parent-home');
+ok('부모 홈에 아이들 학습 보고서가 있다', await has(page, '아이들 학습 보고서'));
+
+/*
+ * **아이들이 내 학습 기록보다 위에 있어야 한다.**
+ *
+ * 예전에는 넷째였다 — 오늘의 공부, 내 학습 기록, 오답 노트를 지나야 나왔다.
+ * 폰 한 화면(870)에 안 들어와서 "아이들 학습 보고서가 왜 안 보이나" 는 물음이
+ * 나왔다. 자기 공부가 맨 앞인 것은 그대로 두고, 그 바로 다음으로 올렸다.
+ *
+ * 글자가 아니라 **화면에서의 높이**로 잰다. 차례를 말로 확인할 방법이 없다.
+ */
+const yOf = async (t) => {
+  const box = await page.getByText(t, { exact: false }).first().boundingBox().catch(() => null);
+  return box ? box.y : Number.NaN;
+};
+const yKids = await yOf('아이들 학습 보고서');
+const yMine = await yOf('내 학습 기록');
+ok(
+  '아이들이 내 학습 기록보다 위에 있다',
+  Number.isFinite(yKids) && Number.isFinite(yMine) && yKids < yMine,
+  `아이들 ${Math.round(yKids)} · 내 기록 ${Math.round(yMine)}`,
+);
+
+await page.getByText('아이들 학습 보고서', { exact: false }).first().click();
+await page.waitForTimeout(1200);
+/*
+ * 여기가 예전에 「아이별 설정」 으로 가던 자리다. 이름은 보고서인데 도착한
+ * 곳에는 학년·하루 분량·금액이 늘어서 있고 정작 기록이 없었다.
+ */
+ok('누르면 아이 이름 버튼이 나온다', await has(page, '수빈 학습 보고서 보기'));
+ok('아이 셋이 다 나온다', (await has(page, '시윤 학습 보고서 보기')) && (await has(page, '서준 학습 보고서 보기')));
+
+await page.getByText('수빈 학습 보고서 보기', { exact: false }).first().click();
+await page.waitForTimeout(1600);
+ok('아이를 누르면 달력이 열린다', await has(page, '보내 온 날만 보여요'));
+/*
+ * 달력은 들어가면 오늘이 이미 골라져 있다. 그 아래에 갈래별 성적이 보여야
+ * 한다 — 부모 폰에는 그 아이 기록이 없고 보내 온 것뿐이라, 이것이 보인다는
+ * 것은 통로가 실제로 뚫렸다는 뜻이다.
+ */
+const remoteSubjects = await page
+  .getByText(/^낱말 \d+개 · \d+\/\d+문제$/)
+  .allTextContents()
+  .catch(() => []);
+ok(
+  '날짜를 고르면 국어·영어가 갈라져 나온다',
+  remoteSubjects.length >= 2,
+  remoteSubjects.join(' / ') || '(없음)',
+);
+/* 오답 낱말은 id 만 보내고 이름은 이 폰의 어휘에서 찾는다. 그것이 되는지. */
+ok('보내 온 오답이 낱말로 보인다', await has(page, '구사일생', 3000));
+
+/* ================================================================= */
+console.log('');
+console.log('  ⑧-6 다른 폰의 아이 — 500원과 공부하세요');
+/* ================================================================= */
+
+await go(page, '/parent-rewards');
+ok('아이가 올린 500원이 부모 폰에 뜬다', await has(page, '오늘 공부 끝'));
+/*
+ * 예전에는 알림만 뜨고 목록에는 안 쌓였다. 이름도 「알 수 없음」 이었다 —
+ * 누가 신청한 것인지 모르는 채로 승인 단추를 누르는 자리였다.
+ */
+ok('누가 올린 것인지 이름이 나온다', await has(page, '수빈', 3000));
+
+/*
+ * 「공부하세요」 는 **그 아이 화면 안**으로 옮겼다. 예전에는 아이 목록 화면에
+ * 셋이 함께 있어서, 수빈이 설정에 들어와 놓고 이름을 한 번 더 눌러 펼쳐야
+ * 했다 — 같은 일을 두 번 시키는 자리였다.
+ */
+await go(page, `/parent-child-one?name=${encodeURIComponent('수빈')}`);
+ok('아이 설정에 공부하세요가 있다', await has(page, '공부하세요'));
+/*
+ * 「직접 쓰기」 는 빈 칸의 안내 글자(placeholder)다. `has` 는 텍스트 노드를
+ * 보므로 안 잡힌다 — 이 파일 앞머리에 적어 둔 그 함정에 그대로 걸렸다.
+ *
+ * **누르지 않아도** 열려 있어야 한다. 이미 그 아이로 들어와 있기 때문이다.
+ */
+ok('보낼 말이 바로 열려 있다', await hasField(page, '직접 쓰기', 3000));
+ok('그 아이에게만 보내는 단추가 있다', await has(page, '수빈에게 보내기', 3000));
+/*
+ * **갈래와 하루 분량도 여기서 정한다.**
+ *
+ * "영어, 국어, 일상 문장 세 가지를 고를 수 있는데 이 선택은 어디서 하나요"
+ * 라는 물음을 들었다. 그때까지 그 자리는 아이 폰에만 있었다 — 부모가 아이
+ * 폰을 걷어 와야 갈래를 켜고 끌 수 있었던 셈이다.
+ */
+ok('무엇을 공부할지 고를 수 있다', await has(page, '무엇을 공부할까요', 3000));
+ok('하루 분량도 정할 수 있다', await has(page, '하루에 새로 배울 개수', 3000));
+
+/* 레벨과 금액도 여기서 정한다 — 아이 폰 안에 있던 값을 알림으로 보낸다. */
+ok('영어 레벨을 정할 수 있다', await has(page, '영어 레벨', 3000));
+ok('국어 레벨을 정할 수 있다', await has(page, '국어 레벨', 3000));
+ok('이 아이만의 금액을 정할 수 있다', await has(page, '수빈의 동기 부여 요청권 금액', 3000));
+/* 보고서로 가는 길은 여기 없어야 한다. 보는 자리는 학습 보고서 하나뿐이다. */
+ok(
+  '설정 화면에 보고서 링크가 없다',
+  !(await has(page, '수빈 학습 보고서 보기', 2000)),
+  '보는 길이 둘로 갈렸다',
+);
+
+/* ================================================================= */
+console.log('');
+console.log('  ⑧-7 아이 폰 달력 — 그날 배운 낱말까지 나오는가');
+/*
+ * 오답 노트와 단어장이 「오늘 것」 만 보여 줘서 어제 뭘 배웠는지 되짚을 길이
+ * 없었다. 그것을 달력으로 옮겨 왔다 — 날짜를 고르면 그날 것이 나온다.
+ */
+/* ================================================================= */
+
+await seed(page, '오늘치를 다 마친 상태');
+await go(page, '/calendar');
+ok('아이 폰 달력에도 갈래가 갈라져 나온다', await has(page, '정답률'));
+ok('그날 배운 낱말을 펼칠 수 있다', await has(page, '이 날 배운 낱말'));
+await page.getByText('이 날 배운 낱말', { exact: false }).first().click({ timeout: 3000 }).catch(() => {});
+await page.waitForTimeout(700);
+/*
+ * 펼치면 낱말이 실제로 나와야 한다. 단추만 있고 눌러도 아무것도 안 나오면
+ * 통과해도 아무 말을 못 하는 검사가 된다.
+ */
+/*
+ * **배운 낱말에만 있고 오답에는 없는 것**을 찾는다. 오답에도 있는 낱말을
+ * 찾으면 위쪽 오답 칸에 이미 떠 있어서, 펼치는 것이 고장 나도 초록이 된다.
+ * 「없는 것을 재고 통과」 하는 자리가 정확히 이런 모양이다.
+ */
+const learnedRows = await page.getByText('다다익선', { exact: false }).count().catch(() => 0);
+ok('펼치면 낱말이 실제로 나온다', learnedRows > 0, '눌렀는데 목록이 비어 있다');
 
 /* ================================================================= */
 console.log('');
@@ -1166,7 +1354,7 @@ await parentPage.waitForTimeout(2000);
 ok('부모 폰이 아이를 등록했다고 말한다', await has(parentPage, '서준 등록했어요'));
 ok('되보내기도 됐다고 말한다', await has(parentPage, '아이 폰에도 알림이 갔습니다', 2500));
 
-await go(parentPage, '/parent-children');
+await go(parentPage, '/parent-child-basics');
 ok('아이 목록에 서준이 나타난다', await has(parentPage, '서준'));
 
 /*

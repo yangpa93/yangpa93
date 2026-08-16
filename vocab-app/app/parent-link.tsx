@@ -227,10 +227,14 @@ export default function ParentLinkScreen() {
       <Screen>
         <View style={{ paddingTop: spacing.lg }}>
           <Text style={{ fontSize: 44 }}>🔗</Text>
-          <H1 style={{ marginTop: spacing.md }}>여기는 아이 폰에서 쓰는 화면이에요</H1>
+          {/*
+            「여기는 아이 폰에서 쓰는 화면이에요」 라고 적혀 있었다. 부모가
+            ⚙️ 설정 → 아이들 폰 연결 을 눌러 들어온 자리인데, 도착하자마자
+            잘못 왔다는 말을 듣는 셈이었다. 실제로는 여기서 아이를 등록한다.
+          */}
+          <H1 style={{ marginTop: spacing.md }}>아이를 등록합니다</H1>
           <Muted style={{ marginTop: spacing.sm }}>
-            이 화면은 아이가 부모님 폰을 등록하는 자리입니다. 부모님 폰에서 아이를 등록하시려면
-            아래로 가세요.
+            아이들 폰에서 QR 을 생성하고 이 폰에서 QR 을 찍어 등록하면 아이가 등록됩니다.
           </Muted>
         </View>
 
@@ -257,7 +261,7 @@ export default function ParentLinkScreen() {
         <Button
           title="아이 목록 보기"
           variant="secondary"
-          onPress={() => router.replace('/parent-children')}
+          onPress={() => router.replace('/parent-child-basics')}
           style={{ marginTop: spacing.lg }}
         />
       </Screen>

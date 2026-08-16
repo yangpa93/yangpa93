@@ -26,10 +26,13 @@ export default function ParentAwardRates() {
     <Screen>
       <Card style={{ marginTop: spacing.md }}>
         <H3>기본 동기 부여 요청권 금액</H3>
+        {/*
+          「한 달을 개근하면」 이라고 적혀 있었다. 그 방식을 없앤 뒤에도 이 줄만
+          남아, 화면 아래에는 없는 것을 위에서 말하고 있었다. 설명도 넉 줄에서
+          한 줄로 줄였다 — 길면 정작 고칠 금액 단추가 화면 밖으로 밀린다.
+        */}
         <Muted style={{ marginTop: spacing.xs }}>
-          아이가 레벨 시험에 통과하거나 한 달을 개근하면 아래 금액을 부모에게 요청할 수
-          있습니다.
-          {'\n'}아이마다 다르게 하시려면 「아이별 설정」에서 그 아이를 눌러 고치세요.
+          아이마다 다르게 하시려면 「아이별 설정」에서 그 아이를 눌러 고치세요.
         </Muted>
 
         <AwardRatesEditor rates={rates} onChange={(next) => updateParent({ awards: next })} />

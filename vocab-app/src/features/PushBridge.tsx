@@ -18,13 +18,25 @@ import {
   parseIncoming,
   parseLinkBack,
   parseNudge,
+  parseRewardAsk,
+  parseRewardDecision,
   parseSettings,
   scheduleMissingReportAlert,
 } from './push';
 import { todayKey } from '../lib/date';
 
 export function PushBridge() {
-  const { ready, state, addReceivedReport, rememberChild, updateSettings, linkParent } = useApp();
+  const {
+    ready,
+    state,
+    addReceivedReport,
+    addChildReward,
+    applyRewardDecision,
+    rememberChild,
+    updateSettings,
+    updateProfile,
+    linkParent,
+  } = useApp();
 
   /**
    * 리포트를 받는 기기인가.
@@ -54,6 +66,20 @@ export function PushBridge() {
         return;
       }
 
+      /*
+       * 아이가 「오늘 다 했어요, 500원 주세요」 를 눌러 보낸 것.
+       *
+       * **예전에는 이것을 받아 두지 않았다.** 알림만 뜨고 사라져서, 부모가
+       * 나중에 승인하려고 보상 화면에 들어가면 아무것도 없었다. 아이 쪽에는
+       * 「부모님 확인 기다리는 중」 이라고 떠 있는데 부모 폰에는 그 요청이
+       * 아예 없는, 서로 다른 말을 하는 상태였다.
+       */
+      const ask = parseRewardAsk(payloadData);
+      if (ask) {
+        addChildReward(ask);
+        return;
+      }
+
       const report = parseIncoming(payloadData);
       if (!report) return;
       addReceivedReport({
@@ -62,6 +88,11 @@ export function PushBridge() {
         headline: report.headline,
         detail: report.detail,
         completed: report.completed,
+        // 날짜별 보고서를 그릴 알맹이. 옛 판 아이 폰에서는 안 온다.
+        ...(report.bySubject ? { bySubject: report.bySubject } : {}),
+        ...(report.wrongIds ? { wrongIds: report.wrongIds } : {}),
+        ...(typeof report.studied === 'number' ? { studied: report.studied } : {}),
+        ...(typeof report.goal === 'number' ? { goal: report.goal } : {}),
       });
       // 리포트에 실려 온 아이 기기 주소를 기억한다. 나중에 "공부하자"고
       // 되보낼 때 쓴다.
@@ -80,7 +111,7 @@ export function PushBridge() {
       received.remove();
       responded.remove();
     };
-  }, [isParentDevice, addReceivedReport, rememberChild]);
+  }, [isParentDevice, addReceivedReport, addChildReward, rememberChild]);
 
   /**
    * 아이 쪽 — 부모가 보낸 설정을 받아 적용한다.
@@ -115,11 +146,50 @@ export function PushBridge() {
         return;
       }
 
+      /*
+       * 부모가 승인·보류한 결과.
+       *
+       * **누르지 않아도 적용한다.** 아이가 알림을 지나치면 저금통에 안 쌓인
+       * 채로 남고, 아이는 부모가 승인했는지 아닌지 알 길이 없다.
+       */
+      const decision = parseRewardDecision(data);
+      if (decision) {
+        applyRewardDecision(decision);
+        return;
+      }
+
       const s = parseSettings(data);
       if (!s) return;
       const active = state.activeProfileId;
       if (!active) return;
-      updateSettings(active, { subjects: s.subjects });
+      /*
+       * 갈래와 하루 분량. **보내 온 것만 바꾼다.**
+       *
+       * 부모가 분량을 안 건드렸으면 안 실려 오고, 그때는 아이가 제 폰에서
+       * 골라 둔 숫자가 그대로 남는다. 통째로 덮으면 부모 화면에 우연히 떠
+       * 있던 기본값이 아이 것을 밀어낸다.
+       */
+      updateSettings(active, {
+        subjects: s.subjects,
+        ...(s.newPerDay ? { newPerDay: s.newPerDay } : {}),
+        ...(s.koNewPerDay ? { koNewPerDay: s.koNewPerDay } : {}),
+      });
+
+      /*
+       * 레벨과 요청권 금액도 부모가 고쳐 보낼 수 있다.
+       *
+       * 이 값들은 아이 폰 안에만 있어서, 부모 폰에 그 아이 프로필이 없으면
+       * (제 폰을 쓰는 아이) 고칠 길이 아예 없었다. 부모가 "중3-1 로 올려
+       * 줘야겠다" 고 생각해도 아이 폰을 걷어 와야 했다.
+       *
+       * **보내 온 것만 바꾼다.** 부모가 안 건드린 값은 안 실려 오고, 그때는
+       * 아이가 제 폰에서 골라 둔 것이 그대로 남는다.
+       */
+      const patch: Parameters<typeof updateProfile>[1] = {};
+      if (s.level) patch.level = s.level as never;
+      if (s.koLevel) patch.koLevel = s.koLevel as never;
+      if (s.rates) patch.awards = s.rates as never;
+      if (Object.keys(patch).length > 0) updateProfile(active, patch);
     };
 
     const received = Notifications.addNotificationReceivedListener((n) =>
@@ -132,7 +202,7 @@ export function PushBridge() {
       received.remove();
       responded.remove();
     };
-  }, [ready, state.activeProfileId, updateSettings, linkParent]);
+  }, [ready, state.activeProfileId, updateSettings, updateProfile, linkParent, applyRewardDecision]);
 
   /**
    * 아이 쪽 — 부모가 보낸 "공부하자" 알림을 눌렀을 때.

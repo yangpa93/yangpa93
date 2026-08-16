@@ -14,6 +14,7 @@ import { Platform } from 'react-native';
 import { APP_NAME } from './app-name';
 import { APP_VERSION } from './changelog';
 import { stampOf } from '../lib/date';
+import { BUILT_AT } from './built-at';
 
 // 예전부터 여기서 가져다 쓰던 자리가 있어 그대로 내보낸다.
 export { APP_NAME };
@@ -99,16 +100,19 @@ export function buildInfo(): BuildInfo {
      *
      * ① `Updates.createdAt` — 무선 업데이트로 갈아 끼운 판이면 그 업데이트가
      *    만들어진 때다. 지금 도는 것이 언제 것인지가 알고 싶은 값이니 이쪽이
-     *    먼저다.
-     * ② `extra.builtAt` — 구울 때 app.config.js 가 박아 둔 시각. APK 를 갓
-     *    깔아 그대로 돌리는 동안에는 ①이 비어 있어서, 이것이 없으면 판
-     *    정보에 시각이 통째로 안 적힌다. "빌드 시간이 다시 없어졌습니다"
-     *    라는 말을 들은 자리가 그것이다.
+     *    먼저다. **APK 를 갓 깔면 비어 있다.**
+     * ② `extra.builtAt` — app.config.js 가 넣는 값. 폰에서는 읽히는데
+     *    **웹으로 구우면 번들에 안 실린다.** 뜯어 보니 시각 문자열이 아예
+     *    없었다.
+     * ③ `BUILT_AT` — 굽기 전에 scripts/stamp.mjs 가 **소스에 적어 둔** 글자.
+     *    번들러는 소스에 적힌 문자열을 빼먹지 않는다. 앞의 둘이 다 비는
+     *    자리를 이것이 막는다.
      *
-     * 둘 다 없으면 빈 문자열이고 화면에서 그 자리가 빠진다. 노트북 미리보기와
-     * 개발 모드가 그렇다 — 없는 시각을 지어내지 않는다.
+     * 세 번을 어긋난 자리다. "되었다가 안 되는 기능" 이라는 말을 들었고,
+     * 그때마다 원인이 달랐다 — ①만 있을 때는 새로 깐 APK 에서, ②까지 있을
+     * 때는 웹에서 비었다. 그래서 마지막 하나는 **믿지 않고 박아 넣는다.**
      */
-    builtAt: stampOf(Updates.createdAt) || stampOf(configBuiltAt(cfg)),
+    builtAt: stampOf(Updates.createdAt) || stampOf(configBuiltAt(cfg)) || stampOf(stamped()),
   };
 }
 
@@ -121,6 +125,11 @@ export function buildInfo(): BuildInfo {
 function configBuiltAt(cfg: typeof Constants.expoConfig): Date | null {
   const v = (cfg?.extra as Record<string, unknown> | undefined)?.builtAt;
   return typeof v === 'string' && v ? new Date(v) : null;
+}
+
+/** 굽기 전에 소스에 박아 둔 시각. 마지막 대비책이다. */
+function stamped(): Date | null {
+  return BUILT_AT ? new Date(BUILT_AT) : null;
 }
 
 /**

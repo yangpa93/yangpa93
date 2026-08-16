@@ -38,9 +38,17 @@ export function VersionButton({
 
   return (
     <View style={[s.wrap, style]}>
+      {/*
+        **만든 때를 여기에 적는다.**
+
+        판 정보 화면 안쪽에만 적어 두었더니 "버전 정보에 빌드 타임이 나타나지
+        않습니다" 는 말을 들었다. 사람이 판을 확인하는 자리는 이 줄이다 —
+        여기 없으면 없는 것이다. 한 줄이 길어지므로 시각은 아랫줄로 내린다.
+      */}
       <Text style={s.now}>
         현재 버전 : <Text style={s.version}>{versionLabel(build)}</Text>
       </Text>
+      {build.builtAt ? <Text style={s.stamp}>{build.builtAt}</Text> : null}
 
       <Pressable
         onPress={() => router.push('/whats-new')}
@@ -60,6 +68,8 @@ export function VersionButton({
 const s = StyleSheet.create({
   wrap: { alignItems: 'center', gap: spacing.xs },
   now: { fontSize: font.tiny, color: colors.subtext },
+  /* 만든 때. 판 번호에 딸린 것이라 더 흐리게, 바로 밑에 붙인다. */
+  stamp: { fontSize: font.tiny, color: colors.subtext, opacity: 0.8, marginTop: -2 },
   /* 번호만 진하게. 사람이 불러 줘야 하는 것은 이 네 자리다. */
   version: { fontWeight: '800', color: colors.text },
   btn: {

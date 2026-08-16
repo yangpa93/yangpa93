@@ -33,6 +33,9 @@ const NEW_PER_DAY = [5, 8, 10, 12, 15, 20];
  */
 const KO_NEW_PER_DAY = [3, 5, 6, 8, 10];
 
+/** 하루에 새로 만날 일상 문장 수. 여든 개뿐이라 폭을 좁게 둔다. */
+const DAILY_NEW_PER_DAY = [2, 4, 6, 8, 10];
+
 /**
  * 📚 내 공부 설정 — 무엇을 하루 몇 개씩 볼지.
  *
@@ -64,6 +67,7 @@ export default function ChildSettingsStudy() {
 
   const { subjects, newPerDay, reviewPerDay, rounds } = profile.settings;
   const koPerDay = profile.settings.koNewPerDay ?? KO_PER_DAY;
+  const dailyPerDay = profile.settings.dailyNewPerDay ?? DAILY_PER_DAY;
   /** 켠 갈래를 푸는 차례. 하나뿐이면 줄 세울 것이 없다. */
   const order = orderedSubjects(profile.settings);
 
@@ -163,62 +167,16 @@ export default function ChildSettingsStudy() {
       </Card>
 
       {/*
-        무엇부터 풀지 아이가 **줄을 세운다.**
+        **「무엇부터 풀까요」 를 걷어 냈다.**
 
-        예전에는 '영어 먼저 / 국어 먼저' 둘 중 하나를 고르는 것이었다. 갈래가
-        둘일 때는 그것으로 충분했지만, 일상 생활 문장이 들어와 셋이 되면서
-        무너졌다 — 셋 중 하나를 골라도 **나머지 둘의 차례**가 안 정해진다.
+        갈래마다 홈에 제 단추가 생기면서 쓸 데가 없어졌다. 아이는 홈에서
+        국어를 먼저 누르든 일상 문장을 먼저 누르든 그때그때 고른다. 설정에서
+        미리 줄을 세워 둘 까닭이 없고, 두 자리가 어긋나면 어느 쪽이 진짜인지
+        물어야 한다.
 
-        위아래 화살표로 한 칸씩 옮긴다. 끌어다 놓기는 아이 손에 어렵고,
-        '몇 번째' 를 숫자로 고르게 하면 둘이 같은 번호를 갖는 경우를 또
-        다뤄야 한다. 한 칸씩이면 잘못 눌러도 한 칸이라 되돌리기 쉽다.
-
-        하나만 켰으면 안 보인다. 줄 세울 것이 없다.
+        저장된 차례(subjectOrder)는 지우지 않는다. 홈에서 단추를 늘어놓는
+        차례로 그대로 쓴다.
       */}
-      {order.length > 1 ? (
-        <Card style={{ marginTop: spacing.md }}>
-          <H3>무엇부터 풀까요</H3>
-          <Muted style={{ marginTop: spacing.xs }}>
-            위에 있는 것부터 다 풀고 다음으로 넘어가요. 화살표로 차례를 바꿉니다.
-          </Muted>
-
-          <View style={{ marginTop: spacing.md, gap: spacing.sm }}>
-            {order.map((sub, i) => (
-              <View key={sub} style={s.rank}>
-                <Text style={s.rankNo}>{i + 1}</Text>
-                {/*
-                  testID 는 노트북 확인(e2e)에서 이 줄들만 골라 읽으려는 것이다.
-                  글자로 찾으면 위 '무엇을 공부할까요' 카드의 같은 이름이 먼저
-                  잡혀서, 차례가 바뀌었는지를 볼 수가 없다.
-                */}
-                <Text style={s.rankName} testID="rank-name">
-                  {SUBJECT_LONG[sub]}
-                </Text>
-                <Pressable
-                  onPress={() => move(sub, -1)}
-                  disabled={i === 0}
-                  accessibilityRole="button"
-                  accessibilityLabel={`${SUBJECT_LABEL[sub]} 위로`}
-                  hitSlop={8}
-                  style={[s.arrow, i === 0 && s.arrowOff]}
-                >
-                  <Text style={s.arrowText}>▲</Text>
-                </Pressable>
-                <Pressable
-                  onPress={() => move(sub, 1)}
-                  disabled={i === order.length - 1}
-                  accessibilityRole="button"
-                  accessibilityLabel={`${SUBJECT_LABEL[sub]} 아래로`}
-                  hitSlop={8}
-                  style={[s.arrow, i === order.length - 1 && s.arrowOff]}
-                >
-                  <Text style={s.arrowText}>▼</Text>
-                </Pressable>
-              </View>
-            ))}
-          </View>
-        </Card>
-      ) : null}
 
       {/*
         하루 분량을 아이가 고른다. 스스로 정한 속도라야 "계획보다 빨리 끝냈다"는
@@ -279,6 +237,35 @@ export default function ChildSettingsStudy() {
       ) : null}
 
       {/*
+        일상 문장 하루치. **이것만 앱이 정해 두고 있었다.**
+
+        영어를 5개로 줄여도 일상 문장은 그대로 4개가 나왔다. 갈래마다 고를 수
+        있는 것과 없는 것이 섞여 있으면, 고른 값과 실제로 푸는 양이 왜 다른지
+        설명할 방법이 없다.
+      */}
+      {subjects.includes('daily') ? (
+        <Card style={{ marginTop: spacing.md }}>
+          <H3>하루에 새로 배울 일상 문장</H3>
+          <Muted style={{ marginTop: spacing.xs }}>
+            자주 쓰는 문장이라 조금씩 자주 보는 것이 좋아요.
+          </Muted>
+          <Row style={{ gap: spacing.sm, marginTop: spacing.md, flexWrap: 'wrap' }}>
+            {DAILY_NEW_PER_DAY.map((n) => (
+              <Pressable
+                key={n}
+                onPress={() => change({ dailyNewPerDay: n }, `일상 문장을 하루 ${n}개로 바꿨어요`)}
+                style={[s.chip, dailyPerDay === n && s.chipOn]}
+                accessibilityRole="button"
+                accessibilityState={{ selected: dailyPerDay === n }}
+              >
+                <Text style={[s.chipText, dailyPerDay === n && s.chipTextOn]}>{n}개</Text>
+              </Pressable>
+            ))}
+          </Row>
+        </Card>
+      ) : null}
+
+      {/*
         **레벨을 아이가 고른다.**
 
         예전에는 부모 폰에만 있었다. 그런데 부모 화면까지 네 번을 눌러 들어가야
@@ -330,9 +317,26 @@ export default function ChildSettingsStudy() {
             오늘 {questions}문제, 약 {minutes}분
           </Text>
         </Muted>
+        {/*
+          **고른 값을 그대로 되읽어 준다.**
+
+          예전에는 국어와 일상 문장을 못박힌 값(KO_PER_DAY · DAILY_PER_DAY)으로
+          적고 있었다. 아이가 국어를 3개로 바꿔도 이 줄은 6개라고 말했으니,
+          "설정한 것과 다르게 나온다" 는 물음이 나올 수밖에 없었다.
+
+          문항 수와 낱말 수가 다르다는 것도 여기서 못박는다. 「10개로 해 뒀는데
+          60개가 나온다」 는 그 둘을 같은 것으로 읽어서 생긴 물음이다.
+        */}
         <Muted style={{ marginTop: spacing.sm, fontSize: font.tiny }}>
-          영어는 새 단어 {newPerDay}개 + 복습 {reviewPerDay}개까지, 국어는 하루 {KO_PER_DAY}개,
-          일상 문장은 하루 {DAILY_PER_DAY}개예요. 복습할 것이 적은 날은 더 적게 나와요.
+          {[
+            subjects.includes('en') ? `영어 새 ${newPerDay}개 + 복습 ${reviewPerDay}개까지` : '',
+            subjects.includes('ko') ? `국어 새 ${koPerDay}개 + 복습` : '',
+            subjects.includes('daily') ? `일상 문장 새 ${dailyPerDay}개 + 복습` : '',
+          ]
+            .filter(Boolean)
+            .join(' · ')}
+          . 낱말 하나가 {rounds}문제로 갈리므로 문제 수는 낱말 수보다 많아요. 복습할 것이 적은
+          날은 더 적게 나와요.
         </Muted>
       </Card>
 

@@ -301,15 +301,17 @@ describe('부모 → 아이 과목 설정', () => {
   it('하루 분량도 함께 건너간다', () => {
     const body = buildSettingsBody(TOKEN, {
       from: '엄마 폰',
-      subjects: ['en', 'ko'],
+      subjects: ['en', 'ko', 'daily'],
       newPerDay: 12,
       koNewPerDay: 3,
+      dailyNewPerDay: 6,
     });
     expect(parseSettings(body.data)).toEqual({
       from: '엄마 폰',
-      subjects: ['en', 'ko'],
+      subjects: ['en', 'ko', 'daily'],
       newPerDay: 12,
       koNewPerDay: 3,
+      dailyNewPerDay: 6,
     });
   });
 

@@ -636,6 +636,17 @@ export interface ProfileSettings {
    */
   koNewPerDay?: number;
   /**
+   * 하루에 새로 만날 **일상 문장** 수.
+   *
+   * 영어·국어와 달리 이것만 앱이 4개로 못박고 있었다. 세 갈래를 다 켠 아이가
+   * 영어를 5개로 줄여도 일상 문장은 그대로 4개가 나와서, 고른 값과 실제로
+   * 푸는 양이 어긋났다. 어긋나는 자리를 남겨 두면 "설정한 것과 다르게
+   * 나온다" 는 말이 반드시 따라온다.
+   *
+   * **없으면 DAILY_PER_DAY(4)** 를 쓴다 — 이 칸이 생기기 전 프로필 때문이다.
+   */
+  dailyNewPerDay?: number;
+  /**
    * 한 단어를 한 세션에서 몇 번 만날지 (2~4).
    *
    * 3이면 재인 → 문맥 → 인출 세 단계를 모두 거친다. 20단어 × 3라운드 =
@@ -882,6 +893,7 @@ export interface KnownChild {
   sentSubjects?: Subject[];
   sentNewPerDay?: number;
   sentKoNewPerDay?: number;
+  sentDailyNewPerDay?: number;
 }
 
 export interface ParentLink {

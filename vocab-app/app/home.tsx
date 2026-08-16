@@ -8,6 +8,7 @@ import { useApp } from '../src/store/AppProvider';
 import { NewWordsCard } from '../src/components/NewWordsCard';
 import { VersionButton } from '../src/components/VersionButton';
 import { ALL_ENTRIES, entriesOf } from '../src/data';
+import { DAILY_ENTRIES, DAILY_LEVEL } from '../src/data/daily';
 import { KO_ENTRIES } from '../src/data/korean/levels';
 import { canTakeKoExam } from '../src/srs/koExam';
 import { pickChildToday } from '../src/srs/childSession';
@@ -59,6 +60,18 @@ export default function Home() {
   }, [profile, data.cards]);
 
   /**
+   * 일상 문장 진도. **여태 없던 카드다.**
+   *
+   * 영어와 국어에는 진도가 있는데 일상 문장에는 없었다. 세 갈래를 켠 아이가
+   * 홈을 열면 진도가 둘만 보여서, 켠 것과 보이는 것이 어긋났다. 레벨이
+   * 없는 갈래라 80문장 전체를 하나로 놓고 센다.
+   */
+  const dailyProgress = useMemo(() => {
+    if (!profile || !profile.settings.subjects.includes('daily')) return null;
+    return levelProgress(DAILY_ENTRIES, data.cards, DAILY_LEVEL);
+  }, [profile, data.cards]);
+
+  /**
    * 오늘 뽑힌 것들. **켠 갈래를 전부 센다.**
    *
    * 예전에는 여기서 영어만 따로 한 번 더 뽑아 셌다. 영어만 켠 아이에게는
@@ -99,6 +112,28 @@ export default function Home() {
     const out: Partial<Record<Subject, number>> = {};
     for (const sub of SUBJECT_ORDER) {
       out[sub] = new Set(session.filter((i) => i.subject === sub).map((i) => i.entryId)).size;
+    }
+    return out;
+  }, [session]);
+
+  /**
+   * 갈래마다 **새로 배울 것과 복습할 것을 갈라 센다.**
+   *
+   * "하루 10개로 해 뒀는데 60개가 나온다" 는 말을 들었다. 실제로는 낱말
+   * 10개에 복습이 얹히고, 낱말 하나가 세 문항(재인·문맥·인출)으로 갈려
+   * 문항이 그만큼 나온 것이었다. 그 셋이 화면에서 구분이 안 되니 고른 값과
+   * 보이는 값이 아무 관계 없는 것처럼 읽힌다.
+   *
+   * 그래서 진도 카드마다 「새 5개 · 복습 7개」 로 갈라 적는다. 낱말 수다.
+   */
+  const perSubjectSplit = useMemo(() => {
+    const uniq = (sub: Subject, mode: 'new' | 'review') =>
+      new Set(
+        session.filter((i) => i.subject === sub && i.mode === mode).map((i) => i.entryId),
+      ).size;
+    const out: Partial<Record<Subject, { fresh: number; review: number }>> = {};
+    for (const sub of SUBJECT_ORDER) {
+      out[sub] = { fresh: uniq(sub, 'new'), review: uniq(sub, 'review') };
     }
     return out;
   }, [session]);
@@ -280,10 +315,17 @@ export default function Home() {
         )}
       </Card>
 
-      {/* 레벨 진도 */}
+      {/*
+        영어 진도. **켠 아이에게만 보인다.**
+
+        예전에는 영어를 꺼도 이 카드가 남아 있었고, 제목도 「중1-1 진도」 라
+        무엇의 진도인지 적혀 있지 않았다. 국어 카드에는 「국어」 가 붙어
+        있어서 더 헷갈렸다 — 갈래 이름 없는 쪽이 영어라는 것을 알아야 읽혔다.
+      */}
+      {profile.settings.subjects.includes('en') ? (
       <Card style={{ marginTop: spacing.md }}>
         <Row style={{ justifyContent: 'space-between' }}>
-          <H3>{LEVEL_SHORT[profile.level]} 진도</H3>
+          <H3>영어 {LEVEL_SHORT[profile.level]} 진도</H3>
           <Muted>
             {progress.mastered} / {progress.total}개 완전 암기
           </Muted>
@@ -291,6 +333,7 @@ export default function Home() {
         <View style={{ marginTop: spacing.md }}>
           <ProgressBar value={progress.ratio} color={colors.accent} />
         </View>
+        <TodaySplit split={perSubjectSplit.en} seen={progress.seen} />
         <Muted style={{ marginTop: spacing.sm }}>
           {progress.canTakeExam
             ? '레벨 시험을 볼 수 있어요!'
@@ -311,6 +354,7 @@ export default function Home() {
           </>
         ) : null}
       </Card>
+      ) : null}
 
       {/* 국어 진도. 국어를 켠 아이에게만 보인다. */}
       {koProgress ? (
@@ -327,6 +371,7 @@ export default function Home() {
               color={colors.accent}
             />
           </View>
+          <TodaySplit split={perSubjectSplit.ko} seen={koProgress.seen} />
           <Muted style={{ marginTop: spacing.sm }}>
             {koProgress.allowed
               ? '국어 레벨 시험을 볼 수 있어요!'
@@ -346,6 +391,33 @@ export default function Home() {
               </Muted>
             </>
           ) : null}
+        </Card>
+      ) : null}
+
+      {/*
+        일상 문장 진도. **레벨도 시험도 없는 갈래다.**
+
+        영어·국어와 달리 학년이 없다. 자주 쓰는 문장 여든 개를 하나로 놓고,
+        그중 몇 개를 외웠는지만 센다. 시험이 없으니 「몇 개 더 외우면」 도
+        적을 것이 없어, 대신 남은 개수를 적는다.
+      */}
+      {dailyProgress ? (
+        <Card style={{ marginTop: spacing.md }}>
+          <Row style={{ justifyContent: 'space-between' }}>
+            <H3>일상 문장 진도</H3>
+            <Muted>
+              {dailyProgress.mastered} / {dailyProgress.total}개 완전 암기
+            </Muted>
+          </Row>
+          <View style={{ marginTop: spacing.md }}>
+            <ProgressBar value={dailyProgress.ratio} color={colors.accent} />
+          </View>
+          <TodaySplit split={perSubjectSplit.daily} seen={dailyProgress.seen} />
+          <Muted style={{ marginTop: spacing.sm }}>
+            {dailyProgress.mastered >= dailyProgress.total
+              ? '문장을 모두 외웠어요! 🎉'
+              : `${dailyProgress.total - dailyProgress.mastered}개가 남았어요. 레벨 시험은 없어요.`}
+          </Muted>
         </Card>
       ) : null}
 
@@ -611,6 +683,48 @@ export default function Home() {
  * 단추와 그 아래 한 줄이 「이만큼 더 하면 된다」 를 말해 준다 — 보상은 받을
  * 때가 아니라 바라볼 때 힘이 된다.
  */
+/**
+ * 진도 카드에 붙는 **오늘 몫** 한 줄.
+ *
+ * ── 왜 필요했나 ─────────────────────────────────────────────
+ *
+ * "공부 완료했는데 진도에 반영이 안 됩니다" 는 말을 들었다. 국어를 끝냈는데
+ * 진도가 `0 / 66` 이었다.
+ *
+ * 진도 막대가 세는 것은 **완전 암기**다. 한 번 풀었다고 외운 것으로 치지
+ * 않는다 — 그렇게 세면 하루 만에 진도가 다 차고 복습이 무의미해진다. 그래서
+ * 오늘 푼 것은 그 숫자를 거의 안 움직인다. 규칙으로는 맞는데, 화면에 그
+ * 사정이 하나도 안 적혀 있으니 **한 일이 사라진 것처럼 보인다.**
+ *
+ * 그래서 두 가지를 함께 적는다.
+ *
+ *   · 오늘 새로 5개 · 복습 7개   ← 오늘 할 몫. 고른 값과 이어진다
+ *   · 만난 낱말 19개              ← 여태 한 번이라도 본 것. 완전 암기 전 단계
+ *
+ * 「10개로 해 뒀는데 60개」 라는 물음에도 이 줄이 답한다. 60은 문항 수이고
+ * 여기 적히는 것은 낱말 수다.
+ */
+function TodaySplit({
+  split,
+  seen,
+}: {
+  split?: { fresh: number; review: number };
+  /** 여태 한 번이라도 만난 낱말. 국어는 세는 곳이 달라 안 넘긴다. */
+  seen?: number;
+}) {
+  if (!split) return null;
+  const today =
+    split.fresh + split.review === 0
+      ? '오늘 몫은 다 했어요'
+      : `오늘 새로 ${split.fresh}개 · 복습 ${split.review}개`;
+  return (
+    <Muted style={{ marginTop: spacing.sm }}>
+      {today}
+      {seen !== undefined ? ` · 여태 만난 낱말 ${seen}개` : ''}
+    </Muted>
+  );
+}
+
 function RewardRow({ title, hint, ready }: { title: string; hint: string; ready: boolean }) {
   return (
     <View>

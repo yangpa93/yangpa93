@@ -87,15 +87,24 @@ export function canTakeKoExam(
   entries: KoEntry[],
   cards: Record<string, CardState>,
   level: LevelId,
-): { allowed: boolean; mastered: number; total: number; need: number } {
+): { allowed: boolean; mastered: number; total: number; need: number; seen: number } {
   const pool = entries.filter((e) => e.level === level);
   const mastered = pool.filter((e) => {
     const c = cards[e.id];
     return c != null && isMastered(c);
   }).length;
+  /*
+   * 한 번이라도 만난 낱말. **완전 암기와 따로 센다.**
+   *
+   * "공부 완료했는데 진도에 반영이 안 됩니다" 라는 말을 들었다. 국어를
+   * 끝냈는데 진도가 `0 / 66` 이었다. 진도 막대가 세는 것은 완전 암기라
+   * 하루 푼 것으로는 거의 안 움직이는데, 화면에 그 사정이 하나도 안 적혀
+   * 있으니 한 일이 사라진 것처럼 보인다. 그래서 만난 수도 함께 돌려준다.
+   */
+  const seen = pool.filter((e) => cards[e.id] != null).length;
   const need = Math.ceil(pool.length * KO_EXAM_UNLOCK_RATIO);
 
-  return { allowed: pool.length > 0 && mastered >= need, mastered, total: pool.length, need };
+  return { allowed: pool.length > 0 && mastered >= need, mastered, total: pool.length, need, seen };
 }
 
 /** 시험 문항을 한 번이라도 틀린 어휘 id (부모 리포트용). */

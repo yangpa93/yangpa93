@@ -192,7 +192,13 @@ interface Ctx {
     patch: Partial<
       Pick<
         KnownChild,
-        'sentLevel' | 'sentKoLevel' | 'rates' | 'sentSubjects' | 'sentNewPerDay' | 'sentKoNewPerDay'
+        | 'sentLevel'
+        | 'sentKoLevel'
+        | 'rates'
+        | 'sentSubjects'
+        | 'sentNewPerDay'
+        | 'sentKoNewPerDay'
+        | 'sentDailyNewPerDay'
       >
     >,
   ): void;
@@ -900,7 +906,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     (name: string, patch: Partial<
       Pick<
         KnownChild,
-        'sentLevel' | 'sentKoLevel' | 'rates' | 'sentSubjects' | 'sentNewPerDay' | 'sentKoNewPerDay'
+        | 'sentLevel'
+        | 'sentKoLevel'
+        | 'rates'
+        | 'sentSubjects'
+        | 'sentNewPerDay'
+        | 'sentKoNewPerDay'
+        | 'sentDailyNewPerDay'
       >
     >) => {
       const { state } = ref.current;

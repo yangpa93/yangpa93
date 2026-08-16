@@ -157,6 +157,25 @@ await shot('p11-child-rates', '아이 둘이 등록된 상태', async (p) => {
 
 console.log('\n아이 폰');
 
+/*
+ * 홈 위쪽 — 오늘의 학습과 **갈래별 진도** 가 있는 자리.
+ *
+ * "공부 완료했는데 진도에 반영이 안 됩니다", "켠 갈래마다 진도가 다 보여야
+ * 합니다" 라는 말을 들은 자리가 여기다.
+ */
+await shot('c0-home-top', CHILD_DONE, async (p) => {
+  await p.goto(`${BASE}/home`);
+  await p.waitForTimeout(1600);
+});
+
+/* 진도 카드 셋이 늘어선 자리. */
+await shot('c0b-progress', CHILD_DONE, async (p) => {
+  await p.goto(`${BASE}/home`);
+  await p.waitForTimeout(1600);
+  await p.getByText('진도', { exact: false }).first().scrollIntoViewIfNeeded().catch(() => {});
+  await p.waitForTimeout(400);
+});
+
 await shot('c1-home', CHILD_DONE, async (p) => {
   await p.goto(`${BASE}/home`);
   await p.waitForTimeout(1400);

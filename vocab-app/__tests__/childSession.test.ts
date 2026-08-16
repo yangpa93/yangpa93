@@ -9,7 +9,14 @@
  * 서로 다른 규칙이었기 때문이다. 그 둘이 같은 것을 보는지 여기서 못박는다.
  */
 
-import { buildChildQueue, childPlannedCount, childPool, pickChildToday } from '../src/srs/childSession';
+import {
+  buildChildQueue,
+  childPlannedCount,
+  childPool,
+  DAILY_PER_DAY,
+  KO_PER_DAY,
+  pickChildToday,
+} from '../src/srs/childSession';
 import { DAILY_ENTRIES } from '../src/data/daily';
 import { entriesOf } from '../src/data';
 import { CardState, Profile, Subject, SUBJECT_ORDER, toggleSubject } from '../src/types';
@@ -214,5 +221,70 @@ describe('toggleSubject', () => {
   it('저장 순서는 늘 같다', () => {
     expect(toggleSubject(['daily'], 'en')).toEqual(['en', 'daily']);
     expect(toggleSubject(['daily', 'ko'], 'en')).toEqual(SUBJECT_ORDER);
+  });
+});
+
+/**
+ * 하루치가 **고른 값을 그대로 따르는가.**
+ *
+ * ── 왜 이 검사가 필요했나 ───────────────────────────────────
+ *
+ * "하루 공부 설정을 10개 했는데 60개나 나타난다" 는 말을 들었다. 파고 보니
+ * 두 가지가 겹쳐 있었다.
+ *
+ *   ① 일상 문장만 앱이 4개로 못박고 있었다. 영어를 5개로 줄여도 그대로였다.
+ *   ② 낱말 하나가 라운드 수만큼 문항으로 갈린다. 낱말 15개가 문항 45개다.
+ *
+ * ②는 규칙대로지만 ①은 어긋난 것이다. 화면 문구로만 고치면 다음에 또 어긋나므로
+ * 여기서 숫자로 못박는다.
+ */
+describe('하루치가 고른 값을 따른다', () => {
+  const all: Subject[] = ['en', 'ko', 'daily'];
+  const words = (a: Parameters<typeof pickChildToday>[0], sub: Subject) =>
+    new Set(pickChildToday(a).filter((i) => i.subject === sub).map((i) => i.entryId)).size;
+
+  it('영어는 고른 개수만큼 새로 나온다', () => {
+    for (const n of [5, 10, 20]) {
+      const p = child(all);
+      p.settings.newPerDay = n;
+      expect(words({ profile: p, cards: NO_CARDS, today: '2026-08-16', rand: () => 0.5 }, 'en')).toBe(n);
+    }
+  });
+
+  it('국어도 고른 개수만큼 나온다', () => {
+    for (const n of [3, 6, 10]) {
+      const p = child(all);
+      p.settings.koNewPerDay = n;
+      expect(words({ profile: p, cards: NO_CARDS, today: '2026-08-16', rand: () => 0.5 }, 'ko')).toBe(n);
+    }
+  });
+
+  it('일상 문장도 고른 개수만큼 나온다', () => {
+    /* 이것만 4개로 못박혀 있었다. 고른 값이 무시되던 자리다. */
+    for (const n of [2, 6, 10]) {
+      const p = child(all);
+      p.settings.dailyNewPerDay = n;
+      expect(words({ profile: p, cards: NO_CARDS, today: '2026-08-16', rand: () => 0.5 }, 'daily')).toBe(n);
+    }
+  });
+
+  it('안 고른 아이는 예전 값 그대로다', () => {
+    const p = child(all);
+    const a = { profile: p, cards: NO_CARDS, today: '2026-08-16', rand: () => 0.5 };
+    expect(words(a, 'daily')).toBe(DAILY_PER_DAY);
+    expect(words(a, 'ko')).toBe(KO_PER_DAY);
+  });
+
+  it('낱말 하나가 라운드 수만큼 문항으로 갈린다', () => {
+    /*
+     * "10개 했는데 60개" 의 나머지 절반이 이것이다. 낱말 수와 문항 수는
+     * 다른 값이고, 화면에서 그 둘을 갈라 적어야 한다.
+     */
+    const p = child(['en']);
+    p.settings.newPerDay = 10;
+    p.settings.rounds = 3;
+    const a = { profile: p, cards: NO_CARDS, today: '2026-08-16', rand: () => 0.5 };
+    expect(words(a, 'en')).toBe(10);
+    expect(buildChildQueue(a).length).toBeGreaterThan(10);
   });
 });

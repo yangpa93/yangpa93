@@ -106,13 +106,20 @@ function pick({ profile, cards, today, rand }: BuildChildQueueArgs) {
    * 고르지 않으므로 80문장을 통째로 넘긴다. `level` 칸은 자리만 채운다 —
    * 넘긴 것이 이미 그 값으로만 되어 있어 거르개가 아무 일도 하지 않는다.
    */
+  /*
+   * 일상 문장 하루치도 **고른 값을 따른다.**
+   *
+   * 이것만 4개로 못박혀 있었다. 영어를 5개로 줄여도 일상 문장은 그대로
+   * 나와서, 고른 값과 실제 양이 어긋났다. 안 고른 아이는 예전 값 그대로다.
+   */
+  const dailyPerDay = profile.settings.dailyNewPerDay ?? DAILY_PER_DAY;
   const daily = subjects.includes('daily')
     ? buildSession({
         entries: DAILY_ENTRIES,
         cards,
         level: DAILY_LEVEL,
-        newPerDay: DAILY_PER_DAY,
-        reviewPerDay: DAILY_PER_DAY,
+        newPerDay: dailyPerDay,
+        reviewPerDay: dailyPerDay,
         today,
         rand,
       })

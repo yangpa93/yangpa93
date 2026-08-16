@@ -80,3 +80,37 @@ describe('app.config.js', () => {
     expect(out.extra.eas?.projectId).toBe(src.extra.eas.projectId);
   });
 });
+
+/**
+ * **소스에 박아 둔 시각.** 앞의 둘이 다 비는 자리를 막는 마지막 대비책이다.
+ *
+ * 이 검사가 없으면 stamp.mjs 가 안 돌았거나 깨진 값을 써도 아무도 모른다.
+ * 판 정보에 시각이 안 뜨는 것을 다음 APK 를 폰에 깔고 나서야 알게 된다 —
+ * 그렇게 세 번을 어긋났다.
+ */
+describe('굽기 전에 박아 두는 시각', () => {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const { BUILT_AT } = require('../src/features/built-at') as { BUILT_AT: string };
+
+  it('날짜로 읽히는 글자가 들어 있다', () => {
+    expect(typeof BUILT_AT).toBe('string');
+    expect(Number.isNaN(Date.parse(BUILT_AT))).toBe(false);
+  });
+
+  it('사람이 읽는 모양으로 바뀐다', () => {
+    /* 이것이 곧 판 정보에 적히는 줄이다. 빈 문자열이면 그 자리가 통째로 빈다. */
+    expect(stampOf(new Date(BUILT_AT))).toMatch(/^\d{4}\.\d{2}\.\d{2}\.\d{2}\.\d{2}$/);
+  });
+
+  it('굽는 길목마다 찍게 되어 있다', () => {
+    /*
+     * package.json 을 직접 본다. 스크립트에서 빠지면 옛 시각이 그대로 남는데,
+     * 화면에는 멀쩡한 시각이 적혀 있어 틀린 줄도 모른다.
+     */
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const pkg = require('../package.json') as { scripts: Record<string, string> };
+    expect(pkg.scripts.preview).toContain('stamp.mjs');
+    // EAS 서버가 빌드 전에 부르는 이름. 이 자리가 없으면 APK 에 옛 시각이 간다.
+    expect(pkg.scripts['eas-build-pre-install']).toContain('stamp.mjs');
+  });
+});

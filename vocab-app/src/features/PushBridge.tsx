@@ -173,6 +173,7 @@ export function PushBridge() {
         subjects: s.subjects,
         ...(s.newPerDay ? { newPerDay: s.newPerDay } : {}),
         ...(s.koNewPerDay ? { koNewPerDay: s.koNewPerDay } : {}),
+        ...(s.dailyNewPerDay ? { dailyNewPerDay: s.dailyNewPerDay } : {}),
       });
 
       /*

@@ -905,6 +905,7 @@ export interface SettingsPayload {
    */
   newPerDay?: number;
   koNewPerDay?: number;
+  dailyNewPerDay?: number;
 }
 
 export function buildSettingsBody(token: string, payload: SettingsPayload) {
@@ -914,7 +915,7 @@ export function buildSettingsBody(token: string, payload: SettingsPayload) {
     payload.level ? '영어 레벨' : '',
     payload.koLevel ? '국어 레벨' : '',
     payload.rates ? '요청권 금액' : '',
-    payload.newPerDay || payload.koNewPerDay ? '하루 분량' : '',
+    payload.newPerDay || payload.koNewPerDay || payload.dailyNewPerDay ? '하루 분량' : '',
   ].filter(Boolean);
   return {
     to: token,
@@ -934,6 +935,7 @@ export function buildSettingsBody(token: string, payload: SettingsPayload) {
       ...(payload.rates ? { rates: payload.rates } : {}),
       ...(payload.newPerDay ? { newPerDay: payload.newPerDay } : {}),
       ...(payload.koNewPerDay ? { koNewPerDay: payload.koNewPerDay } : {}),
+      ...(payload.dailyNewPerDay ? { dailyNewPerDay: payload.dailyNewPerDay } : {}),
     },
   };
 }
@@ -972,6 +974,7 @@ export function parseSettings(data: unknown): SettingsPayload | null {
     typeof v === 'number' && Number.isInteger(v) && v >= 1 && v <= 100 ? v : undefined;
   const newPerDay = count(d.newPerDay);
   const koNewPerDay = count(d.koNewPerDay);
+  const dailyNewPerDay = count(d.dailyNewPerDay);
 
   return {
     from: typeof d.from === 'string' ? d.from : '부모님',
@@ -981,6 +984,7 @@ export function parseSettings(data: unknown): SettingsPayload | null {
     ...(rates && Object.keys(rates).length > 0 ? { rates } : {}),
     ...(newPerDay ? { newPerDay } : {}),
     ...(koNewPerDay ? { koNewPerDay } : {}),
+    ...(dailyNewPerDay ? { dailyNewPerDay } : {}),
   };
 }
 

@@ -687,7 +687,25 @@ function seed(which) {
       doneSubjects:['en','ko','daily'],
       bySubject:{ en:{studied:5,correct:14,wrong:1}, ko:{studied:6,correct:15,wrong:3},
                   daily:{studied:4,correct:12,wrong:0} } };
-    put(root([kids[0]], A), { [A]: data });
+    /*
+     * **푼 낱말은 카드로도 남는다.**
+     *
+     * 하루 기록만 심고 카드를 비워 두었더니 홈 진도에 「여태 만난 낱말 0개」
+     * 라고 떴다. 열다섯 개를 풀어 놓고 만난 낱말이 없다는 화면이라, 데모가
+     * 앱보다 먼저 거짓말을 하는 셈이었다.
+     */
+    for (const id of learnedIds) {
+      data.cards[id] = { entryId:id, ease:2.5, intervalDays:1, streak:1, correct:2, wrong:0,
+        lapses:0, due:'2030-01-01', lastSeen:1577836800000, firstSeen:1577836800000 };
+    }
+    /*
+     * 세 갈래를 다 켠 아이로 심는다. 진도 카드가 갈래마다 하나씩 서는지
+     * 눈으로 보려면 켜 두어야 한다 — 기본값은 영어 하나뿐이다.
+     */
+    const done = base({ id:A, name:'서준', kind:'child', avatar:'🦊', level:'m1-1', streak:3,
+      bestStreak:5, settings:settings({ subjects:['en','ko','daily'], newPerDay:5,
+        reviewPerDay:5, koNewPerDay:5, dailyNewPerDay:4 }) });
+    put(root([done], A), { [A]: data });
   } else if (which === 'childPurse') {
     /*
      * 지난달치가 쌓인 아이. **「지난달에 모은 12,500원 청구하기」 가 떠야 맞다.**

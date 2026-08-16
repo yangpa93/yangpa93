@@ -29,6 +29,8 @@ import { colors, font, radius, spacing } from '../src/theme';
 const NEW_PER_DAY = [5, 8, 10, 12, 15, 20];
 /** 국어는 한 낱말이 뜻마다 문항으로 갈려서 폭을 좁게 둔다. */
 const KO_NEW_PER_DAY = [3, 5, 6, 8, 10];
+/** 일상 문장은 여든 개뿐이라 폭을 좁게 둔다. */
+const DAILY_NEW_PER_DAY = [2, 4, 6, 8, 10];
 
 /** 갈래마다 한 줄 설명. 아이 폰 설정 화면과 같은 말로 적는다. */
 const HINT: Record<Subject, string> = {
@@ -83,6 +85,9 @@ export default function ParentChildOne() {
   const [subjects, setSubjects] = useState<Subject[] | null>(known?.sentSubjects ?? null);
   const [newPerDay, setNewPerDay] = useState<number | null>(known?.sentNewPerDay ?? null);
   const [koNewPerDay, setKoNewPerDay] = useState<number | null>(known?.sentKoNewPerDay ?? null);
+  const [dailyNewPerDay, setDailyNewPerDay] = useState<number | null>(
+    known?.sentDailyNewPerDay ?? null,
+  );
   const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState('');
@@ -110,7 +115,8 @@ export default function ParentChildOne() {
     rates !== null ||
     subjects !== null ||
     newPerDay !== null ||
-    koNewPerDay !== null;
+    koNewPerDay !== null ||
+    dailyNewPerDay !== null;
 
   /** 화면에 켜져 보이는 갈래. 안 고쳤으면 마지막으로 보낸 것, 그것도 없으면 셋 다. */
   const shownSubjects: Subject[] = subjects ?? known.sentSubjects ?? ['en', 'ko', 'daily'];
@@ -138,6 +144,7 @@ export default function ParentChildOne() {
       ...(rates ? { rates: rates as unknown as Record<string, number> } : {}),
       ...(newPerDay ? { newPerDay } : {}),
       ...(koNewPerDay ? { koNewPerDay } : {}),
+      ...(dailyNewPerDay ? { dailyNewPerDay } : {}),
     });
     setBusy(false);
     if (res.ok) {
@@ -149,6 +156,7 @@ export default function ParentChildOne() {
         sentSubjects: shownSubjects,
         ...(newPerDay ? { sentNewPerDay: newPerDay } : {}),
         ...(koNewPerDay ? { sentKoNewPerDay: koNewPerDay } : {}),
+        ...(dailyNewPerDay ? { sentDailyNewPerDay: dailyNewPerDay } : {}),
       });
       setResult('보냈어요. 아이 폰이 켜지면 바로 바뀝니다.');
     } else {
@@ -206,7 +214,7 @@ export default function ParentChildOne() {
         국어를 껐는데 「하루에 새로 배울 국어 어휘」 를 물으면 안 쓸 값을
         고르게 하는 셈이다. 일상 문장은 자료가 적어 앱이 개수를 정해 둔다.
       */}
-      {shownSubjects.includes('en') || shownSubjects.includes('ko') ? (
+      {shownSubjects.length > 0 ? (
         <Card style={{ marginTop: spacing.md }}>
           <H3>하루에 새로 배울 개수</H3>
 
@@ -256,6 +264,37 @@ export default function ParentChildOne() {
               </Muted>
             </>
           ) : null}
+
+          {shownSubjects.includes('daily') ? (
+            <>
+              <Text style={[s.small, { marginTop: spacing.md }]}>일상 문장</Text>
+              <Row style={{ gap: spacing.sm, marginTop: spacing.sm, flexWrap: 'wrap' }}>
+                {DAILY_NEW_PER_DAY.map((n) => {
+                  const on = (dailyNewPerDay ?? known.sentDailyNewPerDay ?? 4) === n;
+                  return (
+                    <Pressable
+                      key={n}
+                      onPress={() => setDailyNewPerDay(n)}
+                      style={[s.chip, on && s.chipOn]}
+                      accessibilityRole="radio"
+                      accessibilityState={{ selected: on }}
+                    >
+                      <Text style={[s.chipText, on && s.chipTextOn]}>{n}개</Text>
+                    </Pressable>
+                  );
+                })}
+              </Row>
+            </>
+          ) : null}
+
+          {/*
+            낱말 수와 문제 수가 다르다는 것을 여기서 못박는다. "10개로 해
+            뒀는데 60개가 나온다" 는 그 둘을 같은 것으로 읽어서 생긴 물음이다.
+          */}
+          <Muted style={{ marginTop: spacing.md }}>
+            여기 숫자는 <Text style={{ fontWeight: '800' }}>낱말 수</Text> 입니다. 낱말 하나가
+            세 문제로 갈리고 복습이 얹히므로, 실제로 푸는 문제 수는 이보다 많아요.
+          </Muted>
         </Card>
       ) : null}
 

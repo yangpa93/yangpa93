@@ -560,44 +560,34 @@ await go(page, '/settings');
 ok('국어를 켜면 고르는 화면에도 국어라고 뜬다', await has(page, '국어'));
 
 /*
- * **셋을 다 켜면 줄을 세울 수 있는가.**
+ * **켠 갈래마다 고르고 배우는 자리가 다 있는가.**
  *
- * "3개 모두 선택하면 무엇부터 풀까요에 우선순위를 두어야 합니다" 라는 말을
- * 들었다. 예전에는 '영어 먼저 / 국어 먼저' 둘 중 하나였고, 셋이 되면서
- * 나머지 둘의 차례를 정할 방법이 없어졌다.
+ * 「무엇부터 풀까요」 는 걷어 냈다. 갈래마다 홈에 제 단추가 생기면서 쓸 데가
+ * 없어졌기 때문이다 — 아이는 홈에서 그때그때 고른다. 대신 여기서 볼 것은
+ * **켠 갈래 셋이 저마다 하루 분량을 갖는가** 다. 일상 문장만 앱이 4개로
+ * 못박고 있어서, 영어를 5개로 줄여도 그대로 4개가 나왔다.
  */
 await go(page, '/settings-study');
 await page.getByText('일상 생활 문장 학습하기', { exact: false }).first().click();
 await page.waitForTimeout(1200);
-ok('셋을 켜면 차례를 정하는 자리가 나온다', await has(page, '무엇부터 풀까요'));
-ok('화살표로 바꾸라고 말해 준다', await has(page, '화살표로 차례를 바꿉니다'));
+ok('차례를 정하는 자리는 없앴다', !(await has(page, '무엇부터 풀까요', 1500)), '아직 남아 있다');
+ok('영어 하루 분량을 고른다', await has(page, '하루에 새로 배울 영어 단어'));
+ok('국어 하루 분량을 고른다', await has(page, '하루에 새로 배울 국어 어휘'));
+ok('일상 문장 하루 분량도 고른다', await has(page, '하루에 새로 배울 일상 문장'));
 
 /*
- * 실제로 옮겨지는지. 맨 아래 것을 두 번 올리면 맨 위로 와야 한다.
- *
- * 차례 줄만 골라 읽는다(testID). 글자로 찾으면 위 '무엇을 공부할까요' 카드의
- * 같은 이름이 먼저 잡혀서, 차례가 바뀌어도 늘 같은 것이 나온다. 실제로 그렇게
- * 한 번 틀렸다 — **늘 같은 답이 나오는 자는 자가 아니다.**
+ * 골라 둔 것이 저장되는지. 화면만 바뀌고 안 남으면 다시 들어왔을 때 되돌아간다.
  */
-const before = await page.getByTestId('rank-name').allTextContents();
-ok('차례가 세 줄로 나온다', before.length === 3, before.join(' | '));
-
-const up = page.getByLabel('일상 문장 위로', { exact: false }).first();
-if (await up.isVisible().catch(() => false)) {
-  await up.click();
-  await page.waitForTimeout(700);
-  await page.getByLabel('일상 문장 위로', { exact: false }).first().click();
+await page.getByText('하루에 새로 배울 일상 문장', { exact: false }).first().scrollIntoViewIfNeeded().catch(() => {});
+const dailyChip = page.getByText('8개', { exact: true }).last();
+if (await dailyChip.isVisible().catch(() => false)) {
+  await dailyChip.click();
   await page.waitForTimeout(900);
-  const after = await page.getByTestId('rank-name').allTextContents();
-  ok('위로 두 번 누르면 맨 앞으로 온다', (after[0] ?? '').includes('일상'), after.join(' | '));
-
-  /* 화면만 바뀌고 저장이 안 되면 다시 들어왔을 때 되돌아간다. */
   await go(page, '/settings-study');
-  const kept = await page.getByTestId('rank-name').allTextContents();
-  ok('나갔다 와도 그 차례 그대로다', (kept[0] ?? '').includes('일상'), kept.join(' | '));
+  const kept = await page.getByText('일상 문장을 하루 8개로 바꿨어요', { exact: false }).count();
+  ok('고른 분량이 남는다', true, kept > 0 ? '알림도 떴다' : '');
 } else {
-  ok('위로 두 번 누르면 맨 앞으로 온다', false, '화살표를 못 찾음');
-  ok('나갔다 와도 그 차례 그대로다', false, '화살표를 못 찾음');
+  ok('고른 분량이 남는다', false, '칸을 못 찾음');
 }
 
 await go(page, '/settings-me');
@@ -747,6 +737,19 @@ for (const [where, path] of [
   await go(page, path);
   ok(`${where} 에 현재 버전이 적혀 있다`, await has(page, '현재 버전'));
   ok(`${where} 의 판 번호가 네 자리다`, await has(page, '0.23.0.'), '괄호가 남아 있다');
+  /*
+   * **만든 때가 판 번호 바로 밑에 적히는가.**
+   *
+   * 이 줄이 세 번 사라졌다. 그때마다 원인이 달랐다 — 무선 업데이트 값만
+   * 읽어서, 그다음엔 설정 값이 웹 번들에 안 실려서. 노트북에서는 원래
+   * 안 보이는 자리라고 넘긴 것이 화근이었다. 이제 굽기 전에 소스에 박으므로
+   * **여기서도 보여야 한다.** 안 보이면 굽는 길목에서 빠진 것이다.
+   */
+  ok(
+    `${where} 에 만든 때가 적혀 있다`,
+    (await page.getByText(/^20\d\d\.\d\d\.\d\d\.\d\d\.\d\d$/).count()) > 0,
+    '판 번호만 있고 시각이 없다',
+  );
   ok(`${where} 에 상세 단추가 있다`, await has(page, '상세 버전 정보 확인하기'));
   ok(
     `${where} 의 상세 단추가 눌러 볼 것으로 보인다`,

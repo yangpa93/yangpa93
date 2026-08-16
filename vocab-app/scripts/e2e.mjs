@@ -590,6 +590,39 @@ if (await dailyChip.isVisible().catch(() => false)) {
   ok('고른 분량이 남는다', false, '칸을 못 찾음');
 }
 
+/*
+ * **단추에 적힌 수와 들어가서 보는 수가 같은가.**
+ *
+ * "영어 공부 시작하기에 18개로 나오는데 막상 시작하면 1/57 로 나옵니다"
+ * 라는 말을 들었다. 둘 다 맞는 숫자였는데 서로 다른 것을 세고 있었다 —
+ * 단추는 낱말, 학습 화면은 문항. 예고한 수와 실제가 다르면 어느 쪽도
+ * 못 믿는다.
+ *
+ * 글자에서 숫자를 뜯어내 견준다. 눈으로는 못 보는 어긋남이다.
+ */
+await go(page, '/home');
+const startBtn = await page
+  .getByText(/공부 시작하기 \(\d+문제\)/)
+  .first()
+  .textContent()
+  .catch(() => null);
+const promised = startBtn ? Number(startBtn.match(/\((\d+)문제\)/)?.[1] ?? 0) : 0;
+ok('단추에 문제 수가 적혀 있다', promised > 0, startBtn ?? '(단추를 못 찾음)');
+
+if (promised > 0) {
+  await page.getByText(/공부 시작하기 \(\d+문제\)/).first().click();
+  await page.waitForTimeout(2000);
+  const counter = await page
+    .getByText(/^\d+\/\d+$/)
+    .first()
+    .textContent()
+    .catch(() => null);
+  const actual = counter ? Number(counter.split('/')[1]) : 0;
+  ok('들어가서 보는 수가 그와 같다', actual === promised, `단추 ${promised} · 화면 ${actual}`);
+} else {
+  ok('들어가서 보는 수가 그와 같다', false, '단추를 못 찾아 못 셌다');
+}
+
 await go(page, '/settings-me');
 ok('내 캐릭터 설정이 있다', await has(page, '내 캐릭터 설정'));
 ok('부모님과 연결하기가 여기로 왔다', await has(page, '내 QR 띄우기'));

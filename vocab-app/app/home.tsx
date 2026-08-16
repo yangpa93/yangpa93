@@ -11,7 +11,7 @@ import { ALL_ENTRIES, entriesOf } from '../src/data';
 import { DAILY_ENTRIES, DAILY_LEVEL } from '../src/data/daily';
 import { KO_ENTRIES } from '../src/data/korean/levels';
 import { canTakeKoExam } from '../src/srs/koExam';
-import { pickChildToday } from '../src/srs/childSession';
+import { buildChildQueue, pickChildToday } from '../src/srs/childSession';
 import { levelProgress } from '../src/srs/progress';
 import { buildDailyReport } from '../src/features/report';
 import { buildMonth, monthOf } from '../src/features/calendar';
@@ -115,6 +115,31 @@ export default function Home() {
     }
     return out;
   }, [session]);
+
+  /**
+   * 갈래마다 **실제로 풀 문제 수.** 단추에 적는 숫자다.
+   *
+   * ── 왜 낱말 수가 아니라 문제 수인가 ─────────────────────────
+   *
+   * "영어 공부 시작하기에 18개로 나오는데 막상 시작하면 1/57 로 나옵니다"
+   * 라는 말을 들었다. 둘 다 맞는 숫자였는데 **서로 다른 것을 세고 있었다** —
+   * 단추는 낱말 18개(새 8 + 복습 10), 학습 화면은 문항 57개.
+   *
+   * 예고한 수와 들어가서 보는 수가 다르면 어느 쪽도 못 믿는다. 단추를 학습
+   * 화면과 같은 단위로 맞춘다. 낱말 수는 바로 아래 진도 카드가 말한다.
+   *
+   * 세는 곳을 학습 화면과 **같은 함수**로 둔다(srs/childSession.ts). 따로
+   * 세면 또 어긋난다 — 이미 한 번 그렇게 어긋났던 자리다.
+   */
+  const perSubjectQuestions = useMemo(() => {
+    const out: Partial<Record<Subject, number>> = {};
+    if (!profile) return out;
+    const queue = buildChildQueue({ profile, cards: data.cards });
+    for (const sub of SUBJECT_ORDER) {
+      out[sub] = queue.filter((i) => i.track === sub).length;
+    }
+    return out;
+  }, [profile, data.cards]);
 
   /**
    * 갈래마다 **새로 배울 것과 복습할 것을 갈라 센다.**
@@ -296,6 +321,7 @@ export default function Home() {
           <View style={{ marginTop: spacing.lg, gap: spacing.sm }}>
             {orderedSubjects(profile.settings).map((sub) => {
               const left = perSubject[sub] ?? 0;
+              const questions = perSubjectQuestions[sub] ?? 0;
               const done = (day?.doneSubjects ?? []).includes(sub);
               if (left === 0 && !done) return null;
               return (
@@ -304,7 +330,7 @@ export default function Home() {
                   title={
                     done
                       ? `✅ ${SUBJECT_LABEL[sub]} 끝냈어요 — 한 번 더`
-                      : `${SUBJECT_LABEL[sub]} 공부 시작하기 (${left}개)`
+                      : `${SUBJECT_LABEL[sub]} 공부 시작하기 (${questions}문제)`
                   }
                   onPress={() => router.push({ pathname: '/study', params: { track: sub } })}
                   variant={done ? 'secondary' : 'primary'}

@@ -10,7 +10,7 @@ import {
 import { createCard, grade } from '../src/srs/scheduler';
 import { ALL_ENTRIES, entriesOf } from '../src/data';
 import { CardState, GameId, LEVEL_ORDER, Stage, VocabEntry } from '../src/types';
-import { primaryMeaning, senseExposure } from '../src/data/entry';
+import { exposureCount, primaryMeaning, senseExposure } from '../src/data/entry';
 import { hasAntonym } from '../src/data/antonyms';
 import { canScramble, tokenize } from '../src/games/scramble';
 
@@ -704,5 +704,54 @@ describe('어순 배열 (scramble)', () => {
     const games = new Set<GameId>();
     for (let i = 0; i < 40; i++) games.add(pickGame(asked, () => i / 40));
     expect([...games]).not.toContain('scramble');
+  });
+});
+
+/**
+ * **복습할 때마다 문장이 바뀌는가.**
+ *
+ * ── 어쩌다 같은 문장만 나왔나 ───────────────────────────────
+ *
+ * 예문은 「그 낱말을 만난 횟수 ÷ 예문 수의 나머지」 로 고른다. 그런데 복습을
+ * 하루에 세 번 내던 때에는 만난 횟수가 하루에 3씩 늘었다. 예문이 3개인
+ * 낱말은 `3 % 3 = 0` 이라 **며칠을 복습해도 늘 첫 문장**이었다.
+ *
+ * 우연이 아니라 필연이다 — 라운드 수와 예문 수가 같으면 언제나 제자리다.
+ * "복습하는 단어는 같은 문장이 아니라 여러 문장이 돌아가면서 나오면 좋겠다"
+ * 는 말이 그래서 나왔다.
+ *
+ * 복습을 하루 한 번으로 줄이면서 1씩만 늘어 순서대로 돌게 됐다. 라운드를
+ * 다시 늘리면 같은 함정에 그대로 빠지므로 여기서 못박는다.
+ */
+describe('복습할 때마다 다른 문장', () => {
+  /** 하루에 문항을 `perDay` 개 풀었을 때, 날마다 쓰는 예문 번호. */
+  function acrossDays(entry: VocabEntry, perDay: number, days: number): number[] {
+    let card: CardState = {
+      entryId: entry.id, ease: 2.3, intervalDays: 1, streak: 1, correct: 0, wrong: 0,
+      lapses: 0, due: '2026-08-01', lastSeen: 0, firstSeen: 0,
+    };
+    const seen: number[] = [];
+    for (let d = 0; d < days; d++) {
+      seen.push(senseExposure(entry, 0, exposureCount(card)).exampleIndex);
+      for (let i = 0; i < perDay; i++) card = grade(card, true, '2026-08-01');
+    }
+    return seen;
+  }
+
+  it('예문이 셋인 낱말도 셋을 다 돈다', () => {
+    const entry = entriesOf('m1-1').find((e) => e.senses[0].examples.length === 3);
+    expect(entry).toBeDefined();
+    const seen = acrossDays(entry!, 1, 6);
+    expect(seen).toEqual([0, 1, 2, 0, 1, 2]);
+  });
+
+  it('예문이 몇 개든 이어진 이틀이 같은 문장이 아니다', () => {
+    for (const entry of entriesOf('m1-1').slice(0, 40)) {
+      if (entry.senses[0].examples.length < 2) continue;
+      const seen = acrossDays(entry, 1, 5);
+      for (let i = 1; i < seen.length; i++) {
+        expect(seen[i]).not.toBe(seen[i - 1]);
+      }
+    }
   });
 });

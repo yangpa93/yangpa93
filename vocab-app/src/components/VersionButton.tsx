@@ -66,7 +66,12 @@ export function VersionButton({
 }
 
 const s = StyleSheet.create({
-  wrap: { alignItems: 'center', gap: spacing.xs },
+  /*
+   * 아래 여백을 넉넉히 둔다. **폰의 홈 단추와 겹친다**는 말을 들었다 — 이
+   * 줄이 화면 맨 아래에 있어서, 안드로이드 밑줄 세 칸(뒤로·홈·최근)과 붙어
+   * 눌리지도 읽히지도 않았다. 스크롤 끝에 손가락 하나 들어갈 자리를 남긴다.
+   */
+  wrap: { alignItems: 'center', gap: spacing.xs, marginBottom: spacing.xl },
   now: { fontSize: font.tiny, color: colors.subtext },
   /* 만든 때. 판 번호에 딸린 것이라 더 흐리게, 바로 밑에 붙인다. */
   stamp: { fontSize: font.tiny, color: colors.subtext, opacity: 0.8, marginTop: -2 },

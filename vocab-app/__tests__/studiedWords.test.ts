@@ -309,3 +309,63 @@ describe('troubleAll — 많이 틀린 낱말', () => {
     expect(got.map((w) => w.id)).toEqual(['w1', 'ko-0001']);
   });
 });
+
+/**
+ * **복습만 한 갈래도 보고서에 나온다.**
+ *
+ * `studied` 는 처음 만난 낱말일 때만 올라간다(dayRecord 의 addToSubject). 그래서
+ * 그날 영어를 복습만 한 아이는 `studied` 가 0 이고, 그것으로 갈래를 가려내면
+ * 스무 문제를 풀었는데도 보고서에서 영어가 통째로 사라진다. "학습 보고서에
+ * 국어만 정보가 나오고 영어는 나오지 않습니다" 라는 말을 들은 자리다.
+ */
+describe('복습만 한 갈래도 보고서에 남는다', () => {
+  /*
+   * `studied` 는 처음 만난 낱말일 때만 오른다(dayRecord 의 addToSubject).
+   * 그래서 그날 영어를 복습만 한 아이는 `studied` 가 0 이고, 그것으로
+   * 갈래를 가려내면 스무 문제를 푸렸는데도 보고서에서 영어가 통째로
+   * 사라진다. "학습 보고서에 국어만 정보가 나오고 영어는 나오지 않습니다"
+   * 라는 말을 들은 자리다.
+   */
+  const day = (over: Partial<DailyRecord> = {}): DailyRecord => ({
+    date: '2026-08-17',
+    goal: 15,
+    studied: 6,
+    correct: 33,
+    wrong: 5,
+    seconds: 600,
+    completed: true,
+    wrongEntryIds: [],
+    studiedEntryIds: [],
+    ...over,
+  });
+
+  it('새 낱말이 없어도 문제를 풀었으면 나온다', () => {
+    const got = dayBySubject(
+      day({
+        bySubject: {
+          // 영어는 복습만 — studied 0 인데 스무 문제를 통과했다
+          en: { studied: 0, correct: 18, wrong: 2 },
+          ko: { studied: 6, correct: 15, wrong: 3 },
+        },
+      }),
+      SRC,
+    );
+    expect(got?.map((x) => x.subject)).toEqual(['en', 'ko']);
+    const en = got?.find((x) => x.subject === 'en');
+    expect(en?.asked).toBe(20);
+    expect(en?.accuracy).toBeCloseTo(0.9);
+  });
+
+  it('아무것도 안 푼 갈래는 그대로 뺀다', () => {
+    const got = dayBySubject(
+      day({
+        bySubject: {
+          en: { studied: 0, correct: 0, wrong: 0 },
+          ko: { studied: 6, correct: 15, wrong: 3 },
+        },
+      }),
+      SRC,
+    );
+    expect(got?.map((x) => x.subject)).toEqual(['ko']);
+  });
+});

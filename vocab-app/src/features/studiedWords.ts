@@ -222,7 +222,19 @@ export function dayBySubject(
 
   return SUBJECT_ORDER.flatMap((subject) => {
     const tally = day.bySubject?.[subject];
-    if (!tally || tally.studied === 0) return [];
+    /*
+     * **문제를 풀었으면 보여 준다.** `studied` 만 보고 가리면 안 된다.
+     *
+     * `studied` 는 **처음 만난 낱말일 때만** 올라간다(dayRecord 의 addToSubject).
+     * 그러니 그날 영어를 복습만 한 아이는 `studied` 가 0 이고, 그것으로
+     * 가려내면 스무 문제를 풀었는데도 보고서에서 영어가 통째로 사라진다.
+     * "학습 보고서에 국어만 정보가 나오고 영어는 나오지 않습니다" 라는 말을
+     * 들은 자리가 여기다.
+     *
+     * 아무것도 안 푼 갈래만 뺀다.
+     */
+    if (!tally) return [];
+    if (tally.studied === 0 && tally.correct + tally.wrong === 0) return [];
     const asked = tally.correct + tally.wrong;
     return [
       {

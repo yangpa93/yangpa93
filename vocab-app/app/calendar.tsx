@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
-import { Body, Card, Chip, EmptyState, H3, Muted, Row, Screen } from '../src/components/ui';
+import { Body, Button, Card, Chip, EmptyState, H3, Muted, Row, Screen } from '../src/components/ui';
+import { NudgeCard } from '../src/components/NudgeCard';
+import { formatWon } from '../src/features/awards';
 import { useApp } from '../src/store/AppProvider';
 import { meaningLine } from '../src/data/entry';
 import { loadProfileData } from '../src/store/storage';
@@ -263,6 +265,36 @@ export default function Calendar() {
         <DayDetail selected={selected} bySubject={bySubject} day={days[selected.date]} />
       ) : null}
 
+      {/*
+        **이 아이에게 할 수 있는 일 둘.** 상 주기와 부르기.
+
+        ── 왜 여기인가 ───────────────────────────────────────────
+
+        기록을 보다가 하고 싶어지는 일이다. "오늘 다 했네" 를 보면 상을 주고,
+        "아직 안 했네" 를 보면 부른다. 그 판단에 필요한 것이 바로 위의 달력과
+        갈래별 성적이다.
+
+        예전에는 둘이 딴 데 있었다. 승인 화면은 있는데 부모 홈에서 그리로 가는
+        길이 없었다 — 홈의 「아이들 학습 보고서」 에 「동기 부여 요청권 1건」
+        이라는 표가 붙는데 눌러 가면 아이를 고르는 화면이었다. 표지와 도착지가
+        어긋난 셈이다. 부르기는 ⚙️ 설정 안쪽 네 단계에 있었다.
+
+        아이를 고르는 화면에 셋을 늘어놓아 봤지만 그것도 아니었다 — 누구에게
+        보내는지 매번 다시 골라야 했다. 아이 하나를 골라 들어온 이 화면에는
+        그 아이만 있으니 다시 고를 것이 없다.
+
+        아이 폰에서는 안 나온다(`remoteName` 이 있을 때만). 자기 상을 자기가
+        승인할 수는 없다.
+      */}
+      {remoteName ? (
+        <>
+          <RewardAsks name={remoteName} />
+          <View style={{ marginTop: spacing.md }}>
+            <NudgeCard only={remoteName} openAlways />
+          </View>
+        </>
+      ) : null}
+
       {/* 이 달 요약 */}
       <Card style={{ marginTop: spacing.md }}>
         <H3>{summary.label} 요약</H3>
@@ -309,6 +341,83 @@ export default function Calendar() {
  * 따로 뺀 것은 자리를 옮기려는 것이다. 예전에는 「이 달 요약」 과 「한 달
  * 성적표」 뒤에 있어서, 날짜를 눌러도 결과가 화면 밖이었다.
  */
+/**
+ * 이 아이가 올린 동기 부여 요청권. **상을 여기서 준다.**
+ *
+ * "메세지는 왔는데 들어가 보면 승인 버튼이 없습니다" 라는 말을 들었다. 승인
+ * 화면(/parent-rewards)은 있었지만 **부모 홈에서 그리로 가는 길이 없었다.**
+ * 홈의 「아이들 학습 보고서」 칸에 「동기 부여 요청권 1건」 이라는 표가 붙는데,
+ * 눌러 가면 아이를 고르는 화면이 열렸다 — 표지와 도착지가 어긋나 있었다.
+ *
+ * 이제 그 아이 보고서 안에서 바로 준다. 기록을 보면서 정하는 것이 맞다.
+ */
+function RewardAsks({ name }: { name: string }) {
+  const { state, decideReward } = useApp();
+  const [note, setNote] = useState('');
+
+  /*
+   * 이 아이 것만. 다른 폰의 아이는 이 폰에 프로필이 없어 `profileId` 로는 못
+   * 가리고, 보내 온 이름으로 가린다.
+   */
+  const asks = state.rewards.filter((r) => r.status === 'pending' && r.childName === name);
+  if (asks.length === 0) return null;
+
+  return (
+    <Card style={{ marginTop: spacing.md, borderColor: colors.accent }}>
+      <H3>🎁 {name}이 올린 상</H3>
+      {asks.map((r) => (
+        <View key={r.id} style={{ marginTop: spacing.md }}>
+          <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+            <Text style={s.askAmount}>{formatWon(r.baseAmount)}</Text>
+            <Chip
+              label={
+                r.kind === 'dailyDone'
+                  ? '오늘 공부 끝'
+                  : r.kind === 'monthlyPurse'
+                    ? '한 달치 모아 받기'
+                    : '레벨업'
+              }
+              tone="accent"
+            />
+          </Row>
+          {r.note ? <Muted style={{ marginTop: spacing.xs }}>“{r.note}”</Muted> : null}
+
+          {/* 한마디를 적어 함께 보낸다. 상보다 이 한 줄을 기다리는 아이가 있다. */}
+          <TextInput
+            value={note}
+            onChangeText={setNote}
+            placeholder="아이에게 한마디 (선택)"
+            placeholderTextColor={colors.subtext}
+            style={s.askInput}
+          />
+          <Row style={{ gap: spacing.sm, marginTop: spacing.md }}>
+            <View style={{ flex: 1 }}>
+              <Button
+                title="주기로 하기"
+                variant="parent"
+                onPress={() => {
+                  decideReward(r.id, 'approved', note.trim(), r.baseAmount);
+                  setNote('');
+                }}
+              />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Button
+                title="다음 기회에"
+                variant="secondary"
+                onPress={() => {
+                  decideReward(r.id, 'rejected', note.trim());
+                  setNote('');
+                }}
+              />
+            </View>
+          </Row>
+        </View>
+      ))}
+    </Card>
+  );
+}
+
 function DayDetail({
   selected,
   bySubject,
@@ -604,5 +713,18 @@ const s = StyleSheet.create({
     paddingTop: spacing.md,
     borderTopWidth: 1,
     borderTopColor: colors.border,
+  },
+  /* 상 금액. 무엇을 정하는 자리인지 한눈에 들어와야 해서 크게 적는다. */
+  askAmount: { fontSize: 26, fontWeight: '800', color: colors.text },
+  askInput: {
+    marginTop: spacing.md,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.bg,
+    fontSize: font.body,
+    color: colors.text,
   },
 });

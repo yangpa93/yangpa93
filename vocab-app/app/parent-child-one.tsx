@@ -5,7 +5,6 @@ import { Body, Button, Card, H3, Muted, Row, Screen } from '../src/components/ui
 import { useApp } from '../src/store/AppProvider';
 import { LevelPicker } from '../src/components/LevelPicker';
 import { AwardRatesEditor } from '../src/components/AwardRatesEditor';
-import { NudgeCard } from '../src/components/NudgeCard';
 import { awardRates } from '../src/features/awards';
 import { sendSettingsToChild } from '../src/features/push';
 import { primaryParent } from '../src/features/parentLinks';
@@ -357,12 +356,12 @@ export default function ParentChildOne() {
       ) : null}
 
       {/*
-        「공부하세요」 는 **이 아이 것이 바로 펼쳐진다.** 이미 그 아이로 들어와
-        있는데 이름을 한 번 더 눌러 펼치게 하면 같은 일을 두 번 시키는 것이다.
+        **「공부하세요」 는 여기 없다.**
+
+        아이별 학습 보고서로 옮겼다. 부모가 부르고 싶어지는 순간은 "오늘 안
+        했네" 를 본 직후이고, 그것을 보는 자리가 보고서다. 설정 화면에 두면
+        레벨과 금액 사이에 부르기 단추가 끼어 무엇을 하는 자리인지 흐려진다.
       */}
-      <View style={{ marginTop: spacing.lg }}>
-        <NudgeCard only={name} openAlways />
-      </View>
     </Screen>
   );
 }

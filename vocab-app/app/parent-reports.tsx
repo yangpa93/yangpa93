@@ -3,7 +3,6 @@ import { Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { Button, Card, Chip, EmptyState, H3, Muted, Row, Screen } from '../src/components/ui';
 import { useApp } from '../src/store/AppProvider';
-import { NudgeCard } from '../src/components/NudgeCard';
 import { hasReports } from '../src/features/childReports';
 import { formatKo, todayKey } from '../src/lib/date';
 import { spacing } from '../src/theme';
@@ -131,39 +130,14 @@ export default function ParentReports() {
       })}
 
       {/*
-        「공부하세요」 를 **보는 자리 바로 아래**에 둔다.
+        **여기에는 부르기도 설정도 없다.**
 
-        ── 왜 여기인가 ───────────────────────────────────────────
+        아이를 고르는 자리다. 부르기와 상 주기는 아이 하나를 고라 들어간
+        보고서 안에 있다 — 셋을 한 화면에 달아 두면 누구에게 보내는지 매번
+        다시 고르게 되고, 상은 그 아이 기록을 보면서 정하는 것이 맞다.
 
-        아이 개별 설정 안에만 두었더니 ⚙️ 설정 → 아이들 기본 설정 → 아이
-        고르기 → 한참 아래로, 네 단계를 들어가야 나왔다. "공부하자는 통보
-        버튼이 없어졌는데 왜 없어진 건가요" 라는 말을 들은 자리가 그것이다.
-        없앤 적은 없지만, 그만큼 멀면 없는 것과 같다.
-
-        부모가 이 화면에 오는 까닭은 "오늘 누가 했나" 다. 안 한 아이가 보이면
-        바로 부르고 싶어진다 — 보는 일과 부르는 일이 이어져 있으니 자리도
-        이어 둔다. 설정과는 다르다. 부르는 것은 값을 고치는 일이 아니라서
-        보러 들어왔다가 잘못 건드릴 것이 없다.
-
-        아이 개별 설정 안의 것은 그대로 둔다. 그 아이만 볼 때 쓰는 자리다.
+        설정으로 가는 길도 뻐다. ⚙️ 설정 → 아이들 기본 설정 하나면 된다.
       */}
-      <View style={{ marginTop: spacing.lg }}>
-        <NudgeCard />
-      </View>
-
-      {/*
-        설정은 따로 간다. 여기는 보는 자리다 — 보러 들어왔다가 레벨을 잘못
-        건드리는 일이 없어야 한다.
-      */}
-      <View style={{ marginTop: spacing.xl }}>
-        <Muted>학년·하루 분량·금액을 바꾸시려면</Muted>
-        <Button
-          title="🧒 아이별 설정 하기"
-          variant="ghost"
-          style={{ marginTop: spacing.sm }}
-          onPress={() => router.push('/parent-child-basics')}
-        />
-      </View>
     </Screen>
   );
 }

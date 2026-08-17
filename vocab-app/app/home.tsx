@@ -297,11 +297,36 @@ export default function Home() {
           <Chip label={`새 단어 ${newCount}개`} tone="accent" />
         </Row>
 
-        <Muted style={{ marginTop: spacing.md }}>
-          {reviewCount > 0
-            ? `틀렸던 단어 ${reviewCount}개를 먼저 다시 봅니다.`
-            : '오늘은 복습할 단어가 없어요. 새 단어로 시작해요!'}
-        </Muted>
+        {/*
+          **무엇이 남았는지 적는다.**
+
+          "아이들 폰에서 다 했는데도 완료로 뜨지를 않네요" 라는 말을 들었다.
+          규칙은 맞게 돌고 있었다 — 켠 갈래를 **전부** 끝내야 하루가 끝난 것으로
+          치는데, 셋을 켜 놓고 둘만 한 상태였다.
+          그런데 화면이 그 사정을 말해 주지 않았다. 아래에 단추가 하나 남아
+          있는 것이 유일한 단서였고, 그건 눈에 안 들어온다.
+        */}
+        {(() => {
+          const left = orderedSubjects(profile.settings).filter(
+            (sub) => !(day?.doneSubjects ?? []).includes(sub),
+          );
+          if (left.length === 0) {
+            return (
+              <Muted style={{ marginTop: spacing.md, color: colors.correct }}>
+                오늘 할 것을 다 마쳤어요! 🎉
+              </Muted>
+            );
+          }
+          return (
+            <Muted style={{ marginTop: spacing.md }}>
+              {left.map((sub) => SUBJECT_LABEL[sub]).join(' · ')}
+              {left.length === orderedSubjects(profile.settings).length
+                ? ' 이 남았어요.'
+                : ' 만 남았어요.'}
+              {reviewCount > 0 ? ` 틀렸던 낱말 ${reviewCount}개를 먼저 다시 봅니다.` : ''}
+            </Muted>
+          );
+        })()}
 
         {session.length === 0 ? (
           <Body style={{ marginTop: spacing.lg, color: colors.correct }}>

@@ -54,8 +54,17 @@ async function tap(text, ms = 4000) {
   return true;
 }
 
+/**
+ * 화면을 찍는다. **스크롤 아래까지 통째로** 담는다(`fullPage`).
+ *
+ * 폰 한 화면(870)만 찍었더니 그 아래가 잘려 나갔다 — 상 승인 카드를 보려고
+ * 찍은 장에서 정작 공부하세요가 반쯤 잘리는 식이었다. "화면이 짤립니다,
+ * 화면이 다 보이도록 해주세요" 라는 말을 들은 자리다.
+ *
+ * 세로로 길어지지만 그것이 맞다. 폰에서도 손가락으로 내려 보는 화면이다.
+ */
 async function shot(name) {
-  await page.screenshot({ path: `${OUT}/${name}.png` });
+  await page.screenshot({ path: `${OUT}/${name}.png`, fullPage: true });
 }
 
 /* 회원님 구성으로 심는다. */
@@ -158,6 +167,62 @@ if (await stamp.isVisible({ timeout: 3000 }).catch(() => false)) {
   ok('판 시각 아래에 여백이 있다', false, '시각을 못 찾음');
 }
 await shot('09-settings');
+
+/* ══════════════════════════════════════════════════════════════
+   아이 폰 — 갈래별 단추와 공부 화면
+   ══════════════════════════════════════════════════════════════ */
+console.log('\n아이 폰 — 갈래별 단추와 공부 화면\n');
+
+/*
+ * 셋을 다 켠 아이로, **아직 아무것도 안 한 상태**로 심는다. 오늘치를 다 마친
+ * 씨앗으로는 단추가 「끝냈어요 — 한 번 더」 로 바뀌어서, 정작 「영어 공부
+ * 시작하기 (N문제)」 를 볼 수가 없다.
+ */
+await page.goto(`${BASE}/demo/`);
+await page
+  .getByText('영어 · 국어 · 일상 문장을 다 켠 상태', { exact: false })
+  .first()
+  .click({ noWaitAfter: true })
+  .catch(() => {});
+await page.waitForTimeout(2500);
+
+await page.goto(`${BASE}/home`);
+await page.waitForTimeout(1600);
+await shot('10-child-home');
+
+/* 켠 갈래마다 단추가 하나씩 서야 한다. */
+const buttons = await page.getByText(/공부 시작하기 \(\d+문제\)/).allTextContents().catch(() => []);
+ok('갈래마다 공부 단추가 있다', buttons.length >= 2, buttons.join(' / ') || '(없음)');
+ok('단추에 문제 수가 적혀 있다', buttons.every((b) => /\(\d+문제\)/.test(b)), buttons.join(' / '));
+
+/* 갈래별 진도가 켠 대로 셋 다 서야 한다. */
+const progress = await page.getByText(/진도$/).allTextContents().catch(() => []);
+ok('진도가 갈래마다 있다', progress.length >= 2, progress.join(' / ') || '(없음)');
+await page.getByText('진도', { exact: false }).first().scrollIntoViewIfNeeded().catch(() => {});
+await page.waitForTimeout(400);
+await shot('11-child-progress');
+
+/*
+ * ── 공부 화면으로 들어간다 ──────────────────────────────────
+ *
+ * "몇개의 단어를 공부하는지 확인해 봐야 합니다." 단추에 적힌 수와 들어가서
+ * 보는 `1/N` 이 **같아야** 한다. 예전에는 단추가 낱말을, 화면이 문항을 세서
+ * 18 과 57 로 갈렸다.
+ */
+const first = buttons[0] ?? '';
+const promised2 = Number(first.match(/\((\d+)문제\)/)?.[1] ?? 0);
+ok('첫 단추의 문제 수를 읽었다', promised2 > 0, first || '(못 읽음)');
+
+if (promised2 > 0) {
+  await page.getByText(/공부 시작하기 \(\d+문제\)/).first().click().catch(() => {});
+  await page.waitForTimeout(2600);
+  await shot('12-study');
+
+  const counter = await page.getByText(/^\d+\/\d+$/).first().textContent().catch(() => null);
+  const total = counter ? Number(counter.split('/')[1]) : 0;
+  ok('단추에 적힌 수와 공부 화면의 총계가 같다', total === promised2, `단추 ${promised2} · 화면 ${total}`);
+  ok('무슨 갈래인지 화면에 적혀 있다', (await page.getByTestId('subject-tag').count()) > 0);
+}
 
 await browser.close();
 

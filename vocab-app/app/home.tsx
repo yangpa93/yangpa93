@@ -317,13 +317,18 @@ export default function Home() {
               </Muted>
             );
           }
+          /*
+           * **조사를 붙이지 않는다.** 「일상 문장 이 남았어요」 처럼 어색해진다.
+           * 받침에 따라 「이/가」 를 갈라 쓰자면 이름마다 규칙을 따져야 하는데,
+           * 갈래 이름은 설정에서 바뀔 수 있어 그 규칙이 언제 깨질지 모른다.
+           * 「남은 것 —」 으로 적으면 무엇이 와도 읽힌다.
+           */
+          const all = orderedSubjects(profile.settings).length;
           return (
             <Muted style={{ marginTop: spacing.md }}>
+              {left.length === all ? '아직 시작 안 했어요 — ' : '남은 것 — '}
               {left.map((sub) => SUBJECT_LABEL[sub]).join(' · ')}
-              {left.length === orderedSubjects(profile.settings).length
-                ? ' 이 남았어요.'
-                : ' 만 남았어요.'}
-              {reviewCount > 0 ? ` 틀렸던 낱말 ${reviewCount}개를 먼저 다시 봅니다.` : ''}
+              {reviewCount > 0 ? `. 틀렸던 낱말 ${reviewCount}개를 먼저 다시 봅니다.` : ''}
             </Muted>
           );
         })()}

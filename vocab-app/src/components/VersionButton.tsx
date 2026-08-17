@@ -71,10 +71,28 @@ const s = StyleSheet.create({
    * 줄이 화면 맨 아래에 있어서, 안드로이드 밑줄 세 칸(뒤로·홈·최근)과 붙어
    * 눌리지도 읽히지도 않았다. 스크롤 끝에 손가락 하나 들어갈 자리를 남긴다.
    */
-  wrap: { alignItems: 'center', gap: spacing.xs, marginBottom: spacing.xl },
-  now: { fontSize: font.tiny, color: colors.subtext },
+  /*
+   * **폭을 화면만큼 준다.**
+   *
+   * `alignItems: 'center'` 만 두었더니 이 줄의 폭이 글자 길이(81px)에 딱 맞게
+   * 잡혔다. 노트북에서는 그것으로 충분했지만 태블릿에서 「2026.08.17.20.」
+   * 까지만 보였다 — 기기 글꼴이 넓거나 「글자 크게」 가 켜져 있으면 같은 글자가
+   * 그 폭에 안 들어간다.
+   *
+   * 폭을 100% 로 두고 글자를 가운데로 밀면, 넘칠 때 잘리는 대신 아랫줄로
+   * 내려간다. 잘린 시각은 없는 시각보다 나쁘다 — 20.0 이 20.05 인지 20.09
+   * 인지 알 수 없으면서 알 수 있는 척을 한다.
+   */
+  wrap: { alignItems: 'center', gap: spacing.xs, marginBottom: spacing.xl, width: '100%' },
+  now: { fontSize: font.tiny, color: colors.subtext, textAlign: 'center' },
   /* 만든 때. 판 번호에 딸린 것이라 더 흐리게, 바로 밑에 붙인다. */
-  stamp: { fontSize: font.tiny, color: colors.subtext, opacity: 0.8, marginTop: -2 },
+  stamp: {
+    fontSize: font.tiny,
+    color: colors.subtext,
+    opacity: 0.8,
+    marginTop: -2,
+    textAlign: 'center',
+  },
   /* 번호만 진하게. 사람이 불러 줘야 하는 것은 이 네 자리다. */
   version: { fontWeight: '800', color: colors.text },
   btn: {

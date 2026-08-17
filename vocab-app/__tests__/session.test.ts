@@ -206,8 +206,14 @@ describe('buildRounds', () => {
     expect(q.every((x) => x.stage === 'learn')).toBe(true);
   });
 
+  /*
+   * **새 낱말로 본다.** 복습은 이제 첫 라운드에만 나오므로 라운드를 견줄 수가
+   * 없다 — 그것을 지키는 검사는 childSession.test.ts 에 따로 있다. 여기서
+   * 보려는 것은 「라운드가 올라가면 단계도 올라가는가」 이고, 그 규칙은 새
+   * 낱말에 그대로 걸린다.
+   */
   it('연속 정답이 쌓이면 라운드마다 단계가 올라간다', () => {
-    const seasoned = words.map((w) => item(w.entry, { card: card(5), mode: 'review' }));
+    const seasoned = words.map((w) => item(w.entry, { card: card(5), mode: 'new' }));
     const q = buildRounds(seasoned, 3, fixedRand);
     const stages: Stage[] = [];
     for (let r = 0; r < 3; r++) {
@@ -226,7 +232,7 @@ describe('buildRounds', () => {
       [5, 'recall'],
     ] as [number, Stage][]) {
       const q = buildRounds(
-        words.map((w) => item(w.entry, { card: card(streak), mode: 'review' })),
+        words.map((w) => item(w.entry, { card: card(streak), mode: 'new' })),
         3,
         fixedRand,
       );

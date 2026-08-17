@@ -205,7 +205,15 @@ export function buildKoRounds(
     const want = wanted[Math.min(r, wanted.length - 1)];
     const metOnce = new Set<string>();
 
-    for (const item of shuffle(items, rand)) {
+    /*
+     * 복습은 한 번만. 까닭은 영어 쪽과 같다(srs/session.ts 의 buildRounds).
+     *
+     * 국어는 더 급했다 — 한 낱말이 뜻마다 문항으로 갈려서, 복습을 세 번
+     * 돌리면 같은 낱말이 한 판에 예닐곱 번씩 나왔다.
+     */
+    const forThisRound = r === 0 ? items : items.filter((i) => i.mode !== 'review');
+
+    for (const item of shuffle(forThisRound, rand)) {
       const firstMeeting = r === 0 && item.mode === 'new' && !metOnce.has(item.entry.id);
       if (firstMeeting) metOnce.add(item.entry.id);
 

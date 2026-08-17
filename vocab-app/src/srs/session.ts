@@ -240,7 +240,27 @@ export function buildRounds(
     // 뜻이 여러 개여도 '처음 만남'은 첫 문항 하나에만 붙인다.
     const metOnce = new Set<string>();
 
-    for (const item of shuffle(items, rand)) {
+    /*
+     * ── 복습은 **한 번만** 나온다 ─────────────────────────────
+     *
+     * 예전에는 새 낱말과 복습을 가리지 않고 셋 다 라운드 수만큼 돌렸다.
+     * 새 8개 + 복습 10개면 24 + 30 = 54문제가 되어, **복습이 절반을
+     * 넘었다.** "너무 많아지는데요" 라는 말을 들은 자리가 여기다.
+     *
+     * 복습은 이미 한 번 자리를 잡은 낱말이다. 핵심은 **꺼내 보는 것**이고,
+     * 한 번 제대로 꺼내면 그날 몫은 끝난다. 같은 날 세 번 몰아 보면 간격을
+     * 두고 다시 만난다는 뜻 자체가 옅어진다 — 간격 반복인데 간격이 없다.
+     *
+     * 못 외운 것이 한 번에 지나가지 않을까. 그렇지 않다. **틀리면 그 자리에서
+     * 다시 나오는 장치가 따로 있다**(app/study.tsx 의 requeue). 그러니 줄어드는
+     * 것은 이미 아는 낱말을 세 번 묻던 몫뿐이다.
+     *
+     * 새 낱말은 그대로 셋을 다 거친다. 처음 만나는 것이라 뜻 → 문맥 → 인출을
+     * 한 번씩 밟아야 자리를 잡는다.
+     */
+    const forThisRound = r === 0 ? items : items.filter((i) => i.mode !== 'review');
+
+    for (const item of shuffle(forThisRound, rand)) {
       const firstMeeting = r === 0 && item.mode === 'new' && !metOnce.has(item.entry.id);
       if (firstMeeting) metOnce.add(item.entry.id);
 

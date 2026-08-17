@@ -288,3 +288,59 @@ describe('하루치가 고른 값을 따른다', () => {
     expect(buildChildQueue(a).length).toBeGreaterThan(10);
   });
 });
+
+/**
+ * **복습은 한 판에서 한 번만 나온다.**
+ *
+ * 예전에는 새 낱말과 복습을 가리지 않고 셋 다 라운드 수만큼 돌렸다. 새 8개 +
+ * 복습 10개면 24 + 30 = 54문제가 되어 복습이 절반을 넘었다. "너무 많아지는데요"
+ * 라는 말을 들었다.
+ *
+ * 복습은 이미 자리를 잡은 낱말이라 한 번 꺼내 보면 그날 몫이 끝난다. 같은 날
+ * 세 번 몰아 보면 간격 반복인데 간격이 없는 셈이 된다. 못 외운 것은 틀렸을 때
+ * 다시 나오는 장치가 따로 받는다.
+ */
+describe('복습은 한 번, 새 낱말은 세 번', () => {
+  /** 복습거리를 만든다 — 기한이 지난 카드. */
+  function due(ids: string[]): Record<string, CardState> {
+    const cards: Record<string, CardState> = {};
+    for (const id of ids) {
+      cards[id] = { entryId: id, ease: 2.5, intervalDays: 1, streak: 1, correct: 1, wrong: 0,
+        lapses: 0, due: '2020-01-01', lastSeen: 1577836800000, firstSeen: 1577836800000 };
+    }
+    return cards;
+  }
+
+  const cards = due(entriesOf('m1-1').slice(0, 10).map((e) => e.id));
+  const args = { profile: child(['en']), cards, today: '2026-08-16', rand: () => 0.5 };
+
+  it('복습 낱말은 라운드마다 되풀이되지 않는다', () => {
+    const q = buildChildQueue(args);
+    for (const id of new Set(q.filter((i) => i.mode === 'review').map((i) => i.entry.id))) {
+      const rounds = new Set(q.filter((i) => i.mode === 'review' && i.entry.id === id).map((i) => i.round));
+      // 뜻이 여럿이면 한 라운드 안에서 문항이 여럿일 수는 있다. 라운드가 여럿이면 안 된다.
+      expect([...rounds]).toEqual([0]);
+    }
+  });
+
+  it('새 낱말은 라운드를 다 거친다', () => {
+    const q = buildChildQueue(args);
+    const fresh = q.filter((i) => i.mode === 'new');
+    expect(new Set(fresh.map((i) => i.round)).size).toBe(child(['en']).settings.rounds);
+  });
+
+  it('그래서 한 판이 눈에 띄게 짧아진다', () => {
+    /*
+     * 복습을 세 번 돌리던 때와 견준다. 같은 낱말 수인데 문항이 줄어야 한다 —
+     * 줄어드는 것은 이미 아는 낱말을 세 번 묻던 몫뿐이다.
+     */
+    const q = buildChildQueue(args);
+    const reviewQ = q.filter((i) => i.mode === 'review').length;
+    const reviewWords = new Set(
+      pickChildToday(args).filter((i) => i.mode === 'review').map((i) => i.entryId),
+    ).size;
+    expect(reviewWords).toBeGreaterThan(0);
+    // 낱말 하나에 문항 하나가 원칙(다의어는 조금 더). 세 배가 되면 안 된다.
+    expect(reviewQ).toBeLessThan(reviewWords * 2);
+  });
+});

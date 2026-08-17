@@ -92,14 +92,22 @@ describe('굽기 전에 박아 두는 시각', () => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const { BUILT_AT } = require('../src/features/built-at') as { BUILT_AT: string };
 
-  it('날짜로 읽히는 글자가 들어 있다', () => {
-    expect(typeof BUILT_AT).toBe('string');
-    expect(Number.isNaN(Date.parse(BUILT_AT))).toBe(false);
+  it('사람이 읽는 모양으로 바로 박힌다', () => {
+    /*
+     * **이제 ISO 가 아니다.** 한국 시간으로 다 만들어진 글자를 박고, 앱은 그것을
+     * 그대로 적는다. 바꿔 세지 않으니 굽는 사람과 폰이 같은 숫자를 본다 —
+     * 대조하려고 적는 값이니 그것이 가장 중요하다.
+     *
+     * 예전에는 UTC 로 박고 폰의 시간대로 바꿔 보여 줬다. 그러니 "10시 52분에
+     * 보냈습니다" 라고 말한 것과 화면의 숫자가 아홉 시간 어긋나, 어느 판이
+     * 폰에 들어갔는지 가릴 수가 없었다.
+     */
+    expect(BUILT_AT).toMatch(/^\d{4}\.\d{2}\.\d{2}\.\d{2}\.\d{2}$/);
   });
 
-  it('사람이 읽는 모양으로 바뀐다', () => {
-    /* 이것이 곧 판 정보에 적히는 줄이다. 빈 문자열이면 그 자리가 통째로 빈다. */
-    expect(stampOf(new Date(BUILT_AT))).toMatch(/^\d{4}\.\d{2}\.\d{2}\.\d{2}\.\d{2}$/);
+  it('그대로 화면에 적힌다 — 다시 세지 않는다', () => {
+    /* 빈 문자열이면 판 정보에서 그 자리가 통째로 빈다. */
+    expect(BUILT_AT.length).toBe(16);
   });
 
   it('굽는 길목마다 찍게 되어 있다', () => {

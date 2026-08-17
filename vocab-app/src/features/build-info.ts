@@ -96,23 +96,25 @@ export function buildInfo(): BuildInfo {
     platform: Platform.OS,
     update,
     /*
-     * **두 군데서 찾는다.**
+     * **소스에 박아 둔 글자를 먼저 쓴다.**
      *
-     * ① `Updates.createdAt` — 무선 업데이트로 갈아 끼운 판이면 그 업데이트가
-     *    만들어진 때다. 지금 도는 것이 언제 것인지가 알고 싶은 값이니 이쪽이
-     *    먼저다. **APK 를 갓 깔면 비어 있다.**
-     * ② `extra.builtAt` — app.config.js 가 넣는 값. 폰에서는 읽히는데
-     *    **웹으로 구우면 번들에 안 실린다.** 뜯어 보니 시각 문자열이 아예
-     *    없었다.
-     * ③ `BUILT_AT` — 굽기 전에 scripts/stamp.mjs 가 **소스에 적어 둔** 글자.
-     *    번들러는 소스에 적힌 문자열을 빼먹지 않는다. 앞의 둘이 다 비는
-     *    자리를 이것이 막는다.
+     * 이 자리가 네 번 어긋났다. 그때마다 원인이 달랐다.
      *
-     * 세 번을 어긋난 자리다. "되었다가 안 되는 기능" 이라는 말을 들었고,
-     * 그때마다 원인이 달랐다 — ①만 있을 때는 새로 깐 APK 에서, ②까지 있을
-     * 때는 웹에서 비었다. 그래서 마지막 하나는 **믿지 않고 박아 넣는다.**
+     *   ① `Updates.createdAt` 하나만 읽었다 → APK 를 갓 깔면 비어 있다
+     *   ② `extra.builtAt` 을 더했다 → 웹으로 구우면 번들에 안 실린다
+     *   ③ `BUILT_AT` 을 더했다 → 값은 들어가는데 **UTC 라 아홉 시간 어긋났다**
+     *   ④ 그래서 굽는 사람이 말한 시각과 화면의 숫자가 달라, 어느 판이
+     *      폰에 들어갔는지 대조할 수가 없었다
+     *
+     * 지금은 `stamp.mjs` 가 한국 시간으로 **다 만들어진 글자**를 박는다. 그것을
+     * 맨 앞에 두면 굽는 사람과 폰이 같은 숫자를 본다 — 대조하려고 적는 값이니
+     * 그것이 가장 중요하다.
+     *
+     * 뒤의 둘은 그 파일이 없거나 비었을 때를 받는다. `Updates.createdAt` 은
+     * 무선 업데이트가 만들어진 때라 `BUILT_AT` 과 몇 초 차이다(같은 `npm run
+     * ota` 안에서 잇달아 돈다).
      */
-    builtAt: stampOf(Updates.createdAt) || stampOf(configBuiltAt(cfg)) || stampOf(stamped()),
+    builtAt: BUILT_AT || stampOf(Updates.createdAt) || stampOf(configBuiltAt(cfg)),
   };
 }
 
@@ -125,11 +127,6 @@ export function buildInfo(): BuildInfo {
 function configBuiltAt(cfg: typeof Constants.expoConfig): Date | null {
   const v = (cfg?.extra as Record<string, unknown> | undefined)?.builtAt;
   return typeof v === 'string' && v ? new Date(v) : null;
-}
-
-/** 굽기 전에 소스에 박아 둔 시각. 마지막 대비책이다. */
-function stamped(): Date | null {
-  return BUILT_AT ? new Date(BUILT_AT) : null;
 }
 
 /**

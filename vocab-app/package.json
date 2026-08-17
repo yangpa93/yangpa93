@@ -79,7 +79,7 @@
     "bump-data": "node scripts/bump-data.mjs",
     "stamp": "node scripts/stamp.mjs",
     "eas-build-pre-install": "node scripts/stamp.mjs",
-    "ota": "node scripts/stamp.mjs && eas update --branch beta --environment production"
+    "ota": "node scripts/stamp.mjs && eas update --branch beta --environment production --non-interactive"
   },
   "private": true
 }

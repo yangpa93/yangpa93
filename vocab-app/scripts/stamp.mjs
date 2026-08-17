@@ -24,19 +24,35 @@
  */
 import { writeFileSync } from 'node:fs';
 
-const at = new Date().toISOString();
+/**
+ * **한국 시간으로, 사람이 읽는 모양 그대로 박는다.**
+ *
+ * 처음에는 ISO(UTC)로 박고 앱에서 폰 시간대로 바꿔 보여 줬다. 그러니 "10시
+ * 52분에 보냈습니다" 라고 말한 것과 화면에 뜨는 숫자가 아홉 시간 어긋났다 —
+ * 어느 판이 폰에 들어갔는지 대조할 방법이 없어진다. 대조하려고 적는 값인데
+ * 대조가 안 되면 적을 뜻이 없다.
+ *
+ * 그래서 여기서 한 번 정해 글자로 굳힌다. 굽는 사람과 폰이 같은 숫자를 본다.
+ */
+const now = new Date();
+const kst = new Date(now.getTime() + 9 * 3600 * 1000);
+const p = (n) => String(n).padStart(2, '0');
+const at =
+  `${kst.getUTCFullYear()}.${p(kst.getUTCMonth() + 1)}.${p(kst.getUTCDate())}` +
+  `.${p(kst.getUTCHours())}.${p(kst.getUTCMinutes())}`;
 const out = 'src/features/built-at.ts';
 
 writeFileSync(
   out,
   `/**
- * 이 판을 구운 때. **scripts/stamp.mjs 가 구울 때마다 다시 씁니다.**
+ * 이 판을 구운 때 (한국 시간). **scripts/stamp.mjs 가 구울 때마다 다시 씁니다.**
  *
- * 손으로 고치지 마세요 — 다음 빌드에서 덮어 쓰입니다.
+ * 화면에 그대로 적히는 글자다 — 바꿔 계산하지 않는다. 손으로 고치지 마세요,
+ * 다음 빌드에서 덮어 쓰입니다.
  */
 export const BUILT_AT = '${at}';
 `,
   'utf8',
 );
 
-console.log(`${out} ← ${at}`);
+console.log(`${out} ← ${at} (한국 시간)`);
